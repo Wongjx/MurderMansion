@@ -1,0 +1,3 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<session version="1.0">&#x0A;<refactoring comment="Delete 5 resources" deleteContents="false" description="Delete 5 resources" element1="/ZombieBird" element2="/ZombieBird-android" element3="/ZombieBird-desktop" element4="/ZombieBird-html" element5="/ZombieBird-robovm" flags="7" id="org.eclipse.ltk.core.refactoring.delete.resources" resources="5" stamp="1423795035910"/>&#x0A;<refactoring comment="Delete 5 resources" deleteContents="true" description="Delete 5 resources" element1="/ZombieBird" element2="/ZombieBird-android" element3="/ZombieBird-desktop" element4="/ZombieBird-html" element5="/ZombieBird-robovm" flags="7" id="org.eclipse.ltk.core.refactoring.delete.resources" resources="5" stamp="1423795098302"/>
+</session>
