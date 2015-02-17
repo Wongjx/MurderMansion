@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry kind="src" path="src"/>
+	<classpathentry exported="true" kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry exported="true" kind="lib" path="C:/Users/JunXiang/.gradle/caches/modules-2/files-2.1/com.badlogicgames.gdx/gdx/1.5.4/c16e1a0088ae7f0cac4a8d6595be32432e6069f4/gdx-1.5.4.jar" sourcepath="C:/Users/JunXiang/.gradle/caches/modules-2/files-2.1/com.badlogicgames.gdx/gdx/1.5.4/3bc504d7330fbbc432a0fa97e64ae118632d1a86/gdx-1.5.4-sources.jar"/>
+	<classpathentry exported="true" kind="lib" path="C:/Users/JunXiang/.gradle/caches/modules-2/files-2.1/com.badlogicgames.box2dlights/box2dlights/1.3/e829c3543ab5a6b3ff818615a8620024f6a14fe0/box2dlights-1.3.jar" sourcepath="C:/Users/JunXiang/.gradle/caches/modules-2/files-2.1/com.badlogicgames.box2dlights/box2dlights/1.3/c8bde8cd5a1048089c7dd7d266aad71e89e096d8/box2dlights-1.3-sources.jar"/>
+	<classpathentry exported="true" kind="lib" path="C:/Users/JunXiang/.gradle/caches/modules-2/files-2.1/com.badlogicgames.gdx/gdx-box2d/1.0.1/78a107753410e8bb11216b654489996bf573b163/gdx-box2d-1.0.1.jar" sourcepath="C:/Users/JunXiang/.gradle/caches/modules-2/files-2.1/com.badlogicgames.gdx/gdx-box2d/1.0.1/ce00a15cbe5d79a259bbde4ca7ed736d359991d/gdx-box2d-1.0.1-sources.jar"/>
+	<classpathentry exported="true" kind="lib" path="/ZombieBird/libs/gdx.jar" sourcepath="/ZombieBird/libs/gdx-sources.jar"/>
+	<classpathentry kind="output" path="bin"/>
+</classpath>

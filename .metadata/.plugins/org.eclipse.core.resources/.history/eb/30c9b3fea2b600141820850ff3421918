@@ -1,0 +1,58 @@
+package com.jkjk.GameWorld;
+
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
+import com.badlogic.gdx.graphics.glutils.ShapeRenderer.ShapeType;
+import com.jkjk.GameObjects.Bat;
+import com.jkjk.GameObjects.Civilian;
+import com.jkjk.GameObjects.DisarmTrap;
+import com.jkjk.GameObjects.Knife;
+import com.jkjk.GameObjects.Murderer;
+import com.jkjk.GameObjects.Trap;
+
+public class GameRenderer {
+	private GameWorld myWorld;
+	private OrthographicCamera cam;
+	private ShapeRenderer shapeRenderer;
+
+	private SpriteBatch batcher;
+
+	private int midPointY;
+
+	// Game Objects
+	private Murderer murderer;
+	private Civilian civilian;
+	private Bat bat;
+	private Trap trap;
+	private DisarmTrap disarmTrap;
+	private Knife knife;
+
+	// Game Assets
+
+	// Tween stuff
+
+	// Buttons
+	
+	public GameRenderer(GameWorld world, int gameHeight, int midPointY) {
+		myWorld = world;
+
+		this.midPointY = midPointY;
+
+		cam = new OrthographicCamera();
+		cam.setToOrtho(true, 136, gameHeight);
+
+		batcher = new SpriteBatch();
+		batcher.setProjectionMatrix(cam.combined);
+		shapeRenderer = new ShapeRenderer();
+		shapeRenderer.setProjectionMatrix(cam.combined);
+	}
+	
+	public void render(float delta, float runTime) {
+
+		
+
+	}
+}
