@@ -15,14 +15,6 @@ public class GameWorld {
 
 	}
 
-	private void updateReady(float delta) {
-
-	}
-
-	public void updateRunning(float delta) {
-
-	}
-
 	public void setRenderer(GameRenderer renderer) {
 		this.renderer = renderer;
 	}

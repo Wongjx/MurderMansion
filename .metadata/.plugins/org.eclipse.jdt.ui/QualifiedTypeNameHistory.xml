@@ -9,4 +9,5 @@
 <fullyQualifiedTypeName name="com.badlogic.gdx.scenes.scene2d.utils.Drawable"/>
 <fullyQualifiedTypeName name="com.jkjk.MMHelpers.AssetLoader"/>
 <fullyQualifiedTypeName name="com.badlogic.gdx.scenes.scene2d.Stage"/>
+<fullyQualifiedTypeName name="com.badlogic.gdx.ApplicationListener"/>
 </qualifiedTypeNameHistroy>
