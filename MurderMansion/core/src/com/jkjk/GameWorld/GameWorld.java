@@ -1,7 +1,7 @@
 package com.jkjk.GameWorld;
 
-import com.jkjk.GameObjects.Civilian;
-import com.jkjk.GameObjects.Murderer;
+import com.jkjk.GameObjects.Characters.Civilian;
+import com.jkjk.GameObjects.Characters.Murderer;
 
 public class GameWorld {
 	private Civilian civilian;

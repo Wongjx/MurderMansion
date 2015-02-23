@@ -13,12 +13,12 @@ import com.badlogic.gdx.scenes.scene2d.ui.Touchpad;
 import com.badlogic.gdx.scenes.scene2d.ui.Touchpad.TouchpadStyle;
 import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
 import com.badlogic.gdx.utils.viewport.ExtendViewport;
-import com.jkjk.GameObjects.Bat;
-import com.jkjk.GameObjects.Civilian;
-import com.jkjk.GameObjects.DisarmTrap;
-import com.jkjk.GameObjects.Knife;
-import com.jkjk.GameObjects.Murderer;
-import com.jkjk.GameObjects.Trap;
+import com.jkjk.GameObjects.Characters.Civilian;
+import com.jkjk.GameObjects.Characters.Murderer;
+import com.jkjk.GameObjects.Items.DisarmTrap;
+import com.jkjk.GameObjects.Items.Trap;
+import com.jkjk.GameObjects.Weapons.Bat;
+import com.jkjk.GameObjects.Weapons.Knife;
 import com.jkjk.MMHelpers.AssetLoader;
 
 public class GameRenderer {
