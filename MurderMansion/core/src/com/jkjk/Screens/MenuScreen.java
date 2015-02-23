@@ -25,7 +25,7 @@ public class MenuScreen implements Screen{
     private TextButton buttonPlay = new TextButton("Enter", normal),
         buttonExit = new TextButton("Exit", normal);
 
-    private Label title = new Label("Murdr Mansion",titleStyle);
+    private Label title = new Label("Murder Mansion",titleStyle);
     
     @Override
     public void show() {
@@ -45,7 +45,7 @@ public class MenuScreen implements Screen{
                 // or System.exit(0);
             }
         });
-    	
+        
         table.add(title).padBottom(40).row();
         table.add(buttonPlay).size(150,60).padBottom(20).row();
         table.add(buttonExit).size(150,60).padBottom(20).row();
