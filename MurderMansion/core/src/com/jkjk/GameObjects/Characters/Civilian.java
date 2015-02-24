@@ -1,34 +1,64 @@
 package com.jkjk.GameObjects.Characters;
 
+import com.jkjk.GameObjects.ItemSlot;
+import com.jkjk.GameObjects.WeaponSlot;
+import com.jkjk.GameObjects.Items.Item;
+import com.jkjk.GameObjects.Weapons.Weapon;
 
-public class Civilian implements GameCharacter {
+
+public class Civilian extends GameCharacter implements ItemSlot, WeaponSlot {
 	
-	Civilian(){
+	private int colour;
+	
+	Civilian(int colour){
+		this.colour = colour;
+	}
+
+	@Override
+	public void addWeapon(Weapon weapon) {
+		// TODO Auto-generated method stub
 		
 	}
-	
-	public void spawn(){
-		// Creates civilian for all players
+
+	@Override
+	public void removeWeapon(Weapon weapon) {
+		// TODO Auto-generated method stub
+		
 	}
-	
-	public void useBat(){
-		// Civilian uses bat
+
+	@Override
+	public void cooldownWeapon() {
+		// TODO Auto-generated method stub
+		
 	}
-	
-	public void useDisarmTrap(){
-		// Civilian uses disarm trap
+
+	@Override
+	public void useWeapon() {
+		// TODO Auto-generated method stub
+		
 	}
-	
-	public void die(){
-		// Kills civilian
+
+	@Override
+	public void addItem(Item item) {
+		// TODO Auto-generated method stub
+		
 	}
-	
-	public void update(){
-		// Updates movement
+
+	@Override
+	public void removeItem(Item item) {
+		// TODO Auto-generated method stub
+		
 	}
-	
-	public void isAlive(){
-		// Checks alive status
+
+	@Override
+	public void cooldownItem() {
+		// TODO Auto-generated method stub
+		
 	}
-	
+
+	@Override
+	public void useItem() {
+		// TODO Auto-generated method stub
+		
+	}
 }
