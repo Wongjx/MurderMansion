@@ -6,6 +6,8 @@ import com.jkjk.GameObjects.Items.Item;
 
 public class Ghost extends GameCharacter implements ItemSlot {
 
+	private Item item;
+	
 	public Ghost() {
 		// TODO Auto-generated constructor stub
 	}
@@ -13,13 +15,13 @@ public class Ghost extends GameCharacter implements ItemSlot {
 	@Override
 	public void addItem(Item item) {
 		// TODO Auto-generated method stub
-		
+		this.item = item;
 	}
 
 	@Override
-	public void removeItem(Item item) {
+	public void removeItem() {
 		// TODO Auto-generated method stub
-		
+		this.item = null;
 	}
 
 	@Override

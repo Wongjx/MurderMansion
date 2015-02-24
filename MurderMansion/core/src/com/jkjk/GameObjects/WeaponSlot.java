@@ -6,7 +6,7 @@ public interface WeaponSlot {
 
 	public void addWeapon(Weapon weapon);
 
-	public void removeWeapon(Weapon weapon);
+	public void removeWeapon();
 	
 	public void cooldownWeapon();
 	

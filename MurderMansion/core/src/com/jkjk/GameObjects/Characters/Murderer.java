@@ -9,6 +9,8 @@ import com.jkjk.GameObjects.Weapons.Weapon;
 public class Murderer extends GameCharacter implements ItemSlot, WeaponSlot {
 
 	private boolean disguised;
+	private Weapon weapon;
+	private Item item;
 	
 	public Murderer() {
 		// TODO Auto-generated constructor stub
@@ -21,13 +23,13 @@ public class Murderer extends GameCharacter implements ItemSlot, WeaponSlot {
 	@Override
 	public void addWeapon(Weapon weapon) {
 		// TODO Auto-generated method stub
-		
+		this.weapon = weapon;
 	}
 
 	@Override
-	public void removeWeapon(Weapon weapon) {
+	public void removeWeapon() {
 		// TODO Auto-generated method stub
-		
+		this.weapon = null;
 	}
 
 	@Override
@@ -45,13 +47,13 @@ public class Murderer extends GameCharacter implements ItemSlot, WeaponSlot {
 	@Override
 	public void addItem(Item item) {
 		// TODO Auto-generated method stub
-		
+		this.item = item;
 	}
 
 	@Override
-	public void removeItem(Item item) {
+	public void removeItem() {
 		// TODO Auto-generated method stub
-		
+		this.item = null;
 	}
 
 	@Override
