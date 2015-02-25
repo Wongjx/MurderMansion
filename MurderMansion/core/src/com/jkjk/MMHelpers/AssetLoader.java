@@ -2,8 +2,10 @@ package com.jkjk.MMHelpers;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.Texture.TextureFilter;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.Sprite;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.scenes.scene2d.ui.Label.LabelStyle;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton.TextButtonStyle;
@@ -17,6 +19,8 @@ public class AssetLoader {
 	public static Drawable touchBackground;
 	public static Drawable touchKnob;
 	
+	public static Texture logoTexture;
+	public static TextureRegion logo;
 	public static TextButtonStyle normal;
 	public static BitmapFont basker32black;
 	public static BitmapFont basker45black;
@@ -34,6 +38,12 @@ public class AssetLoader {
 	public static Sprite blockSprite3;
 	
 	public static void load() {
+		
+		logoTexture = new Texture(Gdx.files.internal("data/logo.png"));
+		logoTexture.setFilter(TextureFilter.Linear, TextureFilter.Linear);
+
+		logo = new TextureRegion(logoTexture);
+		
 		//Create new skin for menu screen
 		menuSkin=new Skin();
 		//Set menu font
