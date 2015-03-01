@@ -10,11 +10,11 @@ public class MurderMansion extends Game {
 	public static final int V_WIDTH = 320;
 	public static final int V_HEIGHT = 200;
 	public static final int SCALE = 2;
-	
+
 	@Override
 	public void create() {
 		AssetLoader.load();
-		setScreen(new SplashScreen(this));
+		setScreen(new SplashScreen(this, V_WIDTH * SCALE, V_HEIGHT * SCALE));
 	}
 
 	@Override

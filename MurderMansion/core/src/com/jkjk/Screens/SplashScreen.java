@@ -21,9 +21,14 @@ public class SplashScreen implements Screen {
 	private SpriteBatch batcher;
 	private Sprite sprite;
 	private MurderMansion game;
+	
+	private float screenWidth;
+	private float screenHeight;
 
-	public SplashScreen(MurderMansion game) {
+	public SplashScreen(MurderMansion game, float screenWidth, float screenHeight) {
 		this.game = game;
+		this.screenWidth = screenWidth;
+		this.screenHeight = screenHeight;
 	}
 
 	@Override
@@ -31,13 +36,11 @@ public class SplashScreen implements Screen {
 		sprite = new Sprite(AssetLoader.logo);
 		sprite.setColor(1, 1, 1, 0);
 
-		float width = Gdx.graphics.getWidth();
-		float height = Gdx.graphics.getHeight();
-		float desiredWidth = width * .3f;
+		float desiredWidth = screenWidth * .3f;
 		float scale = desiredWidth / sprite.getWidth();
 
 		sprite.setSize(sprite.getWidth() * scale, sprite.getHeight() * scale);
-		sprite.setPosition((width / 2) - (sprite.getWidth() / 2), (height / 2)
+		sprite.setPosition((screenWidth / 2) - (sprite.getWidth() / 2), (screenHeight / 2)
 				- (sprite.getHeight() / 2));
 		setupTween();
 		batcher = new SpriteBatch();
@@ -50,7 +53,7 @@ public class SplashScreen implements Screen {
 		TweenCallback cb = new TweenCallback() {
 			@Override
 			public void onEvent(int type, BaseTween<?> source) {
-				game.setScreen(new MenuScreen());
+				game.setScreen(new MenuScreen(screenWidth,screenHeight));
 			}
 		};
 

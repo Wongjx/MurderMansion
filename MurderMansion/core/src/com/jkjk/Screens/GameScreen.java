@@ -1,67 +1,69 @@
 package com.jkjk.Screens;
 
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
 import com.jkjk.GameWorld.GameRenderer;
 import com.jkjk.GameWorld.GameWorld;
 
 public class GameScreen implements Screen {
-	private GameWorld world;
+	private GameWorld gWorld;
 	private GameRenderer renderer;
 	private float runTime;
 
+	private float screenWidth;
+	private float screenHeight;
+
 	// This is the constructor, not the class declaration
-	public GameScreen() {
+	public GameScreen(float screenWidth, float screenHeight) {
 
-/*		float screenWidth = Gdx.graphics.getWidth();
-		float screenHeight = Gdx.graphics.getHeight();*/
+		this.screenWidth = screenWidth;
+		this.screenHeight = screenHeight;
 
-		world = new GameWorld();
-		renderer = new GameRenderer(world);
-		world.setRenderer(renderer);
+		gWorld = new GameWorld(screenWidth, screenHeight);
+		renderer = new GameRenderer(gWorld, screenWidth, screenHeight);
+		gWorld.setRenderer(renderer);
 	}
 
 	@Override
 	public void show() {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
 	public void render(float delta) {
 		runTime += delta;
-		world.update(delta);
+		gWorld.update(delta);
 		renderer.render(delta, runTime);
-		
+
 	}
 
 	@Override
 	public void resize(int width, int height) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
 	public void pause() {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
 	public void resume() {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
 	public void hide() {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
 	public void dispose() {
 		// TODO Auto-generated method stub
-		
+
 	}
 }

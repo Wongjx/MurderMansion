@@ -7,6 +7,7 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
+import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Touchpad;
@@ -22,8 +23,9 @@ import com.jkjk.GameObjects.Weapons.Knife;
 import com.jkjk.MMHelpers.AssetLoader;
 
 public class GameRenderer {
-	private GameWorld myWorld;
+	private GameWorld gWorld;
 	private OrthographicCamera cam;
+	private Box2DDebugRenderer b2dr;
 	private Stage stage;
 	private ShapeRenderer shapeRenderer;
 
@@ -33,6 +35,8 @@ public class GameRenderer {
 
 	private float blockSpeed;
 	private SpriteBatch batch;
+	private float screenWidth;
+	private float screenHeight;
 
 	// Game Objects
 	private Murderer murderer;
@@ -57,24 +61,23 @@ public class GameRenderer {
 
 	// Buttons
 
-	public GameRenderer(GameWorld world) {
-		myWorld = world;
+	public GameRenderer(GameWorld gWorld, float screenWidth, float screenHeight) {
+		this.gWorld = gWorld;
+		this.screenWidth = screenWidth;
+		this.screenHeight = screenHeight;
+		b2dr = new Box2DDebugRenderer();
 		batch = new SpriteBatch();
 
-		// Get Screen width and height
-		float w = Gdx.graphics.getWidth();
-		float h = Gdx.graphics.getHeight();
-
 		// Create camera
-		cam = new OrthographicCamera(30, 30 * (h / w));
+		cam = new OrthographicCamera(30, 30 * (screenHeight / screenWidth));
 		cam.position.set(cam.viewportWidth / 2f, cam.viewportHeight / 2f, 0);
 		cam.update();
 
 		// Initialise assets
-		initAssets(w, h);
+		initAssets(screenWidth, screenHeight);
 
 		// Create a Stage and add TouchPad
-		stage = new Stage(new ExtendViewport(w, h, cam), batch);
+		stage = new Stage(new ExtendViewport(screenWidth, screenHeight, cam), batch);
 		stage.addActor(touchpad);
 		Gdx.input.setInputProcessor(stage);
 
@@ -109,9 +112,10 @@ public class GameRenderer {
 	}
 
 	public void render(float delta, float runTime) {
-		Gdx.gl.glClearColor(0.294f, 0.294f, 0.294f, 1f);
-		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
-		cam.translate(touchpad.getKnobPercentX() * blockSpeed,
+		Gdx.gl.glClearColor(0.294f, 0.294f, 0.294f, 1f); // Grey background
+		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT); // Clears screen everytime it renders
+		b2dr.render(gWorld.getWorld(), cam.combined); // Renders box2d world
+/*		cam.translate(touchpad.getKnobPercentX() * blockSpeed,
 				touchpad.getKnobPercentY() * blockSpeed);
 		cam.update();
 
@@ -132,6 +136,6 @@ public class GameRenderer {
 		batch.end();
 		stage.act(Gdx.graphics.getDeltaTime());
 		stage.draw();
-
+*/
 	}
 }

@@ -27,6 +27,14 @@ public class MenuScreen implements Screen{
 
     private Label title = new Label("Murder Mansion",titleStyle);
     
+    private float screenWidth;
+    private float screenHeight;
+    
+    public MenuScreen(float screenWidth, float screenHeight){
+    	this.screenWidth = screenWidth;
+    	this.screenHeight = screenHeight;
+    }
+    
     @Override
     public void show() {
         //The elements are displayed in the order you add them.
@@ -35,7 +43,7 @@ public class MenuScreen implements Screen{
         buttonPlay.addListener(new ClickListener(){
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                ((Game)Gdx.app.getApplicationListener()).setScreen(new GameScreen());
+                ((Game)Gdx.app.getApplicationListener()).setScreen(new GameScreen(screenWidth, screenHeight));
             }
         });
         buttonExit.addListener(new ClickListener(){
