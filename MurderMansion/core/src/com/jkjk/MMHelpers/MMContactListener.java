@@ -21,9 +21,9 @@ public class MMContactListener implements ContactListener {
 		Fixture fb = c.getFixtureB();
 		
 		System.out.println(fa.getUserData() + ", " + fb.getUserData());
-		System.out.println(fa.getUserData().equals("ground"));
-		System.out.println(fb.getUserData().equals("foot"));
-		if (fa.getUserData().equals("ground") && fb.getUserData().equals("foot"))
+		System.out.println(fa.getUserData().equals("wall"));
+		System.out.println(fb.getUserData().equals("bat"));
+		if (fa.getUserData().equals("wall") && fb.getUserData().equals("bat"))
 			batContact = true;
 		
 	}
@@ -31,6 +31,10 @@ public class MMContactListener implements ContactListener {
 	// called when two fixtures no longer collide
 	public void endContact(Contact c){
 		System.out.println("End contact");
+		Fixture fa = c.getFixtureA();
+		Fixture fb = c.getFixtureB();
+		if (fa.getUserData().equals("wall") && fb.getUserData().equals("bat"))
+			batContact = false;
 	}
 	
 	public boolean isBatContact(){

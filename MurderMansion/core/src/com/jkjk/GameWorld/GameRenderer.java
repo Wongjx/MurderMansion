@@ -34,7 +34,7 @@ public class GameRenderer {
 
 	private Sprite mapSprite;
 
-	private float force;
+	private float maxVelocity;
 	private SpriteBatch batch;
 	private float screenWidth;
 	private float screenHeight;
@@ -89,44 +89,26 @@ public class GameRenderer {
 
 		// Touchpad stuff
 		touchpad = AssetLoader.touchpad;
-		touchpadStyle = AssetLoader.touchpadStyle;
-		touchBackground = AssetLoader.touchBackground;
-		touchKnob = AssetLoader.touchKnob;
-		touchpadSkin = AssetLoader.touchpadSkin;
-		// setBounds(x,y,width,height)
 		touchpad.setBounds(w / 14, h / 14, w / 5, w / 5);
+		touchKnob = AssetLoader.touchKnob;
 		touchKnob.setMinHeight(touchpad.getHeight() / 4);
 		touchKnob.setMinWidth(touchpad.getWidth() / 4);
 
-		// Sprite stuff
-		blockTexture = AssetLoader.blockTexture;
-		blockSprite = AssetLoader.blockSprite;
-		blockSprite2 = AssetLoader.blockSprite2;
-		blockSprite3 = AssetLoader.blockSprite3;
-		// Set position to centre of the screen
-		blockSprite.setBounds(w / 2 - blockSprite.getWidth() / 2, h / 2 - blockSprite.getHeight() / 2,
-				w / 20, w / 20);
-		blockSprite2.setBounds(w / 4 - blockSprite.getWidth() / 2, h / 2 - blockSprite.getHeight() / 2,
-				w / 20, w / 20);
-		blockSprite3.setBounds(3 * w / 4 - blockSprite.getWidth() / 2, h / 2 - blockSprite.getHeight() / 2,
-				w / 20, w / 20);
-		force = w / 250;
+		maxVelocity = w / 7;
 	}
 
 	public void render(float delta, float runTime) {
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT); // Clears screen everytime it renders
-		cam.translate(force * touchpad.getKnobPercentX(), force * touchpad.getKnobPercentY());
+		cam.position.set(gWorld.body.getPosition(), 0);
 		cam.update();
-		
 
-		gWorld.body.setTransform(gWorld.body.getPosition().x + force * touchpad.getKnobPercentX(),
-				gWorld.body.getPosition().y + force * touchpad.getKnobPercentY(), 0);
+		gWorld.body.setLinearVelocity(touchpad.getKnobPercentX() * maxVelocity, touchpad.getKnobPercentY()
+				* maxVelocity);
 		gWorld.body.setAwake(true);
-		
 
 		stage.act(Gdx.graphics.getDeltaTime());
 		stage.draw();
-		
+
 		b2dr.render(gWorld.getWorld(), cam.combined); // Renders box2d world
 	}
 }

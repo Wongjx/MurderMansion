@@ -47,7 +47,7 @@ public class GameWorld {
 		shape.setAsBox(100, 10);
 		FixtureDef fdef = new FixtureDef();
 		fdef.shape = shape;
-		body.createFixture(fdef).setUserData("ground");
+		body.createFixture(fdef).setUserData("wall");
 
 		// create box
 		bdef.position.set(screenWidth / 2, screenHeight / 2);
