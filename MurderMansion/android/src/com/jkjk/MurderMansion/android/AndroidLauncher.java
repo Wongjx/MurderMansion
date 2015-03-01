@@ -19,6 +19,7 @@ public class AndroidLauncher extends AndroidApplication implements GameHelperLis
 		super.onCreate(savedInstanceState);
 		AndroidApplicationConfiguration config = new AndroidApplicationConfiguration();
 		initialize(new MurderMansion(this), config);
+		this.graphics.setDisplayMode(640, 400, true);
 
     if (gameHelper == null) {
       gameHelper = new GameHelper(this, GameHelper.CLIENT_GAMES);

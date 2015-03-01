@@ -18,6 +18,10 @@ import com.jkjk.MurderMansion.MurderMansion;
 public class MenuScreen implements Screen{
     private float screenWidth;
     private float screenHeight;
+    private float TITLE_PAD;
+    private float BUTTON_WIDTH;
+    private float BUTTON_HEIGHT;
+    private float BUTTON_PAD;
 
     private TextButtonStyle normal = AssetLoader.normal;
     private LabelStyle titleStyle = AssetLoader.title;
@@ -34,6 +38,10 @@ public class MenuScreen implements Screen{
     	this.screenWidth = screenWidth;
     	this.screenHeight = screenHeight;
     	this.game=game;
+    	this.BUTTON_HEIGHT=screenHeight*.3f;
+    	this.BUTTON_WIDTH=screenWidth*.3f;
+    	this.BUTTON_PAD=screenHeight*.02f;
+    	this.TITLE_PAD=screenHeight*.04f;
     }
     
     @Override
@@ -57,9 +65,9 @@ public class MenuScreen implements Screen{
             }
         });
         
-        table.add(title).padBottom(40).row();
-        table.add(buttonPlay).size(150,60).padBottom(20).row();
-        table.add(buttonExit).size(150,60).padBottom(20).row();
+        table.add(title).padBottom(this.TITLE_PAD).row();
+        table.add(buttonPlay).size(this.BUTTON_WIDTH,this.BUTTON_HEIGHT).padBottom(this.BUTTON_PAD).row();
+        table.add(buttonExit).size(this.BUTTON_WIDTH,this.BUTTON_HEIGHT).padBottom(this.BUTTON_PAD).row();
 
         table.setFillParent(true);
         stage.addActor(table);
