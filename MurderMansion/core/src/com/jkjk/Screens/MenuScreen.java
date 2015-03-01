@@ -13,26 +13,27 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton.TextButtonStyle;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.jkjk.MMHelpers.AssetLoader;
+import com.jkjk.MurderMansion.MurderMansion;
 
 public class MenuScreen implements Screen{
-	
-    private Stage stage = new Stage();
-    private Table table = new Table();
+    private float screenWidth;
+    private float screenHeight;
 
     private TextButtonStyle normal = AssetLoader.normal;
     private LabelStyle titleStyle = AssetLoader.title;
-
-    private TextButton buttonPlay = new TextButton("Enter", normal),
-        buttonExit = new TextButton("Exit", normal);
-
     private Label title = new Label("Murder Mansion",titleStyle);
+
+    private Stage stage = new Stage();
+    private Table table = new Table();
+    private TextButton buttonPlay = new TextButton("Enter", normal),
+        buttonExit = new TextButton("Connect", normal);
     
-    private float screenWidth;
-    private float screenHeight;
-    
-    public MenuScreen(float screenWidth, float screenHeight){
+    MurderMansion game;
+
+    public MenuScreen(MurderMansion game,float screenWidth, float screenHeight){
     	this.screenWidth = screenWidth;
     	this.screenHeight = screenHeight;
+    	this.game=game;
     }
     
     @Override
@@ -49,7 +50,9 @@ public class MenuScreen implements Screen{
         buttonExit.addListener(new ClickListener(){
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                Gdx.app.exit();
+            	//To do : Switch method to connect to google play account
+            	game.actionResolver.loginGPGS();
+//                Gdx.app.exit();
                 // or System.exit(0);
             }
         });

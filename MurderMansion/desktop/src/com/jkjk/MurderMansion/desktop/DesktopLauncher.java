@@ -11,6 +11,6 @@ public class DesktopLauncher {
 		config.title = "Murder Mansion";
 		config.width = 320 * 2;
 		config.height = 200 * 2;
-		new LwjglApplication(new MurderMansion(), config);
+		new LwjglApplication(new MurderMansion(new ActionResolverDesktop()), config);
 	}
 }
