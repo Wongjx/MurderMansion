@@ -19,6 +19,7 @@ public class GameWorld {
 	private GameRenderer renderer;
 	private World world;
 	private MMContactListener cl;
+	public BodyDef bdef;
 	public Body body;
 
 	private float screenWidth;
@@ -34,7 +35,7 @@ public class GameWorld {
 		this.screenHeight = screenHeight;
 
 		// create BODY for WORLD
-		BodyDef bdef = new BodyDef();
+		bdef = new BodyDef();
 		bdef.position.set(screenWidth / 2, screenHeight / 2 - 40);
 		// static body - don't move, unaffected by forces *eg. ground
 		// kinematic body - don't get affected by forces, but can move *eg. moving platform
@@ -49,19 +50,15 @@ public class GameWorld {
 		fdef.shape = shape;
 		body.createFixture(fdef).setUserData("wall");
 
-		// create box
+		// create player
+		Vector2[] vertices = {new Vector2(0,0), new Vector2(-20,-10), new Vector2(-20,10)};
+		shape.set(vertices);
+		
 		bdef.position.set(screenWidth / 2, screenHeight / 2);
 		bdef.type = BodyType.DynamicBody;
 		body = world.createBody(bdef);
-		shape.setAsBox(10, 10);
 		fdef.shape = shape;
 		body.createFixture(fdef).setUserData("box");
-
-		// create bat
-		shape.setAsBox(4, 4, new Vector2(0, -10), 0);
-		fdef.shape = shape;
-		fdef.isSensor = true;
-		body.createFixture(fdef).setUserData("bat");
 
 	}
 

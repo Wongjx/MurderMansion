@@ -38,6 +38,10 @@ public class GameRenderer {
 	private SpriteBatch batch;
 	private float screenWidth;
 	private float screenHeight;
+	private float touchpadX;
+	private float touchpadY;
+	private float playerAngle;
+	private double angleDiff;
 
 	// Game Objects
 	private Murderer murderer;
@@ -57,8 +61,6 @@ public class GameRenderer {
 	private Sprite blockSprite;
 	private Sprite blockSprite2;
 	private Sprite blockSprite3;
-
-	// Tween stuff
 
 	// Buttons
 
@@ -99,16 +101,39 @@ public class GameRenderer {
 
 	public void render(float delta, float runTime) {
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT); // Clears screen everytime it renders
-		cam.position.set(gWorld.body.getPosition(), 0);
-		cam.update();
+		cam.position.set(gWorld.body.getPosition(), 0); // Set cam position to be on player
+
+		touchpadX = touchpad.getKnobPercentX();
+		touchpadY = touchpad.getKnobPercentY();
+		if (touchpadX == 0) {
+			gWorld.body.setAngularVelocity(0);
+		} else {
+			angleDiff = (Math.atan2(touchpadY, touchpadX) - gWorld.body.getAngle()) % (Math.PI * 2);
+			System.out.println(angleDiff);
+			if (angleDiff > 0) {
+				if (angleDiff >= 3.14)
+					gWorld.body.setAngularVelocity(-5);
+				else if (angleDiff < 0.07)
+					gWorld.body.setAngularVelocity(0);
+				else
+					gWorld.body.setAngularVelocity(5);
+			} else if (angleDiff < 0) {
+				if (angleDiff <= -3.14)
+					gWorld.body.setAngularVelocity(5);
+				else if (angleDiff > -0.07)
+					gWorld.body.setAngularVelocity(0);
+				else
+					gWorld.body.setAngularVelocity(-5);
+			} else
+				gWorld.body.setAngularVelocity(0);
+		}
 
 		gWorld.body.setLinearVelocity(touchpad.getKnobPercentX() * maxVelocity, touchpad.getKnobPercentY()
-				* maxVelocity);
-		gWorld.body.setAwake(true);
+				* maxVelocity); // Set linearV of player
 
-		stage.act(Gdx.graphics.getDeltaTime());
-		stage.draw();
-
+		stage.act(Gdx.graphics.getDeltaTime()); // Acts stage at deltatime
+		stage.draw(); // Draw touchpad
+		cam.update(); // Update cam
 		b2dr.render(gWorld.getWorld(), cam.combined); // Renders box2d world
 	}
 }
