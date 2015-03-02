@@ -109,7 +109,6 @@ public class GameRenderer {
 			gWorld.body.setAngularVelocity(0);
 		} else {
 			angleDiff = (Math.atan2(touchpadY, touchpadX) - gWorld.body.getAngle()) % (Math.PI * 2);
-			System.out.println(angleDiff);
 			if (angleDiff > 0) {
 				if (angleDiff >= 3.14)
 					gWorld.body.setAngularVelocity(-5);
