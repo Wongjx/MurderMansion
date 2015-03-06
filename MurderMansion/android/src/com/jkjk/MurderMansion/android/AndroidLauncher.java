@@ -3,6 +3,7 @@ package com.jkjk.MurderMansion.android;
 import android.content.Intent;
 import android.os.Bundle;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.backends.android.AndroidApplication;
 import com.badlogic.gdx.backends.android.AndroidApplicationConfiguration;
 import com.google.android.gms.games.Games;
@@ -19,12 +20,12 @@ public class AndroidLauncher extends AndroidApplication implements GameHelperLis
 		super.onCreate(savedInstanceState);
 		AndroidApplicationConfiguration config = new AndroidApplicationConfiguration();
 		initialize(new MurderMansion(this), config);
-		this.graphics.setDisplayMode(640, 400, true);
 
     if (gameHelper == null) {
       gameHelper = new GameHelper(this, GameHelper.CLIENT_GAMES);
       gameHelper.enableDebugLog(true);
     }
+    gameHelper.setMaxAutoSignInAttempts(0);
     gameHelper.setup(this);
 	}
 
@@ -60,6 +61,8 @@ public class AndroidLauncher extends AndroidApplication implements GameHelperLis
 				}
 			});
 		} catch (final Exception ex) {
+			Gdx.app.log("MainActivity", "Log in failed: " + ex.getMessage() + ".");
+
 		}
 	}
 

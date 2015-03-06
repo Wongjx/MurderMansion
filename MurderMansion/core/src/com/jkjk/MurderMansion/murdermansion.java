@@ -14,7 +14,6 @@ public class MurderMansion extends Game {
 	public static final int V_HEIGHT = 200;
 	public static final int SCALE = 2;
 	
-
 	public MurderMansion(ActionResolver actionResolver){
 		this.actionResolver=actionResolver;
 	}

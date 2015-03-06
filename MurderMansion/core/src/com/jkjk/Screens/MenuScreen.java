@@ -29,8 +29,7 @@ public class MenuScreen implements Screen{
 
     private Stage stage = new Stage();
     private Table table = new Table();
-    private TextButton buttonPlay = new TextButton("Enter", normal),
-        buttonExit = new TextButton("Connect", normal);
+    private TextButton buttonPlay = new TextButton("Enter", normal),buttonExit = new TextButton("Connect", normal),buttonMulti = new TextButton("Multiplayer", normal);
     
     MurderMansion game;
 
@@ -64,10 +63,17 @@ public class MenuScreen implements Screen{
                 // or System.exit(0);
             }
         });
+        buttonMulti.addListener(new ClickListener(){
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                //Host multiplaer game
+            }
+        });
         
         table.add(title).padBottom(this.TITLE_PAD).row();
         table.add(buttonPlay).size(this.BUTTON_WIDTH,this.BUTTON_HEIGHT).padBottom(this.BUTTON_PAD).row();
         table.add(buttonExit).size(this.BUTTON_WIDTH,this.BUTTON_HEIGHT).padBottom(this.BUTTON_PAD).row();
+        table.add(buttonMulti).size(this.BUTTON_WIDTH,this.BUTTON_HEIGHT).padBottom(this.BUTTON_PAD).row();
 
         table.setFillParent(true);
         stage.addActor(table);
