@@ -1,5 +1,5 @@
 package com.jkjk.GameObjects.Items;
 
-public interface Item {
-
+public abstract class Item {
+	public abstract void use();
 }

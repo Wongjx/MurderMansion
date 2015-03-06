@@ -1,13 +1,9 @@
 package com.jkjk.GameObjects.Characters;
 
-import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
-import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.badlogic.gdx.physics.box2d.PolygonShape;
-import com.badlogic.gdx.physics.box2d.World;
-import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
 import com.jkjk.GameObjects.ItemSlot;
 import com.jkjk.GameObjects.WeaponSlot;
 import com.jkjk.GameObjects.Items.Item;
@@ -34,7 +30,6 @@ public class Civilian extends GameCharacter implements ItemSlot, WeaponSlot {
 		PolygonShape shape = new PolygonShape();
 		shape.set(vertices);
 		fdef.shape = shape;
-		fdef.friction = 0.9f;
 		body.createFixture(fdef).setUserData("civilian");
 
 	}

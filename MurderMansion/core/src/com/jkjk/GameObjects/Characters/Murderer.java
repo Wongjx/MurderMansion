@@ -26,7 +26,6 @@ public class Murderer extends GameCharacter implements ItemSlot, WeaponSlot {
 		PolygonShape shape = new PolygonShape();
 		shape.set(vertices);
 		fdef.shape = shape;
-		fdef.friction = 0.9f;
 		body.createFixture(fdef).setUserData("murderer");
 	}
 	
