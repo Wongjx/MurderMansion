@@ -13,7 +13,7 @@ public class GameCharacterFactory {
 			return null;
 	}
 
-	public GameCharacter createCharacter(String newCharacterType, String colour, Body body){
+	public GameCharacter createCharacter(String newCharacterType, int colour, Body body){
 		CivilianFactory civFac = new CivilianFactory();
 		if (newCharacterType.equals("Civilian")){
 			return civFac.createCivilian(colour, body);

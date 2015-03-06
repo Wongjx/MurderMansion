@@ -2,6 +2,7 @@ package com.jkjk.GameWorld;
 
 import java.util.ArrayList;
 
+import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.BodyDef;
@@ -25,8 +26,9 @@ public class GameWorld {
 	private GameRenderer renderer;
 	private World world;
 	private MMContactListener cl;
-	public BodyDef bdef;
-	public Body body;
+	private BodyDef bdef;
+	private Body body;
+	private ShapeRenderer shapeRenderer;
 
 	private float screenWidth;
 	private float screenHeight;
@@ -40,10 +42,12 @@ public class GameWorld {
 		world.setContactListener(cl);
 		this.screenWidth = screenWidth;
 		this.screenHeight = screenHeight;
+		playerList = new ArrayList<GameCharacter>();
+		numOfPlayers = 3;
 
 		// create BODY for WORLD
 		bdef = new BodyDef();
-		bdef.position.set(500, 500);
+		bdef.position.set(150, 150);
 		// static body - don't move, unaffected by forces *eg. ground
 		// kinematic body - don't get affected by forces, but can move *eg. moving platform
 		// dynamic body - always get affected by forces *eg. player
@@ -58,13 +62,33 @@ public class GameWorld {
 		body.createFixture(fdef).setUserData("wall");
 
 		createPlayer();
+		for (int i = 0;i<numOfPlayers;i++){
+			createOpponents(i);
+		}
 	}
 	
 	private void createPlayer(){
 		bdef.type = BodyType.DynamicBody;
+		bdef.position.set(100, 100); // Spawn position
 		body = world.createBody(bdef);
-		civilian = (Civilian) gameCharFac.createCharacter("Civilian", "Red", body);
+		civilian = (Civilian) gameCharFac.createCharacter("Civilian", 0, body);
 		civilian.spawn();
+	}
+	
+	private void createOpponents(int i){
+		if (i==numOfPlayers){
+			bdef.type = BodyType.KinematicBody;
+			bdef.position.set(100-((i+1)*40), 100); // Spawn position
+			body = world.createBody(bdef);
+			playerList.add((Murderer) gameCharFac.createCharacter("Murderer", body));
+			playerList.get(i).spawn();
+		} else {
+			bdef.type = BodyType.KinematicBody;
+			bdef.position.set(100-((i+1)*40), 100); // Spawn position
+			body = world.createBody(bdef);
+			playerList.add((Civilian) gameCharFac.createCharacter("Civilian", i+1, body));
+			playerList.get(i).spawn();
+		}
 	}
 	
 	public World getWorld(){

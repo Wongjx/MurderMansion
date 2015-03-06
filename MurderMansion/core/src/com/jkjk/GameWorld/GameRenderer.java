@@ -108,6 +108,15 @@ public class GameRenderer {
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT); // Clears screen everytime it renders
 		cam.position.set(civilian.getPosition(), 0); // Set cam position to be on player
 
+		playerMovement();
+		
+		stage.act(Gdx.graphics.getDeltaTime()); // Acts stage at deltatime
+		stage.draw(); // Draw touchpad
+		cam.update(); // Update cam
+		b2dr.render(gWorld.getWorld(), cam.combined); // Renders box2d world
+	}
+	
+	private void playerMovement(){
 		touchpadX = touchpad.getKnobPercentX();
 		touchpadY = touchpad.getKnobPercentY();
 		if (touchpadX == 0) {
@@ -135,9 +144,5 @@ public class GameRenderer {
 		civilian.setLinearVelocity(touchpad.getKnobPercentX() * maxVelocity, touchpad.getKnobPercentY()
 				* maxVelocity); // Set linearV of player
 
-		stage.act(Gdx.graphics.getDeltaTime()); // Acts stage at deltatime
-		stage.draw(); // Draw touchpad
-		cam.update(); // Update cam
-		b2dr.render(gWorld.getWorld(), cam.combined); // Renders box2d world
 	}
 }

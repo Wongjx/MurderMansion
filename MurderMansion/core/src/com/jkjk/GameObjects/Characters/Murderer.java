@@ -1,6 +1,9 @@
 package com.jkjk.GameObjects.Characters;
 
+import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
+import com.badlogic.gdx.physics.box2d.FixtureDef;
+import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.jkjk.GameObjects.ItemSlot;
 import com.jkjk.GameObjects.WeaponSlot;
 import com.jkjk.GameObjects.Items.Item;
@@ -12,10 +15,19 @@ public class Murderer extends GameCharacter implements ItemSlot, WeaponSlot {
 	private boolean disguised;
 	private Weapon weapon;
 	private Item item;
+	
 	private Body body;
+	private FixtureDef fdef;
 	
 	public Murderer(Body body) {
 		this.body = body;
+		// create player
+		Vector2[] vertices = {new Vector2(0,0), new Vector2(-20,-10), new Vector2(-20,10)};
+		PolygonShape shape = new PolygonShape();
+		shape.set(vertices);
+		fdef.shape = shape;
+		fdef.friction = 0.9f;
+		body.createFixture(fdef).setUserData("murderer");
 	}
 	
 	public boolean isDisguised(){
