@@ -1,5 +1,7 @@
 package com.jkjk.GameWorld;
 
+import java.util.ArrayList;
+
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.BodyDef;
@@ -9,12 +11,16 @@ import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.badlogic.gdx.physics.box2d.World;
 import com.jkjk.GameObjects.Characters.Civilian;
+import com.jkjk.GameObjects.Characters.GameCharacter;
+import com.jkjk.GameObjects.Characters.GameCharacterFactory;
 import com.jkjk.GameObjects.Characters.Murderer;
 import com.jkjk.MMHelpers.MMContactListener;
 
 public class GameWorld {
+	GameCharacterFactory gameCharFac;
 	private Civilian civilian;
 	private Murderer murderer;
+	private ArrayList<GameCharacter> playerList;
 
 	private GameRenderer renderer;
 	private World world;
@@ -24,10 +30,11 @@ public class GameWorld {
 
 	private float screenWidth;
 	private float screenHeight;
+	private int numOfPlayers;
 
 	public GameWorld(float screenWidth, float screenHeight) {
+		gameCharFac = new GameCharacterFactory();
 		// create WORLD
-
 		cl = new MMContactListener();
 		world = new World(new Vector2(0, 0), true);
 		world.setContactListener(cl);
@@ -36,7 +43,7 @@ public class GameWorld {
 
 		// create BODY for WORLD
 		bdef = new BodyDef();
-		bdef.position.set(screenWidth / 2, screenHeight / 2 - 40);
+		bdef.position.set(500, 500);
 		// static body - don't move, unaffected by forces *eg. ground
 		// kinematic body - don't get affected by forces, but can move *eg. moving platform
 		// dynamic body - always get affected by forces *eg. player
@@ -50,20 +57,30 @@ public class GameWorld {
 		fdef.shape = shape;
 		body.createFixture(fdef).setUserData("wall");
 
-		// create player
-		Vector2[] vertices = {new Vector2(0,0), new Vector2(-20,-10), new Vector2(-20,10)};
-		shape.set(vertices);
-		
-		bdef.position.set(screenWidth / 2, screenHeight / 2);
+		createPlayer();
+	}
+	
+	private void createPlayer(){
 		bdef.type = BodyType.DynamicBody;
 		body = world.createBody(bdef);
-		fdef.shape = shape;
-		body.createFixture(fdef).setUserData("box");
-
+		civilian = (Civilian) gameCharFac.createCharacter("Civilian", "Red", body);
+		civilian.spawn();
+	}
+	
+	public World getWorld(){
+		return world;
 	}
 
-	public World getWorld() {
-		return world;
+	public int getNumOfPlayers() {
+		return numOfPlayers;
+	}
+
+	public void setNumOfPlayers(int i) {
+		numOfPlayers = i;
+	}
+
+	public GameCharacter getPlayer() {
+		return civilian;
 	}
 
 	public void checkBat() {

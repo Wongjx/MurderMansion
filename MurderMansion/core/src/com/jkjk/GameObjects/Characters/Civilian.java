@@ -1,8 +1,12 @@
 package com.jkjk.GameObjects.Characters;
 
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.physics.box2d.Body;
+import com.badlogic.gdx.physics.box2d.BodyDef;
+import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.badlogic.gdx.physics.box2d.World;
+import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
 import com.jkjk.GameObjects.ItemSlot;
 import com.jkjk.GameObjects.WeaponSlot;
 import com.jkjk.GameObjects.Items.Item;
@@ -14,20 +18,24 @@ public class Civilian extends GameCharacter implements ItemSlot, WeaponSlot {
 	
 	private GameWorld gWorld;
 	private World world;
+	private BodyDef bdef;
+	private Body body;
+	private FixtureDef fdef;
 	
 	private int colour;
 	private Weapon weapon;
 	private Item item;
 	
-	Civilian(int colour){
+	Civilian(int colour, Body body){
 		this.colour = colour;
-		world = gWorld.getWorld();
+		fdef = new FixtureDef();
+		this.body = body;
+		// create player
+		Vector2[] vertices = {new Vector2(0,0), new Vector2(-20,-10), new Vector2(-20,10)};
 		PolygonShape shape = new PolygonShape();
-		Vector2[] vertices = new Vector2[3];
-		vertices[0].set(0.0f, 0.0f);
-		vertices[1].set(1.0f, 0.0f);
-		vertices[2].set(0.0f, 1.0f);
 		shape.set(vertices);
+		fdef.shape = shape;
+		body.createFixture(fdef).setUserData("civilian");
 	}
 
 	@Override
@@ -80,5 +88,9 @@ public class Civilian extends GameCharacter implements ItemSlot, WeaponSlot {
 	
 	public int getColour(){
 		return colour;
+	}
+	
+	public Body getBody(){
+		return body;
 	}
 }

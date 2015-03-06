@@ -4,7 +4,7 @@ package com.jkjk.GameObjects.Characters;
  * Handles all things related to characters
  *
  */
-abstract class GameCharacter {
+public abstract class GameCharacter {
 	
 	private float velocity;
 	private boolean alive;

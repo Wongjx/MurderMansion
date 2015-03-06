@@ -1,5 +1,6 @@
 package com.jkjk.GameObjects.Characters;
 
+import com.badlogic.gdx.physics.box2d.Body;
 import com.jkjk.GameObjects.ItemSlot;
 import com.jkjk.GameObjects.WeaponSlot;
 import com.jkjk.GameObjects.Items.Item;
@@ -11,9 +12,10 @@ public class Murderer extends GameCharacter implements ItemSlot, WeaponSlot {
 	private boolean disguised;
 	private Weapon weapon;
 	private Item item;
+	private Body body;
 	
-	public Murderer() {
-		// TODO Auto-generated constructor stub
+	public Murderer(Body body) {
+		this.body = body;
 	}
 	
 	public boolean isDisguised(){

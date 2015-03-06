@@ -10,7 +10,7 @@ import com.google.android.gms.games.Games;
 import com.google.example.games.basegameutils.GameHelper;
 import com.google.example.games.basegameutils.GameHelper.GameHelperListener;
 import com.jkjk.MMHelpers.ActionResolver;
-import com.jkjk.MurderMansion.MurderMansion;
+import com.jkjk.MurderMansion.murdermansion;
 
 public class AndroidLauncher extends AndroidApplication implements GameHelperListener, ActionResolver{
 //public class AndroidLauncher extends AndroidApplication {
@@ -19,7 +19,7 @@ public class AndroidLauncher extends AndroidApplication implements GameHelperLis
 	protected void onCreate (Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		AndroidApplicationConfiguration config = new AndroidApplicationConfiguration();
-		initialize(new MurderMansion(this), config);
+		initialize(new murdermansion(this), config);
 
     if (gameHelper == null) {
       gameHelper = new GameHelper(this, GameHelper.CLIENT_GAMES);

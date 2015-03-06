@@ -12,7 +12,7 @@ import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.jkjk.MMHelpers.AssetLoader;
-import com.jkjk.MurderMansion.MurderMansion;
+import com.jkjk.MurderMansion.murdermansion;
 import com.jkjk.TweenAccessors.SpriteAccessor;
 
 public class SplashScreen implements Screen {
@@ -20,12 +20,12 @@ public class SplashScreen implements Screen {
 	private TweenManager manager;
 	private SpriteBatch batcher;
 	private Sprite sprite;
-	private MurderMansion game;
+	private murdermansion game;
 	
 	private float screenWidth;
 	private float screenHeight;
 
-	public SplashScreen(MurderMansion game, float screenWidth, float screenHeight) {
+	public SplashScreen(murdermansion game, float screenWidth, float screenHeight) {
 		this.game = game;
 		this.screenWidth = screenWidth;
 		this.screenHeight = screenHeight;

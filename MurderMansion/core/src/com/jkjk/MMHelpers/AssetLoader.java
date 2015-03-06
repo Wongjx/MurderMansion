@@ -11,7 +11,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextButton.TextButtonStyle;
 import com.badlogic.gdx.scenes.scene2d.ui.Touchpad;
 import com.badlogic.gdx.scenes.scene2d.ui.Touchpad.TouchpadStyle;
 import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
-import com.jkjk.MurderMansion.MurderMansion;
+import com.jkjk.MurderMansion.murdermansion;
 
 public class AssetLoader {
 	public static Touchpad touchpad;
@@ -34,7 +34,7 @@ public class AssetLoader {
 	
 	public static void load() {
 		
-		int screenWidth = (MurderMansion.V_WIDTH*MurderMansion.SCALE);
+		int screenWidth = (murdermansion.V_WIDTH*murdermansion.SCALE);
 		
 		logoTexture = new Texture(Gdx.files.internal("data/logo.png"));
 		logoTexture.setFilter(TextureFilter.Linear, TextureFilter.Linear);

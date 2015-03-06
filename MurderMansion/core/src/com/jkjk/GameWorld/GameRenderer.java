@@ -9,6 +9,7 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
+import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
@@ -45,7 +46,7 @@ public class GameRenderer {
 
 	// Game Objects
 	private Murderer murderer;
-	private Civilian civilian;
+	private Body civilian;
 	private Bat bat;
 	private Trap trap;
 	private DisarmTrap disarmTrap;
@@ -85,6 +86,8 @@ public class GameRenderer {
 		stage.addActor(touchpad);
 		Gdx.input.setInputProcessor(stage);
 
+		// Create player
+		civilian = ((Civilian)gWorld.getPlayer()).getBody();
 	}
 
 	private void initAssets(float w, float h) {
@@ -98,36 +101,38 @@ public class GameRenderer {
 
 		maxVelocity = w / 7;
 	}
+	
+	
 
 	public void render(float delta, float runTime) {
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT); // Clears screen everytime it renders
-		cam.position.set(gWorld.body.getPosition(), 0); // Set cam position to be on player
+		cam.position.set(civilian.getPosition(), 0); // Set cam position to be on player
 
 		touchpadX = touchpad.getKnobPercentX();
 		touchpadY = touchpad.getKnobPercentY();
 		if (touchpadX == 0) {
-			gWorld.body.setAngularVelocity(0);
+			civilian.setAngularVelocity(0);
 		} else {
-			angleDiff = (Math.atan2(touchpadY, touchpadX) - gWorld.body.getAngle()) % (Math.PI * 2);
+			angleDiff = (Math.atan2(touchpadY, touchpadX) - civilian.getAngle()) % (Math.PI * 2);
 			if (angleDiff > 0) {
 				if (angleDiff >= 3.14)
-					gWorld.body.setAngularVelocity(-5);
+					civilian.setAngularVelocity(-5);
 				else if (angleDiff < 0.07)
-					gWorld.body.setAngularVelocity(0);
+					civilian.setAngularVelocity(0);
 				else
-					gWorld.body.setAngularVelocity(5);
+					civilian.setAngularVelocity(5);
 			} else if (angleDiff < 0) {
 				if (angleDiff <= -3.14)
-					gWorld.body.setAngularVelocity(5);
+					civilian.setAngularVelocity(5);
 				else if (angleDiff > -0.07)
-					gWorld.body.setAngularVelocity(0);
+					civilian.setAngularVelocity(0);
 				else
-					gWorld.body.setAngularVelocity(-5);
+					civilian.setAngularVelocity(-5);
 			} else
-				gWorld.body.setAngularVelocity(0);
+				civilian.setAngularVelocity(0);
 		}
 
-		gWorld.body.setLinearVelocity(touchpad.getKnobPercentX() * maxVelocity, touchpad.getKnobPercentY()
+		civilian.setLinearVelocity(touchpad.getKnobPercentX() * maxVelocity, touchpad.getKnobPercentY()
 				* maxVelocity); // Set linearV of player
 
 		stage.act(Gdx.graphics.getDeltaTime()); // Acts stage at deltatime

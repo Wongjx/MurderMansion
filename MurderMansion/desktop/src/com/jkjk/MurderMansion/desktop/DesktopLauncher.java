@@ -2,7 +2,7 @@ package com.jkjk.MurderMansion.desktop;
 
 import com.badlogic.gdx.backends.lwjgl.LwjglApplication;
 import com.badlogic.gdx.backends.lwjgl.LwjglApplicationConfiguration;
-import com.jkjk.MurderMansion.MurderMansion;
+import com.jkjk.MurderMansion.murdermansion;
 
 public class DesktopLauncher {
 	public static void main (String[] arg) {
@@ -11,6 +11,6 @@ public class DesktopLauncher {
 		config.title = "Murder Mansion";
 		config.width = 320 * 2;
 		config.height = 180 * 2;
-		new LwjglApplication(new MurderMansion(new ActionResolverDesktop()), config);
+		new LwjglApplication(new murdermansion(new ActionResolverDesktop()), config);
 	}
 }

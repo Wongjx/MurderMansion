@@ -13,7 +13,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton.TextButtonStyle;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.jkjk.MMHelpers.AssetLoader;
-import com.jkjk.MurderMansion.MurderMansion;
+import com.jkjk.MurderMansion.murdermansion;
 
 public class MenuScreen implements Screen{
     private float screenWidth;
@@ -31,9 +31,9 @@ public class MenuScreen implements Screen{
     private Table table = new Table();
     private TextButton buttonPlay = new TextButton("Enter", normal),buttonExit = new TextButton("Connect", normal),buttonMulti = new TextButton("Multiplayer", normal);
     
-    MurderMansion game;
+    murdermansion game;
 
-    public MenuScreen(MurderMansion game,float screenWidth, float screenHeight){
+    public MenuScreen(murdermansion game,float screenWidth, float screenHeight){
     	this.screenWidth = screenWidth;
     	this.screenHeight = screenHeight;
     	this.game=game;

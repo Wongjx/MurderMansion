@@ -1,20 +1,22 @@
 package com.jkjk.GameObjects.Characters;
 
+import com.badlogic.gdx.physics.box2d.Body;
+
 
 public class GameCharacterFactory {
-	public GameCharacter createCharacter(String newCharacterType){
+	public GameCharacter createCharacter(String newCharacterType, Body body){
 		if (newCharacterType.equals("Murderer"))
-			return new Murderer();
+			return new Murderer(body);
 		else if (newCharacterType.equals("Ghost"))
-			return new Ghost();
+			return new Ghost(body);
 		else
 			return null;
 	}
 
-	public GameCharacter createCharacter(String newCharacterType, String colour){
+	public GameCharacter createCharacter(String newCharacterType, String colour, Body body){
 		CivilianFactory civFac = new CivilianFactory();
 		if (newCharacterType.equals("Civilian")){
-			return civFac.createCivilian(colour);
+			return civFac.createCivilian(colour, body);
 		}
 		else
 			return null;

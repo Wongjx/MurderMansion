@@ -6,7 +6,7 @@ import com.jkjk.MMHelpers.AssetLoader;
 import com.jkjk.Screens.GameScreen;
 import com.jkjk.Screens.MenuScreen;
 
-public class MurderMansion extends Game {
+public class murdermansion extends Game {
 	public ActionResolver actionResolver;
 
 	public static final String TITLE = "Murder Mansion";
@@ -15,7 +15,7 @@ public class MurderMansion extends Game {
 	public static final int SCALE = 2;
 	
 
-	public MurderMansion(ActionResolver actionResolver){
+	public murdermansion(ActionResolver actionResolver){
 		this.actionResolver=actionResolver;
 	}
 
