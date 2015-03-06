@@ -37,10 +37,10 @@ public class MenuScreen implements Screen{
     	this.screenWidth = screenWidth;
     	this.screenHeight = screenHeight;
     	this.game=game;
-    	this.BUTTON_HEIGHT=screenHeight*.3f;
-    	this.BUTTON_WIDTH=screenWidth*.3f;
-    	this.BUTTON_PAD=screenHeight*.02f;
-    	this.TITLE_PAD=screenHeight*.04f;
+    	BUTTON_HEIGHT=Gdx.graphics.getHeight()*.2f;
+    	BUTTON_WIDTH=Gdx.graphics.getWidth()*.25f;
+    	BUTTON_PAD=Gdx.graphics.getHeight()*.02f;
+    	TITLE_PAD=Gdx.graphics.getHeight()*.04f;
     }
     
     @Override
@@ -70,10 +70,14 @@ public class MenuScreen implements Screen{
             }
         });
         
-        table.add(title).padBottom(this.TITLE_PAD).row();
+
         table.add(buttonPlay).size(this.BUTTON_WIDTH,this.BUTTON_HEIGHT).padBottom(this.BUTTON_PAD).row();
         table.add(buttonExit).size(this.BUTTON_WIDTH,this.BUTTON_HEIGHT).padBottom(this.BUTTON_PAD).row();
         table.add(buttonMulti).size(this.BUTTON_WIDTH,this.BUTTON_HEIGHT).padBottom(this.BUTTON_PAD).row();
+
+        System.out.println("height: " + BUTTON_HEIGHT);
+        System.out.println("width: " + BUTTON_WIDTH);
+
 
         table.setFillParent(true);
         stage.addActor(table);
