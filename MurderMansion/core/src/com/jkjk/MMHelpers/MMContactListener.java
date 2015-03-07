@@ -7,6 +7,7 @@ import com.badlogic.gdx.physics.box2d.ContactListener;
 import com.badlogic.gdx.physics.box2d.Fixture;
 import com.badlogic.gdx.physics.box2d.Manifold;
 import com.badlogic.gdx.utils.Array;
+import com.jkjk.GameWorld.GameWorld;
 
 /**
  * @author JunXiang Will handle contact between weapons and characters
@@ -17,9 +18,11 @@ public class MMContactListener implements ContactListener {
 	private Fixture fa;
 	private Fixture fb;
 	private Array<Body> bodiesToRemove;
+	private GameWorld gWorld;
 
-	public MMContactListener() {
+	public MMContactListener(GameWorld gWorld) {
 		bodiesToRemove = new Array<Body>();
+		this.gWorld = gWorld;
 	}
 
 	// called when two fixtures start to collide
@@ -30,14 +33,15 @@ public class MMContactListener implements ContactListener {
 
 		System.out.println(fa.getUserData() + ", " + fb.getUserData());
 
-		if (fa.getUserData().equals("civilian") && fb.getUserData().equals("item"))
+		if (fa.getUserData().equals("civilian") && fb.getUserData().equals("item") && gWorld.getPlayer().getItem()==null) {
 			bodiesToRemove.add(fb.getBody());
-		else if (fa.getUserData().equals("murderer") && fb.getUserData().equals("item"))
+		} else if (fa.getUserData().equals("murderer") && fb.getUserData().equals("item") && gWorld.getPlayer().getItem()==null) {
 			bodiesToRemove.add(fb.getBody());
-		else if (fa.getUserData().equals("civilian") && fb.getUserData().equals("weapon"))
+		} else if (fa.getUserData().equals("civilian") && fb.getUserData().equals("weapon") && gWorld.getPlayer().getWeapon()==null) {
 			bodiesToRemove.add(fb.getBody());
-		else if (fa.getUserData().equals("murderer") && fb.getUserData().equals("weapon"))
+		} else if (fa.getUserData().equals("murderer") && fb.getUserData().equals("weapon") && gWorld.getPlayer().getWeapon()==null) {
 			bodiesToRemove.add(fb.getBody());
+		}
 
 	}
 

@@ -19,6 +19,11 @@ public class AssetLoader {
 	public static Drawable touchBackground;
 	public static Drawable touchKnob;
 	
+	public static Texture hudTexture;
+	public static TextureRegion emptySlot;
+	public static TextureRegion bat;
+	public static TextureRegion disarmTrap;
+	
 	public static Texture logoTexture;
 	public static TextureRegion logo;
 	public static TextButtonStyle normal;
@@ -61,27 +66,28 @@ public class AssetLoader {
 		title.font=menuSkin.getFont("basker45");
 		title.font.scale((Gdx.graphics.getWidth()-screenWidth)/screenWidth);
 		
-		// Create a touchpad skin
+		// Create a touchpad
 		touchpadSkin = new Skin();
-		// Set background image
 		touchpadSkin.add("touchBackground", new Texture("data/touchBackground.png"));
-		// Set knob image
 		touchpadSkin.add("touchKnob", new Texture("data/touchKnob.png"));
-		// Create TouchPad Style
-		touchpadStyle = new TouchpadStyle();
-		// Create Drawable's from TouchPad skin
 		touchBackground = touchpadSkin.getDrawable("touchBackground");
 		touchKnob = touchpadSkin.getDrawable("touchKnob");
-		// Apply the Drawables to the TouchPad Style
+		touchpadStyle = new TouchpadStyle();
 		touchpadStyle.background = touchBackground;
 		touchpadStyle.knob = touchKnob;
-		// Create new TouchPad with the created style
-		touchpad = new Touchpad(10, touchpadStyle);
+		touchpad = new Touchpad(5, touchpadStyle);
+		
+		hudTexture = new Texture(Gdx.files.internal("data/MM-PS-HUD.png"));
+		emptySlot = new TextureRegion(hudTexture, 0, 0, 46, 46);
+		disarmTrap = new TextureRegion(hudTexture, 50, 0, 46, 46);
+		bat = new TextureRegion(hudTexture, 100, 0, 46, 46);
 	}
 
 	public static void dispose() {
 		// We must dispose of the texture when we are finished.
 		menuSkin.dispose();
+		logoTexture.dispose();
 		touchpadSkin.dispose();
+		hudTexture.dispose();
 	}
 }

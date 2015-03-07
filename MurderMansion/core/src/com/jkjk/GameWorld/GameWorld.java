@@ -45,7 +45,7 @@ public class GameWorld {
 
 	public GameWorld(float screenWidth, float screenHeight) {
 		world = new World(new Vector2(0, 0), true);
-		cl = new MMContactListener();
+		cl = new MMContactListener(this);
 		world.setContactListener(cl);
 		bdef = new BodyDef();
 

@@ -31,12 +31,12 @@ public class GameRenderer {
 	private OrthographicCamera hudCam;
 	private Box2DDebugRenderer b2dr;
 	private Stage stage;
-	private ShapeRenderer shapeRenderer;
+	private HUD hud;
 
+	private SpriteBatch batch;
 	private Sprite mapSprite;
 
 	private float maxVelocity;
-	private SpriteBatch batch;
 	private float screenWidth;
 	private float screenHeight;
 	private float touchpadX;
@@ -45,7 +45,7 @@ public class GameRenderer {
 	private double angleDiff;
 
 	// Game Objects
-	private Murderer murderer;
+	private Body murderer;
 	private Body civilian;
 	private Bat bat;
 	private Trap trap;
@@ -71,6 +71,7 @@ public class GameRenderer {
 		this.screenHeight = screenHeight;
 		b2dr = new Box2DDebugRenderer();
 		batch = new SpriteBatch();
+		hud = new HUD();
 
 		// Create camera
 		cam = new OrthographicCamera();
@@ -87,7 +88,7 @@ public class GameRenderer {
 		Gdx.input.setInputProcessor(stage);
 
 		// Create player
-		civilian = ((Civilian)gWorld.getPlayer()).getBody();
+		civilian = ((Civilian) gWorld.getPlayer()).getBody();
 	}
 
 	private void initAssets(float w, float h) {
@@ -101,22 +102,36 @@ public class GameRenderer {
 
 		maxVelocity = w / 7;
 	}
-	
-	
 
 	public void render(float delta, float runTime) {
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT); // Clears screen everytime it renders
 		cam.position.set(civilian.getPosition(), 0); // Set cam position to be on player
 
 		playerMovement();
-		
+
 		stage.act(Gdx.graphics.getDeltaTime()); // Acts stage at deltatime
 		stage.draw(); // Draw touchpad
 		cam.update(); // Update cam
 		b2dr.render(gWorld.getWorld(), cam.combined); // Renders box2d world
+
+		batch.begin();
+		batch.setProjectionMatrix(hudCam.combined);
+		itemCheck(batch);
+		batch.end();
 	}
-	
-	private void playerMovement(){
+
+	private void itemCheck(SpriteBatch sb) {
+		if (gWorld.getPlayer().getItem() != null)
+			hud.drawDisarmTrap(sb);
+		else
+			hud.drawEmptyItemSlot(sb);
+		if (gWorld.getPlayer().getWeapon() != null)
+			hud.drawBat(sb);
+		else
+			hud.drawEmptyWeaponSlot(sb);
+	}
+
+	private void playerMovement() {
 		touchpadX = touchpad.getKnobPercentX();
 		touchpadY = touchpad.getKnobPercentY();
 		if (touchpadX == 0) {
