@@ -11,6 +11,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextButton.TextButtonStyle;
 import com.badlogic.gdx.scenes.scene2d.ui.Touchpad;
 import com.badlogic.gdx.scenes.scene2d.ui.Touchpad.TouchpadStyle;
 import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
+import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.jkjk.MurderMansion.murdermansion;
 
 public class AssetLoader {
@@ -18,12 +19,12 @@ public class AssetLoader {
 	public static TouchpadStyle touchpadStyle;
 	public static Drawable touchBackground;
 	public static Drawable touchKnob;
-	
+
 	public static Texture hudTexture;
-	public static TextureRegion emptySlot;
-	public static TextureRegion bat;
-	public static TextureRegion disarmTrap;
-	
+	public static TextureRegionDrawable emptySlot;
+	public static TextureRegionDrawable bat;
+	public static TextureRegionDrawable disarmTrap;
+
 	public static Texture logoTexture;
 	public static TextureRegion logo;
 	public static TextButtonStyle normal;
@@ -31,41 +32,41 @@ public class AssetLoader {
 	public static BitmapFont basker45black;
 	public static Drawable buttonUp;
 	public static Drawable buttonDown;
-	
+
 	public static LabelStyle title;
-	
+
 	public static Skin touchpadSkin;
 	public static Skin menuSkin;
-	
+
 	public static void load() {
-		
-		int screenWidth = (murdermansion.V_WIDTH*murdermansion.SCALE);
-		
+
+		int screenWidth = (murdermansion.V_WIDTH * murdermansion.SCALE);
+
 		logoTexture = new Texture(Gdx.files.internal("data/logo.png"));
 		logoTexture.setFilter(TextureFilter.Linear, TextureFilter.Linear);
 
 		logo = new TextureRegion(logoTexture);
-		
-		//Create new skin for menu screen
-		menuSkin=new Skin();
-		//Set menu font
+
+		// Create new skin for menu screen
+		menuSkin = new Skin();
+		// Set menu font
 		menuSkin.add("basker32", new BitmapFont(Gdx.files.internal("Fonts/Basker32.fnt")));
 		menuSkin.add("basker45", new BitmapFont(Gdx.files.internal("Fonts/Baskek45.fnt")));
-		//Set menu buttons
+		// Set menu buttons
 		menuSkin.add("buttonUp", new Texture("data/butt1.png"));
 		menuSkin.add("buttonDown", new Texture("data/butt2.png"));
-		//Create Text button Style
+		// Create Text button Style
 		normal = new TextButtonStyle();
-		normal.font=menuSkin.getFont("basker32");
-		normal.font.scale((Gdx.graphics.getWidth()-screenWidth)/screenWidth);
-		normal.up=menuSkin.getDrawable("buttonUp");
-		normal.down=menuSkin.getDrawable("buttonDown");
-		normal.pressedOffsetY=-4;
-		//Set label style
-		title=new LabelStyle();
-		title.font=menuSkin.getFont("basker45");
-		title.font.scale((Gdx.graphics.getWidth()-screenWidth)/screenWidth);
-		
+		normal.font = menuSkin.getFont("basker32");
+		normal.font.scale((Gdx.graphics.getWidth() - screenWidth) / screenWidth);
+		normal.up = menuSkin.getDrawable("buttonUp");
+		normal.down = menuSkin.getDrawable("buttonDown");
+		normal.pressedOffsetY = -4;
+		// Set label style
+		title = new LabelStyle();
+		title.font = menuSkin.getFont("basker45");
+		title.font.scale((Gdx.graphics.getWidth() - screenWidth) / screenWidth);
+
 		// Create a touchpad
 		touchpadSkin = new Skin();
 		touchpadSkin.add("touchBackground", new Texture("data/touchBackground.png"));
@@ -76,11 +77,11 @@ public class AssetLoader {
 		touchpadStyle.background = touchBackground;
 		touchpadStyle.knob = touchKnob;
 		touchpad = new Touchpad(5, touchpadStyle);
-		
+
 		hudTexture = new Texture(Gdx.files.internal("data/MM-PS-HUD.png"));
-		emptySlot = new TextureRegion(hudTexture, 0, 0, 46, 46);
-		disarmTrap = new TextureRegion(hudTexture, 50, 0, 46, 46);
-		bat = new TextureRegion(hudTexture, 100, 0, 46, 46);
+		emptySlot = new TextureRegionDrawable(new TextureRegion(hudTexture, 0, 0, 46, 46));
+		disarmTrap = new TextureRegionDrawable(new TextureRegion(hudTexture, 50, 0, 46, 46));
+		bat = new TextureRegionDrawable(new TextureRegion(hudTexture, 100, 0, 46, 46));
 	}
 
 	public static void dispose() {

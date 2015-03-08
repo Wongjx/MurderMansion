@@ -1,25 +1,20 @@
 package com.jkjk.GameWorld;
 
+import java.util.List;
+
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
-import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
-import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.math.Vector3;
+import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
 import com.badlogic.gdx.scenes.scene2d.Stage;
-import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Touchpad;
-import com.badlogic.gdx.scenes.scene2d.ui.Touchpad.TouchpadStyle;
 import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
 import com.badlogic.gdx.utils.viewport.ExtendViewport;
-import com.jkjk.GameObjects.Characters.Civilian;
 import com.jkjk.GameObjects.Characters.GameCharacter;
-import com.jkjk.GameObjects.Characters.Murderer;
 import com.jkjk.GameObjects.Items.DisarmTrap;
 import com.jkjk.GameObjects.Items.Trap;
 import com.jkjk.GameObjects.Weapons.Bat;
@@ -58,6 +53,7 @@ public class GameRenderer {
 	private Drawable touchKnob;
 
 	// Buttons
+	private List<Rectangle> hudButtons;
 
 	public GameRenderer(GameWorld gWorld, float gameWidth, float gameHeight) {
 		float screenWidth = Gdx.graphics.getWidth();
@@ -106,36 +102,40 @@ public class GameRenderer {
 
 		playerMovement();
 
+		itemCheck();
 		stage.act(Gdx.graphics.getDeltaTime()); // Acts stage at deltatime
 		stage.draw(); // Draw touchpad
 		cam.update(); // Update cam
 		b2dr.render(gWorld.getWorld(), cam.combined); // Renders box2d world
 
-		batch.begin();
-		batch.setProjectionMatrix(hudCam.combined);
-		itemCheck(batch);
-		batch.end();
+		/*
+		 * batch.begin(); batch.setProjectionMatrix(hudCam.combined); batch.end();
+		 */
 	}
 
-	private void itemCheck(SpriteBatch sb) {
+	private void itemCheck() {
 		if (player.getName().equals("Civilian")) {
-			if (player.getItem() != null)
-				hud.drawDisarmTrap(sb);
-			else
-				hud.drawEmptyItemSlot(sb);
-			if (player.getWeapon() != null)
-				hud.drawBat(sb);
-			else
-				hud.drawEmptyWeaponSlot(sb);
+			if (player.getItem() != null) {
+				stage.addActor(hud.getDisarmTrap());
+			} else {
+				stage.addActor(hud.getEmptyItemSlot());
+			}
+			if (player.getWeapon() != null) {
+				stage.addActor(hud.getBat());
+			} else {
+				stage.addActor(hud.getEmptyWeaponSlot());
+			}
 		} else if (player.getName().equals("Murderer")) {
-			if (player.getItem() != null)
-				hud.drawTrap(sb);
-			else
-				hud.drawEmptyItemSlot(sb);
-			if (player.getWeapon() != null)
-				hud.drawKnife(sb);
-			else
-				hud.drawEmptyWeaponSlot(sb);
+			if (player.getItem() != null) {
+				stage.addActor(hud.getTrap());
+			} else {
+				stage.addActor(hud.getEmptyItemSlot());
+			}
+			if (player.getWeapon() != null) {
+				stage.addActor(hud.getKnife());
+			} else {
+				stage.addActor(hud.getEmptyWeaponSlot());
+			}
 		}
 	}
 

@@ -1,95 +1,132 @@
 package com.jkjk.GameWorld;
 
-import com.badlogic.gdx.InputProcessor;
-import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.scenes.scene2d.InputEvent;
+import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
+import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
+import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
+import com.jkjk.GameObjects.Characters.GameCharacter;
 import com.jkjk.MMHelpers.AssetLoader;
 
-public class HUD implements InputProcessor {
+public class HUD {
 
-	private TextureRegion emptySlot;
-	private TextureRegion bat;
-	private TextureRegion disarmTrap;
+	private TextureRegionDrawable emptySlot, bat, disarmTrap;
+	
+	private float x, y, width, height;
+	private ImageButton emptyItemSlot, emptyWeaponSlot, weaponButton, itemButton, disguiseToCiv, disguiseToMur;
+	
+	private GameCharacter player;
 
 	public HUD(GameWorld gWorld, float scaleFactorX, float scaleFactorY) {
 		emptySlot = AssetLoader.emptySlot;
 		bat = AssetLoader.bat;
 		disarmTrap = AssetLoader.disarmTrap;
+		player = gWorld.getPlayer();
 	}
 
-	public void drawEmptyItemSlot(SpriteBatch sb) {
-		sb.draw(emptySlot, 485, 25);
+	public ImageButton getEmptyItemSlot() {
+
+		x = 485;
+		y = 25;
+		width = 50;
+		height = 50;
+
+		emptyItemSlot = new ImageButton(emptySlot);
+		emptyItemSlot.setX(x);
+		emptyItemSlot.setY(y);
+		emptyItemSlot.setWidth(width);
+		emptyItemSlot.setHeight(height);
+		
+		emptyItemSlot.addListener(new ClickListener() {
+			public void clicked(InputEvent event, float x, float y) {
+				System.out.println("Clicked on empty item slot");
+			}
+		});
+		
+		return emptyItemSlot;
 	}
 
-	public void drawEmptyWeaponSlot(SpriteBatch sb) {
-		sb.draw(emptySlot, 555, 95);
+	public ImageButton getEmptyWeaponSlot() {
+
+		x = 555;
+		y = 95;
+		width = 50;
+		height = 50;
+
+		emptyWeaponSlot = new ImageButton(emptySlot);
+		emptyWeaponSlot.setX(x);
+		emptyWeaponSlot.setY(y);
+		emptyWeaponSlot.setWidth(width);
+		emptyWeaponSlot.setHeight(height);
+		
+		emptyWeaponSlot.addListener(new ClickListener() {
+			public void clicked(InputEvent event, float x, float y) {
+				System.out.println("Clicked on empty weapon slot");
+			}
+		});
+		
+		return emptyWeaponSlot;
 	}
 
-	public void drawBat(SpriteBatch sb) {
-		sb.draw(bat, 555, 95);
+	public ImageButton getBat() {
+
+		x = 555;
+		y = 95;
+		width = 50;
+		height = 50;
+
+		weaponButton = new ImageButton(bat);
+		weaponButton.setX(x);
+		weaponButton.setY(y);
+		weaponButton.setWidth(width);
+		weaponButton.setHeight(height);
+		
+		weaponButton.addListener(new ClickListener() {
+			public void clicked(InputEvent event, float x, float y) {
+				System.out.println("Clicked on weapon button");
+				player.useWeapon();
+			}
+		});
+		
+		return weaponButton;
 	}
 
-	public void drawDisarmTrap(SpriteBatch sb) {
-		sb.draw(disarmTrap, 485, 25);
+	public ImageButton getDisarmTrap() {
+
+		x = 485;
+		y = 25;
+		width = 50;
+		height = 50;
+
+		itemButton = new ImageButton(disarmTrap);
+		itemButton.setX(x);
+		itemButton.setY(y);
+		itemButton.setWidth(width);
+		itemButton.setHeight(height);
+		
+		itemButton.addListener(new ClickListener() {
+			public void clicked(InputEvent event, float x, float y) {
+				System.out.println("Clicked on item button");
+				player.useItem();
+			}
+		});
+		
+		return itemButton;
 	}
 
-	public void drawKnife(SpriteBatch sb) {
-
+	public ImageButton getKnife() {
+		return weaponButton;
 	}
 
-	public void drawTrap(SpriteBatch sb) {
-
+	public ImageButton getTrap() {
+		return itemButton;
 	}
 
-	public void drawDisguiseToCiv(SpriteBatch sb) {
-
+	public ImageButton getDisguiseToCiv() {
+		return disguiseToCiv;
 	}
 
-	public void drawDisguiseToMur(SpriteBatch sb) {
-
-	}
-
-	@Override
-	public boolean touchDown(int screenX, int screenY, int pointer, int button) {
-		System.out.println("screenX: " + screenX + " screenY: " + screenY + " pointer: " + pointer
-				+ " button: " + button);
-		return false;
-	}
-
-	@Override
-	public boolean touchUp(int screenX, int screenY, int pointer, int button) {
-		// TODO Auto-generated method stub
-		return false;
-	}
-
-	@Override
-	public boolean touchDragged(int screenX, int screenY, int pointer) {
-		return false;
-	}
-
-	@Override
-	public boolean keyDown(int keycode) {
-		return false;
-	}
-
-	@Override
-	public boolean keyUp(int keycode) {
-		return false;
-	}
-
-	@Override
-	public boolean keyTyped(char character) {
-		return false;
-	}
-
-	@Override
-	public boolean mouseMoved(int screenX, int screenY) {
-		return false;
-	}
-
-	@Override
-	public boolean scrolled(int amount) {
-		return false;
+	public ImageButton getDisguiseToMur() {
+		return disguiseToMur;
 	}
 
 }
