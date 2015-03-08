@@ -18,6 +18,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Touchpad.TouchpadStyle;
 import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
 import com.badlogic.gdx.utils.viewport.ExtendViewport;
 import com.jkjk.GameObjects.Characters.Civilian;
+import com.jkjk.GameObjects.Characters.GameCharacter;
 import com.jkjk.GameObjects.Characters.Murderer;
 import com.jkjk.GameObjects.Items.DisarmTrap;
 import com.jkjk.GameObjects.Items.Trap;
@@ -37,16 +38,16 @@ public class GameRenderer {
 	private Sprite mapSprite;
 
 	private float maxVelocity;
-	private float screenWidth;
-	private float screenHeight;
+	private float gameWidth;
+	private float gameHeight;
 	private float touchpadX;
 	private float touchpadY;
 	private float playerAngle;
 	private double angleDiff;
 
 	// Game Objects
-	private Body murderer;
-	private Body civilian;
+	private Body playerBody;
+	private GameCharacter player;
 	private Bat bat;
 	private Trap trap;
 	private DisarmTrap disarmTrap;
@@ -54,41 +55,37 @@ public class GameRenderer {
 
 	// Game Assets
 	private Touchpad touchpad;
-	private TouchpadStyle touchpadStyle;
-	private Drawable touchBackground;
 	private Drawable touchKnob;
-	private Skin touchpadSkin;
-	private Texture blockTexture;
-	private Sprite blockSprite;
-	private Sprite blockSprite2;
-	private Sprite blockSprite3;
 
 	// Buttons
 
-	public GameRenderer(GameWorld gWorld, float screenWidth, float screenHeight) {
+	public GameRenderer(GameWorld gWorld, float gameWidth, float gameHeight) {
+		float screenWidth = Gdx.graphics.getWidth();
+		float screenHeight = Gdx.graphics.getHeight();
 		this.gWorld = gWorld;
-		this.screenWidth = screenWidth;
-		this.screenHeight = screenHeight;
+		this.gameWidth = gameWidth;
+		this.gameHeight = gameHeight;
 		b2dr = new Box2DDebugRenderer();
 		batch = new SpriteBatch();
-		hud = new HUD();
+		hud = new HUD(gWorld, screenWidth / gameWidth, screenHeight / gameHeight);
 
 		// Create camera
 		cam = new OrthographicCamera();
-		cam.setToOrtho(false, screenWidth, screenHeight);
+		cam.setToOrtho(false, gameWidth, gameHeight);
 		hudCam = new OrthographicCamera();
-		hudCam.setToOrtho(false, screenWidth, screenHeight);
+		hudCam.setToOrtho(false, gameWidth, gameHeight);
 
 		// Initialise assets
-		initAssets(screenWidth, screenHeight);
+		initAssets(gameWidth, gameHeight);
 
 		// Create a Stage and add TouchPad
-		stage = new Stage(new ExtendViewport(screenWidth, screenHeight, hudCam), batch);
+		stage = new Stage(new ExtendViewport(gameWidth, gameHeight, hudCam), batch);
 		stage.addActor(touchpad);
 		Gdx.input.setInputProcessor(stage);
 
 		// Create player
-		civilian = ((Civilian) gWorld.getPlayer()).getBody();
+		player = gWorld.getPlayer();
+		playerBody = player.getBody();
 	}
 
 	private void initAssets(float w, float h) {
@@ -105,7 +102,7 @@ public class GameRenderer {
 
 	public void render(float delta, float runTime) {
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT); // Clears screen everytime it renders
-		cam.position.set(civilian.getPosition(), 0); // Set cam position to be on player
+		cam.position.set(playerBody.getPosition(), 0); // Set cam position to be on player
 
 		playerMovement();
 
@@ -121,42 +118,53 @@ public class GameRenderer {
 	}
 
 	private void itemCheck(SpriteBatch sb) {
-		if (gWorld.getPlayer().getItem() != null)
-			hud.drawDisarmTrap(sb);
-		else
-			hud.drawEmptyItemSlot(sb);
-		if (gWorld.getPlayer().getWeapon() != null)
-			hud.drawBat(sb);
-		else
-			hud.drawEmptyWeaponSlot(sb);
+		if (player.getName().equals("Civilian")) {
+			if (player.getItem() != null)
+				hud.drawDisarmTrap(sb);
+			else
+				hud.drawEmptyItemSlot(sb);
+			if (player.getWeapon() != null)
+				hud.drawBat(sb);
+			else
+				hud.drawEmptyWeaponSlot(sb);
+		} else if (player.getName().equals("Murderer")) {
+			if (player.getItem() != null)
+				hud.drawTrap(sb);
+			else
+				hud.drawEmptyItemSlot(sb);
+			if (player.getWeapon() != null)
+				hud.drawKnife(sb);
+			else
+				hud.drawEmptyWeaponSlot(sb);
+		}
 	}
 
 	private void playerMovement() {
 		touchpadX = touchpad.getKnobPercentX();
 		touchpadY = touchpad.getKnobPercentY();
 		if (touchpadX == 0) {
-			civilian.setAngularVelocity(0);
+			playerBody.setAngularVelocity(0);
 		} else {
-			angleDiff = (Math.atan2(touchpadY, touchpadX) - civilian.getAngle()) % (Math.PI * 2);
+			angleDiff = (Math.atan2(touchpadY, touchpadX) - playerBody.getAngle()) % (Math.PI * 2);
 			if (angleDiff > 0) {
 				if (angleDiff >= 3.14)
-					civilian.setAngularVelocity(-5);
+					playerBody.setAngularVelocity(-5);
 				else if (angleDiff < 0.07)
-					civilian.setAngularVelocity(0);
+					playerBody.setAngularVelocity(0);
 				else
-					civilian.setAngularVelocity(5);
+					playerBody.setAngularVelocity(5);
 			} else if (angleDiff < 0) {
 				if (angleDiff <= -3.14)
-					civilian.setAngularVelocity(5);
+					playerBody.setAngularVelocity(5);
 				else if (angleDiff > -0.07)
-					civilian.setAngularVelocity(0);
+					playerBody.setAngularVelocity(0);
 				else
-					civilian.setAngularVelocity(-5);
+					playerBody.setAngularVelocity(-5);
 			} else
-				civilian.setAngularVelocity(0);
+				playerBody.setAngularVelocity(0);
 		}
 
-		civilian.setLinearVelocity(touchpad.getKnobPercentX() * maxVelocity, touchpad.getKnobPercentY()
+		playerBody.setLinearVelocity(touchpad.getKnobPercentX() * maxVelocity, touchpad.getKnobPercentY()
 				* maxVelocity); // Set linearV of player
 
 	}

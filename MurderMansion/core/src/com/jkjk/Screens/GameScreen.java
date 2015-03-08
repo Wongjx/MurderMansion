@@ -1,24 +1,32 @@
 package com.jkjk.Screens;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
 import com.jkjk.GameWorld.GameRenderer;
 import com.jkjk.GameWorld.GameWorld;
+import com.jkjk.GameWorld.HUD;
 
 public class GameScreen implements Screen {
 	private GameWorld gWorld;
 	private GameRenderer renderer;
 	private float runTime;
 
+	private float gameWidth;
+	private float gameHeight;
+	
 	private float screenWidth;
 	private float screenHeight;
-
+	
 	// This is the constructor, not the class declaration
-	public GameScreen(float screenWidth, float screenHeight) {
+	public GameScreen(float gameWidth, float gameHeight) {
 
-		this.screenWidth = screenWidth;
-		this.screenHeight = screenHeight;
+		screenWidth = Gdx.graphics.getWidth();
+		screenHeight = Gdx.graphics.getHeight();
+		this.gameWidth = gameWidth;
+		this.gameHeight = gameHeight;
 
 		gWorld = new GameWorld(screenWidth, screenHeight);
+		Gdx.input.setInputProcessor(new HUD(gWorld, screenWidth / gameWidth, screenHeight / gameHeight));
 		renderer = new GameRenderer(gWorld, screenWidth, screenHeight);
 		gWorld.setRenderer(renderer);
 	}

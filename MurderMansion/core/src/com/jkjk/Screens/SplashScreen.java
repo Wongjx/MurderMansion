@@ -22,13 +22,13 @@ public class SplashScreen implements Screen {
 	private Sprite sprite;
 	private murdermansion game;
 	
-	private float screenWidth;
-	private float screenHeight;
+	private float gameWidth;
+	private float gameHeight;
 
-	public SplashScreen(murdermansion game, float screenWidth, float screenHeight) {
+	public SplashScreen(murdermansion game, float gameWidth, float gameHeight) {
 		this.game = game;
-		this.screenWidth = screenWidth;
-		this.screenHeight = screenHeight;
+		this.gameWidth = gameWidth;
+		this.gameHeight = gameHeight;
 	}
 
 	@Override
@@ -36,11 +36,11 @@ public class SplashScreen implements Screen {
 		sprite = new Sprite(AssetLoader.logo);
 		sprite.setColor(1, 1, 1, 0);
 
-		float desiredWidth = screenWidth * .3f;
+		float desiredWidth = gameWidth * .3f;
 		float scale = desiredWidth / sprite.getWidth();
 
 		sprite.setSize(sprite.getWidth() * scale, sprite.getHeight() * scale);
-		sprite.setPosition((screenWidth / 2) - (sprite.getWidth() / 2), (screenHeight / 2)
+		sprite.setPosition((gameWidth / 2) - (sprite.getWidth() / 2), (gameHeight / 2)
 				- (sprite.getHeight() / 2));
 		setupTween();
 		batcher = new SpriteBatch();
@@ -53,7 +53,7 @@ public class SplashScreen implements Screen {
 		TweenCallback cb = new TweenCallback() {
 			@Override
 			public void onEvent(int type, BaseTween<?> source) {
-				game.setScreen(new MenuScreen(game,screenWidth,screenHeight));
+				game.setScreen(new MenuScreen(game,gameWidth,gameHeight));
 			}
 		};
 

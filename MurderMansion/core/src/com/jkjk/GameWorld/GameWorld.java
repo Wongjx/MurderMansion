@@ -25,8 +25,9 @@ public class GameWorld {
 	private GameCharacterFactory gameCharFac;
 	private Civilian civilian;
 	private Murderer murderer;
+	private GameCharacter player;
 	private Array<GameCharacter> playerList;
-	
+
 	private ItemSprite itemSprite;
 	private ItemFactory itemFac;
 	private Array<ItemSprite> itemList;
@@ -43,24 +44,35 @@ public class GameWorld {
 	private int numOfItems;
 	private int maxItems;
 
-	public GameWorld(float screenWidth, float screenHeight) {
+	public GameWorld(float gameWidth, float gameHeight) {
 		world = new World(new Vector2(0, 0), true);
 		cl = new MMContactListener(this);
 		world.setContactListener(cl);
 		bdef = new BodyDef();
 
-		this.screenWidth = screenWidth;
-		this.screenHeight = screenHeight;
+		this.screenWidth = gameWidth;
+		this.screenHeight = gameHeight;
 
 		gameCharFac = new GameCharacterFactory();
 		playerList = new Array<GameCharacter>();
 		numOfPlayers = 3;
-		
+
 		itemFac = new ItemFactory();
 		itemList = new Array<ItemSprite>();
 		maxItems = numOfPlayers * 2;
 		numOfItems = 0;
 
+		createWall();
+		createPlayer();
+		for (int i = 0; i < numOfPlayers; i++) {
+			createOpponents(i);
+		}
+		for (int i = 0; i < maxItems; i++) {
+			createItems(i);
+		}
+	}
+
+	private void createWall() {
 		// create BODY for WORLD
 		bdef.position.set(150, 150);
 		// static body - don't move, unaffected by forces *eg. ground
@@ -75,26 +87,18 @@ public class GameWorld {
 		FixtureDef fdef = new FixtureDef();
 		fdef.shape = shape;
 		body.createFixture(fdef).setUserData("wall");
-
-		createPlayer();
-		for (int i = 0; i < numOfPlayers; i++) {
-			createOpponents(i);
-		}
-		for (int i = 0; i < maxItems; i++) {
-			createItems(i);
-		}
 	}
 
 	private void createPlayer() {
 		bdef.type = BodyType.DynamicBody;
 		bdef.position.set(100, 100); // Spawn position
 		body = world.createBody(bdef);
-		civilian = (Civilian) gameCharFac.createCharacter("Civilian", 0, body);
-		civilian.spawn();
+		player = gameCharFac.createCharacter("Civilian", 0, body);
+		player.spawn();
 	}
 
 	private void createOpponents(int i) {
-		if (i == numOfPlayers) {
+		if (i+1 == numOfPlayers) {
 			bdef.type = BodyType.KinematicBody;
 			bdef.position.set(100 - ((i + 1) * 40), 100); // Spawn position
 			body = world.createBody(bdef);
@@ -104,7 +108,7 @@ public class GameWorld {
 			bdef.type = BodyType.KinematicBody;
 			bdef.position.set(100 - ((i + 1) * 40), 100); // Spawn position
 			body = world.createBody(bdef);
-			playerList.add((Civilian) gameCharFac.createCharacter("Civilian", i + 1, body));
+			playerList.add((Civilian) gameCharFac.createCharacter("Civilian", i, body));
 			playerList.get(i).spawn();
 		}
 	}
@@ -129,20 +133,23 @@ public class GameWorld {
 	}
 
 	public GameCharacter getPlayer() {
-		return civilian;
+		return player;
 	}
 
 	public void update(float delta) {
 		world.step(delta, 6, 2); // Step size|Steps for each body to check collision|Accuracy of body position
 									// after collision
-		
+
 		// check for collected items
 		Array<Body> bodies = cl.getBodies();
-		for(int i = 0; i < bodies.size; i++) {
+		for (int i = 0; i < bodies.size; i++) {
 			Body b = bodies.get(i);
 			itemList.removeValue((ItemSprite) b.getUserData(), true);
 			world.destroyBody(bodies.get(i));
-			civilian.addItem(itemFac.createItem("Disarm Trap"));
+			if (player.getName().equals("Civilian"))
+				player.addItem(itemFac.createItem("Disarm Trap"));
+			else if (player.getName().equals("Murderer"))
+				player.addItem(itemFac.createItem("Trap"));
 		}
 		bodies.clear();
 	}

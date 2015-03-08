@@ -11,7 +11,7 @@ public class HUD implements InputProcessor {
 	private TextureRegion bat;
 	private TextureRegion disarmTrap;
 
-	public HUD() {
+	public HUD(GameWorld gWorld, float scaleFactorX, float scaleFactorY) {
 		emptySlot = AssetLoader.emptySlot;
 		bat = AssetLoader.bat;
 		disarmTrap = AssetLoader.disarmTrap;
@@ -41,35 +41,18 @@ public class HUD implements InputProcessor {
 
 	}
 
-	private void drawDisguiseToCiv(SpriteBatch sb) {
+	public void drawDisguiseToCiv(SpriteBatch sb) {
 
 	}
 
-	private void drawDisguiseToMur(SpriteBatch sb) {
+	public void drawDisguiseToMur(SpriteBatch sb) {
 
-	}
-
-	@Override
-	public boolean keyDown(int keycode) {
-		// TODO Auto-generated method stub
-		return false;
-	}
-
-	@Override
-	public boolean keyUp(int keycode) {
-		// TODO Auto-generated method stub
-		return false;
-	}
-
-	@Override
-	public boolean keyTyped(char character) {
-		// TODO Auto-generated method stub
-		return false;
 	}
 
 	@Override
 	public boolean touchDown(int screenX, int screenY, int pointer, int button) {
-		// TODO Auto-generated method stub
+		System.out.println("screenX: " + screenX + " screenY: " + screenY + " pointer: " + pointer
+				+ " button: " + button);
 		return false;
 	}
 
@@ -81,19 +64,31 @@ public class HUD implements InputProcessor {
 
 	@Override
 	public boolean touchDragged(int screenX, int screenY, int pointer) {
-		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public boolean keyDown(int keycode) {
+		return false;
+	}
+
+	@Override
+	public boolean keyUp(int keycode) {
+		return false;
+	}
+
+	@Override
+	public boolean keyTyped(char character) {
 		return false;
 	}
 
 	@Override
 	public boolean mouseMoved(int screenX, int screenY) {
-		// TODO Auto-generated method stub
 		return false;
 	}
 
 	@Override
 	public boolean scrolled(int amount) {
-		// TODO Auto-generated method stub
 		return false;
 	}
 

@@ -16,8 +16,8 @@ import com.jkjk.MMHelpers.AssetLoader;
 import com.jkjk.MurderMansion.murdermansion;
 
 public class MenuScreen implements Screen{
-    private float screenWidth;
-    private float screenHeight;
+    private float gameWidth;
+    private float gameHeight;
     private float TITLE_PAD;
     private float BUTTON_WIDTH;
     private float BUTTON_HEIGHT;
@@ -33,9 +33,9 @@ public class MenuScreen implements Screen{
     
     murdermansion game;
 
-    public MenuScreen(murdermansion game,float screenWidth, float screenHeight){
-    	this.screenWidth = screenWidth;
-    	this.screenHeight = screenHeight;
+    public MenuScreen(murdermansion game,float gameWidth, float gameHeight){
+    	this.gameWidth = gameWidth;
+    	this.gameHeight = gameHeight;
     	this.game=game;
     	BUTTON_HEIGHT=Gdx.graphics.getHeight()*.2f;
     	BUTTON_WIDTH=Gdx.graphics.getWidth()*.25f;
@@ -51,7 +51,7 @@ public class MenuScreen implements Screen{
         buttonPlay.addListener(new ClickListener(){
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                ((Game)Gdx.app.getApplicationListener()).setScreen(new GameScreen(screenWidth, screenHeight));
+                ((Game)Gdx.app.getApplicationListener()).setScreen(new GameScreen(gameWidth, gameHeight));
             }
         });
         buttonExit.addListener(new ClickListener(){

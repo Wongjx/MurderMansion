@@ -11,18 +11,19 @@ import com.jkjk.GameObjects.Weapons.Weapon;
 public class Murderer extends GameCharacter {
 
 	private boolean disguised;
-	
-	private Body body;
 	private FixtureDef fdef;
 	
 	public Murderer(Body body) {
-		this.body = body;
+		setName("Murderer");
+		
 		// create player
 		Vector2[] vertices = {new Vector2(0,0), new Vector2(-20,-10), new Vector2(-20,10)};
 		PolygonShape shape = new PolygonShape();
+		fdef = new FixtureDef();
 		shape.set(vertices);
 		fdef.shape = shape;
 		body.createFixture(fdef).setUserData("murderer");
+		setBody(body);
 	}
 	
 	public boolean isDisguised(){

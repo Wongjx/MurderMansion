@@ -7,7 +7,7 @@ public class DisarmTrap extends Item {
 
 	@Override
 	public void use() {
-		// TODO Auto-generated method stub
+		System.out.println("Used disarm trap");
 		
 	}
 }
