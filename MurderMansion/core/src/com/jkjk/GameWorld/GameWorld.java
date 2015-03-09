@@ -1,13 +1,9 @@
 package com.jkjk.GameWorld;
 
-import java.util.ArrayList;
-
-import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
-import com.badlogic.gdx.physics.box2d.CircleShape;
 import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.badlogic.gdx.physics.box2d.World;
@@ -16,9 +12,10 @@ import com.jkjk.GameObjects.Characters.Civilian;
 import com.jkjk.GameObjects.Characters.GameCharacter;
 import com.jkjk.GameObjects.Characters.GameCharacterFactory;
 import com.jkjk.GameObjects.Characters.Murderer;
-import com.jkjk.GameObjects.Items.Item;
 import com.jkjk.GameObjects.Items.ItemFactory;
 import com.jkjk.GameObjects.Items.ItemSprite;
+import com.jkjk.GameObjects.Weapons.WeaponFactory;
+import com.jkjk.GameObjects.Weapons.WeaponSprite;
 import com.jkjk.MMHelpers.MMContactListener;
 
 public class GameWorld {
@@ -31,6 +28,10 @@ public class GameWorld {
 	private ItemSprite itemSprite;
 	private ItemFactory itemFac;
 	private Array<ItemSprite> itemList;
+	
+	private WeaponSprite weaponSprite;
+	private WeaponFactory weaponFac;
+	private Array<WeaponSprite> weaponList;
 
 	private GameRenderer renderer;
 	private World world;
@@ -38,11 +39,9 @@ public class GameWorld {
 	private BodyDef bdef;
 	private Body body;
 
-	private float screenWidth;
-	private float screenHeight;
 	private int numOfPlayers;
-	private int numOfItems;
-	private int maxItems;
+	private int numOfItems, maxItems;
+	private int numOfWeapons, maxWeapons;
 
 	public GameWorld(float gameWidth, float gameHeight) {
 		world = new World(new Vector2(0, 0), true);
@@ -50,25 +49,30 @@ public class GameWorld {
 		world.setContactListener(cl);
 		bdef = new BodyDef();
 
-		this.screenWidth = gameWidth;
-		this.screenHeight = gameHeight;
-
 		gameCharFac = new GameCharacterFactory();
 		playerList = new Array<GameCharacter>();
-		numOfPlayers = 3;
+		numOfPlayers = 4;
 
 		itemFac = new ItemFactory();
 		itemList = new Array<ItemSprite>();
 		maxItems = numOfPlayers * 2;
 		numOfItems = 0;
+		
+		weaponFac = new WeaponFactory();
+		weaponList = new Array<WeaponSprite>();
+		maxWeapons = (int) (numOfPlayers*1.2);
+		numOfWeapons = 0;
 
 		createWall();
 		createPlayer();
-		for (int i = 0; i < numOfPlayers; i++) {
+		for (int i = 0; i < numOfPlayers-1; i++) {
 			createOpponents(i);
 		}
 		for (int i = 0; i < maxItems; i++) {
 			createItems(i);
+		}
+		for (int i = 0; i < maxWeapons; i++) {
+			createWeapons(i);
 		}
 	}
 
@@ -115,9 +119,18 @@ public class GameWorld {
 
 	private void createItems(int i) {
 		bdef.type = BodyType.StaticBody;
-		bdef.position.set(100 - ((i + 1) * 40), 50); // Spawn position
+		bdef.position.set(100 - ((i + 1) * 40), 60); // Spawn position
 		body = world.createBody(bdef);
 		itemList.add(new ItemSprite(body));
+		numOfItems++;
+	}
+	
+	private void createWeapons(int i){
+		bdef.type = BodyType.StaticBody;
+		bdef.position.set(100 - ((i + 1) * 40), 20); // Spawn position
+		body = world.createBody(bdef);
+		weaponList.add(new WeaponSprite(body));
+		numOfWeapons++;
 	}
 
 	public World getWorld() {
@@ -141,17 +154,29 @@ public class GameWorld {
 									// after collision
 
 		// check for collected items
-		Array<Body> bodies = cl.getBodies();
-		for (int i = 0; i < bodies.size; i++) {
-			Body b = bodies.get(i);
+		Array<Body> itemsToRemove = cl.getItemsToRemove();
+		for (int i = 0; i < itemsToRemove.size; i++) {
+			Body b = itemsToRemove.get(i);
 			itemList.removeValue((ItemSprite) b.getUserData(), true);
-			world.destroyBody(bodies.get(i));
+			world.destroyBody(itemsToRemove.get(i));
 			if (player.getName().equals("Civilian"))
 				player.addItem(itemFac.createItem("Disarm Trap"));
 			else if (player.getName().equals("Murderer"))
 				player.addItem(itemFac.createItem("Trap"));
 		}
-		bodies.clear();
+		itemsToRemove.clear();
+		
+		Array<Body> weaponsToRemove = cl.getWeaponsToRemove();
+		for (int i = 0; i < weaponsToRemove.size; i++) {
+			Body b = weaponsToRemove.get(i);
+			itemList.removeValue((ItemSprite) b.getUserData(), true);
+			world.destroyBody(weaponsToRemove.get(i));
+			if (player.getName().equals("Civilian"))
+				player.addWeapon(weaponFac.createWeapon("Bat"));
+			else if (player.getName().equals("Murderer"))
+				player.addWeapon(weaponFac.createWeapon("Knife"));
+		}
+		weaponsToRemove.clear();
 	}
 
 	public void setRenderer(GameRenderer renderer) {

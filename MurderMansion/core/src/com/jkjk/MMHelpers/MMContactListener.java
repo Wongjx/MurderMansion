@@ -14,14 +14,15 @@ import com.jkjk.GameWorld.GameWorld;
  */
 public class MMContactListener implements ContactListener {
 
-	private boolean batContact;
 	private Fixture fa;
 	private Fixture fb;
-	private Array<Body> bodiesToRemove;
+	private Array<Body> itemsToRemove;
+	private Array<Body> weaponsToRemove;
 	private GameWorld gWorld;
 
 	public MMContactListener(GameWorld gWorld) {
-		bodiesToRemove = new Array<Body>();
+		itemsToRemove = new Array<Body>();
+		weaponsToRemove = new Array<Body>();
 		this.gWorld = gWorld;
 	}
 
@@ -34,13 +35,13 @@ public class MMContactListener implements ContactListener {
 		System.out.println(fa.getUserData() + ", " + fb.getUserData());
 
 		if (fa.getUserData().equals("civilian") && fb.getUserData().equals("item") && gWorld.getPlayer().getItem()==null) {
-			bodiesToRemove.add(fb.getBody());
+			itemsToRemove.add(fb.getBody());
 		} else if (fa.getUserData().equals("murderer") && fb.getUserData().equals("item") && gWorld.getPlayer().getItem()==null) {
-			bodiesToRemove.add(fb.getBody());
+			itemsToRemove.add(fb.getBody());
 		} else if (fa.getUserData().equals("civilian") && fb.getUserData().equals("weapon") && gWorld.getPlayer().getWeapon()==null) {
-			bodiesToRemove.add(fb.getBody());
+			weaponsToRemove.add(fb.getBody());
 		} else if (fa.getUserData().equals("murderer") && fb.getUserData().equals("weapon") && gWorld.getPlayer().getWeapon()==null) {
-			bodiesToRemove.add(fb.getBody());
+			weaponsToRemove.add(fb.getBody());
 		}
 
 	}
@@ -52,18 +53,20 @@ public class MMContactListener implements ContactListener {
 		fb = c.getFixtureB();
 	}
 
-	public Array<Body> getBodies() {
-		return bodiesToRemove;
+	public Array<Body> getItemsToRemove() {
+		return itemsToRemove;
+	}
+	
+	public Array<Body> getWeaponsToRemove() {
+		return weaponsToRemove;
 	}
 
 	// collision detection - when two objects collide
 	// presolve
 	// collision handling - what happens when it happens
 	// postsolve
-	public void preSolve(Contact c, Manifold m) {
-	}
+	public void preSolve(Contact c, Manifold m) {	}
 
-	public void postSolve(Contact c, ContactImpulse ci) {
-	}
+	public void postSolve(Contact c, ContactImpulse ci) {	}
 
 }

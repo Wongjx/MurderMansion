@@ -1,5 +1,5 @@
 package com.jkjk.GameObjects.Weapons;
 
-public interface Weapon {
-
+public abstract class Weapon {
+	public abstract void use();
 }

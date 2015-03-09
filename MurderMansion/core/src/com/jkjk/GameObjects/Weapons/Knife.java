@@ -1,5 +1,11 @@
 package com.jkjk.GameObjects.Weapons;
 
-public class Knife implements Weapon {
+public class Knife extends Weapon {
+
+	@Override
+	public void use() {
+		// TODO Auto-generated method stub
+		
+	}
 
 }
