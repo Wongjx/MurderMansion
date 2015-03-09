@@ -14,19 +14,13 @@ public class GameScreen implements Screen {
 	private float gameWidth;
 	private float gameHeight;
 	
-	private float screenWidth;
-	private float screenHeight;
-	
-	// This is the constructor, not the class declaration
 	public GameScreen(float gameWidth, float gameHeight) {
 
-		screenWidth = Gdx.graphics.getWidth();
-		screenHeight = Gdx.graphics.getHeight();
 		this.gameWidth = gameWidth;
 		this.gameHeight = gameHeight;
 
-		gWorld = new GameWorld(screenWidth, screenHeight);
-		renderer = new GameRenderer(gWorld, screenWidth, screenHeight);
+		gWorld = new GameWorld(gameWidth, gameHeight);
+		renderer = new GameRenderer(gWorld, gameWidth, gameHeight);
 		gWorld.setRenderer(renderer);
 	}
 
@@ -46,8 +40,6 @@ public class GameScreen implements Screen {
 
 	@Override
 	public void resize(int width, int height) {
-		this.screenHeight = height;
-		this.screenWidth = width;
 
 	}
 

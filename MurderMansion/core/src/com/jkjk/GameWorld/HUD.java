@@ -16,7 +16,7 @@ public class HUD {
 	
 	private GameCharacter player;
 
-	public HUD(GameWorld gWorld, float scaleFactorX, float scaleFactorY) {
+	public HUD(GameWorld gWorld) {
 		emptySlot = AssetLoader.emptySlot;
 		bat = AssetLoader.bat;
 		disarmTrap = AssetLoader.disarmTrap;

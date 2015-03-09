@@ -53,17 +53,15 @@ public class GameRenderer {
 	private Drawable touchKnob;
 
 	// Buttons
-	private List<Rectangle> hudButtons;
+
 
 	public GameRenderer(GameWorld gWorld, float gameWidth, float gameHeight) {
-		float screenWidth = Gdx.graphics.getWidth();
-		float screenHeight = Gdx.graphics.getHeight();
 		this.gWorld = gWorld;
 		this.gameWidth = gameWidth;
 		this.gameHeight = gameHeight;
 		b2dr = new Box2DDebugRenderer();
 		batch = new SpriteBatch();
-		hud = new HUD(gWorld, screenWidth / gameWidth, screenHeight / gameHeight);
+		hud = new HUD(gWorld);
 
 		// Create camera
 		cam = new OrthographicCamera();
