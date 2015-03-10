@@ -1,5 +1,6 @@
 package com.jkjk.GameWorld;
 
+
 import java.util.List;
 
 import box2dLight.*;
@@ -8,7 +9,10 @@ import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.math.Rectangle;
+import com.badlogic.gdx.maps.tiled.TiledMap;
+import com.badlogic.gdx.maps.tiled.TiledMapRenderer;
+import com.badlogic.gdx.maps.tiled.TmxMapLoader;
+import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
 import com.badlogic.gdx.scenes.scene2d.Stage;
@@ -52,6 +56,8 @@ public class GameRenderer {
 	// Game Assets
 	private Touchpad touchpad;
 	private Drawable touchKnob;
+	TiledMap tiledMap;
+	TiledMapRenderer tiledMapRenderer;
 
 	// Buttons
 	
@@ -86,11 +92,16 @@ public class GameRenderer {
 		player = gWorld.getPlayer();
 		playerBody = player.getBody();
 		
+
 		// Create Light for player
 		rayHandler = new RayHandler(gWorld.getWorld());
 		coneLight = new ConeLight(rayHandler,10000,null,600,200,200,0,40);
 		coneLight.attachToBody(player.getBody(),-10, 0);
 		
+
+		tiledMap = new TmxMapLoader().load("data/level1.tmx");
+        tiledMapRenderer = new OrthogonalTiledMapRenderer(tiledMap);
+
 	}
 
 	private void initAssets(float w, float h) {
@@ -115,9 +126,11 @@ public class GameRenderer {
 		rayHandler.updateAndRender();
 		
 		itemCheck();
-		stage.act(Gdx.graphics.getDeltaTime()); // Acts stage at deltatime
-		stage.draw(); // Draw touchpad
 		cam.update(); // Update cam
+		tiledMapRenderer.setView(cam);
+		tiledMapRenderer.render();
+		stage.draw(); // Draw touchpad
+		stage.act(Gdx.graphics.getDeltaTime()); // Acts stage at deltatime
 		b2dr.render(gWorld.getWorld(), cam.combined); // Renders box2d world
 
 		/*
