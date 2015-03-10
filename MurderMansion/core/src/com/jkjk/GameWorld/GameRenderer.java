@@ -2,6 +2,7 @@ package com.jkjk.GameWorld;
 
 import java.util.List;
 
+import box2dLight.*;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
@@ -53,8 +54,12 @@ public class GameRenderer {
 	private Drawable touchKnob;
 
 	// Buttons
+	
+	// Lights
+	private RayHandler rayHandler;
+	private ConeLight coneLight;
 
-
+	
 	public GameRenderer(GameWorld gWorld, float gameWidth, float gameHeight) {
 		this.gWorld = gWorld;
 		this.gameWidth = gameWidth;
@@ -80,6 +85,12 @@ public class GameRenderer {
 		// Create player
 		player = gWorld.getPlayer();
 		playerBody = player.getBody();
+		
+		// Create Light for player
+		rayHandler = new RayHandler(gWorld.getWorld());
+		coneLight = new ConeLight(rayHandler,10000,null,600,200,200,0,40);
+		coneLight.attachToBody(player.getBody(),-10, 0);
+		
 	}
 
 	private void initAssets(float w, float h) {
@@ -99,7 +110,10 @@ public class GameRenderer {
 		cam.position.set(playerBody.getPosition(), 0); // Set cam position to be on player
 
 		playerMovement();
-
+		
+		rayHandler.setCombinedMatrix(cam.combined);
+		rayHandler.updateAndRender();
+		
 		itemCheck();
 		stage.act(Gdx.graphics.getDeltaTime()); // Acts stage at deltatime
 		stage.draw(); // Draw touchpad
