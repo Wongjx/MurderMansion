@@ -107,11 +107,11 @@ public class GameRenderer {
 		playerMovement();
 
 		itemCheck();
-		stage.act(Gdx.graphics.getDeltaTime()); // Acts stage at deltatime
-		stage.draw(); // Draw touchpad
 		cam.update(); // Update cam
 		tiledMapRenderer.setView(cam);
 		tiledMapRenderer.render();
+		stage.draw(); // Draw touchpad
+		stage.act(Gdx.graphics.getDeltaTime()); // Acts stage at deltatime
 		b2dr.render(gWorld.getWorld(), cam.combined); // Renders box2d world
 
 		/*
