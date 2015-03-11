@@ -66,7 +66,8 @@ public class MenuScreen implements Screen{
         buttonMulti.addListener(new ClickListener(){
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                //Host multiplaer game
+                //Host multiplayer game
+            	game.actionResolver.startQuickGame();
             }
         });
         
