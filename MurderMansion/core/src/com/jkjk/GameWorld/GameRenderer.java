@@ -98,6 +98,7 @@ public class GameRenderer {
 		coneLight = new ConeLight(rayHandler,10000,null,600,200,200,0,40);
 		coneLight.attachToBody(player.getBody(),-10, 0);
 		
+		
 
 		tiledMap = new TmxMapLoader().load("data/level1.tmx");
         tiledMapRenderer = new OrthogonalTiledMapRenderer(tiledMap);
@@ -180,14 +181,18 @@ public class GameRenderer {
 			if (angleDiff > 0) {
 				if (angleDiff >= 3.14)
 					playerBody.setAngularVelocity(-5);
-				else if (angleDiff < 0.1)
+				else if (angleDiff < 0.3 && angleDiff >= 0.07)
+					playerBody.setAngularVelocity(1);
+				else if (angleDiff < 0.07)
 					playerBody.setAngularVelocity(0);
 				else
 					playerBody.setAngularVelocity(5);
 			} else if (angleDiff < 0) {
 				if (angleDiff <= -3.14)
 					playerBody.setAngularVelocity(5);
-				else if (angleDiff > -0.1)
+				else if (angleDiff > -0.3 && angleDiff <= -0.07)
+					playerBody.setAngularVelocity(-1);
+				else if (angleDiff > -0.07)
 					playerBody.setAngularVelocity(0);
 				else
 					playerBody.setAngularVelocity(-5);

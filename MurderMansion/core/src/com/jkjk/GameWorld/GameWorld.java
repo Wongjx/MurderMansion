@@ -144,6 +144,10 @@ public class GameWorld {
 	public void setNumOfPlayers(int i) {
 		numOfPlayers = i;
 	}
+	
+	public Array<GameCharacter> getPlayerList(){
+		return playerList;
+	}
 
 	public GameCharacter getPlayer() {
 		return player;
