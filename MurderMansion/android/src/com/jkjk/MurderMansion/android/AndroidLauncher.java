@@ -86,7 +86,6 @@ public class AndroidLauncher extends AndroidApplication implements GameHelperLis
 	@Override
 	public void onActivityResult(int requestCode, int responseCode, Intent intent) {
 		super.onActivityResult(requestCode, responseCode, intent);
-
 		
 		 switch (requestCode) {
          case RC_SELECT_PLAYERS:
