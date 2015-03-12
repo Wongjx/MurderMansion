@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.ArrayMap;
 import android.util.Log;
 
 import com.badlogic.gdx.Gdx;
@@ -27,6 +28,7 @@ public class AndroidLauncher extends AndroidApplication implements GameHelperLis
     final static int RC_SELECT_PLAYERS = 10000;
     final static int RC_INVITATION_INBOX = 10001;
     final static int RC_WAITING_ROOM = 10002;
+    
     // Request code used to invoke sign in user interactions.
     private static final int RC_SIGN_IN = 9001;
 
@@ -35,7 +37,14 @@ public class AndroidLauncher extends AndroidApplication implements GameHelperLis
 	private ArrayList<Participant> mParticipants;
 	private Object mMyId;
 	
-	private GameHelper gameHelper;
+//	private String mIncomingInvitationId = "mIncomingInvitationId";
+//	private String mRoomId="mRoomId";
+//	private String mParticipants="mParticipants";
+//	private String mMyId="mMyId";
+//	public static volatile Bundle mMultiplayerSeissonInfo;
+	
+	
+	public GameHelper gameHelper;
 	public GoogleApiClient mGoogleApiClient;
 	public GPSListeners mGooglePlayListeners;
 	public RealTimeCommunication mRealTimeListener;
@@ -44,14 +53,14 @@ public class AndroidLauncher extends AndroidApplication implements GameHelperLis
 	@Override
 	protected void onCreate (Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-
 		if (gameHelper == null) {
 			gameHelper = new GameHelper(this, GameHelper.CLIENT_GAMES);
 			gameHelper.enableDebugLog(true);
 		}
 		gameHelper.setMaxAutoSignInAttempts(0);
+		gameHelper.setConnectOnStart(false);
 		gameHelper.setup(this);
-		Log.d(TAG,"gamehelper setup");
+		Log.d(TAG,"Gamehelper setup");
 		
 		//Get and store api client for multi-player services
 		mGoogleApiClient=gameHelper.getApiClient();
@@ -60,11 +69,21 @@ public class AndroidLauncher extends AndroidApplication implements GameHelperLis
 		//Initialize listener helper class
 		if (mGooglePlayListeners == null) {
 			mGooglePlayListeners = new GPSListeners(mGoogleApiClient,this);
-		}
-		
+		}		
 		if (mRealTimeListener == null) {
 			mRealTimeListener = new RealTimeCommunication(mGoogleApiClient,this);
 		}
+		
+//		Create and setup arraymap to contain all information needed for Google Play services
+//		Contains values for:
+//		-mIncomingInvitationId = String 
+//		-mRoomId
+//		-mParticipants
+//		-mMyId
+		
+//		if (mMultiplayerSeissonInfo == null) {
+//			mMultiplayerSeissonInfo = new Bundle();
+//		}
 		
 		AndroidApplicationConfiguration config = new AndroidApplicationConfiguration();
 		initialize(new murdermansion(this), config);
@@ -137,7 +156,23 @@ public class AndroidLauncher extends AndroidApplication implements GameHelperLis
 
 		}
 	}
+	@Override
+	public void logoutGPGS(){
+		if(getSignedInGPGS()){
+			try {
+				runOnUiThread(new Runnable(){
+					public void run() {
+						gameHelper.signOut();
+					}
+				});
+			} catch (final Exception ex) {
+				Gdx.app.log("MainActivity", "Log out failed: " + ex.getMessage() + ".");
 
+			}
+		}
+		
+	}
+	
 	@Override
 	public void submitScoreGPGS(int score) {
 		Games.Leaderboards.submitScore(gameHelper.getApiClient(), "CgkI6574wJUXEAIQBw", score);
@@ -181,21 +216,26 @@ public class AndroidLauncher extends AndroidApplication implements GameHelperLis
 	@Override
 	public void startQuickGame() {
 		// quick-start a game with 1 randomly selected opponent
+		if(!gameHelper.isSignedIn()){
+			gameHelper.beginUserInitiatedSignIn();
+		}else{
+			final int MIN_OPPONENTS = 1, MAX_OPPONENTS = 1;
+			Bundle autoMatchCriteria = RoomConfig.createAutoMatchCriteria(MIN_OPPONENTS,MAX_OPPONENTS, 0);
 
-		final int MIN_OPPONENTS = 1, MAX_OPPONENTS = 1;
-		Bundle autoMatchCriteria = RoomConfig.createAutoMatchCriteria(MIN_OPPONENTS,MAX_OPPONENTS, 0);
+			RoomConfig.Builder rtmConfigBuilder = RoomConfig.builder(mGooglePlayListeners);
+			rtmConfigBuilder.setMessageReceivedListener(mRealTimeListener);
+			rtmConfigBuilder.setRoomStatusUpdateListener(mGooglePlayListeners);
 
-		RoomConfig.Builder rtmConfigBuilder = RoomConfig.builder(mGooglePlayListeners);
-		rtmConfigBuilder.setMessageReceivedListener(mRealTimeListener);
-		rtmConfigBuilder.setRoomStatusUpdateListener(mGooglePlayListeners);
+			rtmConfigBuilder.setAutoMatchCriteria(autoMatchCriteria);
 
-		rtmConfigBuilder.setAutoMatchCriteria(autoMatchCriteria);
+//			switchToScreen(R.id.screen_wait);
+//			keepScreenOn();
+//			resetGameVars();
+			
+			Games.RealTimeMultiplayer.create(mGoogleApiClient, rtmConfigBuilder.build());	
+		}
 
-//		switchToScreen(R.id.screen_wait);
-//		keepScreenOn();
-//		resetGameVars();
 		
-		Games.RealTimeMultiplayer.create(mGoogleApiClient, rtmConfigBuilder.build());
 	}
 	
     // Leave the room.

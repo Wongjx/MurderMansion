@@ -29,7 +29,10 @@ public class MenuScreen implements Screen{
 
     private Stage stage = new Stage();
     private Table table = new Table();
-    private TextButton buttonPlay = new TextButton("Enter", normal),buttonExit = new TextButton("Connect", normal),buttonMulti = new TextButton("Multiplayer", normal);
+    private TextButton buttonPlay = new TextButton("Enter", normal),
+    		buttonLogin = new TextButton("Connect", normal),
+    		buttonMulti = new TextButton("Multiplayer", normal),
+    		buttonLogout = new TextButton("Logout",normal);
     
     murdermansion game;
 
@@ -54,13 +57,11 @@ public class MenuScreen implements Screen{
                 ((Game)Gdx.app.getApplicationListener()).setScreen(new GameScreen(gameWidth, gameHeight));
             }
         });
-        buttonExit.addListener(new ClickListener(){
+        buttonLogin.addListener(new ClickListener(){
             @Override
             public void clicked(InputEvent event, float x, float y) {
-            	//To do : Switch method to connect to google play account
             	game.actionResolver.loginGPGS();
-//                Gdx.app.exit();
-                // or System.exit(0);
+
             }
         });
         buttonMulti.addListener(new ClickListener(){
@@ -70,10 +71,17 @@ public class MenuScreen implements Screen{
             	game.actionResolver.startQuickGame();
             }
         });
+        buttonLogout.addListener(new ClickListener(){
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+            	game.actionResolver.logoutGPGS();
+            }
+        });
         
-
+        table.add(title).padBottom(TITLE_PAD).row();
         table.add(buttonPlay).size(this.BUTTON_WIDTH,this.BUTTON_HEIGHT).padBottom(this.BUTTON_PAD).row();
-        table.add(buttonExit).size(this.BUTTON_WIDTH,this.BUTTON_HEIGHT).padBottom(this.BUTTON_PAD).row();
+        table.add(buttonLogin).size(this.BUTTON_WIDTH,this.BUTTON_HEIGHT).padBottom(this.BUTTON_PAD).row();
+        table.add(buttonLogout).size(this.BUTTON_WIDTH,this.BUTTON_HEIGHT).padBottom(this.BUTTON_PAD).row();
         table.add(buttonMulti).size(this.BUTTON_WIDTH,this.BUTTON_HEIGHT).padBottom(this.BUTTON_PAD).row();
 
         System.out.println("height: " + BUTTON_HEIGHT);
