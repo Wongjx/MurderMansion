@@ -28,11 +28,10 @@ public class MMContactListener implements ContactListener {
 
 	// called when two fixtures start to collide
 	public void beginContact(Contact c) {
-		System.out.println("Begin contact");
 		fa = c.getFixtureA();
 		fb = c.getFixtureB();
 
-		System.out.println(fa.getUserData() + ", " + fb.getUserData());
+		System.out.println("Begin contact: fa: " + fa.getUserData() + ", fb: " + fb.getUserData());
 
 		if (fa.getUserData().equals("civilian") && fb.getUserData().equals("item") && gWorld.getPlayer().getItem()==null) {
 			itemsToRemove.add(fb.getBody());
@@ -48,7 +47,6 @@ public class MMContactListener implements ContactListener {
 
 	// called when two fixtures no longer collide
 	public void endContact(Contact c) {
-		System.out.println("End contact");
 		fa = c.getFixtureA();
 		fb = c.getFixtureB();
 	}

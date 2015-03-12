@@ -1,6 +1,5 @@
 package com.jkjk.GameWorld;
 
-
 import java.util.List;
 
 import box2dLight.*;
@@ -15,6 +14,7 @@ import com.badlogic.gdx.maps.tiled.TmxMapLoader;
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
+import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Touchpad;
 import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
@@ -60,12 +60,11 @@ public class GameRenderer {
 	TiledMapRenderer tiledMapRenderer;
 
 	// Buttons
-	
+
 	// Lights
 	private RayHandler rayHandler;
 	private ConeLight coneLight;
 
-	
 	public GameRenderer(GameWorld gWorld, float gameWidth, float gameHeight) {
 		this.gWorld = gWorld;
 		this.gameWidth = gameWidth;
@@ -86,22 +85,21 @@ public class GameRenderer {
 		// Create a Stage and add TouchPad
 		stage = new Stage(new ExtendViewport(gameWidth, gameHeight, hudCam), batch);
 		stage.addActor(touchpad);
+		stage.addActor(hud.getEmptyItemSlot());
+		stage.addActor(hud.getEmptyWeaponSlot());
 		Gdx.input.setInputProcessor(stage);
 
 		// Create player
 		player = gWorld.getPlayer();
 		playerBody = player.getBody();
-		
 
 		// Create Light for player
 		rayHandler = new RayHandler(gWorld.getWorld());
-		coneLight = new ConeLight(rayHandler,10000,null,600,200,200,0,40);
-		coneLight.attachToBody(player.getBody(),-10, 0);
-		
-		
+		coneLight = new ConeLight(rayHandler, 1000, null, 600, 200, 200, 0, 40);
+		coneLight.attachToBody(player.getBody(), -10, 0);
 
 		tiledMap = new TmxMapLoader().load("data/level1.tmx");
-        tiledMapRenderer = new OrthogonalTiledMapRenderer(tiledMap);
+		tiledMapRenderer = new OrthogonalTiledMapRenderer(tiledMap);
 
 	}
 
@@ -109,6 +107,7 @@ public class GameRenderer {
 
 		// Touchpad stuff
 		touchpad = AssetLoader.touchpad;
+		touchpad.setName("touchpad");
 		touchpad.setBounds(w / 14, h / 14, w / 5, w / 5);
 		touchKnob = AssetLoader.touchKnob;
 		touchKnob.setMinHeight(touchpad.getHeight() / 4);
@@ -119,89 +118,104 @@ public class GameRenderer {
 
 	public void render(float delta, float runTime) {
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT); // Clears screen everytime it renders
-		cam.position.set(playerBody.getPosition(), 0); // Set cam position to be on player
 
 		playerMovement();
-		itemCheck();
-		
-		
+		if (player.getItemChange())
+			itemCheck();
+		if (player.getWeaponChange())
+			weaponCheck();
+
 		cam.update(); // Update cam
 		tiledMapRenderer.setView(cam);
 		tiledMapRenderer.render();
-		
 
 		rayHandler.setCombinedMatrix(cam.combined);
 		rayHandler.updateAndRender();
-		
-		
-	
+
 		b2dr.render(gWorld.getWorld(), cam.combined); // Renders box2d world
-		
+
 		stage.draw(); // Draw touchpad
 		stage.act(Gdx.graphics.getDeltaTime()); // Acts stage at deltatime
 
-		/*
-		 * batch.begin(); batch.setProjectionMatrix(hudCam.combined); batch.end();
-		 */
 	}
 
 	private void itemCheck() {
-		if (player.getName().equals("Civilian")) {
-			if (player.getItem() != null) {
+		player.setItemChange(false);
+		if (player.getItem() != null) {
+			for (Actor actors : stage.getActors()) {
+				if (actors.getName().equals("Empty Item Slot"))
+					actors.remove();
+			}
+			if (player.getName().equals("Civilian"))
 				stage.addActor(hud.getDisarmTrap());
-			} else {
-				stage.addActor(hud.getEmptyItemSlot());
-			}
-			if (player.getWeapon() != null) {
-				stage.addActor(hud.getBat());
-			} else {
-				stage.addActor(hud.getEmptyWeaponSlot());
-			}
-		} else if (player.getName().equals("Murderer")) {
-			if (player.getItem() != null) {
+			else if (player.getName().equals("Murderer"))
 				stage.addActor(hud.getTrap());
-			} else {
-				stage.addActor(hud.getEmptyItemSlot());
+		} else {
+			for (Actor actors : stage.getActors()) {
+				if (actors.getName().equals("Item Button"))
+					actors.remove();
 			}
-			if (player.getWeapon() != null) {
+			stage.addActor(hud.getEmptyItemSlot());
+		}
+	}
+
+	private void weaponCheck() {
+		player.setWeaponChange(false);
+		if (player.getWeapon() != null) {
+			for (Actor actors : stage.getActors()) {
+				if (actors.getName().equals("Empty Weapon Slot"))
+					actors.remove();
+			}
+			if (player.getName().equals("Civilian"))
+				stage.addActor(hud.getBat());
+			else if (player.getName().equals("Murderer"))
 				stage.addActor(hud.getKnife());
-			} else {
-				stage.addActor(hud.getEmptyWeaponSlot());
+		} else {
+			for (Actor actors : stage.getActors()) {
+				if (actors.getName().equals("Weapon Button"))
+					actors.remove();
 			}
+			stage.addActor(hud.getEmptyWeaponSlot());
 		}
 	}
 
 	private void playerMovement() {
 		touchpadX = touchpad.getKnobPercentX();
 		touchpadY = touchpad.getKnobPercentY();
-		if (touchpadX == 0) {
+		if (!touchpad.isTouched()) {
 			playerBody.setAngularVelocity(0);
 		} else {
 			angleDiff = (Math.atan2(touchpadY, touchpadX) - playerBody.getAngle()) % (Math.PI * 2);
-			if (angleDiff > 0) {
+			if (angleDiff > 0.05) {
 				if (angleDiff >= 3.14)
 					playerBody.setAngularVelocity(-5);
-				else if (angleDiff < 0.3 && angleDiff >= 0.07)
+				else if (angleDiff < 0.4)
 					playerBody.setAngularVelocity(1);
-				else if (angleDiff < 0.07)
-					playerBody.setAngularVelocity(0);
 				else
 					playerBody.setAngularVelocity(5);
-			} else if (angleDiff < 0) {
+			} else if (angleDiff < -0.05) {
 				if (angleDiff <= -3.14)
 					playerBody.setAngularVelocity(5);
-				else if (angleDiff > -0.3 && angleDiff <= -0.07)
+				else if (angleDiff > -0.4)
 					playerBody.setAngularVelocity(-1);
-				else if (angleDiff > -0.07)
-					playerBody.setAngularVelocity(0);
 				else
 					playerBody.setAngularVelocity(-5);
 			} else
 				playerBody.setAngularVelocity(0);
 		}
 
-		playerBody.setLinearVelocity(touchpad.getKnobPercentX() * maxVelocity, touchpad.getKnobPercentY()
-				* maxVelocity); // Set linearV of player
+		playerBody.setLinearVelocity(touchpadX * maxVelocity, touchpadY * maxVelocity); // Set linearV of
+																						// player
 
+		cam.position.set(playerBody.getPosition(), 0); // Set cam position to be on player
+
+	}
+
+	public void rendererDispose() {
+		System.out.println("Disposing!");
+		gWorld.getWorld().dispose();
+		rayHandler.dispose();
+		stage.dispose();
+		b2dr.dispose();
 	}
 }

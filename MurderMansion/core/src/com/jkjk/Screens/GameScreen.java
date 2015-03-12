@@ -21,7 +21,6 @@ public class GameScreen implements Screen {
 
 		gWorld = new GameWorld(gameWidth, gameHeight);
 		renderer = new GameRenderer(gWorld, gameWidth, gameHeight);
-		gWorld.setRenderer(renderer);
 	}
 
 	@Override
@@ -63,7 +62,6 @@ public class GameScreen implements Screen {
 
 	@Override
 	public void dispose() {
-		// TODO Auto-generated method stub
-
+		renderer.rendererDispose();
 	}
 }
