@@ -64,7 +64,7 @@ public class GameRenderer {
 	// Lights
 	private RayHandler rayHandler;
 	private ConeLight coneLight;
-
+	
 	
 	public GameRenderer(GameWorld gWorld, float gameWidth, float gameHeight) {
 		this.gWorld = gWorld;
@@ -95,10 +95,11 @@ public class GameRenderer {
 
 		// Create Light for player
 		rayHandler = new RayHandler(gWorld.getWorld());
-		coneLight = new ConeLight(rayHandler,10000,null,600,200,200,0,40);
+		rayHandler.setAmbientLight(0.5f);
+		coneLight = new ConeLight(rayHandler,5000,null,600,200,200,0,40);
 		coneLight.attachToBody(player.getBody(),-10, 0);
 		
-
+		
 		tiledMap = new TmxMapLoader().load("data/level1.tmx");
         tiledMapRenderer = new OrthogonalTiledMapRenderer(tiledMap);
 
@@ -122,13 +123,15 @@ public class GameRenderer {
 
 		playerMovement();
 		
-		rayHandler.setCombinedMatrix(cam.combined);
-		rayHandler.updateAndRender();
 		
 		itemCheck();
 		cam.update(); // Update cam
 		tiledMapRenderer.setView(cam);
 		tiledMapRenderer.render();
+		
+		rayHandler.setCombinedMatrix(cam.combined);
+		rayHandler.updateAndRender();
+		
 		stage.draw(); // Draw touchpad
 		stage.act(Gdx.graphics.getDeltaTime()); // Acts stage at deltatime
 		b2dr.render(gWorld.getWorld(), cam.combined); // Renders box2d world
