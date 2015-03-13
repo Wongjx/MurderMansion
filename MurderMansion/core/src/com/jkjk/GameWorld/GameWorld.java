@@ -1,5 +1,7 @@
 package com.jkjk.GameWorld;
 
+import net.dermetfan.gdx.physics.box2d.Box2DMapObjectParser;
+
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.BodyDef;
@@ -16,6 +18,7 @@ import com.jkjk.GameObjects.Items.ItemFactory;
 import com.jkjk.GameObjects.Items.ItemSprite;
 import com.jkjk.GameObjects.Weapons.WeaponFactory;
 import com.jkjk.GameObjects.Weapons.WeaponSprite;
+import com.jkjk.MMHelpers.AssetLoader;
 import com.jkjk.MMHelpers.MMContactListener;
 
 public class GameWorld {
@@ -67,6 +70,9 @@ public class GameWorld {
 		weaponList = new Array<WeaponSprite>();
 		maxWeapons = (int) (numOfPlayers*1.2);
 		numOfWeapons = 0;
+		
+		Box2DMapObjectParser parser = new Box2DMapObjectParser();
+		parser.load(world,AssetLoader.tiledMap);
 
 		createWall();
 		createPlayer();

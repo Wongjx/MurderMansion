@@ -2,6 +2,8 @@ package com.jkjk.GameWorld;
 
 import java.util.List;
 
+import net.dermetfan.gdx.physics.box2d.Box2DMapObjectParser;
+
 import box2dLight.*;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.GL20;
@@ -56,20 +58,16 @@ public class GameRenderer {
 	// Game Assets
 	private Touchpad touchpad;
 	private Drawable touchKnob;
-	TiledMap tiledMap;
-	TiledMapRenderer tiledMapRenderer;
+	private TiledMap tiledMap;
+	private TiledMapRenderer tiledMapRenderer;
 
 	// Buttons
 
 	// Lights
 	private RayHandler rayHandler;
 	private ConeLight coneLight;
-<<<<<<< HEAD
 	
 	
-=======
-
->>>>>>> 426c34f85a7cb82d9896e814d4a1976785ae6ce0
 	public GameRenderer(GameWorld gWorld, float gameWidth, float gameHeight) {
 		this.gWorld = gWorld;
 		this.gameWidth = gameWidth;
@@ -100,21 +98,12 @@ public class GameRenderer {
 
 		// Create Light for player
 		rayHandler = new RayHandler(gWorld.getWorld());
-<<<<<<< HEAD
-		rayHandler.setAmbientLight(0.5f);
-		coneLight = new ConeLight(rayHandler,5000,null,600,200,200,0,40);
-		coneLight.attachToBody(player.getBody(),-10, 0);
-		
-		
-<<<<<<< HEAD
-=======
-=======
-		coneLight = new ConeLight(rayHandler, 1000, null, 600, 200, 200, 0, 40);
-		coneLight.attachToBody(player.getBody(), -10, 0);
->>>>>>> 426c34f85a7cb82d9896e814d4a1976785ae6ce0
 
->>>>>>> 5e025b6b689e505939a084f88785f5aac0279b41
-		tiledMap = new TmxMapLoader().load("data/level1.tmx");
+		rayHandler.setAmbientLight(0.5f);
+		
+		coneLight = new ConeLight(rayHandler, 5000, null, 600, 200, 200, 0, 40);
+		coneLight.attachToBody(player.getBody(), -10, 0);
+
 		tiledMapRenderer = new OrthogonalTiledMapRenderer(tiledMap);
 
 	}
@@ -128,6 +117,8 @@ public class GameRenderer {
 		touchKnob = AssetLoader.touchKnob;
 		touchKnob.setMinHeight(touchpad.getHeight() / 4);
 		touchKnob.setMinWidth(touchpad.getWidth() / 4);
+		
+		tiledMap = AssetLoader.tiledMap;
 
 		maxVelocity = w / 7;
 	}
@@ -144,26 +135,14 @@ public class GameRenderer {
 		cam.update(); // Update cam
 		tiledMapRenderer.setView(cam);
 		tiledMapRenderer.render();
-<<<<<<< HEAD
-		
-<<<<<<< HEAD
+
 		rayHandler.setCombinedMatrix(cam.combined);
 		rayHandler.updateAndRender();
-		
-=======
-=======
->>>>>>> 426c34f85a7cb82d9896e814d4a1976785ae6ce0
 
 		rayHandler.setCombinedMatrix(cam.combined);
 		rayHandler.updateAndRender();
 
 		b2dr.render(gWorld.getWorld(), cam.combined); // Renders box2d world
-<<<<<<< HEAD
-		
->>>>>>> 5e025b6b689e505939a084f88785f5aac0279b41
-=======
-
->>>>>>> 426c34f85a7cb82d9896e814d4a1976785ae6ce0
 		stage.draw(); // Draw touchpad
 		stage.act(Gdx.graphics.getDeltaTime()); // Acts stage at deltatime
 

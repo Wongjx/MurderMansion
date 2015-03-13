@@ -5,6 +5,8 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.Texture.TextureFilter;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.maps.tiled.TiledMap;
+import com.badlogic.gdx.maps.tiled.TmxMapLoader;
 import com.badlogic.gdx.scenes.scene2d.ui.Label.LabelStyle;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton.TextButtonStyle;
@@ -37,6 +39,8 @@ public class AssetLoader {
 
 	public static Skin touchpadSkin;
 	public static Skin menuSkin;
+	
+	public static TiledMap tiledMap;
 
 	public static void load() {
 
@@ -82,6 +86,8 @@ public class AssetLoader {
 		emptySlot = new TextureRegionDrawable(new TextureRegion(hudTexture, 0, 0, 46, 46));
 		disarmTrap = new TextureRegionDrawable(new TextureRegion(hudTexture, 50, 0, 46, 46));
 		bat = new TextureRegionDrawable(new TextureRegion(hudTexture, 100, 0, 46, 46));
+		
+		tiledMap = new TmxMapLoader().load("map/MMMap.tmx");
 	}
 
 	public static void dispose() {
@@ -90,5 +96,6 @@ public class AssetLoader {
 		logoTexture.dispose();
 		touchpadSkin.dispose();
 		hudTexture.dispose();
+		tiledMap.dispose();
 	}
 }
