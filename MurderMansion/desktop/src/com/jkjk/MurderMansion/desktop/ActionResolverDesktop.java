@@ -35,4 +35,11 @@ public class ActionResolverDesktop implements ActionResolver {
 	public void getAchievementsGPGS() {
 		System.out.println("getAchievementsGPGS");
 	}
+
+	@Override
+	public void startQuickGame() {
+		// TODO Auto-generated method stub
+		System.out.println("Start quick game");
+		
+	}
 }

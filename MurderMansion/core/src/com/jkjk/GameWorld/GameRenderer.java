@@ -100,6 +100,10 @@ public class GameRenderer {
 		coneLight.attachToBody(player.getBody(),-10, 0);
 		
 		
+<<<<<<< HEAD
+=======
+
+>>>>>>> 5e025b6b689e505939a084f88785f5aac0279b41
 		tiledMap = new TmxMapLoader().load("data/level1.tmx");
         tiledMapRenderer = new OrthogonalTiledMapRenderer(tiledMap);
 
@@ -122,19 +126,29 @@ public class GameRenderer {
 		cam.position.set(playerBody.getPosition(), 0); // Set cam position to be on player
 
 		playerMovement();
-		
-		
 		itemCheck();
+		
+		
 		cam.update(); // Update cam
 		tiledMapRenderer.setView(cam);
 		tiledMapRenderer.render();
 		
+<<<<<<< HEAD
 		rayHandler.setCombinedMatrix(cam.combined);
 		rayHandler.updateAndRender();
 		
+=======
+
+		rayHandler.setCombinedMatrix(cam.combined);
+		rayHandler.updateAndRender();
+		
+		
+	
+		b2dr.render(gWorld.getWorld(), cam.combined); // Renders box2d world
+		
+>>>>>>> 5e025b6b689e505939a084f88785f5aac0279b41
 		stage.draw(); // Draw touchpad
 		stage.act(Gdx.graphics.getDeltaTime()); // Acts stage at deltatime
-		b2dr.render(gWorld.getWorld(), cam.combined); // Renders box2d world
 
 		/*
 		 * batch.begin(); batch.setProjectionMatrix(hudCam.combined); batch.end();
@@ -177,6 +191,8 @@ public class GameRenderer {
 			if (angleDiff > 0) {
 				if (angleDiff >= 3.14)
 					playerBody.setAngularVelocity(-5);
+				else if (angleDiff < 0.3 && angleDiff >= 0.07)
+					playerBody.setAngularVelocity(1);
 				else if (angleDiff < 0.07)
 					playerBody.setAngularVelocity(0);
 				else
@@ -184,6 +200,8 @@ public class GameRenderer {
 			} else if (angleDiff < 0) {
 				if (angleDiff <= -3.14)
 					playerBody.setAngularVelocity(5);
+				else if (angleDiff > -0.3 && angleDiff <= -0.07)
+					playerBody.setAngularVelocity(-1);
 				else if (angleDiff > -0.07)
 					playerBody.setAngularVelocity(0);
 				else

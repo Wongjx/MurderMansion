@@ -102,7 +102,7 @@ public class GameWorld {
 	}
 
 	private void createOpponents(int i) {
-		if (i+1 == numOfPlayers) {
+		if (i == 0) {
 			bdef.type = BodyType.KinematicBody;
 			bdef.position.set(100 - ((i + 1) * 40), 100); // Spawn position
 			body = world.createBody(bdef);
@@ -143,6 +143,10 @@ public class GameWorld {
 
 	public void setNumOfPlayers(int i) {
 		numOfPlayers = i;
+	}
+	
+	public Array<GameCharacter> getPlayerList(){
+		return playerList;
 	}
 
 	public GameCharacter getPlayer() {
