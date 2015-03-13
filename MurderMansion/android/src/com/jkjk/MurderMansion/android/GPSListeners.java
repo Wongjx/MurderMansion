@@ -7,6 +7,7 @@ import android.app.Activity;
 import android.content.Intent;
 import android.util.Log;
 
+import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.games.Games;
 import com.google.android.gms.games.GamesStatusCodes;
@@ -25,7 +26,7 @@ public class GPSListeners implements RoomStatusUpdateListener, RoomUpdateListene
     final static int RC_SELECT_PLAYERS = 10000;
     final static int RC_INVITATION_INBOX = 10001;
     final static int RC_WAITING_ROOM = 10002;
-	
+    
 	private GoogleApiClient mGoogleApiClient;
 	private AndroidLauncher activity;
 	
@@ -94,6 +95,7 @@ public class GPSListeners implements RoomStatusUpdateListener, RoomUpdateListene
         Log.d(TAG, "onRoomCreated(" + statusCode + ", " + room + ")");
         if (statusCode != GamesStatusCodes.STATUS_OK) {
             Log.e(TAG, "*** Error: onRoomCreated, status " + statusCode);
+            handleError(statusCode);
 //            showGameError();
             return;
         }
@@ -206,6 +208,13 @@ public class GPSListeners implements RoomStatusUpdateListener, RoomUpdateListene
 
         // show waiting room UI
         activity.startActivityForResult(i, RC_WAITING_ROOM);
+    }
+    
+    private void handleError(int statusCode){
+    	switch (statusCode){
+    	case ConnectionResult.RESOLUTION_REQUIRED:
+    		activity.gameHelper.beginUserInitiatedSignIn();
+    	}
     }
 
 }

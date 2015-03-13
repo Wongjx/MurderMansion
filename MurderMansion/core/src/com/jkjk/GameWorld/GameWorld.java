@@ -33,7 +33,6 @@ public class GameWorld {
 	private WeaponFactory weaponFac;
 	private Array<WeaponSprite> weaponList;
 
-	private GameRenderer renderer;
 	private World world;
 	private MMContactListener cl;
 	private BodyDef bdef;
@@ -42,12 +41,18 @@ public class GameWorld {
 	private int numOfPlayers;
 	private int numOfItems, maxItems;
 	private int numOfWeapons, maxWeapons;
+	
+	private Array<Body> itemsToRemove, weaponsToRemove;
+	private Body bodyToRemove;
 
 	public GameWorld(float gameWidth, float gameHeight) {
 		world = new World(new Vector2(0, 0), true);
 		cl = new MMContactListener(this);
 		world.setContactListener(cl);
 		bdef = new BodyDef();
+		
+		itemsToRemove = cl.getItemsToRemove();
+		weaponsToRemove = cl.getWeaponsToRemove();
 
 		gameCharFac = new GameCharacterFactory();
 		playerList = new Array<GameCharacter>();
@@ -158,11 +163,10 @@ public class GameWorld {
 									// after collision
 
 		// check for collected items
-		Array<Body> itemsToRemove = cl.getItemsToRemove();
 		for (int i = 0; i < itemsToRemove.size; i++) {
-			Body b = itemsToRemove.get(i);
-			itemList.removeValue((ItemSprite) b.getUserData(), true);
-			world.destroyBody(itemsToRemove.get(i));
+			bodyToRemove = itemsToRemove.get(i);
+			itemList.removeValue((ItemSprite) bodyToRemove.getUserData(), true);
+			world.destroyBody(bodyToRemove);
 			if (player.getName().equals("Civilian"))
 				player.addItem(itemFac.createItem("Disarm Trap"));
 			else if (player.getName().equals("Murderer"))
@@ -170,20 +174,15 @@ public class GameWorld {
 		}
 		itemsToRemove.clear();
 		
-		Array<Body> weaponsToRemove = cl.getWeaponsToRemove();
 		for (int i = 0; i < weaponsToRemove.size; i++) {
-			Body b = weaponsToRemove.get(i);
-			itemList.removeValue((ItemSprite) b.getUserData(), true);
-			world.destroyBody(weaponsToRemove.get(i));
+			bodyToRemove = weaponsToRemove.get(i);
+			weaponList.removeValue((WeaponSprite) bodyToRemove.getUserData(), true);
+			world.destroyBody(bodyToRemove);
 			if (player.getName().equals("Civilian"))
 				player.addWeapon(weaponFac.createWeapon("Bat"));
 			else if (player.getName().equals("Murderer"))
 				player.addWeapon(weaponFac.createWeapon("Knife"));
 		}
 		weaponsToRemove.clear();
-	}
-
-	public void setRenderer(GameRenderer renderer) {
-		this.renderer = renderer;
 	}
 }

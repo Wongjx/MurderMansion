@@ -35,6 +35,7 @@ public class HUD {
 		emptyItemSlot.setY(y);
 		emptyItemSlot.setWidth(width);
 		emptyItemSlot.setHeight(height);
+		emptyItemSlot.setName("Empty Item Slot");
 		
 		emptyItemSlot.addListener(new ClickListener() {
 			public void clicked(InputEvent event, float x, float y) {
@@ -57,6 +58,7 @@ public class HUD {
 		emptyWeaponSlot.setY(y);
 		emptyWeaponSlot.setWidth(width);
 		emptyWeaponSlot.setHeight(height);
+		emptyWeaponSlot.setName("Empty Weapon Slot");
 		
 		emptyWeaponSlot.addListener(new ClickListener() {
 			public void clicked(InputEvent event, float x, float y) {
@@ -79,6 +81,7 @@ public class HUD {
 		weaponButton.setY(y);
 		weaponButton.setWidth(width);
 		weaponButton.setHeight(height);
+		weaponButton.setName("Weapon Button");
 		
 		weaponButton.addListener(new ClickListener() {
 			public void clicked(InputEvent event, float x, float y) {
@@ -102,6 +105,7 @@ public class HUD {
 		itemButton.setY(y);
 		itemButton.setWidth(width);
 		itemButton.setHeight(height);
+		itemButton.setName("Item Button");
 		
 		itemButton.addListener(new ClickListener() {
 			public void clicked(InputEvent event, float x, float y) {

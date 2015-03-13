@@ -13,6 +13,8 @@ public abstract class GameCharacter {
 	private String name;
 	
 	private boolean alive;
+	private boolean itemChange;
+	private boolean weaponChange;
 	
 	private Weapon weapon;
 	private Item item;
@@ -33,15 +35,19 @@ public abstract class GameCharacter {
 	public Body getBody(){ return body; } 
 	public void setBody(Body body){ this.body = body; }
 	
-	public void addWeapon(Weapon weapon) { this.weapon = weapon; }
+	public void addWeapon(Weapon weapon) { this.weapon = weapon; weaponChange = true; }
 	public Weapon getWeapon(){ return weapon; }
 	public void cooldownWeapon() {	}
-	public void useWeapon() { this.weapon = null; }
+	public void useWeapon() { this.weapon = null;  weaponChange = true; }
+	public boolean getWeaponChange(){ return weaponChange; }
+	public void setWeaponChange(boolean weaponChange){ this.weaponChange = weaponChange; }
 	
-	public void addItem(Item item) { this.item = item; }
+	public void addItem(Item item) { this.item = item; itemChange = true; }
 	public Item getItem(){ return item; }
 	public void cooldownItem() {	}
-	public void useItem() { this.item = null; }
+	public void useItem() { this.item = null; itemChange = true; }
+	public boolean getItemChange(){ return itemChange; }
+	public void setItemChange(boolean itemChange){ this.itemChange = itemChange; }
 
 	public void update(){	}
 	
