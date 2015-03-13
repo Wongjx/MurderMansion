@@ -42,4 +42,11 @@ public class ActionResolverDesktop implements ActionResolver {
 		System.out.println("Start quick game");
 		
 	}
+
+	@Override
+	public void logoutGPGS() {
+		// TODO Auto-generated method stub
+		System.out.println("Start quick game");
+		
+	}
 }
