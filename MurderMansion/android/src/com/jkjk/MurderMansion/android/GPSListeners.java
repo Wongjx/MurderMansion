@@ -17,6 +17,7 @@ import com.google.android.gms.games.multiplayer.Participant;
 import com.google.android.gms.games.multiplayer.realtime.Room;
 import com.google.android.gms.games.multiplayer.realtime.RoomStatusUpdateListener;
 import com.google.android.gms.games.multiplayer.realtime.RoomUpdateListener;
+import com.jkjk.MMHelpers.MultiplayerSeissonInfo;
 
 public class GPSListeners implements RoomStatusUpdateListener, RoomUpdateListener, OnInvitationReceivedListener{
 	
@@ -29,10 +30,17 @@ public class GPSListeners implements RoomStatusUpdateListener, RoomUpdateListene
     
 	private GoogleApiClient mGoogleApiClient;
 	private AndroidLauncher activity;
+	private MultiplayerSeissonInfo mMultiplayerSeisson; 
 	
-	public GPSListeners(GoogleApiClient mGoogleApiClient,AndroidLauncher activity){
+//	public String mIncomingInvitationId;
+//	public String mRoomId;
+//	public ArrayList<Participant> mParticipants;
+//	public Object mMyId;
+	
+	public GPSListeners(GoogleApiClient mGoogleApiClient,AndroidLauncher activity,MultiplayerSeissonInfo mMultiplayerSeisson){
 		this.mGoogleApiClient=mGoogleApiClient;
 		this.activity=activity;
+		this.mMultiplayerSeisson=mMultiplayerSeisson;
 	}
 
 	// Called when we get an invitation to play a game. We react by showing that to the user.
@@ -41,15 +49,15 @@ public class GPSListeners implements RoomStatusUpdateListener, RoomUpdateListene
         // We got an invitation to play a game! So, store it in
         // mIncomingInvitationId
         // and show the popup on the screen.
-        activity.setmIncomingInvitationId(invitation.getInvitationId());
+    	mMultiplayerSeisson.mIncomingInvitationId=invitation.getInvitationId();
 //        .setText(invitation.getInviter().getDisplayName() + " is inviting you.");
         //Create a text pop-up for invitations
     }
 
     @Override
     public void onInvitationRemoved(String invitationId) {
-        if (activity.getmIncomingInvitationId().equals(invitationId)) {
-        	activity.setmIncomingInvitationId(null);
+        if (mMultiplayerSeisson.mIncomingInvitationId.equals(invitationId)) {
+        	mMultiplayerSeisson.mIncomingInvitationId=null;
             //Hide invitation pop up
         }
     }
@@ -111,13 +119,13 @@ public class GPSListeners implements RoomStatusUpdateListener, RoomUpdateListene
         Log.d(TAG, "onConnectedToRoom.");
 
         // get room ID, participants and my ID:
-        activity.setmRoomId(room.getRoomId());
-        activity.setmParticipants(room.getParticipants());
-        activity.setmMyId(room.getParticipantId(Games.Players.getCurrentPlayerId(mGoogleApiClient)));
+        mMultiplayerSeisson.mRoomId=room.getRoomId();
+        mMultiplayerSeisson.mParticipants=room.getParticipants();
+        mMultiplayerSeisson.mMyId=room.getParticipantId(Games.Players.getCurrentPlayerId(mGoogleApiClient));
 
         // print out the list of participants (for debug purposes)
-        Log.d(TAG, "Room ID: " + activity.getmRoomId());
-        Log.d(TAG, "My ID " + activity.getmMyId());
+        Log.d(TAG, "Room ID: " +mMultiplayerSeisson.mRoomId);
+        Log.d(TAG, "My ID " + mMultiplayerSeisson.mMyId);
         Log.d(TAG, "<< CONNECTED TO ROOM>>");
     }
 
@@ -125,7 +133,7 @@ public class GPSListeners implements RoomStatusUpdateListener, RoomUpdateListene
     // Called when we get disconnected from the room. We return to the main screen.
     @Override
     public void onDisconnectedFromRoom(Room room) {
-        activity.setmRoomId(null);
+    	mMultiplayerSeisson.mRoomId=null;
 //        showGameError();
     }
     // Show error message about game being cancelled and return to main screen.
@@ -190,9 +198,9 @@ public class GPSListeners implements RoomStatusUpdateListener, RoomUpdateListene
 
     void updateRoom(Room room) {
         if (room != null) {
-            activity.setmParticipants(room.getParticipants());
+        	mMultiplayerSeisson.mParticipants=room.getParticipants();
         }
-        if (activity.getmParticipants() != null) {
+        if (mMultiplayerSeisson.mParticipants!= null) {
 //            updatePeerScoresDisplay();
         }
     }
