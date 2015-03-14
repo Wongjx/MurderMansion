@@ -32,29 +32,32 @@ public class MMContactListener implements ContactListener {
 		fb = c.getFixtureB();
 
 		System.out.println("Begin contact: fa: " + fa.getUserData() + ", fb: " + fb.getUserData());
-
-		if (fa.getUserData().equals("civilian") && fb.getUserData().equals("item") && gWorld.getPlayer().getItem()==null) {
-			itemsToRemove.add(fb.getBody());
-		} else if (fa.getUserData().equals("murderer") && fb.getUserData().equals("item") && gWorld.getPlayer().getItem()==null) {
-			itemsToRemove.add(fb.getBody());
-		} else if (fa.getUserData().equals("civilian") && fb.getUserData().equals("weapon") && gWorld.getPlayer().getWeapon()==null) {
-			weaponsToRemove.add(fb.getBody());
-		} else if (fa.getUserData().equals("murderer") && fb.getUserData().equals("weapon") && gWorld.getPlayer().getWeapon()==null) {
-			weaponsToRemove.add(fb.getBody());
+		if (fa.getUserData() != null && fb.getUserData() != null) {
+			if (fa.getUserData().equals("civilian") && fb.getUserData().equals("item")
+					&& gWorld.getPlayer().getItem() == null) {
+				itemsToRemove.add(fb.getBody());
+			} else if (fa.getUserData().equals("murderer") && fb.getUserData().equals("item")
+					&& gWorld.getPlayer().getItem() == null) {
+				itemsToRemove.add(fb.getBody());
+			} else if (fa.getUserData().equals("civilian") && fb.getUserData().equals("weapon")
+					&& gWorld.getPlayer().getWeapon() == null) {
+				weaponsToRemove.add(fb.getBody());
+			} else if (fa.getUserData().equals("murderer") && fb.getUserData().equals("weapon")
+					&& gWorld.getPlayer().getWeapon() == null) {
+				weaponsToRemove.add(fb.getBody());
+			}
 		}
 
 	}
 
 	// called when two fixtures no longer collide
 	public void endContact(Contact c) {
-		fa = c.getFixtureA();
-		fb = c.getFixtureB();
 	}
 
 	public Array<Body> getItemsToRemove() {
 		return itemsToRemove;
 	}
-	
+
 	public Array<Body> getWeaponsToRemove() {
 		return weaponsToRemove;
 	}
@@ -63,8 +66,10 @@ public class MMContactListener implements ContactListener {
 	// presolve
 	// collision handling - what happens when it happens
 	// postsolve
-	public void preSolve(Contact c, Manifold m) {	}
+	public void preSolve(Contact c, Manifold m) {
+	}
 
-	public void postSolve(Contact c, ContactImpulse ci) {	}
+	public void postSolve(Contact c, ContactImpulse ci) {
+	}
 
 }

@@ -1,4 +1,5 @@
 buildscript {
+	apply plugin: 'java'
     repositories {
         mavenCentral()
         jcenter()
@@ -28,7 +29,7 @@ allprojects {
         mavenCentral()
         maven { url "https://oss.sonatype.org/content/repositories/snapshots/" }
         maven { url "https://oss.sonatype.org/content/repositories/releases/" }
-    }
+		}
 }
 
 project(":desktop") {
@@ -102,6 +103,9 @@ project(":core") {
         compile "com.badlogicgames.gdx:gdx:$gdxVersion"
         compile "com.badlogicgames.gdx:gdx-box2d:$gdxVersion"
         compile "com.badlogicgames.box2dlights:box2dlights:$box2DLightsVersion"
+		
+		compile 'net.dermetfan.libgdx-utils:libgdx-utils:0.9.1'
+		compile 'net.dermetfan.libgdx-utils:libgdx-utils-box2d:0.9.1' // Box2D module
     }
 }
 

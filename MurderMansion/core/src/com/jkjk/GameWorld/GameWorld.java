@@ -1,5 +1,7 @@
 package com.jkjk.GameWorld;
 
+import net.dermetfan.gdx.physics.box2d.Box2DMapObjectParser;
+
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.BodyDef;
@@ -16,6 +18,7 @@ import com.jkjk.GameObjects.Items.ItemFactory;
 import com.jkjk.GameObjects.Items.ItemSprite;
 import com.jkjk.GameObjects.Weapons.WeaponFactory;
 import com.jkjk.GameObjects.Weapons.WeaponSprite;
+import com.jkjk.MMHelpers.AssetLoader;
 import com.jkjk.MMHelpers.MMContactListener;
 
 public class GameWorld {
@@ -67,8 +70,9 @@ public class GameWorld {
 		weaponList = new Array<WeaponSprite>();
 		maxWeapons = (int) (numOfPlayers*1.2);
 		numOfWeapons = 0;
+		
 
-		createWall();
+
 		createPlayer();
 		for (int i = 0; i < numOfPlayers-1; i++) {
 			createOpponents(i);
@@ -79,23 +83,6 @@ public class GameWorld {
 		for (int i = 0; i < maxWeapons; i++) {
 			createWeapons(i);
 		}
-	}
-
-	private void createWall() {
-		// create BODY for WORLD
-		bdef.position.set(150, 150);
-		// static body - don't move, unaffected by forces *eg. ground
-		// kinematic body - don't get affected by forces, but can move *eg. moving platform
-		// dynamic body - always get affected by forces *eg. player
-		bdef.type = BodyType.StaticBody;
-		body = world.createBody(bdef);
-
-		// create FIXTURE for BODY for WORLD
-		PolygonShape shape = new PolygonShape();
-		shape.setAsBox(100, 10);
-		FixtureDef fdef = new FixtureDef();
-		fdef.shape = shape;
-		body.createFixture(fdef).setUserData("wall");
 	}
 
 	private void createPlayer() {

@@ -2,6 +2,8 @@ package com.jkjk.GameWorld;
 
 import java.util.List;
 
+import net.dermetfan.gdx.physics.box2d.Box2DMapObjectParser;
+
 import box2dLight.*;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.GL20;
@@ -56,19 +58,21 @@ public class GameRenderer {
 	// Game Assets
 	private Touchpad touchpad;
 	private Drawable touchKnob;
-	TiledMap tiledMap;
-	TiledMapRenderer tiledMapRenderer;
+	private TiledMap tiledMap;
+	private TiledMapRenderer tiledMapRenderer;
 
 	// Buttons
 
 	// Lights
 	private RayHandler rayHandler;
 	private ConeLight coneLight;
-
+	
+	
 	public GameRenderer(GameWorld gWorld, float gameWidth, float gameHeight) {
 		this.gWorld = gWorld;
 		this.gameWidth = gameWidth;
 		this.gameHeight = gameHeight;
+		
 		b2dr = new Box2DDebugRenderer();
 		batch = new SpriteBatch();
 		hud = new HUD(gWorld);
@@ -95,11 +99,17 @@ public class GameRenderer {
 
 		// Create Light for player
 		rayHandler = new RayHandler(gWorld.getWorld());
+
+		rayHandler.setAmbientLight(0.3f);
+		
 		coneLight = new ConeLight(rayHandler, 1000, null, 600, 200, 200, 0, 40);
 		coneLight.attachToBody(player.getBody(), -10, 0);
 
-		tiledMap = new TmxMapLoader().load("data/level1.tmx");
+		tiledMap = new TmxMapLoader().load("map/mansion1.tmx");
 		tiledMapRenderer = new OrthogonalTiledMapRenderer(tiledMap);
+		
+		Box2DMapObjectParser parser = new Box2DMapObjectParser();
+		parser.load(gWorld.getWorld(),tiledMap);
 
 	}
 
@@ -112,6 +122,8 @@ public class GameRenderer {
 		touchKnob = AssetLoader.touchKnob;
 		touchKnob.setMinHeight(touchpad.getHeight() / 4);
 		touchKnob.setMinWidth(touchpad.getWidth() / 4);
+		
+		tiledMap = AssetLoader.tiledMap;
 
 		maxVelocity = w / 7;
 	}
@@ -133,7 +145,6 @@ public class GameRenderer {
 		rayHandler.updateAndRender();
 
 		b2dr.render(gWorld.getWorld(), cam.combined); // Renders box2d world
-
 		stage.draw(); // Draw touchpad
 		stage.act(Gdx.graphics.getDeltaTime()); // Acts stage at deltatime
 
@@ -212,7 +223,6 @@ public class GameRenderer {
 	}
 
 	public void rendererDispose() {
-		System.out.println("Disposing!");
 		gWorld.getWorld().dispose();
 		rayHandler.dispose();
 		stage.dispose();
