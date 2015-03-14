@@ -1,6 +1,7 @@
 package com.jkjk.MurderMansion;
 
 import com.badlogic.gdx.Game;
+import com.badlogic.gdx.utils.GdxNativesLoader;
 import com.jkjk.MMHelpers.ActionResolver;
 import com.jkjk.MMHelpers.AssetLoader;
 import com.jkjk.Screens.GameScreen;
@@ -21,6 +22,8 @@ public class murdermansion extends Game {
 
 	@Override
 	public void create() {
+
+		GdxNativesLoader.load();
 		AssetLoader.load();
 //		setScreen(new SplashScreen(this, V_WIDTH * SCALE, V_HEIGHT * SCALE));
 		setScreen(new MenuScreen(this,V_WIDTH * SCALE, V_HEIGHT * SCALE));

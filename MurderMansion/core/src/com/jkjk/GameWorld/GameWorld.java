@@ -71,10 +71,8 @@ public class GameWorld {
 		maxWeapons = (int) (numOfPlayers*1.2);
 		numOfWeapons = 0;
 		
-		Box2DMapObjectParser parser = new Box2DMapObjectParser();
-		parser.load(world,AssetLoader.tiledMap);
 
-		createWall();
+
 		createPlayer();
 		for (int i = 0; i < numOfPlayers-1; i++) {
 			createOpponents(i);
@@ -85,23 +83,6 @@ public class GameWorld {
 		for (int i = 0; i < maxWeapons; i++) {
 			createWeapons(i);
 		}
-	}
-
-	private void createWall() {
-		// create BODY for WORLD
-		bdef.position.set(150, 150);
-		// static body - don't move, unaffected by forces *eg. ground
-		// kinematic body - don't get affected by forces, but can move *eg. moving platform
-		// dynamic body - always get affected by forces *eg. player
-		bdef.type = BodyType.StaticBody;
-		body = world.createBody(bdef);
-
-		// create FIXTURE for BODY for WORLD
-		PolygonShape shape = new PolygonShape();
-		shape.setAsBox(100, 10);
-		FixtureDef fdef = new FixtureDef();
-		fdef.shape = shape;
-		body.createFixture(fdef).setUserData("wall");
 	}
 
 	private void createPlayer() {

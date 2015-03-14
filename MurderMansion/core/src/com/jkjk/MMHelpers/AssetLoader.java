@@ -87,7 +87,7 @@ public class AssetLoader {
 		disarmTrap = new TextureRegionDrawable(new TextureRegion(hudTexture, 50, 0, 46, 46));
 		bat = new TextureRegionDrawable(new TextureRegion(hudTexture, 100, 0, 46, 46));
 		
-		tiledMap = new TmxMapLoader().load("map/MMMap.tmx");
+		
 	}
 
 	public static void dispose() {
@@ -96,6 +96,5 @@ public class AssetLoader {
 		logoTexture.dispose();
 		touchpadSkin.dispose();
 		hudTexture.dispose();
-		tiledMap.dispose();
 	}
 }

@@ -52,8 +52,6 @@ public class MMContactListener implements ContactListener {
 
 	// called when two fixtures no longer collide
 	public void endContact(Contact c) {
-		fa = c.getFixtureA();
-		fb = c.getFixtureB();
 	}
 
 	public Array<Body> getItemsToRemove() {

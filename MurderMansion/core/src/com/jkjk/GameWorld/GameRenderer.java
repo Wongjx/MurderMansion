@@ -72,6 +72,7 @@ public class GameRenderer {
 		this.gWorld = gWorld;
 		this.gameWidth = gameWidth;
 		this.gameHeight = gameHeight;
+		
 		b2dr = new Box2DDebugRenderer();
 		batch = new SpriteBatch();
 		hud = new HUD(gWorld);
@@ -99,12 +100,16 @@ public class GameRenderer {
 		// Create Light for player
 		rayHandler = new RayHandler(gWorld.getWorld());
 
-		rayHandler.setAmbientLight(0.5f);
+		rayHandler.setAmbientLight(0.3f);
 		
-		coneLight = new ConeLight(rayHandler, 5000, null, 600, 200, 200, 0, 40);
+		coneLight = new ConeLight(rayHandler, 1000, null, 600, 200, 200, 0, 40);
 		coneLight.attachToBody(player.getBody(), -10, 0);
 
+		tiledMap = new TmxMapLoader().load("map/mansion1.tmx");
 		tiledMapRenderer = new OrthogonalTiledMapRenderer(tiledMap);
+		
+		Box2DMapObjectParser parser = new Box2DMapObjectParser();
+		parser.load(gWorld.getWorld(),tiledMap);
 
 	}
 
@@ -135,9 +140,6 @@ public class GameRenderer {
 		cam.update(); // Update cam
 		tiledMapRenderer.setView(cam);
 		tiledMapRenderer.render();
-
-		rayHandler.setCombinedMatrix(cam.combined);
-		rayHandler.updateAndRender();
 
 		rayHandler.setCombinedMatrix(cam.combined);
 		rayHandler.updateAndRender();
@@ -221,7 +223,6 @@ public class GameRenderer {
 	}
 
 	public void rendererDispose() {
-		System.out.println("Disposing!");
 		gWorld.getWorld().dispose();
 		rayHandler.dispose();
 		stage.dispose();
