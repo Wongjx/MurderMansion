@@ -31,8 +31,10 @@ public class MenuScreen implements Screen{
     private Table table = new Table();
     private TextButton buttonPlay = new TextButton("Enter", normal),
     		buttonLogin = new TextButton("Connect", normal),
-    		buttonMulti = new TextButton("Multiplayer", normal),
-    		buttonLogout = new TextButton("Logout",normal);
+    		buttonLogout = new TextButton("Logout",normal),
+    		buttonQuick = new TextButton("Quick game", normal),
+    		buttonInvite = new TextButton("Invite",normal),
+    		buttonJoin = new TextButton("Join game",normal);
     
     murdermansion game;
 
@@ -40,7 +42,7 @@ public class MenuScreen implements Screen{
     	this.gameWidth = gameWidth;
     	this.gameHeight = gameHeight;
     	this.game=game;
-    	BUTTON_HEIGHT=Gdx.graphics.getHeight()*.2f;
+    	BUTTON_HEIGHT=Gdx.graphics.getHeight()*.1f;
     	BUTTON_WIDTH=Gdx.graphics.getWidth()*.25f;
     	BUTTON_PAD=Gdx.graphics.getHeight()*.02f;
     	TITLE_PAD=Gdx.graphics.getHeight()*.04f;
@@ -64,12 +66,13 @@ public class MenuScreen implements Screen{
 
             }
         });
-        buttonMulti.addListener(new ClickListener(){
+        buttonQuick.addListener(new ClickListener(){
             @Override
             public void clicked(InputEvent event, float x, float y) {
                 //Host multiplayer game
             	game.actionResolver.startQuickGame();
-            	((Game)Gdx.app.getApplicationListener()).setScreen(new GameScreen(game,gameWidth, gameHeight));
+            	game.mMultiplayerSeisson.mState=game.mMultiplayerSeisson.ROOM_WAIT;
+            	((Game)Gdx.app.getApplicationListener()).setScreen(new WaitScreen(game,gameWidth, gameHeight));
             }
         });
         buttonLogout.addListener(new ClickListener(){
@@ -78,12 +81,30 @@ public class MenuScreen implements Screen{
             	game.actionResolver.logoutGPGS();
             }
         });
+        buttonInvite.addListener(new ClickListener(){
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+            	game.actionResolver.sendInvitations();
+            	game.mMultiplayerSeisson.mState=game.mMultiplayerSeisson.ROOM_WAIT;
+            	((Game)Gdx.app.getApplicationListener()).setScreen(new WaitScreen(game,gameWidth, gameHeight));
+            }
+        });
+        buttonJoin.addListener(new ClickListener(){
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+            	game.actionResolver.seeInvitations();
+            	game.mMultiplayerSeisson.mState=game.mMultiplayerSeisson.ROOM_WAIT;
+            	((Game)Gdx.app.getApplicationListener()).setScreen(new WaitScreen(game,gameWidth, gameHeight));
+            }
+        });
         
         table.add(title).padBottom(TITLE_PAD).row();
         table.add(buttonPlay).size(this.BUTTON_WIDTH,this.BUTTON_HEIGHT).padBottom(this.BUTTON_PAD).row();
         table.add(buttonLogin).size(this.BUTTON_WIDTH,this.BUTTON_HEIGHT).padBottom(this.BUTTON_PAD).row();
         table.add(buttonLogout).size(this.BUTTON_WIDTH,this.BUTTON_HEIGHT).padBottom(this.BUTTON_PAD).row();
-        table.add(buttonMulti).size(this.BUTTON_WIDTH,this.BUTTON_HEIGHT).padBottom(this.BUTTON_PAD).row();
+        table.add(buttonQuick).size(this.BUTTON_WIDTH,this.BUTTON_HEIGHT).padBottom(this.BUTTON_PAD).row();
+        table.add(buttonInvite).size(this.BUTTON_WIDTH,this.BUTTON_HEIGHT).padBottom(this.BUTTON_PAD).row();
+        table.add(buttonJoin).size(this.BUTTON_WIDTH,this.BUTTON_HEIGHT).padBottom(this.BUTTON_PAD).row();
 
         System.out.println("height: " + BUTTON_HEIGHT);
         System.out.println("width: " + BUTTON_WIDTH);
@@ -97,7 +118,6 @@ public class MenuScreen implements Screen{
 
 	@Override
 	public void render(float delta) {
-		// TODO Auto-generated method stub
         Gdx.gl.glClearColor(0, 0, 0, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
         stage.act();
@@ -107,31 +127,26 @@ public class MenuScreen implements Screen{
 
 	@Override
 	public void resize(int width, int height) {
-		// TODO Auto-generated method stub
 		
 	}
 
 	@Override
 	public void pause() {
-		// TODO Auto-generated method stub
 		
 	}
 
 	@Override
 	public void resume() {
-		// TODO Auto-generated method stub
 		
 	}
 
 	@Override
 	public void hide() {
-		// TODO Auto-generated method stub
 		
 	}
 
 	@Override
 	public void dispose() {
-		// TODO Auto-generated method stub
 		stage.dispose();
 		
 	}
