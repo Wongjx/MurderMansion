@@ -17,6 +17,7 @@ public class WeaponSprite {
 		shape.setAsBox(7, 7);
 		fdef.shape = shape;
 		fdef.isSensor = true;
+		fdef.filter.maskBits = 1;
 		body.createFixture(fdef).setUserData("weapon");
 	}
 

@@ -5,6 +5,7 @@ import java.util.List;
 import net.dermetfan.gdx.physics.box2d.Box2DMapObjectParser;
 
 import box2dLight.*;
+
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
@@ -83,11 +84,10 @@ public class GameRenderer {
 
 		// Create Light for player
 		rayHandler = new RayHandler(gWorld.getWorld());
-
-		rayHandler.setAmbientLight(0.3f);
-
-		coneLight = new ConeLight(rayHandler, 100, null, 600, 200, 200, 0, 40);
+		rayHandler.setAmbientLight(0.1f);
+		coneLight = new ConeLight(rayHandler, 100, null, 200, 200, 200, 0, 40);
 		coneLight.attachToBody(player.getBody(), -10, 0);
+		ConeLight.setContactFilter((short) 2, (short) 2, (short) 1);
 
 		tiledMap = new TmxMapLoader().load("map/mansion2.tmx");
 		tiledMapRenderer = new OrthogonalTiledMapRenderer(tiledMap);
@@ -106,7 +106,6 @@ public class GameRenderer {
 	}
 
 	public void render(float delta, float runTime) {
-		System.out.println(Gdx.graphics.getFramesPerSecond());
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT); // Clears screen everytime it renders
 
 		playerMovement();
@@ -151,10 +150,6 @@ public class GameRenderer {
 					playerBody.setAngularVelocity(-5);
 			} else
 				playerBody.setAngularVelocity(0);
-		}
-		if (angleDiff < -6) {
-			System.out.println(angleDiff);
-			System.out.println(playerBody.getAngularVelocity());
 		}
 
 		playerBody.setLinearVelocity(touchpadX * maxVelocity, touchpadY * maxVelocity); // Set linearV of
