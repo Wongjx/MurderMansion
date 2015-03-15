@@ -54,7 +54,7 @@ public class MenuScreen implements Screen{
         buttonPlay.addListener(new ClickListener(){
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                ((Game)Gdx.app.getApplicationListener()).setScreen(new GameScreen(gameWidth, gameHeight));
+                ((Game)Gdx.app.getApplicationListener()).setScreen(new GameScreen(game,gameWidth, gameHeight));
             }
         });
         buttonLogin.addListener(new ClickListener(){
@@ -69,6 +69,7 @@ public class MenuScreen implements Screen{
             public void clicked(InputEvent event, float x, float y) {
                 //Host multiplayer game
             	game.actionResolver.startQuickGame();
+            	((Game)Gdx.app.getApplicationListener()).setScreen(new GameScreen(game,gameWidth, gameHeight));
             }
         });
         buttonLogout.addListener(new ClickListener(){

@@ -1,11 +1,8 @@
 package com.jkjk.MurderMansion.android;
 
-import java.util.ArrayList;
-
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.ArrayMap;
 import android.util.Log;
 
 import com.badlogic.gdx.Gdx;
@@ -14,11 +11,11 @@ import com.badlogic.gdx.backends.android.AndroidApplicationConfiguration;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.games.Games;
 import com.google.android.gms.games.GamesActivityResultCodes;
-import com.google.android.gms.games.multiplayer.Participant;
 import com.google.android.gms.games.multiplayer.realtime.RoomConfig;
 import com.google.example.games.basegameutils.GameHelper;
 import com.google.example.games.basegameutils.GameHelper.GameHelperListener;
 import com.jkjk.MMHelpers.ActionResolver;
+import com.jkjk.MMHelpers.MultiplayerSeissonInfo;
 import com.jkjk.MurderMansion.murdermansion;
 
 public class AndroidLauncher extends AndroidApplication implements GameHelperListener, ActionResolver{
@@ -32,22 +29,11 @@ public class AndroidLauncher extends AndroidApplication implements GameHelperLis
     // Request code used to invoke sign in user interactions.
     private static final int RC_SIGN_IN = 9001;
 
-	private String mIncomingInvitationId;
-	private String mRoomId;
-	private ArrayList<Participant> mParticipants;
-	private Object mMyId;
-	
-//	private String mIncomingInvitationId = "mIncomingInvitationId";
-//	private String mRoomId="mRoomId";
-//	private String mParticipants="mParticipants";
-//	private String mMyId="mMyId";
-//	public static volatile Bundle mMultiplayerSeissonInfo;
-	
-	
 	public GameHelper gameHelper;
 	public GoogleApiClient mGoogleApiClient;
 	public GPSListeners mGooglePlayListeners;
 	public RealTimeCommunication mRealTimeListener;
+	public MultiplayerSeissonInfo mMultiplayerSeisson;
 	
 	
 	@Override
@@ -68,25 +54,19 @@ public class AndroidLauncher extends AndroidApplication implements GameHelperLis
 		
 		//Initialize listener helper class
 		if (mGooglePlayListeners == null) {
-			mGooglePlayListeners = new GPSListeners(mGoogleApiClient,this);
+			mGooglePlayListeners = new GPSListeners(mGoogleApiClient,this,mMultiplayerSeisson);
 		}		
 		if (mRealTimeListener == null) {
 			mRealTimeListener = new RealTimeCommunication(mGoogleApiClient,this);
 		}
-		
-//		Create and setup arraymap to contain all information needed for Google Play services
-//		Contains values for:
-//		-mIncomingInvitationId = String 
-//		-mRoomId
-//		-mParticipants
-//		-mMyId
-		
-//		if (mMultiplayerSeissonInfo == null) {
-//			mMultiplayerSeissonInfo = new Bundle();
-//		}
+		//Initalize helper class that stores all additional needed information for multiplayer games
+		if (mMultiplayerSeisson == null) {
+			mMultiplayerSeisson = new MultiplayerSeissonInfo();
+		}
+
 		
 		AndroidApplicationConfiguration config = new AndroidApplicationConfiguration();
-		initialize(new murdermansion(this), config);
+		initialize(new murdermansion(this,mMultiplayerSeisson), config);
 
 	}
 
@@ -121,6 +101,7 @@ public class AndroidLauncher extends AndroidApplication implements GameHelperLis
              if (responseCode == Activity.RESULT_OK) {
                  // ready to start playing
                  Log.d(TAG, "Starting game (waiting room returned OK).");
+                 
 //                 startGame(true);
              } else if (responseCode == GamesActivityResultCodes.RESULT_LEFT_ROOM) {
                  // player indicated that they want to leave the room
@@ -219,6 +200,8 @@ public class AndroidLauncher extends AndroidApplication implements GameHelperLis
 		if(!gameHelper.isSignedIn()){
 			gameHelper.beginUserInitiatedSignIn();
 		}else{
+			//Set multiplayer flag to be true so that game screen will choose to create multiplayer world instead
+			mMultiplayerSeisson.mMultiplayer=true;
 			final int MIN_OPPONENTS = 1, MAX_OPPONENTS = 1;
 			Bundle autoMatchCriteria = RoomConfig.createAutoMatchCriteria(MIN_OPPONENTS,MAX_OPPONENTS, 0);
 
@@ -241,44 +224,12 @@ public class AndroidLauncher extends AndroidApplication implements GameHelperLis
     // Leave the room.
     void leaveRoom() {
         Log.d(TAG, "Leaving room.");
-        if (mRoomId != null) {
-            Games.RealTimeMultiplayer.leave(this.mGoogleApiClient, this.mGooglePlayListeners, mRoomId);
-            mRoomId = null;
-//            switchToScreen(R.id.screen_wait);
+        if (mMultiplayerSeisson.mRoomId != null) {
+            Games.RealTimeMultiplayer.leave(this.mGoogleApiClient, this.mGooglePlayListeners, mMultiplayerSeisson.mRoomId);
+            mMultiplayerSeisson.mRoomId=null;
+//            mRoomId = null;
         } else {
 //            switchToMainScreen();
         }
     }
-
-	public String getmIncomingInvitationId() {
-		return mIncomingInvitationId;
-	}
-
-	public void setmIncomingInvitationId(String mIncomingInvitationId) {
-		this.mIncomingInvitationId = mIncomingInvitationId;
-	}
-
-	public String getmRoomId() {
-		return mRoomId;
-	}
-
-	public void setmRoomId(String mRoomId) {
-		this.mRoomId = mRoomId;
-	}
-
-	public ArrayList<Participant> getmParticipants() {
-		return mParticipants;
-	}
-
-	public void setmParticipants(ArrayList<Participant> mParticipants) {
-		this.mParticipants = mParticipants;
-	}
-
-	public Object getmMyId() {
-		return mMyId;
-	}
-
-	public void setmMyId(Object mMyId) {
-		this.mMyId = mMyId;
-	}
 }

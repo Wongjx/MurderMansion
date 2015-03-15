@@ -4,11 +4,12 @@ import com.badlogic.gdx.Game;
 import com.badlogic.gdx.utils.GdxNativesLoader;
 import com.jkjk.MMHelpers.ActionResolver;
 import com.jkjk.MMHelpers.AssetLoader;
-import com.jkjk.Screens.GameScreen;
+import com.jkjk.MMHelpers.MultiplayerSeissonInfo;
 import com.jkjk.Screens.MenuScreen;
 
 public class murdermansion extends Game {
 	public ActionResolver actionResolver;
+	public MultiplayerSeissonInfo mMultiplayerSeisson;
 
 	public static final String TITLE = "Murder Mansion";
 	public static final int V_WIDTH = 320;
@@ -16,9 +17,11 @@ public class murdermansion extends Game {
 	public static final int SCALE = 2;
 	
 
-	public murdermansion(ActionResolver actionResolver){
+	public murdermansion(ActionResolver actionResolver, MultiplayerSeissonInfo mMultiplayerSeisson){
 		this.actionResolver=actionResolver;
+		this.mMultiplayerSeisson=mMultiplayerSeisson; 
 	}
+	
 
 	@Override
 	public void create() {
