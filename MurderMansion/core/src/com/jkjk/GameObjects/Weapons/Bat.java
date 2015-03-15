@@ -14,6 +14,7 @@ public class Bat extends Weapon {
 	private Body body;
 	private FixtureDef fdef;
 	private Vector2 playerPosition;
+	private float playerAngle;
 
 	public Bat() {
 		bdef = new BodyDef();
@@ -25,17 +26,20 @@ public class Bat extends Weapon {
 	public void use(GameWorld gWorld) {
 		System.out.println("Used bat");
 		playerPosition = gWorld.getPlayer().getBody().getPosition();
+		playerAngle = gWorld.getPlayer().getBody().getAngle();
 		bdef.type = BodyType.StaticBody;
-		bdef.position.set(playerPosition.x - (float) (16/(Math.cos(playerPosition.angle()))), playerPosition.y - (float) (16/(Math.cos(playerPosition.angle()))));
+		bdef.position.set(playerPosition.x, playerPosition.y);
+		bdef.angle = playerAngle;
 		body = gWorld.getWorld().createBody(bdef);
 
-		Vector2[] vertices = {new Vector2(0,0), new Vector2(-20,-10), new Vector2(-20,10)};
+		Vector2[] vertices = { new Vector2(0, 0), new Vector2(41, 24), new Vector2(44.5f, 16), new Vector2(47, 8),
+				new Vector2(48, 0), new Vector2(47,-8), new Vector2(44.5f, -16), new Vector2(41,-24) };
 		PolygonShape shape = new PolygonShape();
 		shape.set(vertices);
 		fdef.shape = shape;
 		fdef.isSensor = true;
 		
-		body.createFixture(fdef);
+		body.createFixture(fdef).setUserData("Bat");
 	}
 
 	@Override

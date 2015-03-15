@@ -34,7 +34,6 @@ public class GameRenderer {
 	private Box2DDebugRenderer b2dr;
 	private HudRenderer hud;
 
-
 	private Sprite mapSprite;
 
 	private float maxVelocity;
@@ -63,13 +62,12 @@ public class GameRenderer {
 	// Lights
 	private RayHandler rayHandler;
 	private ConeLight coneLight;
-	
-	
+
 	public GameRenderer(GameWorld gWorld, float gameWidth, float gameHeight) {
 		this.gWorld = gWorld;
 		this.gameWidth = gameWidth;
 		this.gameHeight = gameHeight;
-		
+
 		b2dr = new Box2DDebugRenderer();
 
 		// Create camera
@@ -87,21 +85,21 @@ public class GameRenderer {
 		rayHandler = new RayHandler(gWorld.getWorld());
 
 		rayHandler.setAmbientLight(0.3f);
-		
+
 		coneLight = new ConeLight(rayHandler, 1000, null, 600, 200, 200, 0, 40);
 		coneLight.attachToBody(player.getBody(), -10, 0);
 
-		tiledMap = new TmxMapLoader().load("map/mansion1.tmx");
+		tiledMap = new TmxMapLoader().load("map/mansion2.tmx");
 		tiledMapRenderer = new OrthogonalTiledMapRenderer(tiledMap);
-		
+
 		Box2DMapObjectParser parser = new Box2DMapObjectParser();
-		parser.load(gWorld.getWorld(),tiledMap);
+		parser.load(gWorld.getWorld(), tiledMap);
 
 	}
 
 	private void initAssets(float w, float h) {
 		touchpad = AssetLoader.touchpad;
-		
+
 		tiledMap = AssetLoader.tiledMap;
 
 		maxVelocity = w / 7;
@@ -123,30 +121,39 @@ public class GameRenderer {
 
 	}
 
-
 	private void playerMovement() {
 		touchpadX = touchpad.getKnobPercentX();
 		touchpadY = touchpad.getKnobPercentY();
 		if (!touchpad.isTouched()) {
 			playerBody.setAngularVelocity(0);
 		} else {
-			angleDiff = (Math.atan2(touchpadY, touchpadX) - playerBody.getAngle()) % (Math.PI * 2);
-			if (angleDiff > 0.05) {
-				if (angleDiff >= 3.14)
-					playerBody.setAngularVelocity(-5);
-				else if (angleDiff < 0.4)
-					playerBody.setAngularVelocity(1);
+			angleDiff = (Math.atan2(touchpadY, touchpadX) - (playerBody.getAngle())) % (Math.PI * 2);
+			if (angleDiff > 0) {
+				if (angleDiff >= 3.14) {
+					if (angleDiff > 6.2)
+						playerBody.setAngularVelocity((float) -angleDiff / 7);
+					else
+						playerBody.setAngularVelocity(-5);
+				} else if (angleDiff < 0.4)
+					playerBody.setAngularVelocity((float) angleDiff * 3);
 				else
 					playerBody.setAngularVelocity(5);
-			} else if (angleDiff < -0.05) {
-				if (angleDiff <= -3.14)
-					playerBody.setAngularVelocity(5);
-				else if (angleDiff > -0.4)
-					playerBody.setAngularVelocity(-1);
+			} else if (angleDiff < 0) {
+				if (angleDiff <= -3.14) {
+					if (angleDiff < -6.2)
+						playerBody.setAngularVelocity((float) -angleDiff / 7);
+					else
+						playerBody.setAngularVelocity(5);
+				} else if (angleDiff > -0.4)
+					playerBody.setAngularVelocity((float) angleDiff * 3);
 				else
 					playerBody.setAngularVelocity(-5);
 			} else
 				playerBody.setAngularVelocity(0);
+		}
+		if (angleDiff < -6) {
+			System.out.println(angleDiff);
+			System.out.println(playerBody.getAngularVelocity());
 		}
 
 		playerBody.setLinearVelocity(touchpadX * maxVelocity, touchpadY * maxVelocity); // Set linearV of

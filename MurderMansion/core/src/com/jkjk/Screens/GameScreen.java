@@ -3,13 +3,10 @@ package com.jkjk.Screens;
 import com.badlogic.gdx.Screen;
 import com.jkjk.GameWorld.GameRenderer;
 import com.jkjk.GameWorld.GameWorld;
-<<<<<<< HEAD
 import com.jkjk.GameWorld.HudRenderer;
-=======
 import com.jkjk.GameWorld.mGameWorld;
 import com.jkjk.MMHelpers.MultiplayerSeissonInfo;
 import com.jkjk.MurderMansion.murdermansion;
->>>>>>> 79d6772444f956e5e77d9f7b9c6ee0b720560739
 
 public class GameScreen implements Screen {
 	private murdermansion game;
