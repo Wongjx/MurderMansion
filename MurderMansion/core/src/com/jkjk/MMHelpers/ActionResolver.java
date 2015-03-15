@@ -9,5 +9,7 @@ public interface ActionResolver {
 	public void getLeaderboardGPGS();
 	public void getAchievementsGPGS();
 	public void startQuickGame();
+	public void seeInvitations();
+	public void sendInvitations();
 	
 }

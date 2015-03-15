@@ -1,10 +1,15 @@
 package com.jkjk.MurderMansion.desktop;
 
 import com.jkjk.MMHelpers.ActionResolver;
+import com.jkjk.MMHelpers.MultiplayerSeissonInfo;
 
 public class ActionResolverDesktop implements ActionResolver {	
 	boolean signedInStateGPGS = false;
-
+	public MultiplayerSeissonInfo mMultiplayerSeisson;
+	
+	public ActionResolverDesktop(MultiplayerSeissonInfo mMultiplayerSeisson){
+		this.mMultiplayerSeisson=mMultiplayerSeisson;
+	}
 	@Override
 	public boolean getSignedInGPGS() {
 		return signedInStateGPGS;
@@ -40,13 +45,26 @@ public class ActionResolverDesktop implements ActionResolver {
 	public void startQuickGame() {
 		// TODO Auto-generated method stub
 		System.out.println("Start quick game");
-		
+		this.mMultiplayerSeisson.mState=mMultiplayerSeisson.ROOM_PLAY;
 	}
 
 	@Override
 	public void logoutGPGS() {
 		// TODO Auto-generated method stub
 		System.out.println("Log out of GPGS");
+		
+	}
+
+	@Override
+	public void seeInvitations() {
+		System.out.println("See invites");
+		this.mMultiplayerSeisson.mState=mMultiplayerSeisson.ROOM_PLAY;
+	}
+
+	@Override
+	public void sendInvitations() {
+		System.out.println("Send out invite");
+		this.mMultiplayerSeisson.mState=mMultiplayerSeisson.ROOM_PLAY;
 		
 	}
 }

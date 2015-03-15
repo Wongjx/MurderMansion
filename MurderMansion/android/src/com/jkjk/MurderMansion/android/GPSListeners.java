@@ -6,6 +6,7 @@ import java.util.List;
 import android.app.Activity;
 import android.content.Intent;
 import android.util.Log;
+import android.widget.Toast;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
@@ -50,7 +51,7 @@ public class GPSListeners implements RoomStatusUpdateListener, RoomUpdateListene
         // mIncomingInvitationId
         // and show the popup on the screen.
     	mMultiplayerSeisson.mIncomingInvitationId=invitation.getInvitationId();
-//        .setText(invitation.getInviter().getDisplayName() + " is inviting you.");
+    	Toast.makeText(activity.getApplicationContext(), invitation.getInviter().getDisplayName() + " is inviting you.", Toast.LENGTH_SHORT).show();
         //Create a text pop-up for invitations
     }
 
@@ -82,7 +83,7 @@ public class GPSListeners implements RoomStatusUpdateListener, RoomUpdateListene
     public void onLeftRoom(int statusCode, String roomId) {
         // we have left the room; return to main screen.
         Log.d(TAG, "onLeftRoom, code " + statusCode);
-//        switchToMainScreen();
+        mMultiplayerSeisson.mState=mMultiplayerSeisson.ROOM_MENU;
     }
 
     // Called when room is fully connected.
@@ -134,6 +135,7 @@ public class GPSListeners implements RoomStatusUpdateListener, RoomUpdateListene
     @Override
     public void onDisconnectedFromRoom(Room room) {
     	mMultiplayerSeisson.mRoomId=null;
+    	mMultiplayerSeisson.mState=mMultiplayerSeisson.ROOM_MENU;
 //        showGameError();
     }
     // Show error message about game being cancelled and return to main screen.

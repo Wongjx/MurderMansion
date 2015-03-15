@@ -23,7 +23,7 @@ public class GameScreen implements Screen {
 		this.gameHeight = gameHeight;
 		
 		
-		if(game.mMultiplayerSeisson.mMultiplayer==true){
+		if(game.mMultiplayerSeisson.mState==game.mMultiplayerSeisson.ROOM_PLAY){
 			gWorld = new mGameWorld(gameWidth, gameHeight,game);
 		}else{
 			gWorld = new GameWorld(gameWidth, gameHeight);
