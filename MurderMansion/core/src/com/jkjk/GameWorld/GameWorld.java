@@ -87,7 +87,7 @@ public class GameWorld {
 
 	private void createPlayer() {
 		bdef.type = BodyType.DynamicBody;
-		bdef.position.set(100, 100); // Spawn position
+		bdef.position.set(261, 204); // Spawn position
 		body = world.createBody(bdef);
 		player = gameCharFac.createCharacter("Civilian", 0, body);
 		player.spawn();
@@ -96,13 +96,13 @@ public class GameWorld {
 	private void createOpponents(int i) {
 		if (i == 0) {
 			bdef.type = BodyType.KinematicBody;
-			bdef.position.set(100 - ((i + 1) * 40), 100); // Spawn position
+			bdef.position.set(261 - ((i + 1) * 40), 204); // Spawn position
 			body = world.createBody(bdef);
 			playerList.add((Murderer) gameCharFac.createCharacter("Murderer", body));
 			playerList.get(i).spawn();
 		} else {
 			bdef.type = BodyType.KinematicBody;
-			bdef.position.set(100 - ((i + 1) * 40), 100); // Spawn position
+			bdef.position.set(261 - ((i + 1) * 40), 204); // Spawn position
 			body = world.createBody(bdef);
 			playerList.add((Civilian) gameCharFac.createCharacter("Civilian", i, body));
 			playerList.get(i).spawn();
@@ -111,7 +111,7 @@ public class GameWorld {
 
 	private void createItems(int i) {
 		bdef.type = BodyType.StaticBody;
-		bdef.position.set(100 - ((i + 1) * 40), 60); // Spawn position
+		bdef.position.set(261 - ((i + 1) * 40), 170); // Spawn position
 		body = world.createBody(bdef);
 		itemList.add(new ItemSprite(body));
 		numOfItems++;
@@ -119,7 +119,7 @@ public class GameWorld {
 	
 	private void createWeapons(int i){
 		bdef.type = BodyType.StaticBody;
-		bdef.position.set(100 - ((i + 1) * 40), 20); // Spawn position
+		bdef.position.set(261 - ((i + 1) * 40), 140); // Spawn position
 		body = world.createBody(bdef);
 		weaponList.add(new WeaponSprite(body));
 		numOfWeapons++;

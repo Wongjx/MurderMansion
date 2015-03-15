@@ -1,12 +1,11 @@
 package com.jkjk.GameObjects.Items;
 
+import com.jkjk.GameWorld.GameWorld;
+
 public class DisarmTrap extends Item {
-	public DisarmTrap() {
-		// TODO Auto-generated constructor stub
-	}
 
 	@Override
-	public void use() {
+	public void use(GameWorld gWorld) {
 		System.out.println("Used disarm trap");
 		
 	}

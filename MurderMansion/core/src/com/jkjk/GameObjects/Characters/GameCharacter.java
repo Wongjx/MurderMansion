@@ -1,8 +1,10 @@
 package com.jkjk.GameObjects.Characters;
 
 import com.badlogic.gdx.physics.box2d.Body;
+import com.badlogic.gdx.physics.box2d.World;
 import com.jkjk.GameObjects.Items.Item;
 import com.jkjk.GameObjects.Weapons.Weapon;
+import com.jkjk.GameWorld.GameWorld;
 
 /**
  * Handles all things related to characters
@@ -37,15 +39,15 @@ public abstract class GameCharacter {
 	
 	public void addWeapon(Weapon weapon) { this.weapon = weapon; weaponChange = true; }
 	public Weapon getWeapon(){ return weapon; }
-	public void cooldownWeapon() {	}
-	public void useWeapon() { this.weapon = null;  weaponChange = true; }
+	public void cooldownWeapon() { weapon.cooldown(); }
+	public void useWeapon(GameWorld gWorld) { weapon.use(gWorld); weapon = null;  weaponChange = true; }
 	public boolean getWeaponChange(){ return weaponChange; }
 	public void setWeaponChange(boolean weaponChange){ this.weaponChange = weaponChange; }
 	
 	public void addItem(Item item) { this.item = item; itemChange = true; }
 	public Item getItem(){ return item; }
 	public void cooldownItem() {	}
-	public void useItem() { this.item = null; itemChange = true; }
+	public void useItem(GameWorld gWorld) { item.use(gWorld); item = null; itemChange = true; }
 	public boolean getItemChange(){ return itemChange; }
 	public void setItemChange(boolean itemChange){ this.itemChange = itemChange; }
 
