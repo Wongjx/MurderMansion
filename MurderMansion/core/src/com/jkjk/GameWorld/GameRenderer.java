@@ -31,12 +31,9 @@ import com.jkjk.MMHelpers.AssetLoader;
 public class GameRenderer {
 	private GameWorld gWorld;
 	private OrthographicCamera cam;
-	private OrthographicCamera hudCam;
 	private Box2DDebugRenderer b2dr;
-	private Stage stage;
-	private HUD hud;
+	private HudRenderer hud;
 
-	private SpriteBatch batch;
 	private Sprite mapSprite;
 
 	private float maxVelocity;
@@ -57,7 +54,6 @@ public class GameRenderer {
 
 	// Game Assets
 	private Touchpad touchpad;
-	private Drawable touchKnob;
 	private TiledMap tiledMap;
 	private TiledMapRenderer tiledMapRenderer;
 
@@ -66,32 +62,20 @@ public class GameRenderer {
 	// Lights
 	private RayHandler rayHandler;
 	private ConeLight coneLight;
-	
-	
+
 	public GameRenderer(GameWorld gWorld, float gameWidth, float gameHeight) {
 		this.gWorld = gWorld;
 		this.gameWidth = gameWidth;
 		this.gameHeight = gameHeight;
-		
+
 		b2dr = new Box2DDebugRenderer();
-		batch = new SpriteBatch();
-		hud = new HUD(gWorld);
 
 		// Create camera
 		cam = new OrthographicCamera();
 		cam.setToOrtho(false, gameWidth, gameHeight);
-		hudCam = new OrthographicCamera();
-		hudCam.setToOrtho(false, gameWidth, gameHeight);
 
 		// Initialise assets
 		initAssets(gameWidth, gameHeight);
-
-		// Create a Stage and add TouchPad
-		stage = new Stage(new ExtendViewport(gameWidth, gameHeight, hudCam), batch);
-		stage.addActor(touchpad);
-		stage.addActor(hud.getEmptyItemSlot());
-		stage.addActor(hud.getEmptyWeaponSlot());
-		Gdx.input.setInputProcessor(stage);
 
 		// Create player
 		player = gWorld.getPlayer();
@@ -101,41 +85,31 @@ public class GameRenderer {
 		rayHandler = new RayHandler(gWorld.getWorld());
 
 		rayHandler.setAmbientLight(0.3f);
-		
-		coneLight = new ConeLight(rayHandler, 1000, null, 600, 200, 200, 0, 40);
+
+		coneLight = new ConeLight(rayHandler, 100, null, 600, 200, 200, 0, 40);
 		coneLight.attachToBody(player.getBody(), -10, 0);
 
-		tiledMap = new TmxMapLoader().load("map/mansion1.tmx");
+		tiledMap = new TmxMapLoader().load("map/mansion2.tmx");
 		tiledMapRenderer = new OrthogonalTiledMapRenderer(tiledMap);
-		
+
 		Box2DMapObjectParser parser = new Box2DMapObjectParser();
-		parser.load(gWorld.getWorld(),tiledMap);
+		parser.load(gWorld.getWorld(), tiledMap);
 
 	}
 
 	private void initAssets(float w, float h) {
-
-		// Touchpad stuff
 		touchpad = AssetLoader.touchpad;
-		touchpad.setName("touchpad");
-		touchpad.setBounds(w / 14, h / 14, w / 5, w / 5);
-		touchKnob = AssetLoader.touchKnob;
-		touchKnob.setMinHeight(touchpad.getHeight() / 4);
-		touchKnob.setMinWidth(touchpad.getWidth() / 4);
-		
+
 		tiledMap = AssetLoader.tiledMap;
 
 		maxVelocity = w / 7;
 	}
 
 	public void render(float delta, float runTime) {
+		System.out.println(Gdx.graphics.getFramesPerSecond());
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT); // Clears screen everytime it renders
 
 		playerMovement();
-		if (player.getItemChange())
-			itemCheck();
-		if (player.getWeaponChange())
-			weaponCheck();
 
 		cam.update(); // Update cam
 		tiledMapRenderer.setView(cam);
@@ -145,49 +119,7 @@ public class GameRenderer {
 		rayHandler.updateAndRender();
 
 		b2dr.render(gWorld.getWorld(), cam.combined); // Renders box2d world
-		stage.draw(); // Draw touchpad
-		stage.act(Gdx.graphics.getDeltaTime()); // Acts stage at deltatime
 
-	}
-
-	private void itemCheck() {
-		player.setItemChange(false);
-		if (player.getItem() != null) {
-			for (Actor actors : stage.getActors()) {
-				if (actors.getName().equals("Empty Item Slot"))
-					actors.remove();
-			}
-			if (player.getName().equals("Civilian"))
-				stage.addActor(hud.getDisarmTrap());
-			else if (player.getName().equals("Murderer"))
-				stage.addActor(hud.getTrap());
-		} else {
-			for (Actor actors : stage.getActors()) {
-				if (actors.getName().equals("Item Button"))
-					actors.remove();
-			}
-			stage.addActor(hud.getEmptyItemSlot());
-		}
-	}
-
-	private void weaponCheck() {
-		player.setWeaponChange(false);
-		if (player.getWeapon() != null) {
-			for (Actor actors : stage.getActors()) {
-				if (actors.getName().equals("Empty Weapon Slot"))
-					actors.remove();
-			}
-			if (player.getName().equals("Civilian"))
-				stage.addActor(hud.getBat());
-			else if (player.getName().equals("Murderer"))
-				stage.addActor(hud.getKnife());
-		} else {
-			for (Actor actors : stage.getActors()) {
-				if (actors.getName().equals("Weapon Button"))
-					actors.remove();
-			}
-			stage.addActor(hud.getEmptyWeaponSlot());
-		}
 	}
 
 	private void playerMovement() {
@@ -196,23 +128,33 @@ public class GameRenderer {
 		if (!touchpad.isTouched()) {
 			playerBody.setAngularVelocity(0);
 		} else {
-			angleDiff = (Math.atan2(touchpadY, touchpadX) - playerBody.getAngle()) % (Math.PI * 2);
-			if (angleDiff > 0.05) {
-				if (angleDiff >= 3.14)
-					playerBody.setAngularVelocity(-5);
-				else if (angleDiff < 0.4)
-					playerBody.setAngularVelocity(1);
+			angleDiff = (Math.atan2(touchpadY, touchpadX) - (playerBody.getAngle())) % (Math.PI * 2);
+			if (angleDiff > 0) {
+				if (angleDiff >= 3.14) {
+					if (angleDiff > 6.2)
+						playerBody.setAngularVelocity((float) -angleDiff / 7);
+					else
+						playerBody.setAngularVelocity(-5);
+				} else if (angleDiff < 0.4)
+					playerBody.setAngularVelocity((float) angleDiff * 3);
 				else
 					playerBody.setAngularVelocity(5);
-			} else if (angleDiff < -0.05) {
-				if (angleDiff <= -3.14)
-					playerBody.setAngularVelocity(5);
-				else if (angleDiff > -0.4)
-					playerBody.setAngularVelocity(-1);
+			} else if (angleDiff < 0) {
+				if (angleDiff <= -3.14) {
+					if (angleDiff < -6.2)
+						playerBody.setAngularVelocity((float) -angleDiff / 7);
+					else
+						playerBody.setAngularVelocity(5);
+				} else if (angleDiff > -0.4)
+					playerBody.setAngularVelocity((float) angleDiff * 3);
 				else
 					playerBody.setAngularVelocity(-5);
 			} else
 				playerBody.setAngularVelocity(0);
+		}
+		if (angleDiff < -6) {
+			System.out.println(angleDiff);
+			System.out.println(playerBody.getAngularVelocity());
 		}
 
 		playerBody.setLinearVelocity(touchpadX * maxVelocity, touchpadY * maxVelocity); // Set linearV of
@@ -225,7 +167,6 @@ public class GameRenderer {
 	public void rendererDispose() {
 		gWorld.getWorld().dispose();
 		rayHandler.dispose();
-		stage.dispose();
 		b2dr.dispose();
 	}
 }

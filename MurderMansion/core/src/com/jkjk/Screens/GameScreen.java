@@ -3,6 +3,7 @@ package com.jkjk.Screens;
 import com.badlogic.gdx.Screen;
 import com.jkjk.GameWorld.GameRenderer;
 import com.jkjk.GameWorld.GameWorld;
+import com.jkjk.GameWorld.HudRenderer;
 import com.jkjk.GameWorld.mGameWorld;
 import com.jkjk.MMHelpers.MultiplayerSeissonInfo;
 import com.jkjk.MurderMansion.murdermansion;
@@ -12,6 +13,7 @@ public class GameScreen implements Screen {
 	
 	private GameWorld gWorld;
 	private GameRenderer renderer;
+	private HudRenderer hudRenderer;
 	private float runTime;
 
 	private float gameWidth;
@@ -30,6 +32,7 @@ public class GameScreen implements Screen {
 		}
 		
 		renderer = new GameRenderer(gWorld, gameWidth, gameHeight);
+		hudRenderer = new HudRenderer(gWorld, gameWidth, gameHeight);
 	}
 
 	@Override
@@ -43,7 +46,7 @@ public class GameScreen implements Screen {
 		runTime += delta;
 		gWorld.update(delta);
 		renderer.render(delta, runTime);
-
+		hudRenderer.render(delta);
 	}
 
 	@Override
@@ -72,5 +75,6 @@ public class GameScreen implements Screen {
 	@Override
 	public void dispose() {
 		renderer.rendererDispose();
+		hudRenderer.hudDispose();
 	}
 }

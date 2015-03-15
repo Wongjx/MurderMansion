@@ -1,13 +1,9 @@
 package com.jkjk.GameWorld;
 
-import net.dermetfan.gdx.physics.box2d.Box2DMapObjectParser;
-
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
-import com.badlogic.gdx.physics.box2d.FixtureDef;
-import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.Array;
 import com.jkjk.GameObjects.Characters.Civilian;
@@ -18,7 +14,6 @@ import com.jkjk.GameObjects.Items.ItemFactory;
 import com.jkjk.GameObjects.Items.ItemSprite;
 import com.jkjk.GameObjects.Weapons.WeaponFactory;
 import com.jkjk.GameObjects.Weapons.WeaponSprite;
-import com.jkjk.MMHelpers.AssetLoader;
 import com.jkjk.MMHelpers.MMContactListener;
 
 public class GameWorld {
@@ -87,7 +82,7 @@ public class GameWorld {
 
 	private void createPlayer() {
 		bdef.type = BodyType.DynamicBody;
-		bdef.position.set(100, 100); // Spawn position
+		bdef.position.set(1010, 515); // Spawn position
 		body = world.createBody(bdef);
 		player = gameCharFac.createCharacter("Civilian", 0, body);
 		player.spawn();
@@ -96,13 +91,13 @@ public class GameWorld {
 	private void createOpponents(int i) {
 		if (i == 0) {
 			bdef.type = BodyType.KinematicBody;
-			bdef.position.set(100 - ((i + 1) * 40), 100); // Spawn position
+			bdef.position.set(1010 - ((i + 1) * 40), 515); // Spawn position
 			body = world.createBody(bdef);
 			playerList.add((Murderer) gameCharFac.createCharacter("Murderer", body));
 			playerList.get(i).spawn();
 		} else {
 			bdef.type = BodyType.KinematicBody;
-			bdef.position.set(100 - ((i + 1) * 40), 100); // Spawn position
+			bdef.position.set(1010 - ((i + 1) * 40), 515); // Spawn position
 			body = world.createBody(bdef);
 			playerList.add((Civilian) gameCharFac.createCharacter("Civilian", i, body));
 			playerList.get(i).spawn();
@@ -111,7 +106,7 @@ public class GameWorld {
 
 	private void createItems(int i) {
 		bdef.type = BodyType.StaticBody;
-		bdef.position.set(100 - ((i + 1) * 40), 60); // Spawn position
+		bdef.position.set(1100 - ((i + 1) * 40), 490); // Spawn position
 		body = world.createBody(bdef);
 		itemList.add(new ItemSprite(body));
 		numOfItems++;
@@ -119,7 +114,7 @@ public class GameWorld {
 	
 	private void createWeapons(int i){
 		bdef.type = BodyType.StaticBody;
-		bdef.position.set(100 - ((i + 1) * 40), 20); // Spawn position
+		bdef.position.set(1100 - ((i + 1) * 40), 460); // Spawn position
 		body = world.createBody(bdef);
 		weaponList.add(new WeaponSprite(body));
 		numOfWeapons++;
