@@ -86,7 +86,7 @@ public class GameRenderer {
 
 		rayHandler.setAmbientLight(0.3f);
 
-		coneLight = new ConeLight(rayHandler, 1000, null, 600, 200, 200, 0, 40);
+		coneLight = new ConeLight(rayHandler, 100, null, 600, 200, 200, 0, 40);
 		coneLight.attachToBody(player.getBody(), -10, 0);
 
 		tiledMap = new TmxMapLoader().load("map/mansion2.tmx");
@@ -106,6 +106,7 @@ public class GameRenderer {
 	}
 
 	public void render(float delta, float runTime) {
+		System.out.println(Gdx.graphics.getFramesPerSecond());
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT); // Clears screen everytime it renders
 
 		playerMovement();
