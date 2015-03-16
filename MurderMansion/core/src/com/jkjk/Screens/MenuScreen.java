@@ -4,6 +4,10 @@ import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.GL20;
+import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.Texture.TextureFilter;
+import com.badlogic.gdx.graphics.g2d.Sprite;
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
@@ -16,16 +20,20 @@ import com.jkjk.MMHelpers.AssetLoader;
 import com.jkjk.MurderMansion.murdermansion;
 
 public class MenuScreen implements Screen{
-    private float gameWidth;
+    
+	private float gameWidth;
     private float gameHeight;
     private float TITLE_PAD;
     private float BUTTON_WIDTH;
     private float BUTTON_HEIGHT;
     private float BUTTON_PAD;
+    
+    private SpriteBatch batch;
+    private Texture background;
+    private Sprite sprite;
 
     private TextButtonStyle normal = AssetLoader.normal;
     private LabelStyle titleStyle = AssetLoader.title;
-    private Label title = new Label("Murder Mansion",titleStyle);
 
     private Stage stage = new Stage();
     private Table table = new Table();
@@ -53,7 +61,13 @@ public class MenuScreen implements Screen{
         //The elements are displayed in the order you add them.
         //The first appear on top, the last at the bottom.
     	
-        buttonPlay.addListener(new ClickListener(){
+    	batch = new SpriteBatch();
+    	background = AssetLoader.menuBackground;
+    	background.setFilter(TextureFilter.Linear, TextureFilter.Linear);
+    	sprite = new Sprite(background);
+    	sprite.setSize(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+    	
+    	buttonPlay.addListener(new ClickListener(){
             @Override
             public void clicked(InputEvent event, float x, float y) {
                 ((Game)Gdx.app.getApplicationListener()).setScreen(new GameScreen(game,gameWidth, gameHeight));
@@ -98,7 +112,6 @@ public class MenuScreen implements Screen{
             }
         });
         
-        table.add(title).padBottom(TITLE_PAD).row();
         table.add(buttonPlay).size(this.BUTTON_WIDTH,this.BUTTON_HEIGHT).padBottom(this.BUTTON_PAD).row();
         table.add(buttonLogin).size(this.BUTTON_WIDTH,this.BUTTON_HEIGHT).padBottom(this.BUTTON_PAD).row();
         table.add(buttonLogout).size(this.BUTTON_WIDTH,this.BUTTON_HEIGHT).padBottom(this.BUTTON_PAD).row();
@@ -120,6 +133,11 @@ public class MenuScreen implements Screen{
 	public void render(float delta) {
         Gdx.gl.glClearColor(0, 0, 0, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+        
+        batch.begin();
+        sprite.draw(batch);
+        batch.end();
+        
         stage.act();
         stage.draw();
 		
