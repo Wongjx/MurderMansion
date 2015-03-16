@@ -105,8 +105,16 @@ public class mGameWorld extends GameWorld{
 	}
 
 	private void createPlayer() {
+<<<<<<< HEAD
 		player = gameCharFac.createCharacter("Civilian", 0, world);
 		player.spawn(1010, 515, 0);
+=======
+		bdef.type = BodyType.DynamicBody;
+		bdef.position.set(100, 100); // Spawn position
+		body = world.createBody(bdef);
+		player = gameCharFac.createCharacter("Civilian", 0, body, world);
+		player.spawn();
+>>>>>>> 7a9044a096b7b23eb8ae3af3c2530f98358cea16
 	}
 
 	private void createOpponents(int i) {
@@ -115,9 +123,17 @@ public class mGameWorld extends GameWorld{
 			playerList.get(i).getBody().setType(BodyType.KinematicBody);
 			playerList.get(i).spawn(1010 - ((i + 1) * 40), 515, 0);
 		} else {
+<<<<<<< HEAD
 			playerList.add((Civilian) gameCharFac.createCharacter("Civilian", i, world));
 			playerList.get(i).getBody().setType(BodyType.KinematicBody);
 			playerList.get(i).spawn(1010 - ((i + 1) * 40), 515, 0);
+=======
+			bdef.type = BodyType.KinematicBody;
+			bdef.position.set(100 - ((i + 1) * 40), 100); // Spawn position
+			body = world.createBody(bdef);
+			playerList.add((Civilian) gameCharFac.createCharacter("Civilian", i, body, world));
+			playerList.get(i).spawn();
+>>>>>>> 7a9044a096b7b23eb8ae3af3c2530f98358cea16
 		}
 	}
 

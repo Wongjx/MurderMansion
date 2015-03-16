@@ -1,27 +1,23 @@
 package com.jkjk.GameWorld;
 
-import java.util.List;
-
 import net.dermetfan.gdx.physics.box2d.Box2DMapObjectParser;
-
-import box2dLight.*;
+import box2dLight.ConeLight;
+import box2dLight.RayHandler;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.Sprite;
-import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TiledMapRenderer;
 import com.badlogic.gdx.maps.tiled.TmxMapLoader;
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
+import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
-import com.badlogic.gdx.scenes.scene2d.Actor;
-import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.physics.box2d.Fixture;
+import com.badlogic.gdx.physics.box2d.QueryCallback;
 import com.badlogic.gdx.scenes.scene2d.ui.Touchpad;
-import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
-import com.badlogic.gdx.utils.viewport.ExtendViewport;
 import com.jkjk.GameObjects.Characters.GameCharacter;
 import com.jkjk.GameObjects.Items.DisarmTrap;
 import com.jkjk.GameObjects.Items.Trap;
@@ -63,6 +59,7 @@ public class GameRenderer {
 	// Lights
 	private RayHandler rayHandler;
 	private ConeLight coneLight;
+	
 
 	public GameRenderer(GameWorld gWorld, float gameWidth, float gameHeight) {
 		this.gWorld = gWorld;
@@ -85,7 +82,7 @@ public class GameRenderer {
 		// Create Light for player
 		rayHandler = new RayHandler(gWorld.getWorld());
 		rayHandler.setAmbientLight(0.1f);
-		coneLight = new ConeLight(rayHandler, 100, null, 200, 200, 200, 0, 40);
+		coneLight = new ConeLight(rayHandler, 100, null, 200, 0, 0, 0, 40);
 		coneLight.attachToBody(player.getBody(), -10, 0);
 		ConeLight.setContactFilter((short) 2, (short) 2, (short) 1);
 
@@ -104,12 +101,17 @@ public class GameRenderer {
 
 		maxVelocity = w / 7;
 	}
+	
+	
 
 	public void render(float delta, float runTime) {
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT); // Clears screen everytime it renders
 
 		playerMovement();
-
+		
+		Vector2 v2 = player.getBody().getPosition();
+		player.getLightBody().setTransform(v2.x,v2.y,player.getBody().getAngle());
+		
 		cam.update(); // Update cam
 		tiledMapRenderer.setView(cam);
 		tiledMapRenderer.render();
@@ -164,4 +166,17 @@ public class GameRenderer {
 		rayHandler.dispose();
 		b2dr.dispose();
 	}
+	
+//	public void lightBlind(){
+//		Vector2 pokePoint = new Vector2();
+//		QueryCallback queryCallback = new QueryCallback(){
+//
+//			@Override
+//			public boolean reportFixture(Fixture fixture) {
+//				if(fixture.testPoint(fixture.))
+//				return false;
+//			}
+//			
+//		};
+//	}
 }

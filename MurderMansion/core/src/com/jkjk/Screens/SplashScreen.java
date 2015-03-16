@@ -36,12 +36,8 @@ public class SplashScreen implements Screen {
 		sprite = new Sprite(AssetLoader.logo);
 		sprite.setColor(1, 1, 1, 0);
 
-		float desiredWidth = gameWidth * .3f;
-		float scale = desiredWidth / sprite.getWidth();
-
-		sprite.setSize(sprite.getWidth() * scale, sprite.getHeight() * scale);
-		sprite.setPosition((gameWidth / 2) - (sprite.getWidth() / 2), (gameHeight / 2)
-				- (sprite.getHeight() / 2));
+		sprite.setPosition((Gdx.graphics.getWidth()/2 - sprite.getWidth()/2), 
+				(Gdx.graphics.getHeight()/2 - sprite.getHeight()/2));
 		setupTween();
 		batcher = new SpriteBatch();
 	}
@@ -57,8 +53,8 @@ public class SplashScreen implements Screen {
 			}
 		};
 
-		Tween.to(sprite, SpriteAccessor.ALPHA, .8f).target(1)
-				.ease(TweenEquations.easeInOutQuad).repeatYoyo(1, .4f)
+		Tween.to(sprite, SpriteAccessor.ALPHA, 2f).target(1)
+				.ease(TweenEquations.easeInOutQuad).repeatYoyo(1, 0.5f)
 				.setCallback(cb).setCallbackTriggers(TweenCallback.COMPLETE)
 				.start(manager);
 	}

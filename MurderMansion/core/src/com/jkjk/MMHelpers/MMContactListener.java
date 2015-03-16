@@ -45,8 +45,14 @@ public class MMContactListener implements ContactListener {
 			} else if (fa.getUserData().equals("murderer") && fb.getUserData().equals("weapon")
 					&& gWorld.getPlayer().getWeapon() == null) {
 				weaponsToRemove.add(fb.getBody());
+			} 
+			
+			
+			if (fb.getUserData().equals("lightBody")){
+				System.out.println("draw sprite");
 			}
 		}
+		
 
 	}
 

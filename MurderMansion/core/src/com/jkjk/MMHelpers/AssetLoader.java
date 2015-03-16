@@ -17,6 +17,9 @@ import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.jkjk.MurderMansion.murdermansion;
 
 public class AssetLoader {
+	
+	public static Texture  menuBackground;
+	
 	public static Touchpad touchpad;
 	public static TouchpadStyle touchpadStyle;
 	public static Drawable touchBackground;
@@ -46,6 +49,8 @@ public class AssetLoader {
 
 		int screenWidth = (murdermansion.V_WIDTH * murdermansion.SCALE);
 
+		menuBackground = new Texture(Gdx.files.internal("data/menu.png"));
+		
 		logoTexture = new Texture(Gdx.files.internal("data/logo.png"));
 		logoTexture.setFilter(TextureFilter.Linear, TextureFilter.Linear);
 
@@ -96,5 +101,6 @@ public class AssetLoader {
 		logoTexture.dispose();
 		touchpadSkin.dispose();
 		hudTexture.dispose();
+		menuBackground.dispose();
 	}
 }
