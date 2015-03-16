@@ -4,8 +4,11 @@ import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.GL20;
+import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Label.LabelStyle;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
@@ -16,7 +19,8 @@ import com.jkjk.MMHelpers.AssetLoader;
 import com.jkjk.MurderMansion.murdermansion;
 
 public class MenuScreen implements Screen{
-    private float gameWidth;
+    
+	private float gameWidth;
     private float gameHeight;
     private float TITLE_PAD;
     private float BUTTON_WIDTH;
@@ -29,6 +33,7 @@ public class MenuScreen implements Screen{
 
     private Stage stage = new Stage();
     private Table table = new Table();
+    private Texture backgroundTexture = AssetLoader.menuBackground;
     private TextButton buttonPlay = new TextButton("Enter", normal),
     		buttonLogin = new TextButton("Connect", normal),
     		buttonLogout = new TextButton("Logout",normal),
@@ -53,7 +58,9 @@ public class MenuScreen implements Screen{
         //The elements are displayed in the order you add them.
         //The first appear on top, the last at the bottom.
     	
-        buttonPlay.addListener(new ClickListener(){
+    	
+    	
+    	buttonPlay.addListener(new ClickListener(){
             @Override
             public void clicked(InputEvent event, float x, float y) {
                 ((Game)Gdx.app.getApplicationListener()).setScreen(new GameScreen(game,gameWidth, gameHeight));

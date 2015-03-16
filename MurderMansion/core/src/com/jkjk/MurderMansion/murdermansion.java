@@ -6,6 +6,7 @@ import com.jkjk.MMHelpers.ActionResolver;
 import com.jkjk.MMHelpers.AssetLoader;
 import com.jkjk.MMHelpers.MultiplayerSeissonInfo;
 import com.jkjk.Screens.MenuScreen;
+import com.jkjk.Screens.SplashScreen;
 import com.jkjk.Screens.WaitScreen;
 
 public class murdermansion extends Game {
