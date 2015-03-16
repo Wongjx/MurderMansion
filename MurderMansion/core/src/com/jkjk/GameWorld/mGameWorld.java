@@ -105,42 +105,31 @@ public class mGameWorld extends GameWorld{
 	}
 
 	private void createPlayer() {
-		bdef.type = BodyType.DynamicBody;
-		bdef.position.set(100, 100); // Spawn position
-		body = world.createBody(bdef);
-		player = gameCharFac.createCharacter("Civilian", 0, body);
-		player.spawn();
+		player = gameCharFac.createCharacter("Civilian", 0, world);
+		player.spawn(1010, 515, 0);
 	}
 
 	private void createOpponents(int i) {
 		if (i == 0) {
-			bdef.type = BodyType.KinematicBody;
-			bdef.position.set(100 - ((i + 1) * 40), 100); // Spawn position
-			body = world.createBody(bdef);
-			playerList.add((Murderer) gameCharFac.createCharacter("Murderer", body));
-			playerList.get(i).spawn();
+			playerList.add((Murderer) gameCharFac.createCharacter("Murderer", world));
+			playerList.get(i).getBody().setType(BodyType.KinematicBody);
+			playerList.get(i).spawn(1010 - ((i + 1) * 40), 515, 0);
 		} else {
-			bdef.type = BodyType.KinematicBody;
-			bdef.position.set(100 - ((i + 1) * 40), 100); // Spawn position
-			body = world.createBody(bdef);
-			playerList.add((Civilian) gameCharFac.createCharacter("Civilian", i, body));
-			playerList.get(i).spawn();
+			playerList.add((Civilian) gameCharFac.createCharacter("Civilian", i, world));
+			playerList.get(i).getBody().setType(BodyType.KinematicBody);
+			playerList.get(i).spawn(1010 - ((i + 1) * 40), 515, 0);
 		}
 	}
 
 	private void createItems(int i) {
-		bdef.type = BodyType.StaticBody;
-		bdef.position.set(100 - ((i + 1) * 40), 60); // Spawn position
-		body = world.createBody(bdef);
-		itemList.add(new ItemSprite(body));
+		itemList.add(new ItemSprite(world));
+		itemList.get(i).spawn(1100 - ((i + 1) * 40), 490, 0);
 		numOfItems++;
 	}
 	
 	private void createWeapons(int i){
-		bdef.type = BodyType.StaticBody;
-		bdef.position.set(100 - ((i + 1) * 40), 20); // Spawn position
-		body = world.createBody(bdef);
-		weaponList.add(new WeaponSprite(body));
+		weaponList.add(new WeaponSprite(world));
+		weaponList.get(i).spawn(1100 - ((i + 1) * 40), 460, 0);
 		numOfWeapons++;
 	}
 

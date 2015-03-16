@@ -16,4 +16,10 @@ public class Knife extends Weapon {
 		
 	}
 
+	@Override
+	public void postUse(GameWorld gWorld) {
+		// TODO Auto-generated method stub
+		
+	}
+
 }

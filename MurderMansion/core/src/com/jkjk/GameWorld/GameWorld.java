@@ -2,7 +2,6 @@ package com.jkjk.GameWorld;
 
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
-import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.Array;
@@ -18,27 +17,20 @@ import com.jkjk.MMHelpers.MMContactListener;
 
 public class GameWorld {
 	private GameCharacterFactory gameCharFac;
-	private Civilian civilian;
-	private Murderer murderer;
 	private GameCharacter player;
 	private Array<GameCharacter> playerList;
 
-	private ItemSprite itemSprite;
 	private ItemFactory itemFac;
 	private Array<ItemSprite> itemList;
 	
-	private WeaponSprite weaponSprite;
 	private WeaponFactory weaponFac;
 	private Array<WeaponSprite> weaponList;
 
 	private World world;
 	private MMContactListener cl;
-	private BodyDef bdef;
-	private Body body;
-
 	private int numOfPlayers;
-	private int numOfItems, maxItems;
-	private int numOfWeapons, maxWeapons;
+	private int maxItems;
+	private int maxWeapons;
 	
 	private Array<Body> itemsToRemove, weaponsToRemove;
 	private Body bodyToRemove;
@@ -47,7 +39,6 @@ public class GameWorld {
 		world = new World(new Vector2(0, 0), true);
 		cl = new MMContactListener(this);
 		world.setContactListener(cl);
-		bdef = new BodyDef();
 		
 		itemsToRemove = cl.getItemsToRemove();
 		weaponsToRemove = cl.getWeaponsToRemove();
@@ -59,15 +50,9 @@ public class GameWorld {
 		itemFac = new ItemFactory();
 		itemList = new Array<ItemSprite>();
 		maxItems = numOfPlayers * 2;
-		numOfItems = 0;
-		
 		weaponFac = new WeaponFactory();
 		weaponList = new Array<WeaponSprite>();
 		maxWeapons = (int) (numOfPlayers*1.2);
-		numOfWeapons = 0;
-		
-
-
 		createPlayer();
 		for (int i = 0; i < numOfPlayers-1; i++) {
 			createOpponents(i);
@@ -81,43 +66,30 @@ public class GameWorld {
 	}
 
 	private void createPlayer() {
-		bdef.type = BodyType.DynamicBody;
-		bdef.position.set(1010, 515); // Spawn position
-		body = world.createBody(bdef);
-		player = gameCharFac.createCharacter("Civilian", 0, body);
-		player.spawn();
+		player = gameCharFac.createCharacter("Civilian", 0, world);
+		player.spawn(1010, 515, 0);
 	}
 
 	private void createOpponents(int i) {
 		if (i == 0) {
-			bdef.type = BodyType.KinematicBody;
-			bdef.position.set(1010 - ((i + 1) * 40), 515); // Spawn position
-			body = world.createBody(bdef);
-			playerList.add((Murderer) gameCharFac.createCharacter("Murderer", body));
-			playerList.get(i).spawn();
+			playerList.add((Murderer) gameCharFac.createCharacter("Murderer", world));
+			playerList.get(i).getBody().setType(BodyType.KinematicBody);
+			playerList.get(i).spawn(1010 - ((i + 1) * 40), 515, 0);
 		} else {
-			bdef.type = BodyType.KinematicBody;
-			bdef.position.set(1010 - ((i + 1) * 40), 515); // Spawn position
-			body = world.createBody(bdef);
-			playerList.add((Civilian) gameCharFac.createCharacter("Civilian", i, body));
-			playerList.get(i).spawn();
+			playerList.add((Civilian) gameCharFac.createCharacter("Civilian", i, world));
+			playerList.get(i).getBody().setType(BodyType.KinematicBody);
+			playerList.get(i).spawn(1010 - ((i + 1) * 40), 515, 0);
 		}
 	}
 
 	private void createItems(int i) {
-		bdef.type = BodyType.StaticBody;
-		bdef.position.set(1100 - ((i + 1) * 40), 490); // Spawn position
-		body = world.createBody(bdef);
-		itemList.add(new ItemSprite(body));
-		numOfItems++;
+		itemList.add(new ItemSprite(world));
+		itemList.get(i).spawn(1100 - ((i + 1) * 40), 490, 0);
 	}
 	
 	private void createWeapons(int i){
-		bdef.type = BodyType.StaticBody;
-		bdef.position.set(1100 - ((i + 1) * 40), 460); // Spawn position
-		body = world.createBody(bdef);
-		weaponList.add(new WeaponSprite(body));
-		numOfWeapons++;
+		weaponList.add(new WeaponSprite(world));
+		weaponList.get(i).spawn(1100 - ((i + 1) * 40), 460, 0);
 	}
 
 	public World getWorld() {
