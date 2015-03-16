@@ -108,7 +108,7 @@ public class mGameWorld extends GameWorld{
 		bdef.type = BodyType.DynamicBody;
 		bdef.position.set(100, 100); // Spawn position
 		body = world.createBody(bdef);
-		player = gameCharFac.createCharacter("Civilian", 0, body);
+		player = gameCharFac.createCharacter("Civilian", 0, body, world);
 		player.spawn();
 	}
 
@@ -123,7 +123,7 @@ public class mGameWorld extends GameWorld{
 			bdef.type = BodyType.KinematicBody;
 			bdef.position.set(100 - ((i + 1) * 40), 100); // Spawn position
 			body = world.createBody(bdef);
-			playerList.add((Civilian) gameCharFac.createCharacter("Civilian", i, body));
+			playerList.add((Civilian) gameCharFac.createCharacter("Civilian", i, body, world));
 			playerList.get(i).spawn();
 		}
 	}

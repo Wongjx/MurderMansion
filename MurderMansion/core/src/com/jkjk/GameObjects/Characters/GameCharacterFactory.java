@@ -1,6 +1,7 @@
 package com.jkjk.GameObjects.Characters;
 
 import com.badlogic.gdx.physics.box2d.Body;
+import com.badlogic.gdx.physics.box2d.World;
 
 
 public class GameCharacterFactory {
@@ -13,10 +14,10 @@ public class GameCharacterFactory {
 			return null;
 	}
 
-	public GameCharacter createCharacter(String newCharacterType, int colour, Body body){
+	public GameCharacter createCharacter(String newCharacterType, int colour, Body body, World world){
 		CivilianFactory civFac = new CivilianFactory();
 		if (newCharacterType.equals("Civilian")){
-			return civFac.createCivilian(colour, body);
+			return civFac.createCivilian(colour, body, world);
 		}
 		else
 			return null;

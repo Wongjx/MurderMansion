@@ -84,8 +84,9 @@ public class GameWorld {
 		bdef.type = BodyType.DynamicBody;
 		bdef.position.set(1010, 515); // Spawn position
 		body = world.createBody(bdef);
-		player = gameCharFac.createCharacter("Civilian", 0, body);
+		player = gameCharFac.createCharacter("Civilian", 0, body, world);
 		player.spawn();
+		
 	}
 
 	private void createOpponents(int i) {
@@ -99,7 +100,7 @@ public class GameWorld {
 			bdef.type = BodyType.KinematicBody;
 			bdef.position.set(1010 - ((i + 1) * 40), 515); // Spawn position
 			body = world.createBody(bdef);
-			playerList.add((Civilian) gameCharFac.createCharacter("Civilian", i, body));
+			playerList.add((Civilian) gameCharFac.createCharacter("Civilian", i, body, world));
 			playerList.get(i).spawn();
 		}
 	}
@@ -135,7 +136,7 @@ public class GameWorld {
 	public Array<GameCharacter> getPlayerList(){
 		return playerList;
 	}
-
+	
 	public GameCharacter getPlayer() {
 		return player;
 	}
