@@ -1,11 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.0" orientation="orthogonal" renderorder="right-up" width="40" height="30" tilewidth="32" tileheight="32" nextobjectid="83">
+<map version="1.0" orientation="orthogonal" renderorder="right-up" width="100" height="30" tilewidth="32" tileheight="32" nextobjectid="128">
  <tileset firstgid="1" name="MMmansion2" tilewidth="32" tileheight="32">
   <image source="MMmansion2.png" width="1280" height="960"/>
  </tileset>
- <layer name="map" width="40" height="30">
+ <tileset firstgid="1201" name="MMmansion2-2" tilewidth="32" tileheight="32">
+  <image source="MMmansion2-2.png" width="1280" height="960"/>
+ </tileset>
+ <layer name="map" width="100" height="30">
   <data encoding="base64" compression="zlib">
-   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
+   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
   </data>
  </layer>
  <objectgroup name="wall">
@@ -303,6 +306,264 @@
   <object id="82" name="furniture" type="object" x="462.5" y="790.75" width="31.625" height="30.25">
    <properties>
     <property name="maskBits" value="1"/>
+   </properties>
+  </object>
+  <object id="83" name="wall" type="object" x="2543" y="106.5">
+   <polyline points="0,0 100,0.0625 98.25,117.375 115.75,117.25 115.875,134.125 192.875,134.5 192.938,152.5 133.969,152.531 134.984,527.438 192.016,527.516 192.016,546.5 116.022,546.544 116.047,566.484 -164,566.484 -164.031,614.469 -276.994,614.511 -277.008,715.461 -15,715.492 -14.9844,614.523 -115.984,614.508 -115,688.5 -126.989,688.478 -127.044,614.456 -129,614.478 -129.004,604.484 23.9844,604.5 24,614.484 -3,614.511 -2.99609,715.488 97,715.494 97.0056,614.522 58.9889,614.478 58.9922,604.492 116.016,604.5 116.016,734.438 304,734.413 304.022,546.478 228.984,546.484 229.044,527.456 285.006,527.5 284.969,152.562 226.989,152.511 227.062,134.594 303.978,134.522 304.044,-53.5 116.022,-53.4778 115.992,-33.5078 -296,-33.4565 -296.022,-53.4889 -483.989,-52.5111 -484,134.411 -407.957,134.5 -407.957,152.457 -464.022,152.544 -463.913,546.457 -484,546.522 -484,734.478 -295.022,734.478 -294.984,614.516 -438.022,614.5 -438,602.5 -173.022,602.367 -173.031,565.484 -294.989,564.494 -294.984,546.5 -432.031,546.562 -432,528.453 -313.969,527.484 -314.008,386.492 -421.989,386.522 -421.994,491.489 -431.994,491.5 -432.004,368.504 -315.011,368.489 -314.011,282.5 -310.967,282.467 -311,236.544 -314.004,236.504 -313.989,152.5 -359.004,152.496 -359.994,197.489 -422.008,197.508 -421.996,331.488 -431.994,331.506 -431.994,188.5 -370.008,188.461 -370.016,134.508 -295,134.438 -294.969,117.5 -279.969,117.438 -279.978,-1.5 -180.364,-1.95455"/>
+  </object>
+  <object id="84" name="wall" type="object" x="2770.97" y="809.031">
+   <polyline points="0,0 44.0312,-0.09375 44.0312,-67.9688 76.2188,-67.9375 76.043,-72.043 37.0312,-72.0312 36.9844,-7.07812 0.0273438,-7.03516 0.0273438,-0.0234375"/>
+  </object>
+  <object id="85" name="furniture" type="object" x="2800.64" y="779.091">
+   <properties>
+    <property name="maskBits" value="1"/>
+   </properties>
+   <polyline points="0,0 3.45455,3.72727 4.45455,9.63636 3.45455,13.5455 -1.27273,16.4545 -6.63636,19.0909 -13.1818,17.7273 -17.2727,14 -19,8.72727 -17.0909,3.90909 -12.7273,-1.27273 -6.81818,-2.36364 -1.90909,-1.54545 -0.181818,-0.0909091"/>
+  </object>
+  <object id="86" name="furniture" type="object" x="2705.82" y="836.455">
+   <properties>
+    <property name="maskBits" value="1"/>
+   </properties>
+   <polyline points="0,0 -41.3636,0.363636 -41.7273,-17.4545 -33.2727,-17.8182 -32.8182,-28.2727 -24.3636,-28.6364 -24.3636,-18 -16.0909,-18.4545 -16.4545,-29.8182 -6.45455,-29.3636 -6.45455,-19.5455 -1.45455,-19.9091 -0.727273,-12.8182 11.5455,-18.3636 14.9091,-10.6364 -0.181818,-0.181818"/>
+  </object>
+  <object id="87" name="furniture" type="object" x="2666.73" y="798">
+   <properties>
+    <property name="maskBits" value="1"/>
+   </properties>
+   <polyline points="0,0 18.6364,0.0909091 18.6364,-22.5455 0.0909091,-22 0.181818,-0.181818"/>
+  </object>
+  <object id="88" name="furniture" type="object" x="2667" y="769.909">
+   <properties>
+    <property name="maskBits" value="1"/>
+   </properties>
+   <polyline points="0,0 18.0909,-0.0909091 18.0909,-21.9091 -0.181818,-22 0,-0.181818"/>
+  </object>
+  <object id="89" name="furniture" type="object" x="2776.73" y="711.818">
+   <properties>
+    <property name="maskBits" value="1"/>
+   </properties>
+   <polyline points="0,0 16.1818,17.2727 27.6364,6.54545 31.2727,9.63636 59.0909,-21.4545 50.1818,-29.0909 60,-40.7273 50.3636,-48.5455 39.4545,-36 30.7273,-40.1818 4.36364,-17.4545 10.5455,-9.45455 -0.181818,0.363636"/>
+  </object>
+  <object id="90" name="furniture" type="object" x="2612.91" y="818.182">
+   <properties>
+    <property name="maskBits" value="1"/>
+   </properties>
+   <polyline points="0,0 0,-13.8182 -3,-14 -3.90909,-28.6364 -21.4545,-28.1818 -21.9091,-42.4545 -72.6364,-41.7273 -72.5455,2.90909 0.363636,2.63636 0.0020202,-0.0151515"/>
+  </object>
+  <object id="91" name="furniture" type="object" x="2508" y="722">
+   <properties>
+    <property name="maskBits" value="1"/>
+   </properties>
+   <polyline points="0,0 0.5,23.625 -46.25,24 -45.875,68.625 1.75,68 2.125,99.75 19.75,99.75 20,-0.25 0,-0.125"/>
+  </object>
+  <object id="92" name="furniture" type="object" x="2392.12" y="821.25">
+   <properties>
+    <property name="maskBits" value="1"/>
+   </properties>
+   <polyline points="0,0 -0.5,-27 -10.25,-27 -10.25,-38.125 -13.375,-45.75 -24.75,-45.375 -24.375,-28 -48.625,-27.25 -49,-13.375 -98.625,-14 -98.25,-6.875 -116.375,-25.875 -116.875,-98.5 -108.25,-98.25 -108.125,-84.75 -30.125,-84.5 -30.375,-99.375 -124,-99.125 -124.25,-20.875 -103.5,-0.125 -0.0138889,-0.05"/>
+  </object>
+  <object id="93" name="furniture" type="object" x="2247.94" y="820.906">
+   <properties>
+    <property name="maskBits" value="1"/>
+   </properties>
+   <polyline points="0,0 -12.9375,0.0625 -15.981,-3.81929 -15.9375,-44.9507 -64.9597,-44.9507 -64.9597,-99.9062"/>
+  </object>
+  <object id="94" name="furniture" type="object" x="2093.64" y="831.636">
+   <properties>
+    <property name="maskBits" value="1"/>
+   </properties>
+   <polyline points="0,0 10.7273,1.63636 18.1818,-1.27273 23.2727,-6.36364 39.6364,-6 43.6364,-14.7273 38.7273,-23.4545 24.5455,-22.9091 21.2727,-28.3636 16.9091,-31.0909 18,-46 4.72727,-56.1818 -5.45455,-53.4545 -9.27273,-45.8182 1.09091,-33.2727 -7.81818,-24.1818 -9.45455,-13.8182 -5.81818,-6.54545 0.00808081,-0.0141414"/>
+  </object>
+  <object id="95" name="furniture" type="object" x="2200.73" y="617.818">
+   <properties>
+    <property name="maskBits" value="1"/>
+   </properties>
+   <polyline points="0,0 10.3636,9.27273 12,13.0909 16.1818,11.6364 24,4.90909 24,0.545455 21.2727,-0.545455 12.1818,-11.6364 0,0"/>
+  </object>
+  <object id="96" name="furniture" type="object" x="2128.62" y="591.375">
+   <properties>
+    <property name="maskBits" value="1"/>
+   </properties>
+   <polyline points="0,0 3,3.5 12,2.5 17.5,-4.125 17.875,-11.75 9.625,-17.125 9.875,-27 14.75,-31.875 16,-40.125 10.125,-46.125 0.25,-45.75 -3.875,-40.375 -3.75,-32.375 2.125,-27.5 2,-17.625 -2.5,-13.5 -3.75,-5 0.0305556,0.025"/>
+  </object>
+  <object id="97" name="furniture" type="object" x="2188.19" y="464.312">
+   <properties>
+    <property name="maskBits" value="1"/>
+   </properties>
+   <polyline points="0,0 19.9375,10.0625 37.5,-29 36.75,-33.5625 22.8125,-39.3125 16.6875,-39.25 0.125,-0.0625"/>
+  </object>
+  <object id="98" name="furniture" type="object" x="2185.19" y="437.25">
+   <properties>
+    <property name="maskBits" value="1"/>
+   </properties>
+   <polyline points="0,0 23.375,-23.5 12.3125,-34.8125 8.125,-31.4375 2.375,-31.375 -9.5,-17.6875 -8.875,-13.375 -11.375,-10.25 -0.00972222,-0.0277778"/>
+  </object>
+  <object id="99" name="furniture" type="object" x="2228.97" y="388.969">
+   <properties>
+    <property name="maskBits" value="1"/>
+   </properties>
+   <polyline points="0,0 -12.875,0 -12.875,-45.875 0,-45.9688"/>
+  </object>
+  <object id="100" name="furniture" type="object" x="2120.98" y="368.044">
+   <properties>
+    <property name="maskBits" value="1"/>
+   </properties>
+   <polyline points="0,0 54.0444,-0.0666667 54.0389,-64.0444"/>
+  </object>
+  <object id="101" name="furniture" type="object" x="2118.75" y="224.125">
+   <properties>
+    <property name="maskBits" value="1"/>
+   </properties>
+   <polyline points="0,0 3.125,2.5 7.625,1.75 11.75,-2 13.125,-9.75 11.375,-15.25 6,-18.625 0.375,-18.375 -2.25,-15.25 -2.375,-11.25 -6.5,-11.125 -9.375,-8 -9.375,-5.125 -4.375,-1 0.0833333,-1.10278 0.00555556,0.0194444"/>
+  </object>
+  <object id="102" name="furniture" type="object" x="2095" y="197.727">
+   <properties>
+    <property name="maskBits" value="1"/>
+   </properties>
+   <polyline points="0,0 9.72727,-5.90909 11.4545,-19.2727 1.54545,-25.8182 -8.81818,-19.8182 -9,-7.36364 0.0111111,-0.0161616"/>
+  </object>
+  <object id="103" name="furniture" type="object" x="2082.55" y="158.909">
+   <properties>
+    <property name="maskBits" value="1"/>
+   </properties>
+   <polyline points="0,0 8.27273,0.0909091 16.7273,-8.54545 17.1818,-14.3636 7.45455,-25 -2.45455,-24.9091 -9.18182,-19.3636 -13.9091,-17.1818 -16.1818,-13.6364 -16.7273,-8.54545 -15.5455,-4.63636 -12.5455,-1.36364 -10.0909,-0.454545 0.010101,0.0020202"/>
+  </object>
+  <object id="104" name="furniture" type="object" x="2098.44" y="118.062">
+   <properties>
+    <property name="maskBits" value="1"/>
+   </properties>
+   <polyline points="0,0 9.75,-9.5625 4.8125,-20.875 -7,-22.4375 -14.6875,-14 -10.3125,-1.375 0.0117188,-0.0195312"/>
+  </object>
+  <object id="105" name="furniture" type="object" x="2116.18" y="84.3636">
+   <properties>
+    <property name="maskBits" value="1"/>
+   </properties>
+   <polyline points="0,0 5.45455,0.818182 9.36364,-0.272727 14.5455,-5.72727 14.8182,-12.3636 11.4545,-15.9091 6.72727,-15.7273 5.18182,-14.9091 2.27273,-18.0909 -0.181818,-18.1818 -2.36364,-19.9091 -8,-14.6364 -6,-10.5455 -4.09091,-7 -2.18182,-4.09091 -2.45455,-2.36364 0.0134943,0.00355114"/>
+  </object>
+  <object id="106" name="furniture" type="object" x="2247.27" y="115.636">
+   <properties>
+    <property name="maskBits" value="1"/>
+   </properties>
+   <polyline points="0,0 6.45455,3 7.81818,8.81818 6.63636,14.2727 0.454545,19.0909 0.454545,25.9091 6.36364,28.5455 8.90909,33.1818 8.54545,37.9091 2.09091,45.0909 2.36364,51.9091 7.45455,55.1818 8.63636,58.2727 8.36364,64.2727 2.81818,70.7273 2.45455,78.3636 7.90909,81.4545 8.81818,88.7273 5.09091,94.9091 -0.181818,97.5455 -5.63636,97.7273 -11.7273,92.3636 -11.8182,81.6364 -6,78 -2.09091,77.7273 -2.36364,71 -8.72727,68.6364 -11.9091,63.1818 -12.0909,55.6364 -4.81818,52.4545 -2.18182,51.8182 -2.18182,44.7273 -7.45455,44.0909 -11,39.5455 -12.1818,32.8182 -8.81818,27.2727 -3,25.5455 -3.45455,18.9091 -9.63636,16.6364 -13.6364,11 -12.3636,4.36364 -7.45455,0.363636 0.749495,0.341414"/>
+  </object>
+  <object id="107" name="maskBits" type="object" x="2677.5" y="493.812">
+   <properties>
+    <property name="maskBits" value="1"/>
+   </properties>
+   <polyline points="0,0 18.4375,-0.3125 18.75,18.5 105.875,18.5625 103.812,-16.1875 39.5625,-16.8125 40.3125,-84.1875 104.094,-83.9062 103.875,-119.688 16.3125,-121.062 16.125,-101.688 -0.1875,-101.438"/>
+  </object>
+  <object id="108" name="furniture" type="object" x="2770.82" y="240.636">
+   <properties>
+    <property name="maskBits" value="1"/>
+   </properties>
+   <polyline points="0,0 0,-10.8182 46,-10.6364 46.3636,0.181818 61.8068,0.113636 62.1818,-187.886"/>
+  </object>
+  <object id="109" name="furniture" type="object" x="2806.96" y="84.9565">
+   <properties>
+    <property name="maskBits" value="1"/>
+   </properties>
+   <polyline points="0,0 0.021256,16.0879 -45.9721,16.0122 -45.9878,0.0122283 0.0323671,0.0545894"/>
+  </object>
+  <object id="110" name="furniture" type="object" x="2690.12" y="85.875">
+   <properties>
+    <property name="maskBits" value="1"/>
+   </properties>
+   <polyline points="0,0 44.5,0.25 44.5,15.75 -0.125,16.125 0.0078125,-0.015625"/>
+  </object>
+  <object id="111" name="furniture" type="object" x="2762.36" y="134.364">
+   <properties>
+    <property name="maskBits" value="1"/>
+   </properties>
+   <polyline points="0,0 44.3636,0 44.7273,15.0909 1.09091,15.2727 0.181818,0"/>
+  </object>
+  <object id="112" name="furniture" type="object" x="2762.06" y="176.938">
+   <properties>
+    <property name="maskBits" value="1"/>
+   </properties>
+   <polyline points="0,0 46,0.0625 45.9375,16.0625 -0.0625,15.9375 0.0273438,-0.0078125"/>
+  </object>
+  <object id="113" name="furniture" type="object" x="2689" y="133.909">
+   <properties>
+    <property name="maskBits" value="1"/>
+   </properties>
+   <polyline points="0,0 46.0909,0.181818 45.8182,16 0.0909091,16.0909 0.078125,0.0284091"/>
+  </object>
+  <object id="114" name="furniture" type="object" x="2690.06" y="178.188">
+   <properties>
+    <property name="maskBits" value="1"/>
+   </properties>
+   <polyline points="0,0 44.8125,-0.0625 44.9375,15.9375 0.0625,15.75 0.25,0"/>
+  </object>
+  <object id="115" name="furniture" type="object" x="2642.74" y="128.913">
+   <properties>
+    <property name="maskBits" value="1"/>
+   </properties>
+   <polyline points="0,0 19.2609,0.0869565 19.2174,76.2174 -0.73913,76.087"/>
+  </object>
+  <object id="116" name="furniture" type="object" x="2804.12" y="265.25">
+   <properties>
+    <property name="maskBits" value="1"/>
+   </properties>
+   <polyline points="0,0 -13,9.25 -11.625,19.875 -2.875,28.375 11.375,29.875 19.625,17.875 19.25,10.375 6.375,-0.75 0,-0.125"/>
+  </object>
+  <object id="117" name="furniture" type="object" x="2695" y="279.818">
+   <properties>
+    <property name="maskBits" value="1"/>
+   </properties>
+   <polyline points="0,0 6.36364,1.72727 13.0909,-4.09091 13.8182,-11.6364 10.7273,-16 0.636364,-15.8182 -3.54545,-11.3636 -5.72727,-6.54545 -10.3636,-7.18182 -11.5455,1.90909 -7.27273,10.8182 -3.63636,8.90909 -2.90909,1.27273 0.0909091,-0.0909091"/>
+  </object>
+  <object id="119" name="furniture" type="object" x="2232.38" y="655.812">
+   <properties>
+    <property name="maskBits" value="1"/>
+   </properties>
+   <polyline points="0,0 -6.125,2.125 -8.625,6.4375 -8.875,11 -7.75,16.0625 -2.125,18.9375 6.125,19 11.25,14.0625 12.3125,8.3125 9.875,2.5625 5.875,0.375 -0.03125,0.0117188"/>
+  </object>
+  <object id="120" name="L1S1" type="object" x="657.625" y="74.875" width="7.25" height="30.875">
+   <properties>
+    <property name="isSensor" value="true"/>
+    <property name="userData" value="L1S1"/>
+   </properties>
+  </object>
+  <object id="121" name="L1S2" type="object" x="408.125" y="74.375" width="7.875" height="33.375">
+   <properties>
+    <property name="isSensor" value="true"/>
+    <property name="userData" value="L1S2"/>
+   </properties>
+  </object>
+  <object id="122" name="L1S3" type="object" x="409.091" y="674.364" width="7.63636" height="36.9091">
+   <properties>
+    <property name="isSensor" value="true"/>
+    <property name="userData" value="L1S3"/>
+   </properties>
+  </object>
+  <object id="123" name="L1S4" type="object" x="895.25" y="806.375" width="31.5" height="3.375">
+   <properties>
+    <property name="isSensor" value="true"/>
+    <property name="userData" value="L1S4"/>
+   </properties>
+  </object>
+  <object id="124" name="stair2down" type="object" x="2320.88" y="72.875" width="6" height="31.75">
+   <properties>
+    <property name="isSensor" value="true"/>
+    <property name="userData" value="L2S2"/>
+   </properties>
+  </object>
+  <object id="125" name="stair1down" type="object" x="2578.12" y="73.125" width="6.875" height="33.125">
+   <properties>
+    <property name="isSensor" value="true"/>
+    <property name="userData" value="L2S1"/>
+   </properties>
+  </object>
+  <object id="126" name="stair3down" type="object" x="2313.64" y="671.909" width="6.45455" height="36.7273">
+   <properties>
+    <property name="isSensor" value="true"/>
+    <property name="userData" value="L2S3"/>
+   </properties>
+  </object>
+  <object id="127" name="stair4down" type="object" x="2811" y="809.273" width="4.09091" height="31.4545">
+   <properties>
+    <property name="isSensor" value="true"/>
+    <property name="userData" value="L2S4"/>
    </properties>
   </object>
  </objectgroup>

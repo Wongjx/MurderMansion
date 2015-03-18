@@ -86,11 +86,7 @@ public class GameRenderer {
 		coneLight.attachToBody(player.getBody(), -10, 0);
 		ConeLight.setContactFilter((short) 2, (short) 2, (short) 1);
 
-		tiledMap = new TmxMapLoader().load("map/mansion2.tmx");
 		tiledMapRenderer = new OrthogonalTiledMapRenderer(tiledMap);
-
-		Box2DMapObjectParser parser = new Box2DMapObjectParser();
-		parser.load(gWorld.getWorld(), tiledMap);
 
 	}
 

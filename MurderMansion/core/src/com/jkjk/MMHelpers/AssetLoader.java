@@ -91,8 +91,8 @@ public class AssetLoader {
 		emptySlot = new TextureRegionDrawable(new TextureRegion(hudTexture, 0, 0, 46, 46));
 		disarmTrap = new TextureRegionDrawable(new TextureRegion(hudTexture, 50, 0, 46, 46));
 		bat = new TextureRegionDrawable(new TextureRegion(hudTexture, 100, 0, 46, 46));
-		
-		
+
+		tiledMap = new TmxMapLoader().load("map/mansion2.tmx");
 	}
 
 	public static void dispose() {
@@ -102,5 +102,6 @@ public class AssetLoader {
 		touchpadSkin.dispose();
 		hudTexture.dispose();
 		menuBackground.dispose();
+		tiledMap.dispose();
 	}
 }

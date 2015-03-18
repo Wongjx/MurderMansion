@@ -15,7 +15,6 @@ public class Murderer extends GameCharacter {
 
 	private FixtureDef fdef;
 	private BodyDef bdef;
-	private Body body;
 	private World world;
 	
 	public Murderer(World world) {
@@ -33,7 +32,6 @@ public class Murderer extends GameCharacter {
 		fdef.shape = shape;
 
 		body.createFixture(fdef).setUserData("murderer");
-		setBody(body);
 	}
 
 	@Override
