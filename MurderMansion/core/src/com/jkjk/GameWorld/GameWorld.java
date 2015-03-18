@@ -1,5 +1,7 @@
 package com.jkjk.GameWorld;
 
+import net.dermetfan.gdx.physics.box2d.Box2DMapObjectParser;
+
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
@@ -13,6 +15,7 @@ import com.jkjk.GameObjects.Items.ItemFactory;
 import com.jkjk.GameObjects.Items.ItemSprite;
 import com.jkjk.GameObjects.Weapons.WeaponFactory;
 import com.jkjk.GameObjects.Weapons.WeaponSprite;
+import com.jkjk.MMHelpers.AssetLoader;
 import com.jkjk.MMHelpers.MMContactListener;
 
 public class GameWorld {
@@ -22,7 +25,7 @@ public class GameWorld {
 
 	private ItemFactory itemFac;
 	private Array<ItemSprite> itemList;
-	
+
 	private WeaponFactory weaponFac;
 	private Array<WeaponSprite> weaponList;
 
@@ -31,7 +34,7 @@ public class GameWorld {
 	private int numOfPlayers;
 	private int maxItems;
 	private int maxWeapons;
-	
+
 	private Array<Body> itemsToRemove, weaponsToRemove;
 	private Body bodyToRemove;
 
@@ -39,7 +42,7 @@ public class GameWorld {
 		world = new World(new Vector2(0, 0), true);
 		cl = new MMContactListener(this);
 		world.setContactListener(cl);
-		
+
 		itemsToRemove = cl.getItemsToRemove();
 		weaponsToRemove = cl.getWeaponsToRemove();
 
@@ -52,9 +55,9 @@ public class GameWorld {
 		maxItems = numOfPlayers * 2;
 		weaponFac = new WeaponFactory();
 		weaponList = new Array<WeaponSprite>();
-		maxWeapons = (int) (numOfPlayers*1.2);
+		maxWeapons = (int) (numOfPlayers * 1.2);
 		createPlayer();
-		for (int i = 0; i < numOfPlayers-1; i++) {
+		for (int i = 0; i < numOfPlayers - 1; i++) {
 			createOpponents(i);
 		}
 		for (int i = 0; i < maxItems; i++) {
@@ -63,10 +66,15 @@ public class GameWorld {
 		for (int i = 0; i < maxWeapons; i++) {
 			createWeapons(i);
 		}
+
+		Box2DMapObjectParser parser = new Box2DMapObjectParser();
+		parser.load(world, AssetLoader.tiledMap);
 	}
 
 	private void createPlayer() {
 		player = gameCharFac.createCharacter("Civilian", 0, world);
+		player.getBody().getFixtureList().get(0).setUserData("player");
+		System.out.println(player.getBody().getFixtureList().get(0).getUserData());
 		player.spawn(1010, 515, 0);
 	}
 
@@ -86,8 +94,8 @@ public class GameWorld {
 		itemList.add(new ItemSprite(world));
 		itemList.get(i).spawn(1100 - ((i + 1) * 40), 490, 0);
 	}
-	
-	private void createWeapons(int i){
+
+	private void createWeapons(int i) {
 		weaponList.add(new WeaponSprite(world));
 		weaponList.get(i).spawn(1100 - ((i + 1) * 40), 460, 0);
 	}
@@ -103,11 +111,11 @@ public class GameWorld {
 	public void setNumOfPlayers(int i) {
 		numOfPlayers = i;
 	}
-	
-	public Array<GameCharacter> getPlayerList(){
+
+	public Array<GameCharacter> getPlayerList() {
 		return playerList;
 	}
-	
+
 	public GameCharacter getPlayer() {
 		return player;
 	}
@@ -115,6 +123,8 @@ public class GameWorld {
 	public void update(float delta) {
 		world.step(delta, 6, 2); // Step size|Steps for each body to check collision|Accuracy of body position
 									// after collision
+
+		checkStairs();
 
 		// check for collected items
 		for (int i = 0; i < itemsToRemove.size; i++) {
@@ -127,7 +137,7 @@ public class GameWorld {
 				player.addItem(itemFac.createItem("Trap"));
 		}
 		itemsToRemove.clear();
-		
+
 		for (int i = 0; i < weaponsToRemove.size; i++) {
 			bodyToRemove = weaponsToRemove.get(i);
 			weaponList.removeValue((WeaponSprite) bodyToRemove.getUserData(), true);
@@ -138,5 +148,28 @@ public class GameWorld {
 				player.addWeapon(weaponFac.createWeapon("Knife"));
 		}
 		weaponsToRemove.clear();
+	}
+
+	private void checkStairs() {
+		if (cl.getAtStairs()) {
+			cl.notAtStairs();
+			if (cl.getStairsName().equals("L1S1")) {
+				player.getBody().setTransform(2616, 870, 0);
+			} else if (cl.getStairsName().equals("L1S2")) {
+				player.getBody().setTransform(2292, 870, 3.1415f);
+			} else if (cl.getStairsName().equals("L1S3")) {
+				player.getBody().setTransform(2282, 269, 3.1415f);
+			} else if (cl.getStairsName().equals("L1S4")) {
+				player.getBody().setTransform(2785, 135, 3.1415f);
+			} else if (cl.getStairsName().equals("L2S1")) {
+				player.getBody().setTransform(625, 870, 3.1415f);
+			} else if (cl.getStairsName().equals("L2S2")) {
+				player.getBody().setTransform(445, 870, 0);
+			} else if (cl.getStairsName().equals("L2S3")) {
+				player.getBody().setTransform(448, 269, 0);
+			} else if (cl.getStairsName().equals("L2S4")) {
+				player.getBody().setTransform(920, 177, 0);
+			}
+		}
 	}
 }
