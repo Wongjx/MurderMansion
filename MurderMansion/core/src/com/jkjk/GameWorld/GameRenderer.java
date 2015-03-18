@@ -1,6 +1,5 @@
 package com.jkjk.GameWorld;
 
-import net.dermetfan.gdx.physics.box2d.Box2DMapObjectParser;
 import box2dLight.ConeLight;
 import box2dLight.RayHandler;
 
@@ -10,13 +9,10 @@ import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TiledMapRenderer;
-import com.badlogic.gdx.maps.tiled.TmxMapLoader;
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
-import com.badlogic.gdx.physics.box2d.Fixture;
-import com.badlogic.gdx.physics.box2d.QueryCallback;
 import com.badlogic.gdx.scenes.scene2d.ui.Touchpad;
 import com.jkjk.GameObjects.Characters.GameCharacter;
 import com.jkjk.GameObjects.Items.DisarmTrap;
@@ -70,7 +66,7 @@ public class GameRenderer {
 
 		// Create camera
 		cam = new OrthographicCamera();
-		cam.setToOrtho(false, gameWidth, gameHeight);
+		cam.setToOrtho(false, (float) (gameWidth/(4.0/3)), (float) (gameHeight/(4.0/3)));
 
 		// Initialise assets
 		initAssets(gameWidth, gameHeight);
@@ -82,7 +78,7 @@ public class GameRenderer {
 		// Create Light for player
 		rayHandler = new RayHandler(gWorld.getWorld());
 		rayHandler.setAmbientLight(0.1f);
-		coneLight = new ConeLight(rayHandler, 100, null, 250, 0, 0, 0, 40);
+		coneLight = new ConeLight(rayHandler, 100, null, 200, 0, 0, 0, 40);
 		coneLight.attachToBody(player.getBody(), -10, 0);
 		ConeLight.setContactFilter((short) 2, (short) 2, (short) 1);
 
@@ -95,7 +91,7 @@ public class GameRenderer {
 
 		tiledMap = AssetLoader.tiledMap;
 
-		maxVelocity = w / 7;
+		maxVelocity = w / 10;
 	}
 	
 	
