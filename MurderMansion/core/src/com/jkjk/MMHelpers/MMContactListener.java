@@ -48,7 +48,7 @@ public class MMContactListener implements ContactListener {
 			} 
 			
 			
-			if (fb.getUserData().equals("lightBody")){
+			if (fb.getUserData().equals("lightBody")&&!fa.getUserData().equals("lightBody")){//not into contact with another light body
 				System.out.println("draw sprite");
 			}
 		}

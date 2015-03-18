@@ -16,6 +16,7 @@ public class Civilian extends GameCharacter {
 	private World world;
 	private FixtureDef coneFdef;
 	private BodyDef coneBdef;
+	
 
 	Civilian(int colour, World world) {
 		this.world = world;
@@ -34,11 +35,8 @@ public class Civilian extends GameCharacter {
 
 		body.createFixture(fdef).setUserData("civilian");
 		setBody(body);
-
-		Vector2[] ConeLightVert = { new Vector2(0, 0), new Vector2(100, 100), new Vector2(100, -100) };// triangle
-																										// first
-																										// for
-																										// testing
+		
+		Vector2[] ConeLightVert = {new Vector2(-15,0), new Vector2(117,99), new Vector2(150,87), new Vector2(194,34), new Vector2(200,0), new Vector2(150,-87), new Vector2(194,-34), new Vector2(117,-99)};
 		PolygonShape coneShape = new PolygonShape();
 		coneFdef = new FixtureDef();
 		coneFdef.isSensor = true;
