@@ -29,6 +29,7 @@ public class ItemSprite {
 		fdef.isSensor = true;
 		fdef.filter.maskBits = 1;
 		body.createFixture(fdef).setUserData("item");
+	
 	}
 
 	public void spawn(float x, float y, float angle) {

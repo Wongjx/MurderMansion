@@ -79,6 +79,11 @@ public class MMContactListener implements ContactListener {
 				if (fbUD.equals("lightBody")) {
 					System.out.println("draw sprite");
 				}
+
+				if (fbUD.equals("lightBody") && !faUD.equals("lightBody")) {// not into contact with another
+																			// light body
+					System.out.println("draw sprite");
+				}
 			}
 		}
 

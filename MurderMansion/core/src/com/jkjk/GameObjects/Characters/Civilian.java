@@ -33,10 +33,12 @@ public class Civilian extends GameCharacter {
 
 		body.createFixture(fdef).setUserData("civilian");
 
-		Vector2[] ConeLightVert = { new Vector2(0, 0), new Vector2(100, 100), new Vector2(100, -100) };// triangle
+		//Vector2[] ConeLightVert = { new Vector2(0, 0), new Vector2(100, 100), new Vector2(100, -100) };// triangle
 																										// first
 																										// for
 																										// testing
+		
+		Vector2[] ConeLightVert = {new Vector2(-15,0), new Vector2(117,99), new Vector2(150,87), new Vector2(194,34), new Vector2(200,0), new Vector2(150,-87), new Vector2(194,-34), new Vector2(117,-99)};
 		PolygonShape coneShape = new PolygonShape();
 		coneFdef = new FixtureDef();
 		coneFdef.isSensor = true;

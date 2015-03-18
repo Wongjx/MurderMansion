@@ -3,10 +3,11 @@ package com.jkjk.GameObjects.Characters;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.BodyDef;
+import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
+import com.badlogic.gdx.physics.box2d.CircleShape;
 import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.badlogic.gdx.physics.box2d.World;
-import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
 
 
 public class Murderer extends GameCharacter {
@@ -16,6 +17,9 @@ public class Murderer extends GameCharacter {
 	private FixtureDef fdef;
 	private BodyDef bdef;
 	private World world;
+	
+	private FixtureDef lightFdef;
+	private BodyDef lightBdef;
 	
 	public Murderer(World world) {
 		this.world = world;
@@ -32,6 +36,21 @@ public class Murderer extends GameCharacter {
 		fdef.shape = shape;
 
 		body.createFixture(fdef).setUserData("murderer");
+		
+		CircleShape circle = new CircleShape();
+		lightFdef = new FixtureDef();
+		lightFdef.isSensor = true;
+		circle.setPosition(getBody().getPosition());;
+		circle.setRadius(100);
+		lightFdef.shape = circle;
+		lightFdef.filter.maskBits = 1;
+		
+		lightBdef = new BodyDef();
+		lightBdef.type = BodyType.StaticBody;
+		
+		Body lightBody = world.createBody(lightBdef);
+		lightBody.createFixture(lightFdef).setUserData("lightBody");
+		setLightBody(lightBody);
 	}
 
 	@Override
