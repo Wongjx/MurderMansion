@@ -6,7 +6,7 @@ import com.badlogic.gdx.graphics.Texture.TextureFilter;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.maps.tiled.TiledMap;
-import com.badlogic.gdx.maps.tiled.TmxMapLoader;
+import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Label.LabelStyle;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton.TextButtonStyle;
@@ -44,12 +44,20 @@ public class AssetLoader {
 	public static Skin menuSkin;
 	
 	public static TiledMap tiledMap;
+	
+	public static Texture time;
+	public static Texture civ_profile;
+	
+	private static LabelStyle countdown;
 
 	public static void load() {
 
 		int screenWidth = (murdermansion.V_WIDTH * murdermansion.SCALE);
 
 		menuBackground = new Texture(Gdx.files.internal("data/menu.png"));
+		
+		basker32black = new BitmapFont(Gdx.files.internal("Fonts/Basker32.fnt"));
+		basker45black = new BitmapFont(Gdx.files.internal("Fonts/Baskek45.fnt"));
 		
 		logoTexture = new Texture(Gdx.files.internal("data/logo.png"));
 		logoTexture.setFilter(TextureFilter.Linear, TextureFilter.Linear);
@@ -59,8 +67,8 @@ public class AssetLoader {
 		// Create new skin for menu screen
 		menuSkin = new Skin();
 		// Set menu font
-		menuSkin.add("basker32", new BitmapFont(Gdx.files.internal("Fonts/Basker32.fnt")));
-		menuSkin.add("basker45", new BitmapFont(Gdx.files.internal("Fonts/Baskek45.fnt")));
+		menuSkin.add("basker32", basker32black );
+		menuSkin.add("basker45", basker45black );
 		// Set menu buttons
 		menuSkin.add("buttonUp", new Texture("data/butt1.png"));
 		menuSkin.add("buttonDown", new Texture("data/butt2.png"));
@@ -71,7 +79,7 @@ public class AssetLoader {
 		normal.up = menuSkin.getDrawable("buttonUp");
 		normal.down = menuSkin.getDrawable("buttonDown");
 		normal.pressedOffsetY = -4;
-		// Set label style
+		// Set label style for title
 		title = new LabelStyle();
 		title.font = menuSkin.getFont("basker45");
 		title.font.scale((Gdx.graphics.getWidth() - screenWidth) / screenWidth);
@@ -92,7 +100,10 @@ public class AssetLoader {
 		disarmTrap = new TextureRegionDrawable(new TextureRegion(hudTexture, 50, 0, 46, 46));
 		bat = new TextureRegionDrawable(new TextureRegion(hudTexture, 100, 0, 46, 46));
 		
-		
+		time = new Texture(Gdx.files.internal("data/countdown.png"));
+		time.setFilter(TextureFilter.Linear, TextureFilter.Linear);
+		civ_profile = new Texture(Gdx.files.internal("data/civ_profile.png"));
+		civ_profile.setFilter(TextureFilter.Linear, TextureFilter.Linear);
 	}
 
 	public static void dispose() {
@@ -102,5 +113,7 @@ public class AssetLoader {
 		touchpadSkin.dispose();
 		hudTexture.dispose();
 		menuBackground.dispose();
+		time.dispose();
+		civ_profile.dispose();
 	}
 }
