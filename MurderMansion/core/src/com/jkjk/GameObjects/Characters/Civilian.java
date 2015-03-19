@@ -9,40 +9,41 @@ import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
 
 public class Civilian extends GameCharacter {
 
-	
 	private World world;
 
 	Civilian(int colour, World world) {
 		this.world = world;
 		setName("Civilian");
 		setColour(colour);
-		
+
 		// create body of civilian
 		BodyDef bdef = new BodyDef();
 		bdef.type = BodyType.DynamicBody;
 		body = world.createBody(bdef);
-		
+
 		// triangular body fixture
 		FixtureDef fdef = new FixtureDef();
 		Vector2[] vertices = { new Vector2(0, 0), new Vector2(-20, -10), new Vector2(-20, 10) };
 		PolygonShape shape = new PolygonShape();
 		shape.set(vertices);
 		fdef.shape = shape;
-		body.createFixture(fdef).setUserData("civilian");		
-		
+		body.createFixture(fdef).setUserData("civilian");
+
 		// cone-ish Torch light fixture
 		FixtureDef coneFdef = new FixtureDef();
-		Vector2[] ConeLightVert = {new Vector2(-15,0), new Vector2(117,99), new Vector2(150,87), new Vector2(194,34), new Vector2(200,0), new Vector2(150,-87), new Vector2(194,-34), new Vector2(117,-99)};
+		Vector2[] ConeLightVert = { new Vector2(-15, 0), new Vector2(113, 99), new Vector2(122, 87),
+				new Vector2(146, 34), new Vector2(150, 0), new Vector2(146, -34), new Vector2(122, -87),
+				new Vector2(113, -99) };
 		PolygonShape coneShape = new PolygonShape();
 		coneFdef.isSensor = true;
 		coneShape.set(ConeLightVert);
 		coneFdef.shape = coneShape;
-		coneFdef.filter.maskBits = 1;//cannot bump into other light bodies.
+		coneFdef.filter.maskBits = 1;// cannot bump into other light bodies.
 		body.createFixture(coneFdef).setUserData("lightBody");
 	}
-	
-	private void createBody(){
-		
+
+	private void createBody() {
+
 	}
 
 	@Override
@@ -55,4 +56,3 @@ public class Civilian extends GameCharacter {
 		alive = false;
 	}
 }
-

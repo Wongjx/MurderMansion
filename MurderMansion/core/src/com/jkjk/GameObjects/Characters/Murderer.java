@@ -36,7 +36,7 @@ public class Murderer extends GameCharacter {
 		CircleShape circle = new CircleShape();
 		lightFdef.isSensor = true;
 		circle.setPosition(getBody().getPosition());;
-		circle.setRadius(100);
+		circle.setRadius(150);
 		lightFdef.shape = circle;
 		lightFdef.filter.maskBits = 1;
 		body.createFixture(lightFdef).setUserData("lightBody");
