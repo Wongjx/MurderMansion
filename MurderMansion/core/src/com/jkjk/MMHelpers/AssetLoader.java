@@ -27,12 +27,21 @@ public class AssetLoader {
 	public static Drawable touchKnob;
 	public static Texture emptySlot;
 	
+	// CIVILIAN
 	public static Texture civ_weapon_bat_tex;
 	public static TextureRegionDrawable civ_weapon_bat_draw;
 	public static Texture civ_item_tex;
 	public static TextureRegionDrawable civ_item_draw;
 	public static Texture civ_dash_tex;
 	public static TextureRegionDrawable civ_dash_draw;
+	
+	// MURDERER
+	public static Texture mur_weapon_tex;
+	public static TextureRegionDrawable mur_weapon_draw;
+	public static Texture mur_item_tex;
+	public static TextureRegionDrawable mur_item_draw;
+	public static Texture mur_swap_tex;
+	public static TextureRegionDrawable mur_swap_draw;
 	
 
 	public static Texture logoTexture;
@@ -114,6 +123,12 @@ public class AssetLoader {
 		civ_dash_draw = new TextureRegionDrawable (new TextureRegion(civ_dash_tex));
 		
 		// MURDERER
+		mur_weapon_tex = new Texture(Gdx.files.internal("data/mur_weapon.png"));
+		mur_weapon_draw = new TextureRegionDrawable(new TextureRegion(mur_weapon_tex));
+		mur_item_tex = new Texture(Gdx.files.internal("data/mur_item.png"));
+		mur_item_draw = new TextureRegionDrawable (new TextureRegion(mur_item_tex));
+		mur_swap_tex = new Texture(Gdx.files.internal("data/mur_swap.png"));
+		mur_swap_draw = new TextureRegionDrawable (new TextureRegion(mur_swap_tex));
 		
 		
 		time = new Texture(Gdx.files.internal("data/countdown.png"));
@@ -137,5 +152,8 @@ public class AssetLoader {
 		civ_weapon_bat_tex.dispose();
 		civ_item_tex.dispose();
 		civ_dash_tex.dispose();
+		mur_weapon_tex.dispose();
+		mur_item_tex.dispose();
+		mur_swap_tex.dispose();
 	}
 }
