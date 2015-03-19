@@ -19,7 +19,7 @@ public abstract class GameCharacter {
 	
 	private Weapon weapon;
 	private Item item;
-	private Body body;
+	protected Body body;
 	private Body lightBody;
 	
 	private int colour;
@@ -38,7 +38,6 @@ public abstract class GameCharacter {
 	public void setColour(int colour){ this.colour = colour; }
 	
 	public Body getBody(){ return body; } 
-	public void setBody(Body body){ this.body = body; }
 	
 	public Body getLightBody(){return lightBody;}
 	public void setLightBody(Body lightBody){this.lightBody = lightBody;}
