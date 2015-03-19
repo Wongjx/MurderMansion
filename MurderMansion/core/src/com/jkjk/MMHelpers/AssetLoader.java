@@ -6,6 +6,7 @@ import com.badlogic.gdx.graphics.Texture.TextureFilter;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.maps.tiled.TiledMap;
+import com.badlogic.gdx.maps.tiled.TmxMapLoader;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Label.LabelStyle;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
@@ -35,6 +36,7 @@ public class AssetLoader {
 	public static TextButtonStyle normal;
 	public static BitmapFont basker32black;
 	public static BitmapFont basker45black;
+	public static BitmapFont basker32blackTime;
 	public static Drawable buttonUp;
 	public static Drawable buttonDown;
 
@@ -52,12 +54,14 @@ public class AssetLoader {
 
 	public static void load() {
 
-		int screenWidth = (murdermansion.V_WIDTH * murdermansion.SCALE);
+		int gameWidth = (murdermansion.V_WIDTH * murdermansion.SCALE);
 
 		menuBackground = new Texture(Gdx.files.internal("data/menu.png"));
 		
 		basker32black = new BitmapFont(Gdx.files.internal("Fonts/Basker32.fnt"));
 		basker45black = new BitmapFont(Gdx.files.internal("Fonts/Baskek45.fnt"));
+		basker32blackTime = new BitmapFont(Gdx.files.internal("Fonts/Basker32.fnt"));
+		basker32blackTime.scale((Gdx.graphics.getWidth() - gameWidth) / gameWidth /3);
 		
 		logoTexture = new Texture(Gdx.files.internal("data/logo.png"));
 		logoTexture.setFilter(TextureFilter.Linear, TextureFilter.Linear);
@@ -75,14 +79,14 @@ public class AssetLoader {
 		// Create Text button Style
 		normal = new TextButtonStyle();
 		normal.font = menuSkin.getFont("basker32");
-		normal.font.scale((Gdx.graphics.getWidth() - screenWidth) / screenWidth);
+		normal.font.scale((Gdx.graphics.getWidth() - gameWidth) / gameWidth);
 		normal.up = menuSkin.getDrawable("buttonUp");
 		normal.down = menuSkin.getDrawable("buttonDown");
 		normal.pressedOffsetY = -4;
 		// Set label style for title
 		title = new LabelStyle();
 		title.font = menuSkin.getFont("basker45");
-		title.font.scale((Gdx.graphics.getWidth() - screenWidth) / screenWidth);
+		title.font.scale((Gdx.graphics.getWidth() - gameWidth) / gameWidth);
 
 		// Create a touchpad
 		touchpadSkin = new Skin();
@@ -99,16 +103,13 @@ public class AssetLoader {
 		emptySlot = new TextureRegionDrawable(new TextureRegion(hudTexture, 0, 0, 46, 46));
 		disarmTrap = new TextureRegionDrawable(new TextureRegion(hudTexture, 50, 0, 46, 46));
 		bat = new TextureRegionDrawable(new TextureRegion(hudTexture, 100, 0, 46, 46));
-<<<<<<< HEAD
 		
 		time = new Texture(Gdx.files.internal("data/countdown.png"));
 		time.setFilter(TextureFilter.Linear, TextureFilter.Linear);
 		civ_profile = new Texture(Gdx.files.internal("data/civ_profile.png"));
 		civ_profile.setFilter(TextureFilter.Linear, TextureFilter.Linear);
-=======
 
 		tiledMap = new TmxMapLoader().load("map/mansion2.tmx");
->>>>>>> 8a23505de409c0a0ce07e6d2bb90a1a55419d714
 	}
 
 	public static void dispose() {
@@ -118,11 +119,8 @@ public class AssetLoader {
 		touchpadSkin.dispose();
 		hudTexture.dispose();
 		menuBackground.dispose();
-<<<<<<< HEAD
 		time.dispose();
 		civ_profile.dispose();
-=======
 		tiledMap.dispose();
->>>>>>> 8a23505de409c0a0ce07e6d2bb90a1a55419d714
 	}
 }

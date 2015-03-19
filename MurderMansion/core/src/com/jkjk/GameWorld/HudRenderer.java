@@ -84,7 +84,7 @@ public class HudRenderer {
 		// Top Left of the screen
 		timebox = AssetLoader.time;
 		civ_profile = AssetLoader.civ_profile;
-		font = AssetLoader.basker32black;
+		font = AssetLoader.basker32blackTime;
 		
 	}
 	
@@ -109,7 +109,7 @@ public class HudRenderer {
 	public String getTime(){
 		
 		playTime -= Gdx.graphics.getDeltaTime();
-		time = Float.toString(playTime);
+		time = String.format("%.0f", playTime);
 		// TODO: separate to minutes and seconds, round off to whole number;
 		
 		return time;
