@@ -101,8 +101,8 @@ public class GameRenderer {
 
 		playerMovement();
 		
-		Vector2 v2 = player.getBody().getPosition();
-		player.getLightBody().setTransform(v2.x,v2.y,player.getBody().getAngle());
+		//Vector2 v2 = player.getBody().getPosition();
+		//player.getLightBody().setTransform(v2.x,v2.y,player.getBody().getAngle());
 		
 		cam.update(); // Update cam
 		tiledMapRenderer.setView(cam);
@@ -111,7 +111,7 @@ public class GameRenderer {
 		rayHandler.setCombinedMatrix(cam.combined);
 		rayHandler.updateAndRender();
 
-		//b2dr.render(gWorld.getWorld(), cam.combined); // Renders box2d world
+		b2dr.render(gWorld.getWorld(), cam.combined); // Renders box2d world
 
 	}
 
@@ -159,16 +159,5 @@ public class GameRenderer {
 		b2dr.dispose();
 	}
 	
-//	public void lightBlind(){
-//		Vector2 pokePoint = new Vector2();
-//		QueryCallback queryCallback = new QueryCallback(){
-//
-//			@Override
-//			public boolean reportFixture(Fixture fixture) {
-//				if(fixture.testPoint(fixture.))
-//				return false;
-//			}
-//			
-//		};
-//	}
+
 }

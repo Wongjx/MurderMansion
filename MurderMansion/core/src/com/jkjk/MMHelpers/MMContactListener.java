@@ -75,15 +75,13 @@ public class MMContactListener implements ContactListener {
 					atStairs = true;
 					stairsName = "L2S4";
 				}
-
-				if (fbUD.equals("lightBody")) {
-					System.out.println("draw sprite");
-				}
-
-				if (fbUD.equals("lightBody") && !faUD.equals("lightBody")) {// not into contact with another
-																			// light body
-					System.out.println("draw sprite");
-				}
+			}
+			if (faUD.equals("lightBody") && !fbUD.equals("lightBody")) {// not into contact with another
+				// light body
+				System.out.println("draw sprite");
+			}
+			if(faUD.equals("lightBody") && fbUD.equals("murderer")){
+				System.out.println("BEWARE");
 			}
 		}
 
