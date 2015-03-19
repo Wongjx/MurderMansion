@@ -108,9 +108,10 @@ public class HudRenderer {
 	
 	public String getTime(){
 		
-		playTime -= Gdx.graphics.getDeltaTime();
-		time = String.format("%.0f", playTime);
-		// TODO: separate to minutes and seconds, round off to whole number;
+		playTime -= Gdx.graphics.getDeltaTime(); //
+		int minutes = (int) Math.floor(playTime/60.0f);
+		int seconds = (int) Math.floor(playTime - minutes*60);
+		time = String.format("%d:%02d", minutes, seconds);
 		
 		return time;
 	}
