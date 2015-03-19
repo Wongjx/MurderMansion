@@ -1,7 +1,6 @@
 package com.jkjk.GameObjects.Characters;
 
 import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.badlogic.gdx.physics.box2d.PolygonShape;
@@ -10,50 +9,41 @@ import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
 
 public class Civilian extends GameCharacter {
 
-	private FixtureDef fdef;
-	private BodyDef bdef;
 	private World world;
-	private FixtureDef coneFdef;
-	private BodyDef coneBdef;
 
 	Civilian(int colour, World world) {
 		this.world = world;
-		fdef = new FixtureDef();
-		bdef = new BodyDef();
 		setName("Civilian");
 		setColour(colour);
 
+		// create body of civilian
+		BodyDef bdef = new BodyDef();
 		bdef.type = BodyType.DynamicBody;
 		body = world.createBody(bdef);
 
+		// triangular body fixture
+		FixtureDef fdef = new FixtureDef();
 		Vector2[] vertices = { new Vector2(0, 0), new Vector2(-20, -10), new Vector2(-20, 10) };
 		PolygonShape shape = new PolygonShape();
 		shape.set(vertices);
 		fdef.shape = shape;
-
 		body.createFixture(fdef).setUserData("civilian");
 
-		//Vector2[] ConeLightVert = { new Vector2(0, 0), new Vector2(100, 100), new Vector2(100, -100) };// triangle
-																										// first
-																										// for
-																										// testing
-		
-		Vector2[] ConeLightVert = {new Vector2(-15,0), new Vector2(117,99), new Vector2(150,87), new Vector2(194,34), new Vector2(200,0), new Vector2(150,-87), new Vector2(194,-34), new Vector2(117,-99)};
+		// cone-ish Torch light fixture
+		FixtureDef coneFdef = new FixtureDef();
+		Vector2[] ConeLightVert = { new Vector2(-15, 0), new Vector2(113, 99), new Vector2(122, 87),
+				new Vector2(146, 34), new Vector2(150, 0), new Vector2(146, -34), new Vector2(122, -87),
+				new Vector2(113, -99) };
 		PolygonShape coneShape = new PolygonShape();
-		coneFdef = new FixtureDef();
 		coneFdef.isSensor = true;
 		coneShape.set(ConeLightVert);
 		coneFdef.shape = coneShape;
-		coneFdef.filter.maskBits = 1;
+		coneFdef.filter.maskBits = 1;// cannot bump into other light bodies.
+		body.createFixture(coneFdef).setUserData("lightBody");
+	}
 
-		coneBdef = new BodyDef();
-		coneBdef.type = BodyType.StaticBody;
-		coneBdef.position.set(getBody().getPosition());
-		coneBdef.angle = getBody().getAngle();
+	private void createBody() {
 
-		Body coneBody = world.createBody(coneBdef);
-		coneBody.createFixture(coneFdef).setUserData("lightBody");
-		setLightBody(coneBody);
 	}
 
 	@Override
@@ -66,8 +56,3 @@ public class Civilian extends GameCharacter {
 		alive = false;
 	}
 }
-
-// public void update(){
-// Vector2 v2 = getBody().getPosition();
-// getLightBody().setTransform(v2.x,v2.y,getBody().getAngle());
-// }

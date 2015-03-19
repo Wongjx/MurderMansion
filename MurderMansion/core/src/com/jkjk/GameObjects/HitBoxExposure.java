@@ -1,16 +1,14 @@
-package com.jkjk.GameObjects.Weapons;
+package com.jkjk.GameObjects;
 
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.World;
 
-public class WeaponDuration implements Runnable {
+public class HitBoxExposure implements Runnable {
 
-	private Weapon weapon;
 	private World world;
 	private Body body;
 	
-	public WeaponDuration(Weapon weapon, World world, Body body) {
-		this.weapon = weapon;
+	public HitBoxExposure(World world, Body body) {
 		this.world = world;
 		this.body = body;
 	}

@@ -5,6 +5,7 @@ import net.dermetfan.gdx.physics.box2d.Box2DMapObjectParser;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
+import com.badlogic.gdx.physics.box2d.Fixture;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.Array;
 import com.jkjk.GameObjects.Characters.Civilian;
@@ -74,7 +75,6 @@ public class GameWorld {
 	private void createPlayer() {
 		player = gameCharFac.createCharacter("Civilian", 0, world);
 		player.getBody().getFixtureList().get(0).setUserData("player");
-		System.out.println(player.getBody().getFixtureList().get(0).getUserData());
 		player.spawn(1010, 515, 0);
 	}
 
@@ -154,21 +154,21 @@ public class GameWorld {
 		if (cl.getAtStairs()) {
 			cl.notAtStairs();
 			if (cl.getStairsName().equals("L1S1")) {
-				player.getBody().setTransform(2616, 870, 0);
+				player.getBody().setTransform(2610, 870, player.getBody().getAngle());
 			} else if (cl.getStairsName().equals("L1S2")) {
-				player.getBody().setTransform(2292, 870, 3.1415f);
+				player.getBody().setTransform(2305, 870, player.getBody().getAngle());
 			} else if (cl.getStairsName().equals("L1S3")) {
-				player.getBody().setTransform(2282, 269, 3.1415f);
+				player.getBody().setTransform(2285, 269, player.getBody().getAngle());
 			} else if (cl.getStairsName().equals("L1S4")) {
-				player.getBody().setTransform(2785, 135, 3.1415f);
+				player.getBody().setTransform(2835, 155, player.getBody().getAngle());
 			} else if (cl.getStairsName().equals("L2S1")) {
-				player.getBody().setTransform(625, 870, 3.1415f);
+				player.getBody().setTransform(645, 870, player.getBody().getAngle());
 			} else if (cl.getStairsName().equals("L2S2")) {
-				player.getBody().setTransform(445, 870, 0);
+				player.getBody().setTransform(445, 870, player.getBody().getAngle());
 			} else if (cl.getStairsName().equals("L2S3")) {
-				player.getBody().setTransform(448, 269, 0);
+				player.getBody().setTransform(445, 269, player.getBody().getAngle());
 			} else if (cl.getStairsName().equals("L2S4")) {
-				player.getBody().setTransform(920, 177, 0);
+				player.getBody().setTransform(910, 180, player.getBody().getAngle());
 			}
 		}
 	}

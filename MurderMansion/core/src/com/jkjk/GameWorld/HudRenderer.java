@@ -273,10 +273,49 @@ public class HudRenderer {
 	}
 
 	public ImageButton getKnife() {
+		x = 555;
+		y = 95;
+		width = 50;
+		height = 50;
+
+		weaponButton = new ImageButton(bat);
+		weaponButton.setX(x);
+		weaponButton.setY(y);
+		weaponButton.setWidth(width);
+		weaponButton.setHeight(height);
+		weaponButton.setName("Weapon Button");
+		
+		weaponButton.addListener(new ClickListener() {
+			public void clicked(InputEvent event, float x, float y) {
+				System.out.println("Clicked on weapon button");
+				player.useWeapon(gWorld);
+			}
+		});
+		
 		return weaponButton;
 	}
 
 	public ImageButton getTrap() {
+
+		x = 485;
+		y = 25;
+		width = 50;
+		height = 50;
+
+		itemButton = new ImageButton(disarmTrap);
+		itemButton.setX(x);
+		itemButton.setY(y);
+		itemButton.setWidth(width);
+		itemButton.setHeight(height);
+		itemButton.setName("Item Button");
+		
+		itemButton.addListener(new ClickListener() {
+			public void clicked(InputEvent event, float x, float y) {
+				System.out.println("Clicked on item button");
+				player.useItem(gWorld);
+			}
+		});
+		
 		return itemButton;
 	}
 

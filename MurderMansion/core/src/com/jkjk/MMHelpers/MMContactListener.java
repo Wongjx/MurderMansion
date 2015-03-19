@@ -20,6 +20,7 @@ public class MMContactListener implements ContactListener {
 	private Object fbUD;
 	private Array<Body> itemsToRemove;
 	private Array<Body> weaponsToRemove;
+	private Array<Body> bodiesToDraw; // later between batch.start() and batch.end(), draw only items in this array.
 	private GameWorld gWorld;
 	private boolean atStairs;
 	private String stairsName;
@@ -27,6 +28,7 @@ public class MMContactListener implements ContactListener {
 	public MMContactListener(GameWorld gWorld) {
 		itemsToRemove = new Array<Body>();
 		weaponsToRemove = new Array<Body>();
+		bodiesToDraw = new Array<Body>();// need to permanently add player's own body inside here. but where?
 		this.gWorld = gWorld;
 		atStairs = false;
 		stairsName = null;
@@ -39,8 +41,8 @@ public class MMContactListener implements ContactListener {
 		faUD = fa.getUserData();
 		fbUD = fb.getUserData();
 
-		System.out.println("Begin contact: fa: " + faUD + ", fb: " + fbUD);
 		if (faUD != null && fbUD != null) {
+			System.out.println("Begin contact: fa: " + faUD + ", fb: " + fbUD);
 			if (faUD.equals("player") || fbUD.equals("player")) {
 				if (faUD.equals("item") && gWorld.getPlayer().getItem() == null) {
 					itemsToRemove.add(fa.getBody());
@@ -75,14 +77,12 @@ public class MMContactListener implements ContactListener {
 					atStairs = true;
 					stairsName = "L2S4";
 				}
-
-				if (fbUD.equals("lightBody")) {
-					System.out.println("draw sprite");
-				}
-
-				if (fbUD.equals("lightBody") && !faUD.equals("lightBody")) {// not into contact with another
-																			// light body
-					System.out.println("draw sprite");
+			}
+			else{ // non player fixture interaction
+				// in contact with all other object fixtures but other light fixtures
+				if (faUD.equals("lightBody") && !fbUD.equals("lightBody")) {
+					System.out.println("FB: draw sprite of " + fbUD);
+					bodiesToDraw.add(fb.getBody());
 				}
 			}
 		}
@@ -103,6 +103,19 @@ public class MMContactListener implements ContactListener {
 
 	// called when two fixtures no longer collide
 	public void endContact(Contact c) {
+		fa = c.getFixtureA();
+		fb = c.getFixtureB();
+		faUD = fa.getUserData();
+		fbUD = fb.getUserData();
+		if(faUD!=null && fbUD!=null){
+			if(faUD.equals("lightBody")&&!fbUD.equals("lightBody")){
+				System.out.println("END contact: fa: " + faUD + ", fb: " + fbUD);
+				bodiesToDraw.removeValue(fb.getBody(), true);
+				System.out.println("FB: " + fbUD + " was removed from bodies to be drawn array.");
+				
+			}
+		}
+		
 	}
 
 	public Array<Body> getItemsToRemove() {
