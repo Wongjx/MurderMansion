@@ -99,16 +99,16 @@ public class MMContactListener implements ContactListener {
 		return stairsName;
 	}
 
-	// called when two fixtures no longer collide
-	public void endContact(Contact c) {
-	}
-
 	public Array<Body> getItemsToRemove() {
 		return itemsToRemove;
 	}
 
 	public Array<Body> getWeaponsToRemove() {
 		return weaponsToRemove;
+	}
+
+	// called when two fixtures no longer collide
+	public void endContact(Contact c) {
 	}
 
 	// collision detection - when two objects collide

@@ -1,7 +1,6 @@
 package com.jkjk.GameObjects.Characters;
 
 import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.badlogic.gdx.physics.box2d.PolygonShape;
@@ -40,6 +39,10 @@ public class Civilian extends GameCharacter {
 		coneFdef.shape = coneShape;
 		coneFdef.filter.maskBits = 1;//cannot bump into other light bodies.
 		body.createFixture(coneFdef).setUserData("lightBody");
+	}
+	
+	private void createBody(){
+		
 	}
 
 	@Override

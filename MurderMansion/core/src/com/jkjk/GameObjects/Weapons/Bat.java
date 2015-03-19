@@ -9,6 +9,7 @@ import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
 import com.badlogic.gdx.physics.box2d.FixtureDef;
+import com.jkjk.GameObjects.HitBoxExposure;
 import com.jkjk.GameWorld.GameWorld;
 
 public class Bat extends Weapon {
@@ -42,11 +43,11 @@ public class Bat extends Weapon {
 		shape.set(vertices);
 		fdef.shape = shape;
 		fdef.isSensor = true;
-		//fdef.filter.maskBits = 1;
+		fdef.filter.maskBits = 1;
 		
 		body.createFixture(fdef).setUserData("bat");
 		
-		executor.execute(new WeaponDuration(this, gWorld.getWorld(), body));
+		executor.execute(new HitBoxExposure(gWorld.getWorld(), body));
 	}
 	
 	public void postUse(GameWorld gWorld){

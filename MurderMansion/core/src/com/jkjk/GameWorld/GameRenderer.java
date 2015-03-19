@@ -77,7 +77,7 @@ public class GameRenderer {
 
 		// Create Light for player
 		rayHandler = new RayHandler(gWorld.getWorld());
-		rayHandler.setAmbientLight(0.1f);
+		rayHandler.setAmbientLight(0.12f);
 		coneLight = new ConeLight(rayHandler, 100, null, 200, 0, 0, 0, 40);
 		coneLight.attachToBody(player.getBody(), -10, 0);
 		ConeLight.setContactFilter((short) 2, (short) 2, (short) 1);

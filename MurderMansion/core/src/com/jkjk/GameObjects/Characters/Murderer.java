@@ -1,7 +1,6 @@
 package com.jkjk.GameObjects.Characters;
 
 import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
 import com.badlogic.gdx.physics.box2d.CircleShape;
@@ -23,6 +22,14 @@ public class Murderer extends GameCharacter {
 		BodyDef bdef = new BodyDef();
 		bdef.type = BodyType.DynamicBody;
 		body = world.createBody(bdef);
+
+		// triangular body fixture
+		FixtureDef fdef = new FixtureDef();
+		Vector2[] vertices = { new Vector2(0, 0), new Vector2(-20, -10), new Vector2(-20, 10) };
+		PolygonShape shape = new PolygonShape();
+		shape.set(vertices);
+		fdef.shape = shape;
+		body.createFixture(fdef).setUserData("murderer");
 		
 		// light fixture
 		FixtureDef lightFdef = new FixtureDef();
@@ -33,14 +40,6 @@ public class Murderer extends GameCharacter {
 		lightFdef.shape = circle;
 		lightFdef.filter.maskBits = 1;
 		body.createFixture(lightFdef).setUserData("lightBody");
-
-		// triangular body fixture
-		FixtureDef fdef = new FixtureDef();
-		Vector2[] vertices = { new Vector2(0, 0), new Vector2(-20, -10), new Vector2(-20, 10) };
-		PolygonShape shape = new PolygonShape();
-		shape.set(vertices);
-		fdef.shape = shape;
-		body.createFixture(fdef).setUserData("murderer");
 	}
 
 	@Override
