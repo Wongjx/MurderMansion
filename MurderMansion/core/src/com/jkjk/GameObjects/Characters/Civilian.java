@@ -53,7 +53,3 @@ public class Civilian extends GameCharacter {
 	}
 }
 
-// public void update(){
-// Vector2 v2 = getBody().getPosition();
-// getLightBody().setTransform(v2.x,v2.y,getBody().getAngle());
-// }
