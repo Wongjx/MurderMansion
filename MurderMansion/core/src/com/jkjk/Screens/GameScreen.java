@@ -4,7 +4,7 @@ import com.badlogic.gdx.Screen;
 import com.jkjk.GameWorld.GameRenderer;
 import com.jkjk.GameWorld.GameWorld;
 import com.jkjk.GameWorld.HudRenderer;
-import com.jkjk.GameWorld.mGameWorld;
+//import com.jkjk.GameWorld.mGameWorld;
 import com.jkjk.MMHelpers.MultiplayerSeissonInfo;
 import com.jkjk.MurderMansion.murdermansion;
 
@@ -26,7 +26,7 @@ public class GameScreen implements Screen {
 		
 		
 		if(game.mMultiplayerSeisson.mState==game.mMultiplayerSeisson.ROOM_PLAY){
-			gWorld = new mGameWorld(gameWidth, gameHeight,game);
+			//gWorld = new mGameWorld(gameWidth, gameHeight,game);
 		}else{
 			gWorld = new GameWorld(gameWidth, gameHeight);
 		}

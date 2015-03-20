@@ -124,6 +124,7 @@ public class GameWorld {
 		world.step(delta, 6, 2); // Step size|Steps for each body to check collision|Accuracy of body position
 									// after collision
 
+		player.update();
 		checkStairs();
 
 		// check for collected items
@@ -132,9 +133,9 @@ public class GameWorld {
 			itemList.removeValue((ItemSprite) bodyToRemove.getUserData(), true);
 			world.destroyBody(bodyToRemove);
 			if (player.getName().equals("Civilian"))
-				player.addItem(itemFac.createItem("Disarm Trap"));
+				player.addItem(itemFac.createItem("Disarm Trap", this));
 			else if (player.getName().equals("Murderer"))
-				player.addItem(itemFac.createItem("Trap"));
+				player.addItem(itemFac.createItem("Trap", this));
 		}
 		itemsToRemove.clear();
 
@@ -143,9 +144,9 @@ public class GameWorld {
 			weaponList.removeValue((WeaponSprite) bodyToRemove.getUserData(), true);
 			world.destroyBody(bodyToRemove);
 			if (player.getName().equals("Civilian"))
-				player.addWeapon(weaponFac.createWeapon("Bat"));
+				player.addWeapon(weaponFac.createWeapon("Bat", this));
 			else if (player.getName().equals("Murderer"))
-				player.addWeapon(weaponFac.createWeapon("Knife"));
+				player.addWeapon(weaponFac.createWeapon("Knife", this));
 		}
 		weaponsToRemove.clear();
 	}

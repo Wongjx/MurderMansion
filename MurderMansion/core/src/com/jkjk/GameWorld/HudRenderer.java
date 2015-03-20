@@ -203,7 +203,7 @@ public class HudRenderer {
 		weaponButton.addListener(new ClickListener() {
 			public void clicked(InputEvent event, float x, float y) {
 				System.out.println("Clicked on weapon button");
-				player.useWeapon(gWorld);
+				player.useWeapon();
 			}
 		});
 		
@@ -225,7 +225,7 @@ public class HudRenderer {
 				System.out.println("Clicked on item button");
 				// Used to check character position FOR TESTING
 				System.out.println(player.getBody().getPosition());
-				player.useItem(gWorld);
+				player.useItem();
 			}
 		});
 		
@@ -267,7 +267,7 @@ public class HudRenderer {
 		dashButton.addListener(new ClickListener() {
 			public void clicked(InputEvent event, float x, float y) {
 				System.out.println("Clicked on weapon button");
-				player.useWeapon(gWorld);
+				player.useWeapon();
 			}
 		});
 		
@@ -291,7 +291,7 @@ public class HudRenderer {
 		itemButton.addListener(new ClickListener() {
 			public void clicked(InputEvent event, float x, float y) {
 				System.out.println("Clicked on item button");
-				player.useItem(gWorld);
+				player.useItem();
 			}
 		});
 		

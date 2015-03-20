@@ -4,14 +4,13 @@ import com.jkjk.GameWorld.GameWorld;
 
 public class Shotgun extends Weapon {
 
-	@Override
-	public void use(GameWorld gWorld) {
-		// TODO Auto-generated method stub
+	public Shotgun(GameWorld gWorld) {
+		super(gWorld);
 		
 	}
 
 	@Override
-	public void cooldown() {
+	public void use() {
 		// TODO Auto-generated method stub
 		
 	}

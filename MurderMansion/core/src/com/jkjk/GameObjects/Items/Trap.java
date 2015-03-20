@@ -20,13 +20,14 @@ public class Trap extends Item {
 	private Vector2 playerPosition;
 	private float playerAngle;
 
-	public Trap() {
+	public Trap(GameWorld gWorld) {
+		super(gWorld);
 		bdef = new BodyDef();
 		fdef = new FixtureDef();
 	}
 
 	@Override
-	public void use(GameWorld gWorld) {
+	public void use() {
 		System.out.println("Used trap");
 		playerPosition = gWorld.getPlayer().getBody().getPosition();
 		playerAngle = gWorld.getPlayer().getBody().getAngle();

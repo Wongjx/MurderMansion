@@ -1,5 +1,9 @@
 package com.jkjk.GameObjects.Characters;
 
+import box2dLight.ConeLight;
+import box2dLight.RayHandler;
+
+import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.physics.box2d.FixtureDef;
@@ -10,6 +14,7 @@ import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
 public class Civilian extends GameCharacter {
 
 	private World world;
+	private ConeLight coneLight;
 
 	Civilian(int colour, World world) {
 		this.world = world;
@@ -28,6 +33,13 @@ public class Civilian extends GameCharacter {
 		shape.set(vertices);
 		fdef.shape = shape;
 		body.createFixture(fdef).setUserData("civilian");
+		
+		// Create Light for player
+		rayHandler = new RayHandler(world);
+		rayHandler.setAmbientLight(0.12f);
+		coneLight = new ConeLight(rayHandler, 100, null, 200, 0, 0, 0, 40);
+		coneLight.attachToBody(body, -10, 0);
+		ConeLight.setContactFilter((short) 2, (short) 2, (short) 1);
 
 		// cone-ish Torch light fixture
 		FixtureDef coneFdef = new FixtureDef();
@@ -40,19 +52,6 @@ public class Civilian extends GameCharacter {
 		coneFdef.shape = coneShape;
 		coneFdef.filter.maskBits = 1;// cannot bump into other light bodies.
 		body.createFixture(coneFdef).setUserData("lightBody");
-	}
 
-	private void createBody() {
-
-	}
-
-	@Override
-	public void spawn(float x, float y, float angle) {
-		alive = true;
-		body.setTransform(x, y, angle); // Spawn position
-	}
-
-	public void die() {
-		alive = false;
 	}
 }
