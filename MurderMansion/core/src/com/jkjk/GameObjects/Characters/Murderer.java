@@ -11,18 +11,15 @@ import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.badlogic.gdx.physics.box2d.World;
 
-
 public class Murderer extends GameCharacter {
 
 	private boolean disguised;
-	private World world;
-	
+
 	private PointLight pointLight;
-	
+
 	public Murderer(World world) {
-		this.world = world;
 		setType("Murderer");
-		
+
 		// create body of murderer
 		BodyDef bdef = new BodyDef();
 		bdef.type = BodyType.DynamicBody;
@@ -30,32 +27,32 @@ public class Murderer extends GameCharacter {
 
 		// triangular body fixture
 		FixtureDef fdef = new FixtureDef();
-		Vector2[] vertices = { new Vector2(0, 0), new Vector2(-20, -10), new Vector2(-20, 10) };
-		PolygonShape shape = new PolygonShape();
-		shape.set(vertices);
+		CircleShape shape = new CircleShape();
+		shape.setRadius(10);
 		fdef.shape = shape;
 		body.createFixture(fdef).setUserData("murderer");
-		
+
 		// create light
 		rayHandler = new RayHandler(world);
 		rayHandler.setAmbientLight(0.12f);
 		pointLight = new PointLight(rayHandler, 100, null, 150, 0, 0);
 		pointLight.attachToBody(body);
 		PointLight.setContactFilter((short) 2, (short) 2, (short) 1);
-		
+
 		// light fixture
 		FixtureDef lightFdef = new FixtureDef();
 		CircleShape circle = new CircleShape();
 		lightFdef.isSensor = true;
-		circle.setPosition(getBody().getPosition());;
+		circle.setPosition(getBody().getPosition());
+		;
 		circle.setRadius(150);
 		lightFdef.shape = circle;
 		lightFdef.filter.maskBits = 1;
 		body.createFixture(lightFdef).setUserData("lightBody");
 
 	}
-	
-	public boolean isDisguised(){
+
+	public boolean isDisguised() {
 		return disguised;
 	}
 

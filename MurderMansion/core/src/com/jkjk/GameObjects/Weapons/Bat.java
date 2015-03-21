@@ -32,7 +32,7 @@ public class Bat extends Weapon {
 		bdef.angle = playerAngle;
 		body = gWorld.getWorld().createBody(bdef);
 
-		Vector2[] vertices = { new Vector2(1, 0), new Vector2(27.7f, 16), new Vector2(30, 10.9f), new Vector2(31.5f, 5.6f),
+		Vector2[] vertices = { new Vector2(11, 0), new Vector2(27.7f, 16), new Vector2(30, 10.9f), new Vector2(31.5f, 5.6f),
 				new Vector2(32, 0), new Vector2(31.5f,-5.6f), new Vector2(30, -10.9f), new Vector2(27.7f,-16) };
 		PolygonShape shape = new PolygonShape();
 		shape.set(vertices);

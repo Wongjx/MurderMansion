@@ -8,6 +8,8 @@ public class AbilityFactory {
 			return new Panic(gameCharacter);
 		else if (gameCharacter.getType().equals("Murderer"))
 			return new Disguise(gameCharacter);
+		else if (gameCharacter.getType().equals("Ghost"))
+			return new Haunt(gameCharacter);
 		else
 			return null;
 	}

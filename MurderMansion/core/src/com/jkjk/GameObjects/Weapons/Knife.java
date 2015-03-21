@@ -31,7 +31,7 @@ public class Knife extends Weapon {
 		bdef.angle = playerAngle;
 		body = gWorld.getWorld().createBody(bdef);
 
-		Vector2[] vertices = { new Vector2(1, 0), new Vector2(20, 8.9f), new Vector2(28, 5.6f),
+		Vector2[] vertices = { new Vector2(11, 0), new Vector2(20, 8.9f), new Vector2(28, 5.6f),
 				new Vector2(32, 0), new Vector2(28, -5.6f), new Vector2(20, -8.9f) };
 		PolygonShape shape = new PolygonShape();
 		shape.set(vertices);

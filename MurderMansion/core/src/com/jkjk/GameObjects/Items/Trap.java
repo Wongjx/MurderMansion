@@ -33,11 +33,11 @@ public class Trap extends Item {
 		playerAngle = gWorld.getPlayer().getBody().getAngle();
 		bdef.type = BodyType.StaticBody;
 		bdef.position.set(playerPosition.x, playerPosition.y);
-		bdef.angle = playerAngle;
 		body = gWorld.getWorld().createBody(bdef);
 
 		CircleShape shape = new CircleShape();
 		shape.setRadius(10);
+		shape.setPosition(new Vector2((float) (25f*Math.cos(playerAngle)),(float) (25f*Math.sin(playerAngle))));
 		fdef.shape = shape;
 		fdef.isSensor = true;
 		fdef.filter.maskBits = 1;

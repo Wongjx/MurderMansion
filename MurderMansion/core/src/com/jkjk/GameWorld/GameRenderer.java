@@ -44,8 +44,8 @@ public class GameRenderer {
 		tiledMapRenderer.setView(cam);
 		tiledMapRenderer.render();
 
-		if (player.isAlive()) {
-			player.render(cam);
+		if (gWorld.getPlayer().isAlive()) {
+			gWorld.getPlayer().render(cam);
 		}
 		cam.update(); // Update cam
 
@@ -55,7 +55,7 @@ public class GameRenderer {
 
 	public void rendererDispose() {
 		gWorld.getWorld().dispose();
-		player.dispose();
+		gWorld.getPlayer().dispose();
 		b2dr.dispose();
 	}
 

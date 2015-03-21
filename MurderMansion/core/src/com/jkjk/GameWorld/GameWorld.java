@@ -4,6 +4,9 @@ import net.dermetfan.gdx.physics.box2d.Box2DMapObjectParser;
 
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
+import com.badlogic.gdx.physics.box2d.BodyDef;
+import com.badlogic.gdx.physics.box2d.CircleShape;
+import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.Array;
@@ -38,8 +41,17 @@ public class GameWorld {
 	private int maxItems;
 	private int maxWeapons;
 
-	private Array<Body> itemsToRemove, weaponsToRemove;
+	private Array<Body> itemsToRemove, weaponsToRemove, trapToRemove;
 	private Body bodyToRemove;
+	
+	private float currentPositionX;
+	private float currentPositionY;
+	private float currentAngle;
+	
+	// FOR DEBUG PURPOSE
+	private BodyDef bdef;
+	private Body body;
+	private FixtureDef fdef;
 
 	public GameWorld(float gameWidth, float gameHeight) {
 		world = new World(new Vector2(0, 0), true);
@@ -48,6 +60,7 @@ public class GameWorld {
 
 		itemsToRemove = cl.getItemsToRemove();
 		weaponsToRemove = cl.getWeaponsToRemove();
+		trapToRemove = cl.getTrapToRemove();
 
 		abilityFac = new AbilityFactory();
 
@@ -71,9 +84,29 @@ public class GameWorld {
 		for (int i = 0; i < maxWeapons; i++) {
 			createWeapons(i);
 		}
+		
+		createTrap(); // FOR DEBUG PURPOSE
+
 
 		Box2DMapObjectParser parser = new Box2DMapObjectParser();
 		parser.load(world, AssetLoader.tiledMap);
+	}
+	
+	// FOR DEBUG PURPOSE
+	private void createTrap(){
+		bdef = new BodyDef();
+		fdef = new FixtureDef();
+		bdef.type = BodyType.StaticBody;
+		bdef.position.set(1010, 570);
+		body = world.createBody(bdef);
+
+		CircleShape shape = new CircleShape();
+		shape.setRadius(10);
+		fdef.shape = shape;
+		fdef.isSensor = true;
+		fdef.filter.maskBits = 1;
+		
+		body.createFixture(fdef).setUserData("trap");
 	}
 
 	private void createPlayer() {
@@ -128,8 +161,18 @@ public class GameWorld {
 	public void update(float delta) {
 		world.step(delta, 6, 2); // Step size|Steps for each body to check collision|Accuracy of body position
 									// after collision
+
 		if (player.isAlive()){
 			player.update();
+		} else {
+			currentPositionX = player.getBody().getPosition().x;
+			currentPositionY = player.getBody().getPosition().y;
+			currentAngle = player.getBody().getAngle();
+			world.destroyBody(player.getBody());
+			player = gameCharFac.createCharacter("Ghost", world);
+			player.getBody().getFixtureList().get(0).setUserData("player");
+			player.spawn(currentPositionX, currentPositionY, currentAngle);
+			player.addAbility(abilityFac.createAbility(player));
 		}
 		checkStairs();
 
@@ -155,6 +198,13 @@ public class GameWorld {
 				player.addWeapon(weaponFac.createWeapon("Knife", this));
 		}
 		weaponsToRemove.clear();
+		
+		for (int i = 0; i < trapToRemove.size; i++) {
+			bodyToRemove = trapToRemove.get(i);
+			weaponList.removeValue((WeaponSprite) bodyToRemove.getUserData(), true);
+			world.destroyBody(bodyToRemove);
+		}
+		trapToRemove.clear();
 	}
 
 	private void checkStairs() {
