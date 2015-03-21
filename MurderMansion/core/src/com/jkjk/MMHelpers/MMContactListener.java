@@ -20,6 +20,7 @@ public class MMContactListener implements ContactListener {
 	private Object fbUD;
 	private Array<Body> itemsToRemove;
 	private Array<Body> weaponsToRemove;
+	private Array<Body> trapToRemove;
 	private Array<Body> bodiesToDraw; // later between batch.start() and batch.end(), draw only items in this array.
 	private GameWorld gWorld;
 	private boolean atStairs;
@@ -28,6 +29,7 @@ public class MMContactListener implements ContactListener {
 	public MMContactListener(GameWorld gWorld) {
 		itemsToRemove = new Array<Body>();
 		weaponsToRemove = new Array<Body>();
+		trapToRemove = new Array<Body>();
 		bodiesToDraw = new Array<Body>();// need to permanently add player's own body inside here. but where?
 		this.gWorld = gWorld;
 		atStairs = false;
@@ -76,6 +78,12 @@ public class MMContactListener implements ContactListener {
 				} else if (faUD.equals("L2S4") || fbUD.equals("L2S4")) {
 					atStairs = true;
 					stairsName = "L2S4";
+				} else if (faUD.equals("bat") || fbUD.equals("bat")){
+					gWorld.getPlayer().stun(true);
+				} else if (faUD.equals("trap") || fbUD.equals("trap")){
+					gWorld.getPlayer().die();
+				} else if (faUD.equals("knife") || fbUD.equals("knife")){
+					gWorld.getPlayer().die();
 				}
 			}
 			else{ // non player fixture interaction
@@ -83,6 +91,14 @@ public class MMContactListener implements ContactListener {
 				if (faUD.equals("lightBody") && !fbUD.equals("lightBody")) {
 					System.out.println("FB: draw sprite of " + fbUD);
 					bodiesToDraw.add(fb.getBody());
+				}
+				
+				if (faUD.equals("disarm trap") || fbUD.equals("disarm trap")){
+					if (faUD.equals("trap")){
+						trapToRemove.add(fa.getBody());
+					} else if (faUD.equals("trap")){
+						trapToRemove.add(fb.getBody());
+					}
 				}
 			}
 		}

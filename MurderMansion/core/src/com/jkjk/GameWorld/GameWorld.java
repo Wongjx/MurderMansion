@@ -5,9 +5,9 @@ import net.dermetfan.gdx.physics.box2d.Box2DMapObjectParser;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
-import com.badlogic.gdx.physics.box2d.Fixture;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.Array;
+import com.jkjk.GameObjects.Abilities.AbilityFactory;
 import com.jkjk.GameObjects.Characters.Civilian;
 import com.jkjk.GameObjects.Characters.GameCharacter;
 import com.jkjk.GameObjects.Characters.GameCharacterFactory;
@@ -30,6 +30,8 @@ public class GameWorld {
 	private WeaponFactory weaponFac;
 	private Array<WeaponSprite> weaponList;
 
+	private AbilityFactory abilityFac;
+
 	private World world;
 	private MMContactListener cl;
 	private int numOfPlayers;
@@ -46,6 +48,8 @@ public class GameWorld {
 
 		itemsToRemove = cl.getItemsToRemove();
 		weaponsToRemove = cl.getWeaponsToRemove();
+
+		abilityFac = new AbilityFactory();
 
 		gameCharFac = new GameCharacterFactory();
 		playerList = new Array<GameCharacter>();
@@ -76,6 +80,7 @@ public class GameWorld {
 		player = gameCharFac.createCharacter("Civilian", 0, world);
 		player.getBody().getFixtureList().get(0).setUserData("player");
 		player.spawn(1010, 515, 0);
+		player.addAbility(abilityFac.createAbility(player));
 	}
 
 	private void createOpponents(int i) {
@@ -123,8 +128,9 @@ public class GameWorld {
 	public void update(float delta) {
 		world.step(delta, 6, 2); // Step size|Steps for each body to check collision|Accuracy of body position
 									// after collision
-
-		player.update();
+		if (player.isAlive()){
+			player.update();
+		}
 		checkStairs();
 
 		// check for collected items
@@ -132,9 +138,9 @@ public class GameWorld {
 			bodyToRemove = itemsToRemove.get(i);
 			itemList.removeValue((ItemSprite) bodyToRemove.getUserData(), true);
 			world.destroyBody(bodyToRemove);
-			if (player.getName().equals("Civilian"))
+			if (player.getType().equals("Civilian"))
 				player.addItem(itemFac.createItem("Disarm Trap", this));
-			else if (player.getName().equals("Murderer"))
+			else if (player.getType().equals("Murderer"))
 				player.addItem(itemFac.createItem("Trap", this));
 		}
 		itemsToRemove.clear();
@@ -143,9 +149,9 @@ public class GameWorld {
 			bodyToRemove = weaponsToRemove.get(i);
 			weaponList.removeValue((WeaponSprite) bodyToRemove.getUserData(), true);
 			world.destroyBody(bodyToRemove);
-			if (player.getName().equals("Civilian"))
+			if (player.getType().equals("Civilian"))
 				player.addWeapon(weaponFac.createWeapon("Bat", this));
-			else if (player.getName().equals("Murderer"))
+			else if (player.getType().equals("Murderer"))
 				player.addWeapon(weaponFac.createWeapon("Knife", this));
 		}
 		weaponsToRemove.clear();

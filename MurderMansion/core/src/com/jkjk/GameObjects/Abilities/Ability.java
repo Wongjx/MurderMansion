@@ -1,23 +1,27 @@
 package com.jkjk.GameObjects.Abilities;
 
+import com.jkjk.GameObjects.Cooldown;
+import com.jkjk.GameObjects.Characters.GameCharacter;
+
 
 public abstract class Ability {
 	
-	private boolean onCooldown;
+	protected Cooldown cooldown;
+	protected GameCharacter gameCharacter;
 	
-	public Ability(){
-		onCooldown = false;
+	public Ability(GameCharacter gameCharacter){
+		this.gameCharacter = gameCharacter;
 	}
 	
 	public boolean isOnCoolDown(){
-		return onCooldown;
-	}
-	
-	public void setCooldown(boolean onCooldown){
-		this.onCooldown = onCooldown;
+		return cooldown.isOnCooldown();
 	}
 	
 	public abstract void use();
 	public abstract void cooldown();
+	
+	public void update(){
+		cooldown.update();
+	}
 	
 }

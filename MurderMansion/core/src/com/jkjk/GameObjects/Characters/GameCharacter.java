@@ -5,9 +5,9 @@ import box2dLight.RayHandler;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.scenes.scene2d.ui.Touchpad;
+import com.jkjk.GameObjects.Abilities.Ability;
 import com.jkjk.GameObjects.Items.Item;
 import com.jkjk.GameObjects.Weapons.Weapon;
-import com.jkjk.GameWorld.GameWorld;
 import com.jkjk.MMHelpers.AssetLoader;
 
 /**
@@ -16,7 +16,7 @@ import com.jkjk.MMHelpers.AssetLoader;
  */
 public abstract class GameCharacter {
 
-	private String name;
+	private String type;
 
 	protected boolean alive;
 	private boolean itemChange, weaponChange;
@@ -29,9 +29,10 @@ public abstract class GameCharacter {
 
 	private Weapon weapon;
 	private Item item;
+	private Ability ability;
 	protected Body body;
 	protected RayHandler rayHandler;
-	
+
 	private Touchpad touchpad;
 
 	private int colour;
@@ -41,12 +42,12 @@ public abstract class GameCharacter {
 		touchpad = AssetLoader.touchpad;
 	}
 
-	public String getName() {
-		return name;
+	public String getType() {
+		return type;
 	}
 
-	public void setName(String name) {
-		this.name = name;
+	public void setType(String type) {
+		this.type = type;
 	}
 
 	public void spawn(float x, float y, float angle) {
@@ -60,6 +61,14 @@ public abstract class GameCharacter {
 
 	public boolean isAlive() {
 		return alive;
+	}
+
+	public float getVelocity() {
+		return maxVelocity;
+	}
+
+	public void setVelocity(float velocity) {
+		maxVelocity = velocity;
 	}
 
 	public void stun(boolean stun) {
@@ -80,6 +89,21 @@ public abstract class GameCharacter {
 
 	public Body getBody() {
 		return body;
+	}
+
+	public void addAbility(Ability ability) {
+		this.ability = ability;
+	}
+
+	public Ability getAbility() {
+		return ability;
+	}
+
+	public void useAbility() {
+		if (!ability.isOnCoolDown()) {
+			ability.use();
+			ability.cooldown();
+		}
 	}
 
 	public void addWeapon(Weapon weapon) {
@@ -137,40 +161,45 @@ public abstract class GameCharacter {
 				itemChange = true;
 			}
 		}
+		if (ability != null) {
+			ability.update();
+		}
 	}
 
 	public void render(OrthographicCamera cam) {
-		touchpadX = touchpad.getKnobPercentX();
-		touchpadY = touchpad.getKnobPercentY();
-		if (!touchpad.isTouched()) {
-			body.setAngularVelocity(0);
-		} else {
-			angleDiff = (Math.atan2(touchpadY, touchpadX) - (body.getAngle())) % (Math.PI * 2);
-			if (angleDiff > 0) {
-				if (angleDiff >= 3.14) {
-					if (angleDiff > 6.2)
-						body.setAngularVelocity((float) -angleDiff / 7);
-					else
-						body.setAngularVelocity(-5);
-				} else if (angleDiff < 0.4)
-					body.setAngularVelocity((float) angleDiff * 3);
-				else
-					body.setAngularVelocity(5);
-			} else if (angleDiff < 0) {
-				if (angleDiff <= -3.14) {
-					if (angleDiff < -6.2)
-						body.setAngularVelocity((float) -angleDiff / 7);
+		if (!stun) {
+			touchpadX = touchpad.getKnobPercentX();
+			touchpadY = touchpad.getKnobPercentY();
+			if (!touchpad.isTouched()) {
+				body.setAngularVelocity(0);
+			} else {
+				angleDiff = (Math.atan2(touchpadY, touchpadX) - (body.getAngle())) % (Math.PI * 2);
+				if (angleDiff > 0) {
+					if (angleDiff >= 3.14) {
+						if (angleDiff > 6.2)
+							body.setAngularVelocity((float) -angleDiff / 7);
+						else
+							body.setAngularVelocity(-5);
+					} else if (angleDiff < 0.4)
+						body.setAngularVelocity((float) angleDiff * 3);
 					else
 						body.setAngularVelocity(5);
-				} else if (angleDiff > -0.4)
-					body.setAngularVelocity((float) angleDiff * 3);
-				else
-					body.setAngularVelocity(-5);
-			} else
-				body.setAngularVelocity(0);
-		}
+				} else if (angleDiff < 0) {
+					if (angleDiff <= -3.14) {
+						if (angleDiff < -6.2)
+							body.setAngularVelocity((float) -angleDiff / 7);
+						else
+							body.setAngularVelocity(5);
+					} else if (angleDiff > -0.4)
+						body.setAngularVelocity((float) angleDiff * 3);
+					else
+						body.setAngularVelocity(-5);
+				} else
+					body.setAngularVelocity(0);
+			}
 
-		body.setLinearVelocity(touchpadX * maxVelocity, touchpadY * maxVelocity);
+			body.setLinearVelocity(touchpadX * maxVelocity, touchpadY * maxVelocity);
+		}
 
 		cam.position.set(body.getPosition(), 0); // Set cam position to be on player
 

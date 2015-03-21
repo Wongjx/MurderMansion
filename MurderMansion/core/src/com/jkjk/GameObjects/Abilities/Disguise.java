@@ -1,21 +1,28 @@
 package com.jkjk.GameObjects.Abilities;
 
-public class Disguise extends Ability {
+import com.jkjk.GameObjects.Cooldown;
+import com.jkjk.GameObjects.Characters.GameCharacter;
 
-	public Disguise() {
-		// TODO Auto-generated constructor stub
+public class Disguise extends Ability {
+	
+	public Disguise(GameCharacter gameCharacter) {
+		super(gameCharacter);
+		cooldown = new Cooldown(300000);
 	}
 	
 	@Override
 	public void use() {
-		// TODO Auto-generated method stub
+		// if murderer:
+		// 		if gameCharacter.sprite == civilian:
+		// 			gameCharacter.setSprite = murderer;
+		// 		else:
+		//			gameCharacter.setSprite = civilian;
 		
 	}
 	
 	@Override
 	public void cooldown() {
-		// TODO Auto-generated method stub
-		
+		cooldown.startCooldown();
 	}
 
 }

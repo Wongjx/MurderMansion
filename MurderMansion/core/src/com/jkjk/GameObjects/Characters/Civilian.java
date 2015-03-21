@@ -18,7 +18,7 @@ public class Civilian extends GameCharacter {
 
 	Civilian(int colour, World world) {
 		this.world = world;
-		setName("Civilian");
+		setType("Civilian");
 		setColour(colour);
 
 		// create body of civilian

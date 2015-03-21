@@ -17,7 +17,7 @@ public class GameRenderer {
 
 	// Game Objects
 	private GameCharacter player;
-	
+
 	// Game Assets
 	private TiledMap tiledMap;
 	private TiledMapRenderer tiledMapRenderer;
@@ -32,7 +32,7 @@ public class GameRenderer {
 
 		// Create player
 		player = gWorld.getPlayer();
-		
+
 		tiledMap = AssetLoader.tiledMap;
 		tiledMapRenderer = new OrthogonalTiledMapRenderer(tiledMap);
 
@@ -43,8 +43,10 @@ public class GameRenderer {
 
 		tiledMapRenderer.setView(cam);
 		tiledMapRenderer.render();
-		
-		player.render(cam);
+
+		if (player.isAlive()) {
+			player.render(cam);
+		}
 		cam.update(); // Update cam
 
 		b2dr.render(gWorld.getWorld(), cam.combined); // Renders box2d world

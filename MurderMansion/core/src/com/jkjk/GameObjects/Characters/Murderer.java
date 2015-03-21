@@ -21,7 +21,7 @@ public class Murderer extends GameCharacter {
 	
 	public Murderer(World world) {
 		this.world = world;
-		setName("Murderer");
+		setType("Murderer");
 		
 		// create body of murderer
 		BodyDef bdef = new BodyDef();
