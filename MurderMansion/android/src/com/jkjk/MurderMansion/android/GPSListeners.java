@@ -24,10 +24,10 @@ public class GPSListeners implements RoomStatusUpdateListener, RoomUpdateListene
 	
 	private String TAG = "MurderMansion GPS listeners";
 	
-    // Request codes for the UIs that we show with startActivityForResult:
-    final static int RC_SELECT_PLAYERS = 10000;
-    final static int RC_INVITATION_INBOX = 10001;
-    final static int RC_WAITING_ROOM = 10002;
+//    // Request codes for the UIs that we show with startActivityForResult:
+//    final static int RC_SELECT_PLAYERS = 10000;
+//    final static int RC_INVITATION_INBOX = 10001;
+//    final static int RC_WAITING_ROOM = 10002;
     
 	private GoogleApiClient mGoogleApiClient;
 	private AndroidLauncher activity;
@@ -217,7 +217,7 @@ public class GPSListeners implements RoomStatusUpdateListener, RoomUpdateListene
         Intent i = Games.RealTimeMultiplayer.getWaitingRoomIntent(mGoogleApiClient, room, MIN_PLAYERS);
 
         // show waiting room UI
-        activity.startActivityForResult(i, RC_WAITING_ROOM);
+        activity.startActivityForResult(i, AndroidLauncher.RC_WAITING_ROOM);
     }
     
     private void handleError(int statusCode){

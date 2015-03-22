@@ -1,7 +1,9 @@
 package com.jkjk.MMHelpers;
 
+import java.net.ServerSocket;
+import java.net.Socket;
+import java.net.SocketAddress;
 import java.util.ArrayList;
-import java.util.List;
 
 
 /**
@@ -15,6 +17,11 @@ public class MultiplayerSeissonInfo {
 	public volatile ArrayList mParticipants;
 	public volatile Object mMyId; 
 	public volatile int mState=1000;
+	
+	public Socket sock;
+	public ServerSocket server;
+	public SocketAddress socketAddress;
+	public ArrayList<Socket> clients;
 	
 	public final int ROOM_NULL=1000;
 	public final int ROOM_WAIT=1001;
