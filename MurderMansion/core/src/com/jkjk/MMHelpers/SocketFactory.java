@@ -25,14 +25,14 @@ public class SocketFactory {
 		
 		return sock;
 	}
-	public Socket getClientSocket(SocketAddress addr){
-		Socket sock;
-		
-	}
+//	public Socket getClientSocket(SocketAddress addr){
+//		Socket sock;
+//		
+//	}
 }
 /**
  * Thread used to connect to server socket
- * Precondition: GPS room is ready, Server has sent out SocketAddress to write into
+ * Precondition: GPS room is in play mode && Server has sent out SocketAddress to clients
  * @author Wong
  *
  */
@@ -58,6 +58,13 @@ class clientConnectThread extends Thread{
 	}
 }
 
+/**
+ * Non-blocking Thread to for server to accept connections
+ * Precondition: GPS Room is in play mode && Message with server address sent out to clients 
+ * 				&& MultiPlayerSeissonInfo.server != null;
+ * @author Wong
+ *
+ */
 class serverAcceptThread extends Thread{
 	private MultiplayerSeissonInfo info;
 	private String TAG = "ServerAcceptThread";
