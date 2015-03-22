@@ -1,12 +1,12 @@
 package com.jkjk.GameObjects;
 
-public class Cooldown {
+public class Duration {
 
 	private int cooldown; // This cooldown's time (in seconds)
 	private boolean isOnCooldown; // Currently on cooldown?
 	private long timeStartCooldown; // The time when the cooldown started ( in milli seconds)
 
-	public Cooldown(int cooldown) {
+	public Duration(int cooldown) {
 
 		// get the time this cooldown should be on for
 		this.cooldown = cooldown;

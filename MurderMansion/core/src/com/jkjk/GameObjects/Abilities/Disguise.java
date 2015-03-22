@@ -1,13 +1,13 @@
 package com.jkjk.GameObjects.Abilities;
 
-import com.jkjk.GameObjects.Cooldown;
+import com.jkjk.GameObjects.Duration;
 import com.jkjk.GameObjects.Characters.GameCharacter;
 
 public class Disguise extends Ability {
 	
 	public Disguise(GameCharacter gameCharacter) {
 		super(gameCharacter);
-		cooldown = new Cooldown(300000);
+		cooldown = new Duration(300000);
 	}
 	
 	@Override

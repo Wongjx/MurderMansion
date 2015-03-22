@@ -5,6 +5,7 @@ import box2dLight.RayHandler;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.scenes.scene2d.ui.Touchpad;
+import com.jkjk.GameObjects.Duration;
 import com.jkjk.GameObjects.Abilities.Ability;
 import com.jkjk.GameObjects.Items.Item;
 import com.jkjk.GameObjects.Weapons.Weapon;
@@ -21,6 +22,7 @@ public abstract class GameCharacter {
 	protected boolean alive;
 	private boolean itemChange, weaponChange;
 	private boolean stun;
+	private Duration stunDuration;
 
 	private float maxVelocity;
 	private float touchpadX;
@@ -40,6 +42,7 @@ public abstract class GameCharacter {
 	public GameCharacter() {
 		maxVelocity = 64;
 		touchpad = AssetLoader.touchpad;
+		stunDuration = new Duration(5000);
 	}
 
 	public String getType() {
@@ -73,6 +76,7 @@ public abstract class GameCharacter {
 
 	public void stun(boolean stun) {
 		this.stun = stun;
+		stunDuration.startCooldown();
 	}
 
 	public boolean isStun() {
@@ -164,6 +168,8 @@ public abstract class GameCharacter {
 		if (ability != null) {
 			ability.update();
 		}
+		if (stun)
+			stunDuration.update();
 	}
 
 	public void render(OrthographicCamera cam) {
