@@ -25,11 +25,24 @@ public class AssetLoader {
 	public static TouchpadStyle touchpadStyle;
 	public static Drawable touchBackground;
 	public static Drawable touchKnob;
-
-	public static Texture hudTexture;
-	public static TextureRegionDrawable emptySlot;
-	public static TextureRegionDrawable bat;
-	public static TextureRegionDrawable disarmTrap;
+	public static Texture emptySlot;
+	
+	// CIVILIAN
+	public static Texture civ_weapon_bat_tex;
+	public static TextureRegionDrawable civ_weapon_bat_draw;
+	public static Texture civ_item_tex;
+	public static TextureRegionDrawable civ_item_draw;
+	public static Texture civ_dash_tex;
+	public static TextureRegionDrawable civ_dash_draw;
+	
+	// MURDERER
+	public static Texture mur_weapon_tex;
+	public static TextureRegionDrawable mur_weapon_draw;
+	public static Texture mur_item_tex;
+	public static TextureRegionDrawable mur_item_draw;
+	public static Texture mur_swap_tex;
+	public static TextureRegionDrawable mur_swap_draw;
+	
 
 	public static Texture logoTexture;
 	public static TextureRegion logo;
@@ -99,10 +112,24 @@ public class AssetLoader {
 		touchpadStyle.knob = touchKnob;
 		touchpad = new Touchpad(5, touchpadStyle);
 
-		hudTexture = new Texture(Gdx.files.internal("data/MM-PS-HUD.png"));
-		emptySlot = new TextureRegionDrawable(new TextureRegion(hudTexture, 0, 0, 46, 46));
-		disarmTrap = new TextureRegionDrawable(new TextureRegion(hudTexture, 50, 0, 46, 46));
-		bat = new TextureRegionDrawable(new TextureRegion(hudTexture, 100, 0, 46, 46));
+		emptySlot = new Texture (Gdx.files.internal("data/slots.png"));
+		
+		//CIVILIANS
+		civ_weapon_bat_tex = new Texture(Gdx.files.internal("data/civ_weapon_bat.png"));
+		civ_weapon_bat_draw = new TextureRegionDrawable(new TextureRegion(civ_weapon_bat_tex));
+		civ_item_tex = new Texture(Gdx.files.internal("data/civ_item.png"));
+		civ_item_draw = new TextureRegionDrawable (new TextureRegion(civ_item_tex));
+		civ_dash_tex = new Texture(Gdx.files.internal("data/civ_dash.png"));
+		civ_dash_draw = new TextureRegionDrawable (new TextureRegion(civ_dash_tex));
+		
+		// MURDERER
+		mur_weapon_tex = new Texture(Gdx.files.internal("data/mur_weapon.png"));
+		mur_weapon_draw = new TextureRegionDrawable(new TextureRegion(mur_weapon_tex));
+		mur_item_tex = new Texture(Gdx.files.internal("data/mur_item.png"));
+		mur_item_draw = new TextureRegionDrawable (new TextureRegion(mur_item_tex));
+		mur_swap_tex = new Texture(Gdx.files.internal("data/mur_swap.png"));
+		mur_swap_draw = new TextureRegionDrawable (new TextureRegion(mur_swap_tex));
+		
 		
 		time = new Texture(Gdx.files.internal("data/countdown.png"));
 		time.setFilter(TextureFilter.Linear, TextureFilter.Linear);
@@ -117,10 +144,16 @@ public class AssetLoader {
 		menuSkin.dispose();
 		logoTexture.dispose();
 		touchpadSkin.dispose();
-		hudTexture.dispose();
 		menuBackground.dispose();
 		time.dispose();
 		civ_profile.dispose();
 		tiledMap.dispose();
+		emptySlot.dispose();
+		civ_weapon_bat_tex.dispose();
+		civ_item_tex.dispose();
+		civ_dash_tex.dispose();
+		mur_weapon_tex.dispose();
+		mur_item_tex.dispose();
+		mur_swap_tex.dispose();
 	}
 }

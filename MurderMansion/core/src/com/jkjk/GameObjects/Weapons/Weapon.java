@@ -1,29 +1,45 @@
 package com.jkjk.GameObjects.Weapons;
 
+import com.badlogic.gdx.physics.box2d.Body;
+import com.jkjk.GameObjects.Cooldown;
+import com.jkjk.GameObjects.HitBoxExposure;
 import com.jkjk.GameWorld.GameWorld;
 
-
 public abstract class Weapon {
-	
-	protected boolean weaponOnCooldown;
-	
-	public Weapon(){
-		weaponOnCooldown = false;
+
+	private Cooldown cooldown;
+	protected HitBoxExposure hitBoxExposure;
+	protected GameWorld gWorld;
+	protected Body body;
+
+	public Weapon(GameWorld gWorld) {
+		cooldown = new Cooldown(5000);
+		hitBoxExposure = new HitBoxExposure(10);
+		this.gWorld = gWorld;
 	}
-	
-	public boolean isWeaponOnCooldown(){
-		return weaponOnCooldown;
+
+	public boolean isOnCooldown() {
+		return cooldown.isOnCooldown();
 	}
-	
-	public void setWeaponOnCooldown(boolean weaponOnCooldown){
-		this.weaponOnCooldown = weaponOnCooldown;
-	}
-	
-	public abstract void use(GameWorld gWorld);
-	
+
+	public abstract void use();
+
 	public abstract void postUse(GameWorld gWorld);
-	
-	public abstract void cooldown();
-	
-	
+
+	public void cooldown() {
+		cooldown.startCooldown();
+	}
+
+	public void update() {
+		cooldown.update();
+		hitBoxExposure.update();
+		if (!hitBoxExposure.isHitBoxExposed()) {
+			if (body != null){
+				gWorld.getWorld().destroyBody(body);
+				body = null;
+			}
+		}
+
+	}
+
 }

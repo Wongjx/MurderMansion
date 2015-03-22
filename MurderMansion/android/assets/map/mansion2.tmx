@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.0" orientation="orthogonal" renderorder="right-up" width="100" height="30" tilewidth="32" tileheight="32" nextobjectid="132">
+<map version="1.0" orientation="orthogonal" renderorder="right-up" width="100" height="30" tilewidth="32" tileheight="32" nextobjectid="133">
  <tileset firstgid="1" name="MMmansion2-2" tilewidth="32" tileheight="32">
   <image source="MMmansion2-2.png" width="1280" height="960"/>
  </tileset>
@@ -485,57 +485,65 @@
    </properties>
    <polyline points="0,0 -6.125,2.125 -8.625,6.4375 -8.875,11 -7.75,16.0625 -2.125,18.9375 6.125,19 11.25,14.0625 12.3125,8.3125 9.875,2.5625 5.875,0.375 -0.03125,0.0117188"/>
   </object>
-  <object id="120" name="L1S1" type="object" x="657.625" y="74.875" width="7.25" height="30.875">
+  <object id="120" name="L1S1" type="object" x="674.125" y="74.375" width="7.25" height="30.875">
    <properties>
     <property name="isSensor" value="true"/>
+    <property name="maskBits" value="1"/>
     <property name="userData" value="L1S1"/>
    </properties>
   </object>
-  <object id="121" name="L1S2" type="object" x="408.125" y="74.375" width="7.875" height="33.375">
+  <object id="121" name="L1S2" type="object" x="384.125" y="74.125" width="7.875" height="33.375">
    <properties>
     <property name="isSensor" value="true"/>
+    <property name="maskBits" value="1"/>
     <property name="userData" value="L1S2"/>
    </properties>
   </object>
-  <object id="122" name="L1S3" type="object" x="409.091" y="674.364" width="7.63636" height="36.9091">
+  <object id="122" name="L1S3" type="object" x="378.091" y="673.489" width="7.63636" height="36.9091">
    <properties>
     <property name="isSensor" value="true"/>
+    <property name="maskBits" value="1"/>
     <property name="userData" value="L1S3"/>
    </properties>
   </object>
   <object id="123" name="L1S4" type="object" x="895.25" y="806.375" width="31.5" height="3.375">
    <properties>
     <property name="isSensor" value="true"/>
+    <property name="maskBits" value="1"/>
     <property name="userData" value="L1S4"/>
    </properties>
   </object>
-  <object id="124" name="stair2down" type="object" x="2320.88" y="72.875" width="6" height="31.75">
+  <object id="124" name="stair2down" type="object" x="2344.76" y="73" width="6" height="31.75">
    <properties>
     <property name="isSensor" value="true"/>
+    <property name="maskBits" value="1"/>
     <property name="userData" value="L2S2"/>
    </properties>
   </object>
-  <object id="125" name="stair1down" type="object" x="2578.12" y="73.125" width="6.875" height="33.125">
+  <object id="125" name="stair1down" type="object" x="2554.57" y="73.2273" width="6.875" height="33.125">
    <properties>
     <property name="isSensor" value="true"/>
+    <property name="maskBits" value="1"/>
     <property name="userData" value="L2S1"/>
    </properties>
   </object>
-  <object id="126" name="stair3down" type="object" x="2313.64" y="671.909" width="6.45455" height="36.7273">
+  <object id="126" name="stair3down" type="object" x="2345.76" y="672.159" width="6.45455" height="36.7273">
    <properties>
     <property name="isSensor" value="true"/>
+    <property name="maskBits" value="1"/>
     <property name="userData" value="L2S3"/>
-   </properties>
-  </object>
-  <object id="127" name="stair4down" type="object" x="2811" y="809.273" width="4.09091" height="31.4545">
-   <properties>
-    <property name="isSensor" value="true"/>
-    <property name="userData" value="L2S4"/>
    </properties>
   </object>
   <object id="128" name="wall" type="object" x="675.333" y="587.333" width="14.6667" height="15.3333"/>
   <object id="129" name="wall" type="object" x="378" y="586.667" width="20" height="20"/>
   <object id="130" name="wall" type="object" x="378.667" y="298.667" width="19.3333" height="18"/>
   <object id="131" name="wall" type="object" x="670" y="296.667" width="17.3333" height="17.3333"/>
+  <object id="132" name="L2S4" type="object" x="2815.56" y="772.489" width="31.125" height="4.125">
+   <properties>
+    <property name="isSensor" value="true"/>
+    <property name="maskBits" value="1"/>
+    <property name="userData" value="L2S4"/>
+   </properties>
+  </object>
  </objectgroup>
 </map>

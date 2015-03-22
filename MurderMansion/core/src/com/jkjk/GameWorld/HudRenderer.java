@@ -19,7 +19,9 @@ import com.jkjk.MMHelpers.AssetLoader;
 
 public class HudRenderer {
 
-	private TextureRegionDrawable emptySlot, bat, disarmTrap;
+	private TextureRegionDrawable civ_bat, civ_item, civ_dash;
+	private Texture emptySlot;
+	private Actor emptySlot_actor;
 	private Texture timebox;
 	private Actor timebox_actor;
 	private Texture civ_profile;
@@ -29,7 +31,7 @@ public class HudRenderer {
 	private Float playTime;
 	
 	private float x, y, width, height;
-	private ImageButton emptyItemSlot, emptyWeaponSlot, weaponButton, itemButton, disguiseToCiv, disguiseToMur;
+	private ImageButton weaponButton, itemButton, dashButton, disguiseToCiv, disguiseToMur;
 	
 	private GameCharacter player;
 	private GameWorld gWorld;
@@ -52,7 +54,7 @@ public class HudRenderer {
 		player = gWorld.getPlayer();
 		
 		// countdown 
-		playTime = 180.0f;
+		playTime = 240.0f;
 		
 		hudCam = new OrthographicCamera();
 		hudCam.setToOrtho(false, gameWidth, gameHeight);
@@ -63,15 +65,16 @@ public class HudRenderer {
 		stage.addActor(touchpad);
 		stage.addActor(getTimebox());
 		stage.addActor(getProfile());
-		stage.addActor(getEmptyItemSlot());
-		stage.addActor(getEmptyWeaponSlot());
+		stage.addActor(getEmptySlot());
+		stage.addActor(getPanic());
 		Gdx.input.setInputProcessor(stage);
 	}
 	
 	private void initAssets(float w, float h){
 		emptySlot = AssetLoader.emptySlot;
-		bat = AssetLoader.bat;
-		disarmTrap = AssetLoader.disarmTrap;
+		civ_bat = AssetLoader.civ_weapon_bat_draw;
+		civ_item = AssetLoader.civ_item_draw;
+		civ_dash = AssetLoader.civ_dash_draw;
 
 		// Touchpad stuff
 		touchpad = AssetLoader.touchpad;
@@ -93,6 +96,7 @@ public class HudRenderer {
 		batch.begin();
 		batch.draw(timebox, 55, 280);
 		batch.draw(civ_profile, 180, 282);
+		batch.draw(emptySlot, 485, 25);
 		font.draw(batch,getTime(), 75, 330);
 		batch.end();
 		
@@ -108,9 +112,10 @@ public class HudRenderer {
 	
 	public String getTime(){
 		
-		playTime -= Gdx.graphics.getDeltaTime();
-		time = String.format("%.0f", playTime);
-		// TODO: separate to minutes and seconds, round off to whole number;
+		playTime -= Gdx.graphics.getDeltaTime(); //
+		int minutes = (int) Math.floor(playTime/60.0f);
+		int seconds = (int) Math.floor(playTime - minutes*60);
+		time = String.format("%d:%02d", minutes, seconds);
 		
 		return time;
 	}
@@ -123,16 +128,16 @@ public class HudRenderer {
 				if (actors.getName().equals("Empty Item Slot"))
 					actors.remove();
 			}
-			if (player.getName().equals("Civilian"))
+			if (player.getType().equals("Civilian"))
 				stage.addActor(getDisarmTrap());
-			else if (player.getName().equals("Murderer"))
+			else if (player.getType().equals("Murderer"))
 				stage.addActor(getTrap());
 		} else {
 			for (Actor actors : stage.getActors()) {
 				if (actors.getName().equals("Item Button"))
 					actors.remove();
 			}
-			stage.addActor(getEmptyItemSlot());
+//			stage.addActor(getEmptyItemSlot());
 		}
 	}
 
@@ -143,16 +148,16 @@ public class HudRenderer {
 				if (actors.getName().equals("Empty Weapon Slot"))
 					actors.remove();
 			}
-			if (player.getName().equals("Civilian"))
+			if (player.getType().equals("Civilian"))
 				stage.addActor(getBat());
-			else if (player.getName().equals("Murderer"))
+			else if (player.getType().equals("Murderer"))
 				stage.addActor(getKnife());
 		} else {
 			for (Actor actors : stage.getActors()) {
 				if (actors.getName().equals("Weapon Button"))
 					actors.remove();
 			}
-			stage.addActor(getEmptyWeaponSlot());
+//			stage.addActor(getEmptyWeaponSlot());
 		}
 	}
 	
@@ -169,78 +174,36 @@ public class HudRenderer {
 		
 		civ_profile_actor = new Actor();
 		civ_profile_actor.draw(batch, 1);
-		civ_profile_actor.scaleBy(3);
 		civ_profile_actor.setName("civ profile actor");
 		
 		return civ_profile_actor;
 	}
-
-	public ImageButton getEmptyItemSlot() {
-
-		x = 485;
-		y = 25;
-		width = 50;
-		height = 50;
-
-		emptyItemSlot = new ImageButton(emptySlot);
-		emptyItemSlot.setX(x);
-		emptyItemSlot.setY(y);
-		emptyItemSlot.setWidth(width);
-		emptyItemSlot.setHeight(height);
-		emptyItemSlot.setName("Empty Item Slot");
+	
+	public Actor getEmptySlot(){
 		
-		emptyItemSlot.addListener(new ClickListener() {
-			public void clicked(InputEvent event, float x, float y) {
-				System.out.println("Clicked on empty item slot");
-				// Used to check character position FOR TESTING
-				System.out.println(player.getBody().getPosition());
-			}
-		});
+		emptySlot_actor = new Actor();
+		emptySlot_actor.draw(batch, 1);
+		emptySlot_actor.setName("empty slot");
 		
-		return emptyItemSlot;
-	}
-
-	public ImageButton getEmptyWeaponSlot() {
-
-		x = 555;
-		y = 95;
-		width = 50;
-		height = 50;
-
-		emptyWeaponSlot = new ImageButton(emptySlot);
-		emptyWeaponSlot.setX(x);
-		emptyWeaponSlot.setY(y);
-		emptyWeaponSlot.setWidth(width);
-		emptyWeaponSlot.setHeight(height);
-		emptyWeaponSlot.setName("Empty Weapon Slot");
-		
-		emptyWeaponSlot.addListener(new ClickListener() {
-			public void clicked(InputEvent event, float x, float y) {
-				System.out.println("Clicked on empty weapon slot");
-			}
-		});
-		
-		return emptyWeaponSlot;
+		return emptySlot_actor;
 	}
 
 	public ImageButton getBat() {
 
-		x = 555;
-		y = 95;
-		width = 50;
-		height = 50;
+		x = 505;
+		y = 41;
+//		width = 50;
+//		height = 50;
 
-		weaponButton = new ImageButton(bat);
+		weaponButton = new ImageButton(civ_bat);
 		weaponButton.setX(x);
 		weaponButton.setY(y);
-		weaponButton.setWidth(width);
-		weaponButton.setHeight(height);
 		weaponButton.setName("Weapon Button");
 		
 		weaponButton.addListener(new ClickListener() {
 			public void clicked(InputEvent event, float x, float y) {
 				System.out.println("Clicked on weapon button");
-				player.useWeapon(gWorld);
+				player.useWeapon();
 			}
 		});
 		
@@ -249,12 +212,77 @@ public class HudRenderer {
 
 	public ImageButton getDisarmTrap() {
 
+		x = 567;
+		y = 43;
+
+		itemButton = new ImageButton(civ_item);
+		itemButton.setX(x);
+		itemButton.setY(y);
+		itemButton.setName("Item Button");
+		
+		itemButton.addListener(new ClickListener() {
+			public void clicked(InputEvent event, float x, float y) {
+				System.out.println("Clicked on item button");
+				// Used to check character position FOR TESTING
+				System.out.println(player.getBody().getPosition());
+				player.useItem();
+			}
+		});
+		
+		return itemButton;
+	}
+	
+	public ImageButton getPanic(){
+		
+		x = 528;
+		y = 100;
+		
+		dashButton = new ImageButton(civ_dash);
+		dashButton.setX(x);
+		dashButton.setY(y);
+		dashButton.setName("Panic");
+		
+		dashButton.addListener(new ClickListener() {
+			public void clicked(InputEvent event, float x, float y) {
+				System.out.println("Clicked on panic button");
+				player.useAbility();
+			}
+		});
+		
+		return dashButton;
+	}
+
+	public ImageButton getKnife() {
+		x = 555;
+		y = 120;
+		width = 50;
+		height = 50;
+
+		itemButton = new ImageButton(civ_bat);
+		itemButton.setX(x);
+		itemButton.setY(y);
+		itemButton.setWidth(width);
+		itemButton.setHeight(height);
+		itemButton.setName("Weapon Button");
+		
+		dashButton.addListener(new ClickListener() {
+			public void clicked(InputEvent event, float x, float y) {
+				System.out.println("Clicked on weapon button");
+				player.useWeapon();
+			}
+		});
+		
+		return itemButton;
+	}
+
+	public ImageButton getTrap() {
+
 		x = 485;
 		y = 25;
 		width = 50;
 		height = 50;
 
-		itemButton = new ImageButton(disarmTrap);
+		itemButton = new ImageButton(civ_item);
 		itemButton.setX(x);
 		itemButton.setY(y);
 		itemButton.setWidth(width);
@@ -264,18 +292,10 @@ public class HudRenderer {
 		itemButton.addListener(new ClickListener() {
 			public void clicked(InputEvent event, float x, float y) {
 				System.out.println("Clicked on item button");
-				player.useItem(gWorld);
+				player.useItem();
 			}
 		});
 		
-		return itemButton;
-	}
-
-	public ImageButton getKnife() {
-		return weaponButton;
-	}
-
-	public ImageButton getTrap() {
 		return itemButton;
 	}
 
