@@ -1,10 +1,6 @@
 package com.jkjk.GameObjects.Items;
 
-import java.util.concurrent.Executor;
-import java.util.concurrent.Executors;
-
 import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.badlogic.gdx.physics.box2d.PolygonShape;
@@ -15,20 +11,19 @@ import com.jkjk.GameWorld.GameWorld;
 public class DisarmTrap extends Item {
 
 	private BodyDef bdef;
-	private Body body;
 	private FixtureDef fdef;
 	private Vector2 playerPosition;
 	private float playerAngle;
-	private Executor executor;
 
-	public DisarmTrap() {
+	public DisarmTrap(GameWorld gWorld) {
+		super(gWorld);
 		bdef = new BodyDef();
 		fdef = new FixtureDef();
-		executor = Executors.newFixedThreadPool(1);
+		hitBoxExposure = new HitBoxExposure(10);
 	}
 	
 	@Override
-	public void use(GameWorld gWorld) {
+	public void use() {
 		System.out.println("Used disarm trap");
 		playerPosition = gWorld.getPlayer().getBody().getPosition();
 		playerAngle = gWorld.getPlayer().getBody().getAngle();
@@ -37,7 +32,7 @@ public class DisarmTrap extends Item {
 		bdef.angle = playerAngle;
 		body = gWorld.getWorld().createBody(bdef);
 
-		Vector2[] vertices = { new Vector2(1, 0), new Vector2(20, 8.9f), new Vector2(28, 5.6f),
+		Vector2[] vertices = { new Vector2(11, 0), new Vector2(20, 8.9f), new Vector2(28, 5.6f),
 				new Vector2(32, 0), new Vector2(28,-5.6f), new Vector2(20, -8.9f) };
 		PolygonShape shape = new PolygonShape();
 		shape.set(vertices);
@@ -47,6 +42,6 @@ public class DisarmTrap extends Item {
 		
 		body.createFixture(fdef).setUserData("disarm trap");
 		
-		executor.execute(new HitBoxExposure(gWorld.getWorld(), body));
+		hitBoxExposure.startExposure();
 	}
 }

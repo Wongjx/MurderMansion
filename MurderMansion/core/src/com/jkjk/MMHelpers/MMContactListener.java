@@ -20,7 +20,9 @@ public class MMContactListener implements ContactListener {
 	private Object fbUD;
 	private Array<Body> itemsToRemove;
 	private Array<Body> weaponsToRemove;
-	private Array<Body> bodiesToDraw; // later between batch.start() and batch.end(), draw only items in this array.
+	private Array<Body> trapToRemove;
+	private Array<Body> bodiesToDraw; // later between batch.start() and batch.end(), draw only items in this
+										// array.
 	private GameWorld gWorld;
 	private boolean atStairs;
 	private String stairsName;
@@ -28,6 +30,7 @@ public class MMContactListener implements ContactListener {
 	public MMContactListener(GameWorld gWorld) {
 		itemsToRemove = new Array<Body>();
 		weaponsToRemove = new Array<Body>();
+		trapToRemove = new Array<Body>();
 		bodiesToDraw = new Array<Body>();// need to permanently add player's own body inside here. but where?
 		this.gWorld = gWorld;
 		atStairs = false;
@@ -76,13 +79,29 @@ public class MMContactListener implements ContactListener {
 				} else if (faUD.equals("L2S4") || fbUD.equals("L2S4")) {
 					atStairs = true;
 					stairsName = "L2S4";
+				} else if (faUD.equals("bat") || fbUD.equals("bat")) {
+					if (!gWorld.getPlayer().getType().equals("Ghost"))
+						gWorld.getPlayer().stun(true);
+				} else if (faUD.equals("trap") || fbUD.equals("trap")) {
+					if (!gWorld.getPlayer().getType().equals("Ghost"))
+						gWorld.getPlayer().die();
+				} else if (faUD.equals("knife") || fbUD.equals("knife")) {
+					if (!gWorld.getPlayer().getType().equals("Ghost"))
+						gWorld.getPlayer().die();
 				}
-			}
-			else{ // non player fixture interaction
-				// in contact with all other object fixtures but other light fixtures
+			} else { // non player fixture interaction
+						// in contact with all other object fixtures but other light fixtures
 				if (faUD.equals("lightBody") && !fbUD.equals("lightBody")) {
 					System.out.println("FB: draw sprite of " + fbUD);
 					bodiesToDraw.add(fb.getBody());
+				}
+
+				if (faUD.equals("disarm trap") || fbUD.equals("disarm trap")) {
+					if (faUD.equals("trap")) {
+						trapToRemove.add(fa.getBody());
+					} else if (fbUD.equals("trap")) {
+						trapToRemove.add(fb.getBody());
+					}
 				}
 			}
 		}
@@ -107,15 +126,15 @@ public class MMContactListener implements ContactListener {
 		fb = c.getFixtureB();
 		faUD = fa.getUserData();
 		fbUD = fb.getUserData();
-		if(faUD!=null && fbUD!=null){
-			if(faUD.equals("lightBody")&&!fbUD.equals("lightBody")){
+		if (faUD != null && fbUD != null) {
+			if (faUD.equals("lightBody") && !fbUD.equals("lightBody")) {
 				System.out.println("END contact: fa: " + faUD + ", fb: " + fbUD);
 				bodiesToDraw.removeValue(fb.getBody(), true);
 				System.out.println("FB: " + fbUD + " was removed from bodies to be drawn array.");
-				
+
 			}
 		}
-		
+
 	}
 
 	public Array<Body> getItemsToRemove() {
@@ -124,6 +143,10 @@ public class MMContactListener implements ContactListener {
 
 	public Array<Body> getWeaponsToRemove() {
 		return weaponsToRemove;
+	}
+
+	public Array<Body> getTrapToRemove() {
+		return trapToRemove;
 	}
 
 	// collision detection - when two objects collide

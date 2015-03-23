@@ -66,7 +66,7 @@ public class HudRenderer {
 		stage.addActor(getTimebox());
 		stage.addActor(getProfile());
 		stage.addActor(getEmptySlot());
-		stage.addActor(getDash());
+		stage.addActor(getPanic());
 		Gdx.input.setInputProcessor(stage);
 	}
 	
@@ -128,9 +128,9 @@ public class HudRenderer {
 				if (actors.getName().equals("Empty Item Slot"))
 					actors.remove();
 			}
-			if (player.getName().equals("Civilian"))
+			if (player.getType().equals("Civilian"))
 				stage.addActor(getDisarmTrap());
-			else if (player.getName().equals("Murderer"))
+			else if (player.getType().equals("Murderer"))
 				stage.addActor(getTrap());
 		} else {
 			for (Actor actors : stage.getActors()) {
@@ -148,9 +148,9 @@ public class HudRenderer {
 				if (actors.getName().equals("Empty Weapon Slot"))
 					actors.remove();
 			}
-			if (player.getName().equals("Civilian"))
+			if (player.getType().equals("Civilian"))
 				stage.addActor(getBat());
-			else if (player.getName().equals("Murderer"))
+			else if (player.getType().equals("Murderer"))
 				stage.addActor(getKnife());
 		} else {
 			for (Actor actors : stage.getActors()) {
@@ -203,7 +203,7 @@ public class HudRenderer {
 		weaponButton.addListener(new ClickListener() {
 			public void clicked(InputEvent event, float x, float y) {
 				System.out.println("Clicked on weapon button");
-				player.useWeapon(gWorld);
+				player.useWeapon();
 			}
 		});
 		
@@ -225,14 +225,14 @@ public class HudRenderer {
 				System.out.println("Clicked on item button");
 				// Used to check character position FOR TESTING
 				System.out.println(player.getBody().getPosition());
-				player.useItem(gWorld);
+				player.useItem();
 			}
 		});
 		
 		return itemButton;
 	}
 	
-	public ImageButton getDash(){
+	public ImageButton getPanic(){
 		
 		x = 528;
 		y = 100;
@@ -240,11 +240,12 @@ public class HudRenderer {
 		dashButton = new ImageButton(civ_dash);
 		dashButton.setX(x);
 		dashButton.setY(y);
-		dashButton.setName("Dash");
+		dashButton.setName("Panic");
 		
 		dashButton.addListener(new ClickListener() {
 			public void clicked(InputEvent event, float x, float y) {
-				System.out.println("Clicked on dash button");
+				System.out.println("Clicked on panic button");
+				player.useAbility();
 			}
 		});
 		
@@ -267,7 +268,7 @@ public class HudRenderer {
 		dashButton.addListener(new ClickListener() {
 			public void clicked(InputEvent event, float x, float y) {
 				System.out.println("Clicked on weapon button");
-				player.useWeapon(gWorld);
+				player.useWeapon();
 			}
 		});
 		
@@ -291,7 +292,7 @@ public class HudRenderer {
 		itemButton.addListener(new ClickListener() {
 			public void clicked(InputEvent event, float x, float y) {
 				System.out.println("Clicked on item button");
-				player.useItem(gWorld);
+				player.useItem();
 			}
 		});
 		

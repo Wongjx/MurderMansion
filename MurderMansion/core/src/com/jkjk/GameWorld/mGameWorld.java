@@ -1,4 +1,4 @@
-package com.jkjk.GameWorld;
+/*package com.jkjk.GameWorld;
 
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
@@ -152,13 +152,11 @@ public class mGameWorld extends GameWorld{
 	}
 
 	public void update(float delta) {
-//		for(GameCharacter character : playerList){
-//			Body old=character.getBody();
-//			old.0
-//			character.setBody(body);
-//		}
 		world.step(delta, 6, 2); // Step size|Steps for each body to check collision|Accuracy of body position
 									// after collision
+
+		player.update();
+		checkStairs();
 
 		// check for collected items
 		for (int i = 0; i < itemsToRemove.size; i++) {
@@ -171,16 +169,17 @@ public class mGameWorld extends GameWorld{
 				player.addItem(itemFac.createItem("Trap"));
 		}
 		itemsToRemove.clear();
-		
+
 		for (int i = 0; i < weaponsToRemove.size; i++) {
 			bodyToRemove = weaponsToRemove.get(i);
 			weaponList.removeValue((WeaponSprite) bodyToRemove.getUserData(), true);
 			world.destroyBody(bodyToRemove);
 			if (player.getName().equals("Civilian"))
-				player.addWeapon(weaponFac.createWeapon("Bat"));
+				player.addWeapon(weaponFac.createWeapon("Bat", this));
 			else if (player.getName().equals("Murderer"))
-				player.addWeapon(weaponFac.createWeapon("Knife"));
+				player.addWeapon(weaponFac.createWeapon("Knife", this));
 		}
 		weaponsToRemove.clear();
 	}
 }
+*/

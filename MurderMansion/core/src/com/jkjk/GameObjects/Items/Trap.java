@@ -20,23 +20,24 @@ public class Trap extends Item {
 	private Vector2 playerPosition;
 	private float playerAngle;
 
-	public Trap() {
+	public Trap(GameWorld gWorld) {
+		super(gWorld);
 		bdef = new BodyDef();
 		fdef = new FixtureDef();
 	}
 
 	@Override
-	public void use(GameWorld gWorld) {
+	public void use() {
 		System.out.println("Used trap");
 		playerPosition = gWorld.getPlayer().getBody().getPosition();
 		playerAngle = gWorld.getPlayer().getBody().getAngle();
 		bdef.type = BodyType.StaticBody;
 		bdef.position.set(playerPosition.x, playerPosition.y);
-		bdef.angle = playerAngle;
 		body = gWorld.getWorld().createBody(bdef);
 
 		CircleShape shape = new CircleShape();
 		shape.setRadius(10);
+		shape.setPosition(new Vector2((float) (25f*Math.cos(playerAngle)),(float) (25f*Math.sin(playerAngle))));
 		fdef.shape = shape;
 		fdef.isSensor = true;
 		fdef.filter.maskBits = 1;
