@@ -10,6 +10,11 @@ import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
 import com.jkjk.GameObjects.Characters.GameCharacter;
 import com.jkjk.MMHelpers.AssetLoader;
 
+/**
+ * @author JunXiang GameRenderer's primary purpose is to render the graphics that are seen on your screen.
+ *         This includes displaying the HUD, map, and sprites that exist in the world.
+ * 
+ */
 public class GameRenderer {
 	private GameWorld gWorld;
 	private OrthographicCamera cam;
