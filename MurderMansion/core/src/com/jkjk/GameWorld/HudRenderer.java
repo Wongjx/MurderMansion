@@ -223,8 +223,6 @@ public class HudRenderer {
 		itemButton.addListener(new ClickListener() {
 			public void clicked(InputEvent event, float x, float y) {
 				System.out.println("Clicked on item button");
-				// Used to check character position FOR TESTING
-				System.out.println(player.getBody().getPosition());
 				player.useItem();
 			}
 		});
@@ -245,6 +243,8 @@ public class HudRenderer {
 		dashButton.addListener(new ClickListener() {
 			public void clicked(InputEvent event, float x, float y) {
 				System.out.println("Clicked on panic button");
+				// Used to check character position FOR TESTING
+				System.out.println(player.getBody().getPosition());
 				player.useAbility();
 			}
 		});

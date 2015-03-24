@@ -1,9 +1,13 @@
-package com.jkjk.Server;
+package com.jkjk.Host;
 
 import com.badlogic.gdx.physics.box2d.Body;
 import com.jkjk.GameObjects.Characters.GameCharacter;
 
 public class MMServer {
+
+	private ItemSpawner itemSpawner;
+	private WeaponSpawner weaponSpawner;
+	private WeaponPartSpawner weaponPartSpawner;
 
 	private final int numOfPlayers;
 	private Object numOfPlayersSync;
@@ -23,17 +27,39 @@ public class MMServer {
 	// animation
 	// HOW?!!?!?!?!?!?!!
 
-	public MMServer(int numOfPlayers) {
+	public MMServer(int numOfPlayers) throws InterruptedException {
 		this.numOfPlayers = numOfPlayers;
 		playerIsAlive = new Boolean[numOfPlayers];
 		playerIsStun = new Boolean[numOfPlayers];
 		playerType = new GameCharacter[numOfPlayers];
 		playerBody = new Body[numOfPlayers];
-		
+
 		itemSpawnLocations = new SpawnBuffer(numOfPlayers);
 		weaponSpawnLocations = new SpawnBuffer(numOfPlayers);
 		weaponPartSpawnLocations = new SpawnBuffer(numOfPlayers);
 		trapLocations = new SpawnBuffer(numOfPlayers);
+		
+		spawnItems(numOfPlayers*3);
+		spawnWeapons(numOfPlayers);
+		spawnWeaponParts(numOfPlayers*2);
+	}
+
+	private void spawnItems(int numOfItems) throws InterruptedException {
+		for (int i = 0; i < numOfItems; i++) {
+			produceItemSpawnLocations(itemSpawner.spawn());
+		}
+	}
+	
+	private void spawnWeapons(int numOfItems) throws InterruptedException {
+		for (int i = 0; i < numOfItems; i++) {
+			produceWeaponPartSpawnLocations(weaponSpawner.spawn());
+		}
+	}
+	
+	private void spawnWeaponParts(int numOfItems) throws InterruptedException {
+		for (int i = 0; i < numOfItems; i++) {
+			produceWeaponPartSpawnLocations(weaponPartSpawner.spawn());
+		}
 	}
 
 	public int getNumOfPlayers() {
@@ -101,10 +127,11 @@ public class MMServer {
 			itemSpawnLocations.produce(location);
 		}
 	}
-	
+
 	public void consumeItemSpawnLocations(Location location) throws InterruptedException {
 		synchronized (itemSpawnLocations) {
 			itemSpawnLocations.consume(location);
+			itemSpawner.restore(location);
 		}
 	}
 
@@ -119,10 +146,11 @@ public class MMServer {
 			weaponSpawnLocations.produce(location);
 		}
 	}
-	
+
 	public void consumeWeaponSpawnLocations(Location location) throws InterruptedException {
 		synchronized (weaponSpawnLocations) {
 			weaponSpawnLocations.consume(location);
+			weaponSpawner.restore(location);
 		}
 	}
 
@@ -137,7 +165,7 @@ public class MMServer {
 			weaponPartSpawnLocations.produce(location);
 		}
 	}
-	
+
 	public void consumeWeaponPartSpawnLocations(Location location) throws InterruptedException {
 		synchronized (weaponPartSpawnLocations) {
 			weaponPartSpawnLocations.consume(location);
@@ -155,7 +183,7 @@ public class MMServer {
 			trapLocations.produce(location);
 		}
 	}
-	
+
 	public void consumeTrapLocations(Location location) throws InterruptedException {
 		synchronized (trapLocations) {
 			trapLocations.consume(location);
