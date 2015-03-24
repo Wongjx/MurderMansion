@@ -1,12 +1,12 @@
 package com.jkjk.GameObjects.Abilities;
 
-import com.jkjk.GameObjects.Cooldown;
+import com.jkjk.GameObjects.Duration;
 import com.jkjk.GameObjects.Characters.GameCharacter;
 
 
 public abstract class Ability {
 	
-	protected Cooldown cooldown;
+	protected Duration cooldown;
 	protected GameCharacter gameCharacter;
 	
 	public Ability(GameCharacter gameCharacter){

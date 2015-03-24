@@ -1,17 +1,17 @@
 package com.jkjk.GameObjects.Abilities;
 
-import com.jkjk.GameObjects.Cooldown;
+import com.jkjk.GameObjects.Duration;
 import com.jkjk.GameObjects.Characters.GameCharacter;
 
 public class Panic extends Ability {
 	
-	private Cooldown duration;
+	private Duration duration;
 	private boolean active;
 	
 	public Panic(GameCharacter gameCharacter) {
 		super(gameCharacter);
-		cooldown = new Cooldown(300000);
-		duration = new Cooldown(5000);
+		cooldown = new Duration(300000);
+		duration = new Duration(5000);
 	}
 	
 	@Override

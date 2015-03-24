@@ -22,6 +22,10 @@ import com.jkjk.GameObjects.Weapons.WeaponSprite;
 import com.jkjk.MMHelpers.AssetLoader;
 import com.jkjk.MMHelpers.MMContactListener;
 
+/**
+ * @author JunXiang GameWorld's primary purpose is to update the results of interactions in the world. It
+ *         deals with creation and destruction of Box2D bodies, and manages contact listeners.
+ */
 public class GameWorld {
 	private GameCharacterFactory gameCharFac;
 	private GameCharacter player;
@@ -43,11 +47,11 @@ public class GameWorld {
 
 	private Array<Body> itemsToRemove, weaponsToRemove, trapToRemove;
 	private Body bodyToRemove;
-	
+
 	private float currentPositionX;
 	private float currentPositionY;
 	private float currentAngle;
-	
+
 	// FOR DEBUG PURPOSE
 	private BodyDef bdef;
 	private Body body;
@@ -84,16 +88,39 @@ public class GameWorld {
 		for (int i = 0; i < maxWeapons; i++) {
 			createWeapons(i);
 		}
-		
-		createTrap(); // FOR DEBUG PURPOSE
 
+		createTrap(); // FOR DEBUG PURPOSE
 
 		Box2DMapObjectParser parser = new Box2DMapObjectParser();
 		parser.load(world, AssetLoader.tiledMap);
 	}
-	
+
+	public void update(float delta) {
+		world.step(delta, 6, 2); // Step size|Steps for each body to check collision|Accuracy of body position
+									// after collision
+
+		if (player.isAlive()) {
+			player.update();
+		} else {
+			createGhost();
+		}
+		checkStairs();
+		checkItemSprite();
+		checkWeaponSprite();
+		checkWeaponPartSprite();
+		checkTrap();
+
+	}
+
+	private void createPlayer() {
+		player = gameCharFac.createCharacter("Civilian", 0, world);
+		player.getBody().getFixtureList().get(0).setUserData("player");
+		player.spawn(1010, 515, 0);
+		player.addAbility(abilityFac.createAbility(player));
+	}
+
 	// FOR DEBUG PURPOSE
-	private void createTrap(){
+	private void createTrap() {
 		bdef = new BodyDef();
 		fdef = new FixtureDef();
 		bdef.type = BodyType.StaticBody;
@@ -105,17 +132,11 @@ public class GameWorld {
 		fdef.shape = shape;
 		fdef.isSensor = true;
 		fdef.filter.maskBits = 1;
-		
+
 		body.createFixture(fdef).setUserData("trap");
 	}
 
-	private void createPlayer() {
-		player = gameCharFac.createCharacter("Civilian", 0, world);
-		player.getBody().getFixtureList().get(0).setUserData("player");
-		player.spawn(1010, 515, 0);
-		player.addAbility(abilityFac.createAbility(player));
-	}
-
+	// FOR DEBUG PURPOSE
 	private void createOpponents(int i) {
 		if (i == 0) {
 			playerList.add((Murderer) gameCharFac.createCharacter("Murderer", world));
@@ -128,11 +149,13 @@ public class GameWorld {
 		}
 	}
 
+	// FOR DEBUG PURPOSE
 	private void createItems(int i) {
 		itemList.add(new ItemSprite(world));
 		itemList.get(i).spawn(1100 - ((i + 1) * 40), 490, 0);
 	}
 
+	// FOR DEBUG PURPOSE
 	private void createWeapons(int i) {
 		weaponList.add(new WeaponSprite(world));
 		weaponList.get(i).spawn(1100 - ((i + 1) * 40), 460, 0);
@@ -158,25 +181,18 @@ public class GameWorld {
 		return player;
 	}
 
-	public void update(float delta) {
-		world.step(delta, 6, 2); // Step size|Steps for each body to check collision|Accuracy of body position
-									// after collision
+	private void createGhost() {
+		currentPositionX = player.getBody().getPosition().x;
+		currentPositionY = player.getBody().getPosition().y;
+		currentAngle = player.getBody().getAngle();
+		world.destroyBody(player.getBody());
+		player = gameCharFac.createCharacter("Ghost", world);
+		player.getBody().getFixtureList().get(0).setUserData("player");
+		player.spawn(currentPositionX, currentPositionY, currentAngle);
+		player.addAbility(abilityFac.createAbility(player));
+	}
 
-		if (player.isAlive()){
-			player.update();
-		} else {
-			currentPositionX = player.getBody().getPosition().x;
-			currentPositionY = player.getBody().getPosition().y;
-			currentAngle = player.getBody().getAngle();
-			world.destroyBody(player.getBody());
-			player = gameCharFac.createCharacter("Ghost", world);
-			player.getBody().getFixtureList().get(0).setUserData("player");
-			player.spawn(currentPositionX, currentPositionY, currentAngle);
-			player.addAbility(abilityFac.createAbility(player));
-		}
-		checkStairs();
-
-		// check for collected items
+	private void checkItemSprite() {
 		for (int i = 0; i < itemsToRemove.size; i++) {
 			bodyToRemove = itemsToRemove.get(i);
 			itemList.removeValue((ItemSprite) bodyToRemove.getUserData(), true);
@@ -187,7 +203,9 @@ public class GameWorld {
 				player.addItem(itemFac.createItem("Trap", this));
 		}
 		itemsToRemove.clear();
+	}
 
+	private void checkWeaponSprite() {
 		for (int i = 0; i < weaponsToRemove.size; i++) {
 			bodyToRemove = weaponsToRemove.get(i);
 			weaponList.removeValue((WeaponSprite) bodyToRemove.getUserData(), true);
@@ -198,7 +216,13 @@ public class GameWorld {
 				player.addWeapon(weaponFac.createWeapon("Knife", this));
 		}
 		weaponsToRemove.clear();
-		
+	}
+
+	private void checkWeaponPartSprite() {
+
+	}
+
+	private void checkTrap() {
 		for (int i = 0; i < trapToRemove.size; i++) {
 			bodyToRemove = trapToRemove.get(i);
 			weaponList.removeValue((WeaponSprite) bodyToRemove.getUserData(), true);
