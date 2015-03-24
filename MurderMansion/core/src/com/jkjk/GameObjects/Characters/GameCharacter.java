@@ -48,13 +48,10 @@ public abstract class GameCharacter {
 	public GameCharacter() {
 		maxVelocity = 64;
 		touchpad = AssetLoader.touchpad;
-<<<<<<< HEAD
 		batch = new SpriteBatch();
 		charAnim = AssetLoader.civAnimation;
 		runTime = 0;
-=======
 		stunDuration = new Duration(5000);
->>>>>>> dfaa3b1e92ae95e1e9222e2dda3a9f729d83ac20
 	}
 
 	public String getType() {
@@ -229,7 +226,6 @@ public abstract class GameCharacter {
 		batch.begin();
 		runTime +=Gdx.graphics.getRawDeltaTime();
 		batch.draw(charAnim.getKeyFrame(runTime,true), body.getPosition().x-10, body.getPosition().y-10, 10, 10, 20, 20, 1, 1,(float) (body.getAngle()*180/Math.PI)-90);
-		Gdx.app.error("getRaw = ", "      "+runTime);
 		batch.end();
 		
 	}
