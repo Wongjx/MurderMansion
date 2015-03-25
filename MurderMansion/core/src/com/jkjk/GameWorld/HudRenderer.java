@@ -35,7 +35,7 @@ public class HudRenderer {
 	private String time;
 	private Float playTime;
 
-	private float x, y, width, height;
+	private float x, y;
 	private ImageButton weaponButton, itemButton, dashButton, disguiseToCiv, disguiseToMur, hauntButton;
 
 	private GameCharacter player;
@@ -190,7 +190,6 @@ public class HudRenderer {
 				if (actors.getName().equals("Item Button"))
 					actors.remove();
 			}
-			// stage.addActor(getEmptyItemSlot());
 		}
 	}
 
@@ -201,9 +200,16 @@ public class HudRenderer {
 	private void weaponCheck() {
 		player.setWeaponChange(false);
 		if (player.getWeapon() != null) {
-			if (player.getType().equals("Civilian"))
+			for (Actor actors : stage.getActors()) {
+				if (actors.getName().equals("Weapon Button"))
+					actors.remove();
+			}
+			if (player.getWeapon().getName().equals("Shotgun")){
+				stage.addActor(getShotgun());
+			}
+			else if (player.getWeapon().getName().equals("Bat"))
 				stage.addActor(getBat());
-			else if (player.getType().equals("Murderer"))
+			else if (player.getWeapon().getName().equals("Knife"))
 				stage.addActor(getKnife());
 		} else {
 			for (Actor actors : stage.getActors()) {
@@ -269,6 +275,31 @@ public class HudRenderer {
 		weaponButton.addListener(new ClickListener() {
 			public void clicked(InputEvent event, float x, float y) {
 				System.out.println("Clicked on bat button");
+				player.useWeapon();
+			}
+		});
+
+		return weaponButton;
+	}
+
+	/**
+	 * Creates the actor for the shotgun slot at 505,41.
+	 * 
+	 * @return Actor for Shotgun slot
+	 */
+	public ImageButton getShotgun() {
+
+		x = 505;
+		y = 41;
+
+		weaponButton = new ImageButton(civ_item);
+		weaponButton.setX(x);
+		weaponButton.setY(y);
+		weaponButton.setName("Weapon Button");
+
+		weaponButton.addListener(new ClickListener() {
+			public void clicked(InputEvent event, float x, float y) {
+				System.out.println("Clicked on shotgun button");
 				player.useWeapon();
 			}
 		});
@@ -429,6 +460,11 @@ public class HudRenderer {
 		return disguiseToMur;
 	}
 
+	/**
+	 * Creates the actor for the haunt slot at 528,100.
+	 * 
+	 * @return Actor for Haunt slot.
+	 */
 	public ImageButton getHaunt() {
 		x = 528;
 		y = 100;

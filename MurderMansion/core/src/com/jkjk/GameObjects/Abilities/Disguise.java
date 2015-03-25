@@ -24,7 +24,7 @@ public class Disguise extends Ability {
 	
 	@Override
 	public void cooldown() {
-		cooldown.startCooldown();
+		cooldown.startCountdown();
 	}
 
 }

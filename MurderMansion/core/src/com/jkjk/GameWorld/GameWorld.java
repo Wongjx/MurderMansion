@@ -10,7 +10,7 @@ import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.Array;
-import com.jkjk.GameObjects.Abilities.AbilityFactory;
+import com.jkjk.GameObjects.WeaponPartSprite;
 import com.jkjk.GameObjects.Characters.Civilian;
 import com.jkjk.GameObjects.Characters.GameCharacter;
 import com.jkjk.GameObjects.Characters.GameCharacterFactory;
@@ -43,15 +43,18 @@ public class GameWorld {
 	private WeaponFactory weaponFac;
 	private Array<WeaponSprite> weaponList;
 
-	private AbilityFactory abilityFac;
+	private Array<WeaponPartSprite> weaponPartList;
+	private int numOfWeaponPartsCollected;
+	private boolean shotgunCreated;
 
 	private World world;
 	private MMContactListener cl;
 	private int numOfPlayers;
 	private int maxItems;
 	private int maxWeapons;
+	private int maxWeaponParts;
 
-	private Array<Body> itemsToRemove, weaponsToRemove, trapToRemove;
+	private Array<Body> itemsToRemove, weaponsToRemove, weaponPartsToRemove, trapToRemove;
 	private Body bodyToRemove;
 
 	private float currentPositionX;
@@ -79,9 +82,8 @@ public class GameWorld {
 
 		itemsToRemove = cl.getItemsToRemove();
 		weaponsToRemove = cl.getWeaponsToRemove();
+		weaponPartsToRemove = cl.getWeaponPartsToRemove();
 		trapToRemove = cl.getTrapToRemove();
-
-		abilityFac = new AbilityFactory();
 
 		gameCharFac = new GameCharacterFactory();
 		playerList = new Array<GameCharacter>();
@@ -93,6 +95,9 @@ public class GameWorld {
 		weaponFac = new WeaponFactory();
 		weaponList = new Array<WeaponSprite>();
 		maxWeapons = (int) (numOfPlayers * 1.2);
+		numOfWeaponPartsCollected = 0;
+		weaponPartList = new Array<WeaponPartSprite>();
+		maxWeaponParts = numOfPlayers * 2;
 		createPlayer();
 		for (int i = 0; i < numOfPlayers - 1; i++) {
 			createOpponents(i);
@@ -102,6 +107,9 @@ public class GameWorld {
 		}
 		for (int i = 0; i < maxWeapons; i++) {
 			createWeapons(i);
+		}
+		for (int i = 0; i < maxWeaponParts; i++) {
+			createWeaponParts(i);
 		}
 
 		createTrap(); // FOR DEBUG PURPOSE
@@ -133,14 +141,19 @@ public class GameWorld {
 		checkWeaponPartSprite();
 		checkTrap();
 
+		if (numOfWeaponPartsCollected == 8 && !shotgunCreated) {
+			createShotgun();
+			shotgunCreated = true;
+		}
+
 	}
 
 	/**
 	 * Creates the player in the Box2D world. User data is set as "player" and spawned at defined location.
 	 */
 	private void createPlayer() {
-		player = gameCharFac.createCharacter("Murderer", 0, world);
-//		player = gameCharFac.createCharacter("Civilian", 0, world);
+		// player = gameCharFac.createCharacter("Murderer", 0, world);
+		player = gameCharFac.createCharacter("Civilian", 0, world);
 		player.getBody().getFixtureList().get(0).setUserData("player");
 		player.spawn(1010, 515, 0);
 	}
@@ -187,6 +200,21 @@ public class GameWorld {
 		weaponList.get(i).spawn(1100 - ((i + 1) * 40), 460, 0);
 	}
 
+	// FOR DEBUG PURPOSE
+	private void createWeaponParts(int i) {
+		weaponPartList.add(new WeaponPartSprite(world));
+		weaponPartList.get(i).spawn(1100 - ((i + 1) * 40), 430, 0);
+	}
+
+	/**
+	 * If the player is a civilian, his weapon will be replaced with a shotgun
+	 */
+	private void createShotgun() {
+		if (player.getType().equals("Civilian")) {
+			player.addWeapon(weaponFac.createWeapon("Shotgun", this));
+		}
+	}
+
 	/**
 	 * @return Box2D World
 	 */
@@ -221,6 +249,14 @@ public class GameWorld {
 	 */
 	public GameCharacter getPlayer() {
 		return player;
+	}
+
+	public int getNumOfWeaponPartsCollected() {
+		return numOfWeaponPartsCollected;
+	}
+
+	public void weaponPartsCollected() {
+		this.numOfWeaponPartsCollected++;
 	}
 
 	/**
@@ -275,7 +311,15 @@ public class GameWorld {
 	 * Checks to remove weapon part sprites that have been contacted by the player.
 	 */
 	private void checkWeaponPartSprite() {
-
+		for (int i = 0; i < weaponPartsToRemove.size; i++) {
+			bodyToRemove = weaponPartsToRemove.get(i);
+			weaponPartList.removeValue((WeaponPartSprite) bodyToRemove.getUserData(), true);
+			world.destroyBody(bodyToRemove);
+			if (player.getType().equals("Civilian")) {
+				numOfWeaponPartsCollected++;
+			}
+		}
+		weaponPartsToRemove.clear();
 	}
 
 	/**

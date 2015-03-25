@@ -1,5 +1,7 @@
 package com.jkjk.Host;
 
+import java.util.Random;
+
 public class MMServer {
 
 	private ItemSpawner itemSpawner;
@@ -7,6 +9,8 @@ public class MMServer {
 	private WeaponPartSpawner weaponPartSpawner;
 
 	private final int numOfPlayers;
+	private Random randMurderer;
+	private int murdererId;
 
 	private final int[] playerIsAlive; // If 1 -> true; If 0 -> false;
 	private final int[] playerIsStun; // If 1 -> true; If 0 -> false;
@@ -36,6 +40,8 @@ public class MMServer {
 		weaponSpawnLocations = new SpawnBuffer(numOfPlayers);
 		weaponPartSpawnLocations = new SpawnBuffer(numOfPlayers);
 		trapLocations = new SpawnBuffer(numOfPlayers);
+		
+		murdererId = randMurderer.nextInt(numOfPlayers);
 		
 		spawnItems(numOfPlayers*3);
 		spawnWeapons(numOfPlayers);
