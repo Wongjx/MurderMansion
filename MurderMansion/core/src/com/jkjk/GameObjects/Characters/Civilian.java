@@ -15,9 +15,8 @@ public class Civilian extends GameCharacter {
 
 	private ConeLight coneLight;
 
-	Civilian(int colour, World world) {
-		setType("Civilian");
-		setColour(colour);
+	Civilian(int id, World world) {
+		super("Civilian", id);
 
 		// create body of civilian
 		BodyDef bdef = new BodyDef();

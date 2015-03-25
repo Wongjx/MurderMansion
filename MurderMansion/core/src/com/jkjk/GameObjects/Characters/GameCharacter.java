@@ -10,6 +10,7 @@ import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.scenes.scene2d.ui.Touchpad;
 import com.jkjk.GameObjects.Duration;
 import com.jkjk.GameObjects.Abilities.Ability;
+import com.jkjk.GameObjects.Abilities.AbilityFactory;
 import com.jkjk.GameObjects.Items.Item;
 import com.jkjk.GameObjects.Weapons.Weapon;
 import com.jkjk.MMHelpers.AssetLoader;
@@ -40,26 +41,27 @@ public abstract class GameCharacter {
 
 	private Touchpad touchpad;
 
-	private int colour;
+	private int id;
 	private SpriteBatch batch;
 	private Animation charAnim;
 	private float runTime;
 	
-	public GameCharacter() {
+	public GameCharacter(String type, int id) {
 		maxVelocity = 64;
 		touchpad = AssetLoader.touchpad;
 		batch = new SpriteBatch();
 		charAnim = AssetLoader.civAnimation;
 		runTime = 0;
 		stunDuration = new Duration(5000);
+		
+		this.type = type;
+		this.id = id;
+		AbilityFactory af = new AbilityFactory();
+		ability = af.createAbility(this);
 	}
 
 	public String getType() {
 		return type;
-	}
-
-	public void setType(String type) {
-		this.type = type;
 	}
 
 	public void spawn(float x, float y, float angle) {
@@ -95,20 +97,16 @@ public abstract class GameCharacter {
 		return stun;
 	}
 
-	public int getColour() {
-		return colour;
+	public int getId() {
+		return id;
 	}
 
-	public void setColour(int colour) {
-		this.colour = colour;
+	public void setId(int id) {
+		this.id = id;
 	}
 
 	public Body getBody() {
 		return body;
-	}
-
-	public void addAbility(Ability ability) {
-		this.ability = ability;
 	}
 
 	public Ability getAbility() {
