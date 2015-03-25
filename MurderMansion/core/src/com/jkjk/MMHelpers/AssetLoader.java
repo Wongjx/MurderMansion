@@ -3,6 +3,7 @@ package com.jkjk.MMHelpers;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.Texture.TextureFilter;
+import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.maps.tiled.TiledMap;
@@ -42,7 +43,6 @@ public class AssetLoader {
 	public static TextureRegionDrawable mur_item_draw;
 	public static Texture mur_swap_tex;
 	public static TextureRegionDrawable mur_swap_draw;
-	
 
 	public static Texture logoTexture;
 	public static TextureRegion logo;
@@ -63,7 +63,14 @@ public class AssetLoader {
 	public static Texture time;
 	public static Texture civ_profile;
 	
-	private static LabelStyle countdown;
+	public static Texture civ_walk;
+	public static TextureRegion civ_walk1;
+	public static TextureRegion civ_walk2;
+	public static TextureRegion civ_walk3;
+	public static TextureRegion civ_walk4;
+	public static TextureRegion civ_walk5;
+	public static Animation civAnimation;
+	
 
 	public static void load() {
 
@@ -137,6 +144,23 @@ public class AssetLoader {
 		civ_profile.setFilter(TextureFilter.Linear, TextureFilter.Linear);
 
 		tiledMap = new TmxMapLoader().load("map/mansion2.tmx");
+		
+		civ_walk = new Texture(Gdx.files.internal("data/civilians.png"));
+		civ_walk.setFilter(TextureFilter.Nearest, TextureFilter.Nearest);
+		civ_walk1 = new TextureRegion(civ_walk, 0,0,32,32);
+//		civ_walk1.flip(false, true);
+		civ_walk2 = new TextureRegion(civ_walk, 32,0,32,32);
+//		civ_walk2.flip(false, true);
+		civ_walk3 = new TextureRegion(civ_walk, 64,0,32,32);
+//		civ_walk3.flip(false, true);
+		civ_walk4 = new TextureRegion(civ_walk, 96,0,32,32);
+//		civ_walk4.flip(false, true);
+		civ_walk5 = new TextureRegion(civ_walk, 128,0,32,32);
+//		civ_walk5.flip(false, true);
+		TextureRegion[] civilians = { civ_walk1};//, civ_walk2, civ_walk3, civ_walk4, civ_walk5};
+		civAnimation = new Animation(0.06f, civilians);
+		civAnimation.setPlayMode(Animation.PlayMode.LOOP_PINGPONG);
+		
 	}
 
 	public static void dispose() {
@@ -155,5 +179,6 @@ public class AssetLoader {
 		mur_weapon_tex.dispose();
 		mur_item_tex.dispose();
 		mur_swap_tex.dispose();
+		civ_walk.dispose();
 	}
 }

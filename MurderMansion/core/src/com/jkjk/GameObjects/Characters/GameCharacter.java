@@ -2,7 +2,10 @@ package com.jkjk.GameObjects.Characters;
 
 import box2dLight.RayHandler;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.graphics.g2d.Animation;
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.scenes.scene2d.ui.Touchpad;
 import com.jkjk.GameObjects.Duration;
@@ -38,10 +41,16 @@ public abstract class GameCharacter {
 	private Touchpad touchpad;
 
 	private int colour;
-
+	private SpriteBatch batch;
+	private Animation charAnim;
+	private float runTime;
+	
 	public GameCharacter() {
 		maxVelocity = 64;
 		touchpad = AssetLoader.touchpad;
+		batch = new SpriteBatch();
+		charAnim = AssetLoader.civAnimation;
+		runTime = 0;
 		stunDuration = new Duration(5000);
 	}
 
@@ -176,6 +185,7 @@ public abstract class GameCharacter {
 	}
 
 	public void render(OrthographicCamera cam) {
+		
 		if (!stun) {
 			touchpadX = touchpad.getKnobPercentX();
 			touchpadY = touchpad.getKnobPercentY();
@@ -214,6 +224,13 @@ public abstract class GameCharacter {
 
 		rayHandler.setCombinedMatrix(cam.combined);
 		rayHandler.updateAndRender();
+		
+		batch.setProjectionMatrix(cam.combined);
+		batch.begin();
+		runTime +=Gdx.graphics.getRawDeltaTime();
+		batch.draw(charAnim.getKeyFrame(runTime,true), body.getPosition().x-10, body.getPosition().y-10, 10, 10, 20, 20, 1, 1,(float) (body.getAngle()*180/Math.PI)-90);
+		batch.end();
+		
 	}
 
 	public void dispose() {
