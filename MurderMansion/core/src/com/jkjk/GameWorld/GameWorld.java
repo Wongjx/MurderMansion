@@ -132,7 +132,6 @@ public class GameWorld {
 		if (player.isAlive()) {
 			player.update();
 		} else {
-			System.out.println("Creating ghost");
 			createGhost();
 		}
 		checkStairs();
@@ -152,8 +151,12 @@ public class GameWorld {
 	 * Creates the player in the Box2D world. User data is set as "player" and spawned at defined location.
 	 */
 	private void createPlayer() {
+<<<<<<< HEAD
 
 		// player = gameCharFac.createCharacter("Murderer", 0, world);
+=======
+		//player = gameCharFac.createCharacter("Murderer", 0, world);
+>>>>>>> 2dbe3bf91c8c01e9b4339fcebffaa8c051239970
 		player = gameCharFac.createCharacter("Civilian", 0, world);
 		player.getBody().getFixtureList().get(0).setUserData("player");
 		player.spawn(1010, 515, 0);

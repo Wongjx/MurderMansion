@@ -2,12 +2,19 @@ package com.jkjk.GameObjects.Characters;
 
 import box2dLight.ConeLight;
 import box2dLight.RayHandler;
+<<<<<<< HEAD
+=======
+
+>>>>>>> 2dbe3bf91c8c01e9b4339fcebffaa8c051239970
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+<<<<<<< HEAD
 import com.badlogic.gdx.graphics.OrthographicCamera;
+=======
+>>>>>>> 2dbe3bf91c8c01e9b4339fcebffaa8c051239970
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;

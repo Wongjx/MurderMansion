@@ -14,7 +14,6 @@ import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.viewport.ExtendViewport;
-import com.jkjk.GameObjects.Characters.GameCharacter;
 import com.jkjk.MMHelpers.AssetLoader;
 
 /**
@@ -24,6 +23,8 @@ import com.jkjk.MMHelpers.AssetLoader;
  */
 public class HudRenderer {
 
+	private GameWorld gWorld;
+	
 	private TextureRegionDrawable civ_bat, civ_item, civ_dash;
 	private Texture emptySlot;
 	private Actor emptySlot_actor;
@@ -38,7 +39,6 @@ public class HudRenderer {
 	private float x, y;
 	private ImageButton weaponButton, itemButton, dashButton, disguiseToCiv, disguiseToMur, hauntButton;
 
-	private GameCharacter player;
 	private SpriteBatch batch;
 	private OrthographicCamera hudCam;
 	private Stage stage;
@@ -60,8 +60,7 @@ public class HudRenderer {
 	 */
 	public HudRenderer(GameWorld gWorld, float gameWidth, float gameHeight) {
 		initAssets(gameWidth, gameHeight);
-
-		player = gWorld.getPlayer();
+		this.gWorld = gWorld;
 
 		// countdown
 		playTime = 240.0f;
@@ -125,11 +124,11 @@ public class HudRenderer {
 		font.draw(batch, getTime(), 75, 330);
 		batch.end();
 
-		if (player.getItemChange())
+		if (gWorld.getPlayer().getItemChange())
 			itemCheck();
-		if (player.getWeaponChange())
+		if (gWorld.getPlayer().getWeaponChange())
 			weaponCheck();
-		if (player.getAbilityChange())
+		if (gWorld.getPlayer().getAbilityChange())
 			abilityCheck();
 
 		stage.draw(); // Draw touchpad
@@ -179,11 +178,11 @@ public class HudRenderer {
 	 * and updating the new item for the player's item slot.
 	 */
 	private void itemCheck() {
-		player.setItemChange(false);
-		if (player.getItem() != null) {
-			if (player.getType().equals("Civilian"))
+		gWorld.getPlayer().setItemChange(false);
+		if (gWorld.getPlayer().getItem() != null) {
+			if (gWorld.getPlayer().getType().equals("Civilian"))
 				stage.addActor(getDisarmTrap());
-			else if (player.getType().equals("Murderer"))
+			else if (gWorld.getPlayer().getType().equals("Murderer"))
 				stage.addActor(getTrap());
 		} else {
 			for (Actor actors : stage.getActors()) {
@@ -198,18 +197,17 @@ public class HudRenderer {
 	 * false and updating the new item for the player's weapon slot.
 	 */
 	private void weaponCheck() {
-		player.setWeaponChange(false);
-		if (player.getWeapon() != null) {
+		gWorld.getPlayer().setWeaponChange(false);
+		if (gWorld.getPlayer().getWeapon() != null) {
 			for (Actor actors : stage.getActors()) {
 				if (actors.getName().equals("Weapon Button"))
 					actors.remove();
 			}
-			if (player.getWeapon().getName().equals("Shotgun")){
+			if (gWorld.getPlayer().getWeapon().getName().equals("Shotgun")) {
 				stage.addActor(getShotgun());
-			}
-			else if (player.getWeapon().getName().equals("Bat"))
+			} else if (gWorld.getPlayer().getWeapon().getName().equals("Bat"))
 				stage.addActor(getBat());
-			else if (player.getWeapon().getName().equals("Knife"))
+			else if (gWorld.getPlayer().getWeapon().getName().equals("Knife"))
 				stage.addActor(getKnife());
 		} else {
 			for (Actor actors : stage.getActors()) {
@@ -224,21 +222,28 @@ public class HudRenderer {
 	 * to false and updating the new item for the player's ability slot.
 	 */
 	private void abilityCheck() {
-		player.setAbilityChange(false);
-		if (player.getType().equals("Civilian")) {
+		gWorld.getPlayer().setAbilityChange(false);
+		if (gWorld.getPlayer().getType().equals("Civilian")) {
 			stage.addActor(getPanic());
-		} else if (player.getType().equals("Murderer")) {
+		} else if (gWorld.getPlayer().getType().equals("Murderer")) {
 			for (Actor actors : stage.getActors()) {
 				if (actors.getName().equals("Disguise to civilian")
 						|| actors.getName().equals("Disguise to murderer"))
 					actors.remove();
 			}
-			if (player.isDisguised()) {
+			if (gWorld.getPlayer().isDisguised()) {
 				stage.addActor(getDisguiseToMur());
 			} else {
 				stage.addActor(getDisguiseToCiv());
 			}
 		} else {
+			for (Actor actors : stage.getActors()) {
+				if (actors.getName().equals("Disguise to civilian")
+						|| actors.getName().equals("Disguise to murderer")
+						|| actors.getName().equals("Panic")){
+					actors.remove();
+				}
+			}
 			stage.addActor(getHaunt());
 		}
 	}
@@ -275,7 +280,7 @@ public class HudRenderer {
 		weaponButton.addListener(new ClickListener() {
 			public void clicked(InputEvent event, float x, float y) {
 				System.out.println("Clicked on bat button");
-				player.useWeapon();
+				gWorld.getPlayer().useWeapon();
 			}
 		});
 
@@ -300,7 +305,7 @@ public class HudRenderer {
 		weaponButton.addListener(new ClickListener() {
 			public void clicked(InputEvent event, float x, float y) {
 				System.out.println("Clicked on shotgun button");
-				player.useWeapon();
+				gWorld.getPlayer().useWeapon();
 			}
 		});
 
@@ -325,7 +330,7 @@ public class HudRenderer {
 		itemButton.addListener(new ClickListener() {
 			public void clicked(InputEvent event, float x, float y) {
 				System.out.println("Clicked on disarm trap button");
-				player.useItem();
+				gWorld.getPlayer().useItem();
 			}
 		});
 
@@ -351,8 +356,8 @@ public class HudRenderer {
 			public void clicked(InputEvent event, float x, float y) {
 				System.out.println("Clicked on panic button");
 				// Used to check character position FOR TESTING
-				System.out.println(player.getBody().getPosition());
-				player.useAbility();
+				System.out.println(gWorld.getPlayer().getBody().getPosition());
+				gWorld.getPlayer().useAbility();
 			}
 		});
 
@@ -376,7 +381,7 @@ public class HudRenderer {
 		itemButton.addListener(new ClickListener() {
 			public void clicked(InputEvent event, float x, float y) {
 				System.out.println("Clicked on knife button");
-				player.useWeapon();
+				gWorld.getPlayer().useWeapon();
 			}
 		});
 
@@ -401,7 +406,7 @@ public class HudRenderer {
 		itemButton.addListener(new ClickListener() {
 			public void clicked(InputEvent event, float x, float y) {
 				System.out.println("Clicked on trap button");
-				player.useItem();
+				gWorld.getPlayer().useItem();
 			}
 		});
 
@@ -426,8 +431,8 @@ public class HudRenderer {
 			public void clicked(InputEvent event, float x, float y) {
 				System.out.println("Clicked on disguise to civilian button");
 				// Used to check character position FOR TESTING
-				System.out.println(player.getBody().getPosition());
-				player.useAbility();
+				System.out.println(gWorld.getPlayer().getBody().getPosition());
+				gWorld.getPlayer().useAbility();
 			}
 		});
 
@@ -452,8 +457,8 @@ public class HudRenderer {
 			public void clicked(InputEvent event, float x, float y) {
 				System.out.println("Clicked on disguise to murderer button");
 				// Used to check character position FOR TESTING
-				System.out.println(player.getBody().getPosition());
-				player.useAbility();
+				System.out.println(gWorld.getPlayer().getBody().getPosition());
+				gWorld.getPlayer().useAbility();
 			}
 		});
 
@@ -469,7 +474,7 @@ public class HudRenderer {
 		x = 528;
 		y = 100;
 
-		hauntButton = new ImageButton(civ_dash);
+		hauntButton = new ImageButton(civ_item);
 		hauntButton.setX(x);
 		hauntButton.setY(y);
 		hauntButton.setName("Haunt");
@@ -478,8 +483,8 @@ public class HudRenderer {
 			public void clicked(InputEvent event, float x, float y) {
 				System.out.println("Clicked haunt button");
 				// Used to check character position FOR TESTING
-				System.out.println(player.getBody().getPosition());
-				player.useAbility();
+				System.out.println(gWorld.getPlayer().getBody().getPosition());
+				gWorld.getPlayer().useAbility();
 			}
 		});
 
