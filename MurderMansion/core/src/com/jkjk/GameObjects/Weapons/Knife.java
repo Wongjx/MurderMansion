@@ -7,6 +7,7 @@ import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
 import com.jkjk.GameWorld.GameWorld;
+import com.jkjk.MMHelpers.AssetLoader;
 
 public class Knife extends Weapon {
 
@@ -25,6 +26,7 @@ public class Knife extends Weapon {
 	@Override
 	public void use() {
 		System.out.println("Used knife");
+		gWorld.getPlayer().getBody().setUserData(AssetLoader.murKnifeAnimation);
 		playerPosition = gWorld.getPlayer().getBody().getPosition();
 		playerAngle = gWorld.getPlayer().getBody().getAngle();
 		bdef.type = BodyType.DynamicBody;

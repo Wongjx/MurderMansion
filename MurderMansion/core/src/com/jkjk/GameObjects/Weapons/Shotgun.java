@@ -6,6 +6,7 @@ import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
 import com.jkjk.GameWorld.GameWorld;
+import com.jkjk.MMHelpers.AssetLoader;
 
 public class Shotgun extends Weapon {
 
@@ -24,6 +25,7 @@ public class Shotgun extends Weapon {
 	@Override
 	public void use() {
 		System.out.println("Used shotgun");
+		gWorld.getPlayer().getBody().setUserData(AssetLoader.civShotgunAnimation);
 		playerPosition = gWorld.getPlayer().getBody().getPosition();
 		playerAngle = gWorld.getPlayer().getBody().getAngle();
 		bdef.type = BodyType.DynamicBody;

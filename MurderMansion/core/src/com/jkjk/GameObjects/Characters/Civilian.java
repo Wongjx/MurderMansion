@@ -2,16 +2,12 @@ package com.jkjk.GameObjects.Characters;
 
 import box2dLight.ConeLight;
 import box2dLight.RayHandler;
-
-<<<<<<< HEAD
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
-=======
 import com.badlogic.gdx.graphics.OrthographicCamera;
->>>>>>> f3013fbe4bb5fe634bf6835181abec41b182d7e9
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
@@ -73,7 +69,7 @@ public class Civilian extends GameCharacter {
 	public void render(OrthographicCamera cam){
 		super.render(cam);
 		
-		charAnim = (Animation) body.getUserData();
+		//charAnim = (Animation) body.getUserData();
 		
 		batch.setProjectionMatrix(cam.combined);
 		batch.begin();

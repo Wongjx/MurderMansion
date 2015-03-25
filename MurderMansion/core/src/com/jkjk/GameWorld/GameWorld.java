@@ -152,11 +152,8 @@ public class GameWorld {
 	 * Creates the player in the Box2D world. User data is set as "player" and spawned at defined location.
 	 */
 	private void createPlayer() {
-<<<<<<< HEAD
-		//player = gameCharFac.createCharacter("Murderer", 0, world);
-=======
+
 		// player = gameCharFac.createCharacter("Murderer", 0, world);
->>>>>>> f3013fbe4bb5fe634bf6835181abec41b182d7e9
 		player = gameCharFac.createCharacter("Civilian", 0, world);
 		player.getBody().getFixtureList().get(0).setUserData("player");
 		player.spawn(1010, 515, 0);

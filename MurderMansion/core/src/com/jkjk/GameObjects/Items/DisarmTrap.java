@@ -7,6 +7,7 @@ import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.jkjk.GameObjects.Duration;
 import com.jkjk.GameWorld.GameWorld;
+import com.jkjk.MMHelpers.AssetLoader;
 
 public class DisarmTrap extends Item {
 
@@ -25,6 +26,7 @@ public class DisarmTrap extends Item {
 	@Override
 	public void use() {
 		System.out.println("Used disarm trap");
+		gWorld.getPlayer().getBody().setUserData(AssetLoader.civDisarmAnimation);
 		playerPosition = gWorld.getPlayer().getBody().getPosition();
 		playerAngle = gWorld.getPlayer().getBody().getAngle();
 		bdef.type = BodyType.DynamicBody;

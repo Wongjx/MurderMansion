@@ -78,10 +78,12 @@ public class AssetLoader {
 	public static Animation civStunAnimation;
 	public static Texture civ_panic;
 	public static Animation civPanicAnimation;
+	public static Texture civ_shotgun;
+	public static Animation civShotgunAnimation;
 	public static Texture mur_walk;
 	public static Animation murAnimation;
 	public static Texture mur_knife;
-	public static Animation murKifeAnimation;
+	public static Animation murKnifeAnimation;
 	public static Texture mur_plantTrap;
 	public static Animation murPlantTrapAnimation;
 	public static Texture mur_death;
@@ -141,7 +143,7 @@ public class AssetLoader {
 
 		emptySlot = new Texture (Gdx.files.internal("data/slots.png"));
 		
-		//CIVILIANS
+		//CIVILIANS HUD
 		civ_weapon_bat_tex = new Texture(Gdx.files.internal("data/civ_weapon_bat.png"));
 		civ_weapon_bat_draw = new TextureRegionDrawable(new TextureRegion(civ_weapon_bat_tex));
 		civ_item_tex = new Texture(Gdx.files.internal("data/civ_item.png"));
@@ -149,7 +151,7 @@ public class AssetLoader {
 		civ_dash_tex = new Texture(Gdx.files.internal("data/civ_dash.png"));
 		civ_dash_draw = new TextureRegionDrawable (new TextureRegion(civ_dash_tex));
 		
-		// MURDERER
+		// MURDERER HUD
 		mur_weapon_tex = new Texture(Gdx.files.internal("data/mur_weapon.png"));
 		mur_weapon_draw = new TextureRegionDrawable(new TextureRegion(mur_weapon_tex));
 		mur_item_tex = new Texture(Gdx.files.internal("data/mur_item.png"));
@@ -157,13 +159,15 @@ public class AssetLoader {
 		mur_swap_tex = new Texture(Gdx.files.internal("data/mur_swap.png"));
 		mur_swap_draw = new TextureRegionDrawable (new TextureRegion(mur_swap_tex));
 		
-		
+		// TIMER
 		time = new Texture(Gdx.files.internal("data/countdown.png"));
 		time.setFilter(TextureFilter.Linear, TextureFilter.Linear);
 		civ_profile = new Texture(Gdx.files.internal("data/civ_profile.png"));
 		civ_profile.setFilter(TextureFilter.Linear, TextureFilter.Linear);
+		
 
 		tiledMap = new TmxMapLoader().load("map/mansion2.tmx");
+		
 		
 		civ_walk = new Texture(Gdx.files.internal("data/civilians.png"));
 		civ_walk.setFilter(TextureFilter.Nearest, TextureFilter.Nearest);
@@ -197,6 +201,7 @@ public class AssetLoader {
 //		civ_trapDeath.dispose();
 //		civ_stun.dispose();
 //		civ_panic.dispose();
+//		civ_shotgun.dispose();
 //		mur_walk.dispose();
 //		mur_knife.dispose();
 //		mur_plantTrap.dispose();
