@@ -96,7 +96,7 @@ public abstract class GameCharacter {
 
 	public void stun(boolean stun) {
 		this.stun = stun;
-		stunDuration.startCooldown();
+		stunDuration.startCountdown();
 	}
 
 	public boolean isStun() {

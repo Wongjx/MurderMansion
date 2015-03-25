@@ -1,12 +1,10 @@
 package com.jkjk.GameObjects.Weapons;
 
 import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
 import com.badlogic.gdx.physics.box2d.FixtureDef;
-import com.badlogic.gdx.physics.box2d.World;
 import com.jkjk.GameWorld.GameWorld;
 import com.jkjk.MMHelpers.AssetLoader;
 
@@ -21,6 +19,7 @@ public class Bat extends Weapon {
 		super(gWorld);
 		bdef = new BodyDef();
 		fdef = new FixtureDef();
+		name = "Bat";
 	}
 
 	@Override
@@ -43,11 +42,7 @@ public class Bat extends Weapon {
 		fdef.filter.maskBits = 1;
 		body.createFixture(fdef).setUserData("bat");
 		
-		hitBoxExposure.startExposure();
-	}
-	
-	public void postUse(GameWorld gWorld){
-		
+		hitBoxExposure.startCountdown();
 	}
 
 }

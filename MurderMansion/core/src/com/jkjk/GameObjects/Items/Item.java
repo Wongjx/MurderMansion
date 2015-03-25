@@ -1,23 +1,23 @@
 package com.jkjk.GameObjects.Items;
 
 import com.badlogic.gdx.physics.box2d.Body;
-import com.jkjk.GameObjects.HitBoxExposure;
+import com.jkjk.GameObjects.Duration;
 import com.jkjk.GameWorld.GameWorld;
 
 public abstract class Item {
 
-	protected HitBoxExposure hitBoxExposure;
+	protected Duration hitBoxExposure;
 	protected GameWorld gWorld;
 	protected Body body;
 	private boolean isDestroy;
 
 	public Item(GameWorld gWorld) {
-		hitBoxExposure = new HitBoxExposure(10);
+		hitBoxExposure = new Duration(10);
 		this.gWorld = gWorld;
 	}
 
 	public boolean isHitBoxExposed() {
-		return hitBoxExposure.isHitBoxExposed();
+		return hitBoxExposure.isCountingDown();
 	}
 	
 	public boolean isDestroy(){
@@ -28,7 +28,7 @@ public abstract class Item {
 
 	public void update() {
 		hitBoxExposure.update();
-		if (!hitBoxExposure.isHitBoxExposed()) {
+		if (!hitBoxExposure.isCountingDown()) {
 			if (body != null) {
 				gWorld.getWorld().destroyBody(body);
 				body = null;

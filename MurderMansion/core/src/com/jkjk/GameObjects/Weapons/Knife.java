@@ -19,6 +19,7 @@ public class Knife extends Weapon {
 		super(gWorld);
 		bdef = new BodyDef();
 		fdef = new FixtureDef();
+		name = "Knife";
 	}
 
 	@Override
@@ -40,13 +41,7 @@ public class Knife extends Weapon {
 		fdef.filter.maskBits = 1;
 		body.createFixture(fdef).setUserData("knife");
 
-		hitBoxExposure.startExposure();
-	}
-
-
-	@Override
-	public void postUse(GameWorld gWorld) {
-
+		hitBoxExposure.startCountdown();
 	}
 
 }

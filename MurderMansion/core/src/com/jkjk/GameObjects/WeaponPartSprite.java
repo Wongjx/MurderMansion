@@ -1,7 +1,7 @@
 /**
  * 
  */
-package com.jkjk.GameObjects.Weapons;
+package com.jkjk.GameObjects;
 
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.BodyDef;

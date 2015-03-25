@@ -14,7 +14,7 @@ public abstract class Ability {
 	}
 	
 	public boolean isOnCoolDown(){
-		return cooldown.isOnCooldown();
+		return cooldown.isCountingDown();
 	}
 	
 	public abstract void use();
