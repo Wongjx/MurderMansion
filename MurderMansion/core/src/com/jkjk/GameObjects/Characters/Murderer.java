@@ -3,22 +3,18 @@ package com.jkjk.GameObjects.Characters;
 import box2dLight.PointLight;
 import box2dLight.RayHandler;
 
-import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
 import com.badlogic.gdx.physics.box2d.CircleShape;
 import com.badlogic.gdx.physics.box2d.FixtureDef;
-import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.badlogic.gdx.physics.box2d.World;
 
 public class Murderer extends GameCharacter {
 
-	private boolean disguised;
-
 	private PointLight pointLight;
 
-	public Murderer(World world) {
-		setType("Murderer");
+	public Murderer(int id, World world) {
+		super("Murderer", id);
 
 		// create body of murderer
 		BodyDef bdef = new BodyDef();
@@ -50,10 +46,6 @@ public class Murderer extends GameCharacter {
 		lightFdef.filter.maskBits = 1;
 		body.createFixture(lightFdef).setUserData("lightBody");
 
-	}
-
-	public boolean isDisguised() {
-		return disguised;
 	}
 
 }

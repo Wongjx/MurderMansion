@@ -3,7 +3,6 @@ package com.jkjk.GameObjects.Characters;
 import box2dLight.ConeLight;
 import box2dLight.RayHandler;
 
-import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.physics.box2d.CircleShape;
@@ -16,20 +15,16 @@ public class Civilian extends GameCharacter {
 
 	private ConeLight coneLight;
 
-	Civilian(int colour, World world) {
-		setType("Civilian");
-		setColour(colour);
+	Civilian(int id, World world) {
+		super("Civilian", id);
 
 		// create body of civilian
 		BodyDef bdef = new BodyDef();
 		bdef.type = BodyType.DynamicBody;
 		body = world.createBody(bdef);
 
-		// triangular body fixture
+		// Circular body fixture
 		FixtureDef fdef = new FixtureDef();
-/*		Vector2[] vertices = { new Vector2(0, 0), new Vector2(-20, -10), new Vector2(-20, 10) };
-		PolygonShape shape = new PolygonShape();
-		shape.set(vertices);*/
 		CircleShape shape = new CircleShape();
 		shape.setRadius(10);
 		fdef.shape = shape;

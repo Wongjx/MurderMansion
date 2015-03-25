@@ -10,6 +10,7 @@ import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.scenes.scene2d.ui.Touchpad;
 import com.jkjk.GameObjects.Duration;
 import com.jkjk.GameObjects.Abilities.Ability;
+import com.jkjk.GameObjects.Abilities.AbilityFactory;
 import com.jkjk.GameObjects.Items.Item;
 import com.jkjk.GameObjects.Weapons.Weapon;
 import com.jkjk.MMHelpers.AssetLoader;
@@ -23,9 +24,10 @@ public abstract class GameCharacter {
 	private String type;
 
 	protected boolean alive;
-	private boolean itemChange, weaponChange;
+	private boolean itemChange, weaponChange, abilityChange;
 	private boolean stun;
 	private Duration stunDuration;
+	private boolean disguised;	// true for civilian, false for murderer
 
 	private float maxVelocity;
 	private float touchpadX;
@@ -40,26 +42,31 @@ public abstract class GameCharacter {
 
 	private Touchpad touchpad;
 
-	private int colour;
+	private int id;
 	private SpriteBatch batch;
 	private Animation charAnim;
 	private float runTime;
 	
-	public GameCharacter() {
+	public GameCharacter(String type, int id) {
 		maxVelocity = 64;
 		touchpad = AssetLoader.touchpad;
 		batch = new SpriteBatch();
 		charAnim = AssetLoader.civAnimation;
 		runTime = 0;
 		stunDuration = new Duration(5000);
+		
+		this.type = type;
+		this.id = id;
+		AbilityFactory af = new AbilityFactory();
+		ability = af.createAbility(this);
+		
+		if (type.equals("Murderer")){
+			disguised = true;
+		}
 	}
 
 	public String getType() {
 		return type;
-	}
-
-	public void setType(String type) {
-		this.type = type;
 	}
 
 	public void spawn(float x, float y, float angle) {
@@ -69,6 +76,10 @@ public abstract class GameCharacter {
 
 	public void die() {
 		alive = false;
+		weapon = null;
+		ability = null;
+		item = null;
+		abilityChange = true;
 	}
 
 	public boolean isAlive() {
@@ -92,20 +103,16 @@ public abstract class GameCharacter {
 		return stun;
 	}
 
-	public int getColour() {
-		return colour;
+	public int getId() {
+		return id;
 	}
 
-	public void setColour(int colour) {
-		this.colour = colour;
+	public void setId(int id) {
+		this.id = id;
 	}
 
 	public Body getBody() {
 		return body;
-	}
-
-	public void addAbility(Ability ability) {
-		this.ability = ability;
 	}
 
 	public Ability getAbility() {
@@ -116,6 +123,7 @@ public abstract class GameCharacter {
 		if (!ability.isOnCoolDown()) {
 			ability.use();
 			ability.cooldown();
+			abilityChange = true;
 		}
 	}
 
@@ -162,6 +170,22 @@ public abstract class GameCharacter {
 
 	public void setItemChange(boolean itemChange) {
 		this.itemChange = itemChange;
+	}
+	
+	public boolean isDisguised(){
+		return disguised;
+	}
+	
+	public void setDisguise(boolean disguised){
+		this.disguised = disguised;
+	}
+	
+	public boolean getAbilityChange(){
+		return abilityChange;
+	}
+	
+	public void setAbilityChange(boolean abilityChange){
+		this.abilityChange = abilityChange;
 	}
 
 	public void update() {
