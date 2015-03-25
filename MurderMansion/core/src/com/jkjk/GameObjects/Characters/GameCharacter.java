@@ -51,7 +51,7 @@ public abstract class GameCharacter {
 		maxVelocity = 64;
 		touchpad = AssetLoader.touchpad;
 		batch = new SpriteBatch();
-		charAnim = AssetLoader.civAnimation;
+		
 		runTime = 0;
 		stunDuration = new Duration(5000);
 		
@@ -246,13 +246,9 @@ public abstract class GameCharacter {
 		rayHandler.setCombinedMatrix(cam.combined);
 		rayHandler.updateAndRender();
 		
-		batch.setProjectionMatrix(cam.combined);
-		batch.begin();
-		runTime +=Gdx.graphics.getRawDeltaTime();
-		batch.draw(charAnim.getKeyFrame(runTime,true), body.getPosition().x-10, body.getPosition().y-10, 10, 10, 20, 20, 1, 1,(float) (body.getAngle()*180/Math.PI)-90);
-		batch.end();
-		
 	}
+	
+	
 
 	public void dispose() {
 		rayHandler.dispose();
