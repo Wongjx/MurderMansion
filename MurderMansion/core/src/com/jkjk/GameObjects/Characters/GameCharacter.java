@@ -60,6 +60,9 @@ public abstract class GameCharacter {
 
 	public void die() {
 		alive = false;
+		weapon = null;
+		ability = null;
+		item = null;
 	}
 
 	public boolean isAlive() {
