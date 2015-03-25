@@ -7,7 +7,10 @@ import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+<<<<<<< HEAD
 import com.badlogic.gdx.graphics.OrthographicCamera;
+=======
+>>>>>>> 974c992134013f5f9ec664fb770d0fcf61a217ba
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
@@ -67,7 +70,6 @@ public class Civilian extends GameCharacter {
 	}
 	@Override
 	public void render(OrthographicCamera cam){
-		super.render(cam);
 		
 		//charAnim = (Animation) body.getUserData();
 		
@@ -76,6 +78,7 @@ public class Civilian extends GameCharacter {
 		runTime +=Gdx.graphics.getRawDeltaTime();
 		batch.draw(charAnim.getKeyFrame(runTime,true), body.getPosition().x-10, body.getPosition().y-10, 10, 10, 20, 20, 1, 1,(float) (body.getAngle()*180/Math.PI)-90);
 		batch.end();
+		super.render(cam);
 	}
 }
 
