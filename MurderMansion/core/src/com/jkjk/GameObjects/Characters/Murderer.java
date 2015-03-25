@@ -11,8 +11,6 @@ import com.badlogic.gdx.physics.box2d.World;
 
 public class Murderer extends GameCharacter {
 
-	private boolean disguised;
-
 	private PointLight pointLight;
 
 	public Murderer(int id, World world) {
@@ -48,10 +46,6 @@ public class Murderer extends GameCharacter {
 		lightFdef.filter.maskBits = 1;
 		body.createFixture(lightFdef).setUserData("lightBody");
 
-	}
-
-	public boolean isDisguised() {
-		return disguised;
 	}
 
 }

@@ -23,11 +23,8 @@ public class Civilian extends GameCharacter {
 		bdef.type = BodyType.DynamicBody;
 		body = world.createBody(bdef);
 
-		// triangular body fixture
+		// Circular body fixture
 		FixtureDef fdef = new FixtureDef();
-/*		Vector2[] vertices = { new Vector2(0, 0), new Vector2(-20, -10), new Vector2(-20, 10) };
-		PolygonShape shape = new PolygonShape();
-		shape.set(vertices);*/
 		CircleShape shape = new CircleShape();
 		shape.setRadius(10);
 		fdef.shape = shape;

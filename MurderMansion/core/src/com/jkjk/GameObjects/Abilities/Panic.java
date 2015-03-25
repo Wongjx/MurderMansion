@@ -10,8 +10,8 @@ public class Panic extends Ability {
 	
 	public Panic(GameCharacter gameCharacter) {
 		super(gameCharacter);
-		cooldown = new Duration(300000);
-		duration = new Duration(5000);
+		cooldown = new Duration(300000);	// 5min cooldown
+		duration = new Duration(5000);	// 5s duration
 	}
 	
 	@Override
