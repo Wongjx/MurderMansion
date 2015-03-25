@@ -202,37 +202,10 @@ public abstract class GameCharacter {
 	public void render(OrthographicCamera cam) {
 		
 		if (!stun) {
-			touchpadX = touchpad.getKnobPercentX();
-			touchpadY = touchpad.getKnobPercentY();
-			if (!touchpad.isTouched()) {
-				body.setAngularVelocity(0);
-			} else {
-				angleDiff = (Math.atan2(touchpadY, touchpadX) - (body.getAngle())) % (Math.PI * 2);
-				if (angleDiff > 0) {
-					if (angleDiff >= 3.14) {
-						if (angleDiff > 6.2)
-							body.setAngularVelocity((float) -angleDiff / 7);
-						else
-							body.setAngularVelocity(-5);
-					} else if (angleDiff < 0.4)
-						body.setAngularVelocity((float) angleDiff * 3);
-					else
-						body.setAngularVelocity(5);
-				} else if (angleDiff < 0) {
-					if (angleDiff <= -3.14) {
-						if (angleDiff < -6.2)
-							body.setAngularVelocity((float) -angleDiff / 7);
-						else
-							body.setAngularVelocity(5);
-					} else if (angleDiff > -0.4)
-						body.setAngularVelocity((float) angleDiff * 3);
-					else
-						body.setAngularVelocity(-5);
-				} else
-					body.setAngularVelocity(0);
-			}
-
-			body.setLinearVelocity(touchpadX * maxVelocity, touchpadY * maxVelocity);
+			playerMovement();
+		} else {
+			body.setAngularVelocity(0);
+			body.setLinearVelocity(0,0);
 		}
 
 		cam.position.set(body.getPosition(), 0); // Set cam position to be on player
@@ -242,7 +215,39 @@ public abstract class GameCharacter {
 		
 	}
 	
-	
+	private void playerMovement(){
+		touchpadX = touchpad.getKnobPercentX();
+		touchpadY = touchpad.getKnobPercentY();
+		if (!touchpad.isTouched()) {
+			body.setAngularVelocity(0);
+		} else {
+			angleDiff = (Math.atan2(touchpadY, touchpadX) - (body.getAngle())) % (Math.PI * 2);
+			if (angleDiff > 0) {
+				if (angleDiff >= 3.14) {
+					if (angleDiff > 6.2)
+						body.setAngularVelocity((float) -angleDiff / 7);
+					else
+						body.setAngularVelocity(-5);
+				} else if (angleDiff < 0.4)
+					body.setAngularVelocity((float) angleDiff * 3);
+				else
+					body.setAngularVelocity(5);
+			} else if (angleDiff < 0) {
+				if (angleDiff <= -3.14) {
+					if (angleDiff < -6.2)
+						body.setAngularVelocity((float) -angleDiff / 7);
+					else
+						body.setAngularVelocity(5);
+				} else if (angleDiff > -0.4)
+					body.setAngularVelocity((float) angleDiff * 3);
+				else
+					body.setAngularVelocity(-5);
+			} else
+				body.setAngularVelocity(0);
+		}
+
+		body.setLinearVelocity(touchpadX * maxVelocity, touchpadY * maxVelocity);
+	}
 
 	public void dispose() {
 		rayHandler.dispose();
