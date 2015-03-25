@@ -24,10 +24,10 @@ public abstract class GameCharacter {
 	private String type;
 
 	protected boolean alive;
-	private boolean itemChange, weaponChange, abilityChange;
+	protected boolean itemChange, weaponChange, abilityChange;
 	private boolean stun;
 	private Duration stunDuration;
-	private boolean disguised;	// true for civilian, false for murderer
+	protected boolean disguised;	// true for civilian, false for murderer
 
 	private float maxVelocity;
 	private float touchpadX;
@@ -36,7 +36,7 @@ public abstract class GameCharacter {
 
 	private Weapon weapon;
 	private Item item;
-	private Ability ability;
+	protected Ability ability;
 	protected Body body;
 	protected RayHandler rayHandler;
 
@@ -59,10 +59,6 @@ public abstract class GameCharacter {
 		this.id = id;
 		AbilityFactory af = new AbilityFactory();
 		ability = af.createAbility(this);
-		
-		if (type.equals("Murderer")){
-			disguised = true;
-		}
 	}
 
 	public String getType() {
@@ -72,14 +68,13 @@ public abstract class GameCharacter {
 	public void spawn(float x, float y, float angle) {
 		alive = true;
 		body.setTransform(x, y, angle); // Spawn position
+		abilityChange = true;
+		addWeapon(null);
+		addItem(null);
 	}
 
 	public void die() {
 		alive = false;
-		weapon = null;
-		ability = null;
-		item = null;
-		abilityChange = true;
 	}
 
 	public boolean isAlive() {
@@ -123,7 +118,6 @@ public abstract class GameCharacter {
 		if (!ability.isOnCoolDown()) {
 			ability.use();
 			ability.cooldown();
-			abilityChange = true;
 		}
 	}
 

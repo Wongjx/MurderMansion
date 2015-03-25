@@ -46,6 +46,15 @@ public class Murderer extends GameCharacter {
 		lightFdef.filter.maskBits = 1;
 		body.createFixture(lightFdef).setUserData("lightBody");
 
+		disguised = true;
+
+	}
+	
+	@Override
+	public void useAbility() {
+		if (!ability.isOnCoolDown()) {
+			abilityChange = true;
+		}
 	}
 
 }

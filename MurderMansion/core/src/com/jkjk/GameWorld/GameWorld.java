@@ -132,7 +132,6 @@ public class GameWorld {
 		if (player.isAlive()) {
 			player.update();
 		} else {
-			System.out.println("Creating ghost");
 			createGhost();
 		}
 		checkStairs();
