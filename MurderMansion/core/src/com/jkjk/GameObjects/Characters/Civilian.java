@@ -23,9 +23,10 @@ public class Civilian extends GameCharacter {
 	private float runTime;
 	private Animation charAnim;
 	private TextureRegion[] civ;
+	private float ambientLightValue;
 
 	Civilian(int id, World world) {
-		
+
 		super("Civilian", id);
 
 		// create body of civilian
@@ -39,10 +40,11 @@ public class Civilian extends GameCharacter {
 		shape.setRadius(10);
 		fdef.shape = shape;
 		body.createFixture(fdef).setUserData("civilian");
-		
+
 		// Create Light for player
+		ambientLightValue = 0;
 		rayHandler = new RayHandler(world);
-		rayHandler.setAmbientLight(0.12f);
+		rayHandler.setAmbientLight(ambientLightValue);
 		coneLight = new ConeLight(rayHandler, 100, null, 200, 0, 0, 0, 40);
 		coneLight.attachToBody(body, 0, 0);
 		ConeLight.setContactFilter((short) 2, (short) 2, (short) 1);
@@ -58,23 +60,32 @@ public class Civilian extends GameCharacter {
 		coneFdef.shape = coneShape;
 		coneFdef.filter.maskBits = 1;// cannot bump into other light bodies.
 		body.createFixture(coneFdef).setUserData("lightBody");
-		
+
 		charAnim = AssetLoader.civAnimation;
 		body.setUserData(charAnim);
 		batch = new SpriteBatch();
 		runTime = 0;
 	}
+
 	@Override
-	public void render(OrthographicCamera cam){
-		
-		//charAnim = (Animation) body.getUserData();
-		
+	public void render(OrthographicCamera cam) {
+
+		// charAnim = (Animation) body.getUserData();
+
 		batch.setProjectionMatrix(cam.combined);
 		batch.begin();
-		runTime +=Gdx.graphics.getRawDeltaTime();
-		batch.draw(charAnim.getKeyFrame(runTime,true), body.getPosition().x-10, body.getPosition().y-10, 10, 10, 20, 20, 1, 1,(float) (body.getAngle()*180/Math.PI)-90);
+		runTime += Gdx.graphics.getRawDeltaTime();
+		batch.draw(charAnim.getKeyFrame(runTime, true), body.getPosition().x - 10, body.getPosition().y - 10,
+				10, 10, 20, 20, 1, 1, (float) (body.getAngle() * 180 / Math.PI) - 90);
 		batch.end();
+
+		if (runTime % 5.0 < 0.02){
+			ambientLightValue += 0.003;
+			System.out.println(ambientLightValue);
+			rayHandler.setAmbientLight(ambientLightValue);
+		}
+
+
 		super.render(cam);
 	}
 }
-
