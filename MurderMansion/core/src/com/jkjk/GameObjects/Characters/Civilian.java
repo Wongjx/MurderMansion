@@ -75,12 +75,6 @@ public class Civilian extends GameCharacter {
 	}
 
 	@Override
-<<<<<<< HEAD
-	public void render(OrthographicCamera cam){
-		
-		
-		//charAnim = (Animation) body.getUserData();
-=======
 	public void render(OrthographicCamera cam) {
 
 		// charAnim = (Animation) body.getUserData();
@@ -92,7 +86,6 @@ public class Civilian extends GameCharacter {
 		}
 
 		super.render(cam);
->>>>>>> 89ba71310709f43381f0348025c49a31335b2b4a
 		
 		batch.setProjectionMatrix(cam.combined);
 		batch.begin();
