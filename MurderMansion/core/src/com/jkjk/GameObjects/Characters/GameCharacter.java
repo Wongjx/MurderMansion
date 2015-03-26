@@ -6,6 +6,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.scenes.scene2d.ui.Touchpad;
 import com.jkjk.GameObjects.Duration;
@@ -43,16 +44,10 @@ public abstract class GameCharacter {
 	private Touchpad touchpad;
 
 	private int id;
-	private SpriteBatch batch;
-	private Animation charAnim;
-	private float runTime;
 	
 	public GameCharacter(String type, int id) {
 		maxVelocity = 64;
 		touchpad = AssetLoader.touchpad;
-		batch = new SpriteBatch();
-		
-		runTime = 0;
 		stunDuration = new Duration(5000);
 		
 		this.type = type;

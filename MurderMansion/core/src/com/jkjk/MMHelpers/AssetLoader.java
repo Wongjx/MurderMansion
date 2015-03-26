@@ -65,7 +65,15 @@ public class AssetLoader {
 	
 	// Animations
 	public static Texture civ_walk;
+	public static TextureRegion civ_rest;
+	public static TextureRegion civ_walk1;
+	public static TextureRegion civ_walk2;
+	public static TextureRegion civ_walk3;
+	public static TextureRegion civ_walk4;
+	public static TextureRegion civ_walk5;
+	public static TextureRegion[] civilians;
 	public static Animation civAnimation;
+	
 	public static Texture civ_bat;
 	public static Animation civBatAnimation;
 	public static Texture civ_disarm;
@@ -172,9 +180,9 @@ public class AssetLoader {
 		civ_walk = new Texture(Gdx.files.internal("data/civilians.png"));
 		civ_walk.setFilter(TextureFilter.Nearest, TextureFilter.Nearest);
 		TextureRegion[] civilians = TextureRegion.split(civ_walk, 32, 32)[0];
-		System.out.println("Num frames: " + civilians.length);
 		civAnimation = new Animation(0.1f, civilians);
 		civAnimation.setPlayMode(Animation.PlayMode.LOOP_PINGPONG);
+		civ_rest = civilians[0];
 		
 	}
 
