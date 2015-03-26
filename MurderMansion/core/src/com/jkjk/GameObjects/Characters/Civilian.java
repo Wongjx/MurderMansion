@@ -78,6 +78,7 @@ public class Civilian extends GameCharacter {
 	public void render(OrthographicCamera cam) {
 
 		// charAnim = (Animation) body.getUserData();
+		super.render(cam);
 
 		if (runTime % 5.0 < 0.02){
 			ambientLightValue += 0.003;
@@ -85,7 +86,6 @@ public class Civilian extends GameCharacter {
 			rayHandler.setAmbientLight(ambientLightValue);
 		}
 
-		super.render(cam);
 		
 		batch.setProjectionMatrix(cam.combined);
 		batch.begin();
@@ -99,5 +99,7 @@ public class Civilian extends GameCharacter {
 		}
 		
 		batch.end();
+		
+		
 	}
 }

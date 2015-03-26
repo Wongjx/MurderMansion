@@ -181,7 +181,7 @@ public class AssetLoader {
 		civ_walk = new Texture(Gdx.files.internal("data/civilians.png"));
 		civ_walk.setFilter(TextureFilter.Nearest, TextureFilter.Nearest);
 		TextureRegion[] civilians = TextureRegion.split(civ_walk, 32, 32)[0];
-		civAnimation = new Animation(0.1f, civilians);
+		civAnimation = new Animation(0.2f, civilians);
 		civAnimation.setPlayMode(Animation.PlayMode.LOOP_PINGPONG);
 		civ_rest = civilians[0];
 		civ_dead_lines = new Texture(Gdx.files.internal("data/dead_lines.png"));
@@ -189,7 +189,7 @@ public class AssetLoader {
 		civ_bat = new Texture(Gdx.files.internal("data/civilians.png"));
 		civ_bat.setFilter(TextureFilter.Nearest, TextureFilter.Nearest);
 		TextureRegion[] bat_swing = TextureRegion.split(civ_bat, 32, 32)[0];
-		civBatAnimation = new Animation(0.1f, bat_swing);
+		civBatAnimation = new Animation(0.2f, bat_swing);
 		civBatAnimation.setPlayMode(Animation.PlayMode.NORMAL);
 	}
 
