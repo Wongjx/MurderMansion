@@ -157,8 +157,8 @@ public class AssetLoader {
 //		civ_walk4.flip(false, true);
 		civ_walk5 = new TextureRegion(civ_walk, 128,0,32,32);
 //		civ_walk5.flip(false, true);
-		TextureRegion[] civilians = { civ_walk1};//, civ_walk2, civ_walk3, civ_walk4, civ_walk5};
-		civAnimation = new Animation(0.06f, civilians);
+		TextureRegion[] civilians = { civ_walk1, civ_walk2, civ_walk3, civ_walk4, civ_walk5};
+		civAnimation = new Animation(0.2f, civilians);
 		civAnimation.setPlayMode(Animation.PlayMode.LOOP_PINGPONG);
 		
 	}

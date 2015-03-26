@@ -6,6 +6,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.scenes.scene2d.ui.Touchpad;
 import com.jkjk.GameObjects.Duration;
@@ -43,6 +44,7 @@ public abstract class GameCharacter {
 	private int colour;
 	private SpriteBatch batch;
 	private Animation charAnim;
+	private TextureRegion charRest;
 	private float runTime;
 	
 	public GameCharacter() {
@@ -50,6 +52,7 @@ public abstract class GameCharacter {
 		touchpad = AssetLoader.touchpad;
 		batch = new SpriteBatch();
 		charAnim = AssetLoader.civAnimation;
+		charRest = AssetLoader.civ_walk1;
 		runTime = 0;
 		stunDuration = new Duration(5000);
 	}
@@ -225,7 +228,13 @@ public abstract class GameCharacter {
 		batch.setProjectionMatrix(cam.combined);
 		batch.begin();
 		runTime +=Gdx.graphics.getRawDeltaTime();
-		batch.draw(charAnim.getKeyFrame(runTime,true), body.getPosition().x-10, body.getPosition().y-10, 10, 10, 20, 20, 1, 1,(float) (body.getAngle()*180/Math.PI)-90);
+		if (touchpad.isTouched()){
+			batch.draw(charAnim.getKeyFrame(runTime,true), body.getPosition().x-10, body.getPosition().y-10, 10, 10, 20, 20, 1, 1,(float) (body.getAngle()*180/Math.PI)-90);
+		}
+		else{
+			batch.draw(charRest, body.getPosition().x-10, body.getPosition().y-10, 10, 10, 20, 20, 1, 1,(float) (body.getAngle()*180/Math.PI)-90);
+		}
+		
 		batch.end();
 		
 	}
