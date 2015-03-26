@@ -44,22 +44,10 @@ public abstract class GameCharacter {
 	private Touchpad touchpad;
 
 	private int id;
-	private SpriteBatch batch;
-	private Animation charAnim;
-	private TextureRegion charRest;
-	private float runTime;
 	
 	public GameCharacter(String type, int id) {
 		maxVelocity = 64;
 		touchpad = AssetLoader.touchpad;
-		batch = new SpriteBatch();
-<<<<<<< HEAD
-		charAnim = AssetLoader.civAnimation;
-		charRest = AssetLoader.civ_walk1;
-=======
-		
->>>>>>> 4c697f50884d0102b5de50ddc1f7e8d543b8f80e
-		runTime = 0;
 		stunDuration = new Duration(5000);
 		
 		this.type = type;
@@ -220,20 +208,6 @@ public abstract class GameCharacter {
 		rayHandler.setCombinedMatrix(cam.combined);
 		rayHandler.updateAndRender();
 		
-<<<<<<< HEAD
-		batch.setProjectionMatrix(cam.combined);
-		batch.begin();
-		runTime +=Gdx.graphics.getRawDeltaTime();
-		if (touchpad.isTouched()){
-			batch.draw(charAnim.getKeyFrame(runTime,true), body.getPosition().x-10, body.getPosition().y-10, 10, 10, 20, 20, 1, 1,(float) (body.getAngle()*180/Math.PI)-90);
-		}
-		else{
-			batch.draw(charRest, body.getPosition().x-10, body.getPosition().y-10, 10, 10, 20, 20, 1, 1,(float) (body.getAngle()*180/Math.PI)-90);
-		}
-		
-		batch.end();
-		
-=======
 	}
 	
 	private void playerMovement(){
@@ -268,7 +242,6 @@ public abstract class GameCharacter {
 		}
 
 		body.setLinearVelocity(touchpadX * maxVelocity, touchpadY * maxVelocity);
->>>>>>> 4c697f50884d0102b5de50ddc1f7e8d543b8f80e
 	}
 
 	public void dispose() {
