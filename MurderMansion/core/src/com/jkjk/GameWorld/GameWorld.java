@@ -266,12 +266,15 @@ public class GameWorld {
 		currentPositionX = player.getBody().getPosition().x;
 		currentPositionY = player.getBody().getPosition().y;
 		currentAngle = player.getBody().getAngle();
-
+		
 		world.destroyBody(player.getBody());
 
 		player = gameCharFac.createCharacter("Ghost", player.getId(), world);
+		player.set_deathPositionX(currentPositionX);
+		player.set_deathPositionY(currentPositionY);
 		player.getBody().getFixtureList().get(0).setUserData("player");
 		player.spawn(currentPositionX, currentPositionY, currentAngle);
+		
 	}
 
 	/**

@@ -3,15 +3,23 @@ package com.jkjk.GameObjects.Characters;
 import box2dLight.PointLight;
 import box2dLight.RayHandler;
 
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.physics.box2d.CircleShape;
 import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
+import com.jkjk.GameWorld.GameWorld;
+import com.jkjk.MMHelpers.AssetLoader;
 
 public class Ghost extends GameCharacter {
 
 	private PointLight pointLight;
+	private SpriteBatch batch;
+	private Texture civ_dead_lines;
 
 	public Ghost(int id, World world) {
 		super("Ghost", id);
@@ -46,6 +54,21 @@ public class Ghost extends GameCharacter {
 		lightFdef.shape = circle;
 		lightFdef.filter.maskBits = 1;
 		body.createFixture(lightFdef).setUserData("lightBody");
+		
+		batch = new SpriteBatch();
+		civ_dead_lines = AssetLoader.civ_dead_lines;
+	}
+	
+	@Override
+	public void render(OrthographicCamera cam){
+		
+		batch.setProjectionMatrix(cam.combined);
+		
+		batch.begin();
+		batch.draw(civ_dead_lines, this.get_deathPositionX()-33/2, this.get_deathPositionY()-32/2, 33, 32);
+		batch.end();
+		
+		super.render(cam);
 	}
 
 }

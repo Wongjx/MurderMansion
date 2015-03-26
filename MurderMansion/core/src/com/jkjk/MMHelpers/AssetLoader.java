@@ -74,14 +74,17 @@ public class AssetLoader {
 	public static TextureRegion[] civilians;
 	public static Animation civAnimation;
 	
+	public static Texture civ_dead_lines;
+	public static Texture civ_trapDeath;
+	public static Animation civTrapDeathAnimation;
+	
 	public static Texture civ_bat;
 	public static Animation civBatAnimation;
+	
 	public static Texture civ_disarm;
 	public static Animation civDisarmAnimation;
 	public static Texture civ_knifeDeath;
 	public static Animation civKnifeDeathAnimation;
-	public static Texture civ_trapDeath;
-	public static Animation civTrapDeathAnimation;
 	public static Texture civ_stun;
 	public static Animation civStunAnimation;
 	public static Texture civ_panic;
@@ -173,9 +176,7 @@ public class AssetLoader {
 		civ_profile = new Texture(Gdx.files.internal("data/civ_profile.png"));
 		civ_profile.setFilter(TextureFilter.Linear, TextureFilter.Linear);
 		
-
 		tiledMap = new TmxMapLoader().load("map/mansion2.tmx");
-		
 		
 		civ_walk = new Texture(Gdx.files.internal("data/civilians.png"));
 		civ_walk.setFilter(TextureFilter.Nearest, TextureFilter.Nearest);
@@ -183,7 +184,13 @@ public class AssetLoader {
 		civAnimation = new Animation(0.1f, civilians);
 		civAnimation.setPlayMode(Animation.PlayMode.LOOP_PINGPONG);
 		civ_rest = civilians[0];
+		civ_dead_lines = new Texture(Gdx.files.internal("data/dead_lines.png"));
 		
+		civ_bat = new Texture(Gdx.files.internal("data/civilians.png"));
+		civ_bat.setFilter(TextureFilter.Nearest, TextureFilter.Nearest);
+		TextureRegion[] bat_swing = TextureRegion.split(civ_bat, 32, 32)[0];
+		civBatAnimation = new Animation(0.1f, bat_swing);
+		civBatAnimation.setPlayMode(Animation.PlayMode.NORMAL);
 	}
 
 	public static void dispose() {
@@ -203,6 +210,8 @@ public class AssetLoader {
 		mur_item_tex.dispose();
 		mur_swap_tex.dispose();
 		civ_walk.dispose();
+		civ_dead_lines.dispose();
+		civ_bat.dispose();
 //		civ_bat.dispose();
 //		civ_disarm.dispose();
 //		civ_knifeDeath.dispose();

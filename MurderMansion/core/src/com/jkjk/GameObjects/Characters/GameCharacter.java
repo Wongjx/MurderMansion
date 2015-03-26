@@ -42,6 +42,9 @@ public abstract class GameCharacter {
 	protected RayHandler rayHandler;
 
 	private Touchpad touchpad;
+	
+	private float deathPositionX;
+	private float deathPositionY;
 
 	private int id;
 	
@@ -54,6 +57,23 @@ public abstract class GameCharacter {
 		this.id = id;
 		AbilityFactory af = new AbilityFactory();
 		ability = af.createAbility(this);
+		
+		this.deathPositionX = 0;
+		this.deathPositionY = 0;
+		
+	}
+	
+	public float get_deathPositionX(){
+		return deathPositionX;
+	}
+	public float get_deathPositionY(){
+		return deathPositionY;
+	}
+	public void set_deathPositionX(float k){
+		deathPositionX = k;
+	}
+	public void set_deathPositionY(float k){
+		deathPositionY = k;
 	}
 
 	public String getType() {
