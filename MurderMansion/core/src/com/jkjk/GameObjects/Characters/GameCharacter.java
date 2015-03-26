@@ -89,6 +89,7 @@ public abstract class GameCharacter {
 	}
 
 	public void die() {
+		
 		alive = false;
 	}
 

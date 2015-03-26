@@ -53,8 +53,7 @@ public class Murderer extends GameCharacter {
 		lightFdef.shape = circle;
 		lightFdef.filter.maskBits = 1;
 		body.createFixture(lightFdef).setUserData("lightBody");
-
-		charAnim = AssetLoader.murAnimation;
+		charAnim = AssetLoader.civAnimation;
 		body.setUserData(charAnim);
 		batch = new SpriteBatch();
 		runTime = 0;
@@ -70,7 +69,6 @@ public class Murderer extends GameCharacter {
 		runTime +=Gdx.graphics.getRawDeltaTime();
 		batch.draw(charAnim.getKeyFrame(runTime,true), body.getPosition().x-10, body.getPosition().y-10, 10, 10, 20, 20, 1, 1,(float) (body.getAngle()*180/Math.PI)-90);
 		batch.end();
-		
 		disguised = true;
 
 	}
