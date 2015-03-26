@@ -10,26 +10,26 @@ public class Panic extends Ability {
 	
 	public Panic(GameCharacter gameCharacter) {
 		super(gameCharacter);
-		cooldown = new Duration(300000);
-		duration = new Duration(5000);
+		cooldown = new Duration(300000);	// 5min cooldown
+		duration = new Duration(5000);	// 5s duration
 	}
 	
 	@Override
 	public void use() {
 		gameCharacter.setVelocity(gameCharacter.getVelocity()*1.5f);
-		duration.startCooldown();
+		duration.startCountdown();
 		active = true;
 	}
 	
 	@Override
 	public void cooldown() {
-		cooldown.startCooldown();
+		cooldown.startCountdown();
 	}
 	
 	public void update(){
 		super.update();
 		duration.update();
-		if (!duration.isOnCooldown() && active){
+		if (!duration.isCountingDown() && active){
 			gameCharacter.setVelocity(gameCharacter.getVelocity()/1.5f);
 			active = false;
 		}

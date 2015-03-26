@@ -1,7 +1,6 @@
 package com.jkjk.Host;
 
-import com.badlogic.gdx.physics.box2d.Body;
-import com.jkjk.GameObjects.Characters.GameCharacter;
+import java.util.Random;
 
 public class MMServer {
 
@@ -10,12 +9,14 @@ public class MMServer {
 	private WeaponPartSpawner weaponPartSpawner;
 
 	private final int numOfPlayers;
-	private Object numOfPlayersSync;
+	private Random randMurderer;
+	private int murdererId;
 
-	private final Boolean[] playerIsAlive;
-	private final Boolean[] playerIsStun;
-	private final GameCharacter[] playerType;
-	private final Body[] playerBody; // Location information stored in body
+	private final int[] playerIsAlive; // If 1 -> true; If 0 -> false;
+	private final int[] playerIsStun; // If 1 -> true; If 0 -> false;
+	private final int[] playerType; // If 0 -> civilian; If 1 -> murderer; If 2 -> Ghost
+	private final float[] playerPosition;
+	private final float[] playerAngle;
 
 	// private ArrayList<Location> playerLocations;
 	private final SpawnBuffer itemSpawnLocations;
@@ -29,19 +30,24 @@ public class MMServer {
 
 	public MMServer(int numOfPlayers) throws InterruptedException {
 		this.numOfPlayers = numOfPlayers;
-		playerIsAlive = new Boolean[numOfPlayers];
-		playerIsStun = new Boolean[numOfPlayers];
-		playerType = new GameCharacter[numOfPlayers];
-		playerBody = new Body[numOfPlayers];
+		playerIsAlive = new int[numOfPlayers];
+		playerIsStun = new int[numOfPlayers];
+		playerType = new int[numOfPlayers];
+		playerPosition = new float[numOfPlayers];
+		playerAngle = new float[numOfPlayers];
 
 		itemSpawnLocations = new SpawnBuffer(numOfPlayers);
 		weaponSpawnLocations = new SpawnBuffer(numOfPlayers);
 		weaponPartSpawnLocations = new SpawnBuffer(numOfPlayers);
 		trapLocations = new SpawnBuffer(numOfPlayers);
 		
+		murdererId = randMurderer.nextInt(numOfPlayers);
+		
 		spawnItems(numOfPlayers*3);
 		spawnWeapons(numOfPlayers);
 		spawnWeaponParts(numOfPlayers*2);
+		
+		// Attempt to connect to clients (numOfPlayers)
 	}
 
 	private void spawnItems(int numOfItems) throws InterruptedException {
@@ -63,56 +69,66 @@ public class MMServer {
 	}
 
 	public int getNumOfPlayers() {
-		synchronized (numOfPlayersSync) {
 			return numOfPlayers;
-		}
 	}
 
-	public Boolean[] getPlayerIsAlive() {
+	public int[] getPlayerIsAlive() {
 		synchronized (playerIsAlive) {
 			return playerIsAlive;
 		}
 	}
 
-	public void setPlayerIsAlive(int position, boolean value) {
+	public void setPlayerIsAlive(int position, int value) {
 		synchronized (playerIsAlive) {
 			playerIsAlive[position] = value;
 		}
 	}
 
-	public Boolean[] getPlayerIsStun() {
+	public int[] getPlayerIsStun() {
 		synchronized (playerIsStun) {
 			return playerIsStun;
 		}
 	}
 
-	public void setPlayerIsStun(int position, boolean value) {
+	public void setPlayerIsStun(int position, int value) {
 		synchronized (playerIsStun) {
 			playerIsStun[position] = value;
 		}
 	}
 
-	public GameCharacter[] getPlayerType() {
+	public int[] getPlayerType() {
 		synchronized (playerType) {
 			return playerType;
 		}
 	}
 
-	public void setPlayerType(int position, GameCharacter value) {
+	public void setPlayerType(int position, int value) {
 		synchronized (playerType) {
 			playerType[position] = value;
 		}
 	}
 
-	public Body[] getPlayerBody() {
-		synchronized (playerBody) {
-			return playerBody;
+	public float[] getPlayerPosition() {
+		synchronized (playerPosition) {
+			return playerPosition;
 		}
 	}
 
-	public void setPlayerBody(int position, Body value) {
-		synchronized (playerBody) {
-			playerBody[position] = value;
+	public void setPlayerPosition(int position, float value) {
+		synchronized (playerPosition) {
+			playerPosition[position] = value;
+		}
+	}	
+	
+	public float[] getPlayerAngle() {
+		synchronized (playerAngle) {
+			return playerAngle;
+		}
+	}
+
+	public void setPlayerAngle(int position, float value) {
+		synchronized (playerAngle) {
+			playerAngle[position] = value;
 		}
 	}
 

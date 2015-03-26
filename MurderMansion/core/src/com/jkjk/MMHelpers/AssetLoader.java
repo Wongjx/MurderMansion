@@ -63,13 +63,35 @@ public class AssetLoader {
 	public static Texture time;
 	public static Texture civ_profile;
 	
+	// Animations
 	public static Texture civ_walk;
-	public static TextureRegion civ_walk1;
-	public static TextureRegion civ_walk2;
-	public static TextureRegion civ_walk3;
-	public static TextureRegion civ_walk4;
-	public static TextureRegion civ_walk5;
 	public static Animation civAnimation;
+	public static Texture civ_bat;
+	public static Animation civBatAnimation;
+	public static Texture civ_disarm;
+	public static Animation civDisarmAnimation;
+	public static Texture civ_knifeDeath;
+	public static Animation civKnifeDeathAnimation;
+	public static Texture civ_trapDeath;
+	public static Animation civTrapDeathAnimation;
+	public static Texture civ_stun;
+	public static Animation civStunAnimation;
+	public static Texture civ_panic;
+	public static Animation civPanicAnimation;
+	public static Texture civ_shotgun;
+	public static Animation civShotgunAnimation;
+	public static Texture mur_walk;
+	public static Animation murAnimation;
+	public static Texture mur_knife;
+	public static Animation murKnifeAnimation;
+	public static Texture mur_plantTrap;
+	public static Animation murPlantTrapAnimation;
+	public static Texture mur_death;
+	public static Animation murDeathAnimation;
+	public static Texture mur_civTransformation;
+	public static Animation murToCivAnimation;
+	public static Texture civ_murTransformation;
+	public static Animation civToMurAnimation;
 	
 
 	public static void load() {
@@ -121,7 +143,7 @@ public class AssetLoader {
 
 		emptySlot = new Texture (Gdx.files.internal("data/slots.png"));
 		
-		//CIVILIANS
+		//CIVILIANS HUD
 		civ_weapon_bat_tex = new Texture(Gdx.files.internal("data/civ_weapon_bat.png"));
 		civ_weapon_bat_draw = new TextureRegionDrawable(new TextureRegion(civ_weapon_bat_tex));
 		civ_item_tex = new Texture(Gdx.files.internal("data/civ_item.png"));
@@ -129,7 +151,7 @@ public class AssetLoader {
 		civ_dash_tex = new Texture(Gdx.files.internal("data/civ_dash.png"));
 		civ_dash_draw = new TextureRegionDrawable (new TextureRegion(civ_dash_tex));
 		
-		// MURDERER
+		// MURDERER HUD
 		mur_weapon_tex = new Texture(Gdx.files.internal("data/mur_weapon.png"));
 		mur_weapon_draw = new TextureRegionDrawable(new TextureRegion(mur_weapon_tex));
 		mur_item_tex = new Texture(Gdx.files.internal("data/mur_item.png"));
@@ -137,16 +159,19 @@ public class AssetLoader {
 		mur_swap_tex = new Texture(Gdx.files.internal("data/mur_swap.png"));
 		mur_swap_draw = new TextureRegionDrawable (new TextureRegion(mur_swap_tex));
 		
-		
+		// TIMER
 		time = new Texture(Gdx.files.internal("data/countdown.png"));
 		time.setFilter(TextureFilter.Linear, TextureFilter.Linear);
 		civ_profile = new Texture(Gdx.files.internal("data/civ_profile.png"));
 		civ_profile.setFilter(TextureFilter.Linear, TextureFilter.Linear);
+		
 
 		tiledMap = new TmxMapLoader().load("map/mansion2.tmx");
 		
+		
 		civ_walk = new Texture(Gdx.files.internal("data/civilians.png"));
 		civ_walk.setFilter(TextureFilter.Nearest, TextureFilter.Nearest);
+<<<<<<< HEAD
 		civ_walk1 = new TextureRegion(civ_walk, 0,0,32,32);
 //		civ_walk1.flip(false, true);
 		civ_walk2 = new TextureRegion(civ_walk, 32,0,32,32);
@@ -159,6 +184,11 @@ public class AssetLoader {
 //		civ_walk5.flip(false, true);
 		TextureRegion[] civilians = { civ_walk1, civ_walk2, civ_walk3, civ_walk4, civ_walk5};
 		civAnimation = new Animation(0.2f, civilians);
+=======
+		TextureRegion[] civilians = TextureRegion.split(civ_walk, 32, 32)[0];
+		System.out.println("Num frames: " + civilians.length);
+		civAnimation = new Animation(0.1f, civilians);
+>>>>>>> 4c697f50884d0102b5de50ddc1f7e8d543b8f80e
 		civAnimation.setPlayMode(Animation.PlayMode.LOOP_PINGPONG);
 		
 	}
@@ -180,5 +210,18 @@ public class AssetLoader {
 		mur_item_tex.dispose();
 		mur_swap_tex.dispose();
 		civ_walk.dispose();
+//		civ_bat.dispose();
+//		civ_disarm.dispose();
+//		civ_knifeDeath.dispose();
+//		civ_trapDeath.dispose();
+//		civ_stun.dispose();
+//		civ_panic.dispose();
+//		civ_shotgun.dispose();
+//		mur_walk.dispose();
+//		mur_knife.dispose();
+//		mur_plantTrap.dispose();
+//		mur_death.dispose();
+//		mur_civTransformation.dispose();
+//		civ_murTransformation.dispose();
 	}
 }

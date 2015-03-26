@@ -21,6 +21,7 @@ public class MMContactListener implements ContactListener {
 	private Array<Body> itemsToRemove;
 	private Array<Body> weaponsToRemove;
 	private Array<Body> trapToRemove;
+	private Array<Body> weaponPartsToRemove;
 	private Array<Body> bodiesToDraw; // later between batch.start() and batch.end(), draw only items in this
 										// array.
 	private GameWorld gWorld;
@@ -30,6 +31,7 @@ public class MMContactListener implements ContactListener {
 	public MMContactListener(GameWorld gWorld) {
 		itemsToRemove = new Array<Body>();
 		weaponsToRemove = new Array<Body>();
+		weaponPartsToRemove = new Array<Body>();
 		trapToRemove = new Array<Body>();
 		bodiesToDraw = new Array<Body>();// need to permanently add player's own body inside here. but where?
 		this.gWorld = gWorld;
@@ -55,6 +57,10 @@ public class MMContactListener implements ContactListener {
 					weaponsToRemove.add(fb.getBody());
 				} else if (faUD.equals("weapon") && gWorld.getPlayer().getWeapon() == null) {
 					weaponsToRemove.add(fa.getBody());
+				} else if (faUD.equals("weapon part")) {
+					weaponPartsToRemove.add(fa.getBody());
+				} else if (fbUD.equals("weapon part")) {
+					weaponPartsToRemove.add(fb.getBody());
 				} else if (faUD.equals("L1S1") || fbUD.equals("L1S1")) {
 					atStairs = true;
 					stairsName = "L1S1";
@@ -143,6 +149,10 @@ public class MMContactListener implements ContactListener {
 
 	public Array<Body> getWeaponsToRemove() {
 		return weaponsToRemove;
+	}
+
+	public Array<Body> getWeaponPartsToRemove() {
+		return weaponPartsToRemove;
 	}
 
 	public Array<Body> getTrapToRemove() {

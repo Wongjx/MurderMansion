@@ -2,11 +2,12 @@ package com.jkjk.GameObjects.Items;
 
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.BodyDef;
+import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
 import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.badlogic.gdx.physics.box2d.PolygonShape;
-import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
-import com.jkjk.GameObjects.HitBoxExposure;
+import com.jkjk.GameObjects.Duration;
 import com.jkjk.GameWorld.GameWorld;
+import com.jkjk.MMHelpers.AssetLoader;
 
 public class DisarmTrap extends Item {
 
@@ -19,12 +20,13 @@ public class DisarmTrap extends Item {
 		super(gWorld);
 		bdef = new BodyDef();
 		fdef = new FixtureDef();
-		hitBoxExposure = new HitBoxExposure(10);
+		hitBoxExposure = new Duration(10);
 	}
 	
 	@Override
 	public void use() {
 		System.out.println("Used disarm trap");
+		gWorld.getPlayer().getBody().setUserData(AssetLoader.civDisarmAnimation);
 		playerPosition = gWorld.getPlayer().getBody().getPosition();
 		playerAngle = gWorld.getPlayer().getBody().getAngle();
 		bdef.type = BodyType.DynamicBody;
@@ -42,6 +44,6 @@ public class DisarmTrap extends Item {
 		
 		body.createFixture(fdef).setUserData("disarm trap");
 		
-		hitBoxExposure.startExposure();
+		hitBoxExposure.startCountdown();
 	}
 }

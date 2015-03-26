@@ -1,4 +1,7 @@
-package com.jkjk.GameObjects.Weapons;
+/**
+ * 
+ */
+package com.jkjk.GameObjects;
 
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.BodyDef;
@@ -8,14 +11,18 @@ import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
 
-public class WeaponSprite {
+/**
+ * @author LeeJunXiang
+ *
+ */
+public class WeaponPartSprite {
 
 	private Body body;
 	private BodyDef bdef;
 	private World world;
 	private FixtureDef fdef;
 
-	public WeaponSprite(World world) {
+	public WeaponPartSprite(World world) {
 		this.world = world;
 		fdef = new FixtureDef();
 		bdef = new BodyDef();
@@ -29,7 +36,7 @@ public class WeaponSprite {
 		fdef.shape = shape;
 		fdef.isSensor = true;
 		fdef.filter.maskBits = 1;
-		body.createFixture(fdef).setUserData("weapon");
+		body.createFixture(fdef).setUserData("weapon part");
 	}
 
 	public void spawn(float x, float y, float angle) {
@@ -39,5 +46,4 @@ public class WeaponSprite {
 	public void render() {
 
 	}
-
 }
