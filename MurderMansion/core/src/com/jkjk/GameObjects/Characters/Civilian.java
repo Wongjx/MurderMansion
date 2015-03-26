@@ -7,10 +7,7 @@ import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
-<<<<<<< HEAD
 import com.badlogic.gdx.graphics.OrthographicCamera;
-=======
->>>>>>> 974c992134013f5f9ec664fb770d0fcf61a217ba
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
@@ -70,6 +67,7 @@ public class Civilian extends GameCharacter {
 	}
 	@Override
 	public void render(OrthographicCamera cam){
+		
 		
 		//charAnim = (Animation) body.getUserData();
 		

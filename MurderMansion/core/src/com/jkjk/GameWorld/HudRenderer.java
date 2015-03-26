@@ -459,6 +459,7 @@ public class HudRenderer {
 				// Used to check character position FOR TESTING
 				System.out.println(gWorld.getPlayer().getBody().getPosition());
 				gWorld.getPlayer().useAbility();
+				
 			}
 		});
 
