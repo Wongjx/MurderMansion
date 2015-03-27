@@ -2,6 +2,7 @@ package com.jkjk.GameObjects.Abilities;
 
 import com.jkjk.GameObjects.Duration;
 import com.jkjk.GameObjects.Characters.GameCharacter;
+import com.jkjk.MMHelpers.AssetLoader;
 
 public class Panic extends Ability {
 	
@@ -16,6 +17,7 @@ public class Panic extends Ability {
 	
 	@Override
 	public void use() {
+		gameCharacter.getBody().setUserData(AssetLoader.civPanicAnimation);
 		gameCharacter.setVelocity(gameCharacter.getVelocity()*1.5f);
 		duration.startCountdown();
 		active = true;
@@ -30,6 +32,7 @@ public class Panic extends Ability {
 		super.update();
 		duration.update();
 		if (!duration.isCountingDown() && active){
+			gameCharacter.getBody().setUserData(AssetLoader.civAnimation);
 			gameCharacter.setVelocity(gameCharacter.getVelocity()/1.5f);
 			active = false;
 		}

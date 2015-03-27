@@ -25,7 +25,7 @@ public class Shotgun extends Weapon {
 	@Override
 	public void use() {
 		System.out.println("Used shotgun");
-		gWorld.getPlayer().getBody().setUserData(AssetLoader.civShotgunAnimation);
+		//gWorld.getPlayer().getBody().setUserData(AssetLoader.civShotgunAnimation);
 		playerPosition = gWorld.getPlayer().getBody().getPosition();
 		playerAngle = gWorld.getPlayer().getBody().getAngle();
 		bdef.type = BodyType.DynamicBody;

@@ -27,7 +27,7 @@ public class DisarmTrap extends Item {
 	@Override
 	public void use() {
 		System.out.println("Used disarm trap");
-		gWorld.getPlayer().getBody().setUserData(AssetLoader.civDisarmAnimation);
+		//gWorld.getPlayer().getBody().setUserData(AssetLoader.civDisarmAnimation);
 		playerPosition = gWorld.getPlayer().getBody().getPosition();
 		playerAngle = gWorld.getPlayer().getBody().getAngle();
 		bdef.type = BodyType.DynamicBody;
@@ -44,7 +44,6 @@ public class DisarmTrap extends Item {
 		fdef.filter.maskBits = 1;
 
 		body.createFixture(fdef).setUserData("disarm trap");
-
 		hitBoxExposure.startCountdown();
 	}
 

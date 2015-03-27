@@ -7,6 +7,7 @@ import com.badlogic.gdx.physics.box2d.CircleShape;
 import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.badlogic.gdx.physics.box2d.World;
+import com.jkjk.MMHelpers.AssetLoader;
 
 public class ItemSprite {
 
@@ -30,6 +31,7 @@ public class ItemSprite {
 		fdef.isSensor = true;
 		fdef.filter.maskBits = 1;
 		body.createFixture(fdef).setUserData("item");
+		body.setUserData(AssetLoader.itemTexture);
 	
 	}
 

@@ -55,6 +55,11 @@ public class Ghost extends GameCharacter {
 		body.createFixture(lightFdef).setUserData("lightBody");
 		
 		civ_dead_lines = AssetLoader.civ_dead_lines;
+		
+		charAnim = AssetLoader.civAnimation;
+		body.setUserData(charAnim);
+		batch = new SpriteBatch();
+		runTime = 0;
 	}
 	
 	@Override
@@ -67,10 +72,7 @@ public class Ghost extends GameCharacter {
 		batch.end();
 		
 		super.render(cam);
-		charAnim = AssetLoader.civAnimation;
-		body.setUserData(charAnim);
-		batch = new SpriteBatch();
-		runTime = 0;
+		
 	}
 	
 }

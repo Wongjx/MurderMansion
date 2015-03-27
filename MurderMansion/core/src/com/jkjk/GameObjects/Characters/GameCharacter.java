@@ -224,6 +224,7 @@ public abstract class GameCharacter {
 		runTime += Gdx.graphics.getRawDeltaTime();
 		
 		
+		
 		if (!stun) {
 			playerMovement();
 		} else {
@@ -268,7 +269,6 @@ public abstract class GameCharacter {
 			} else
 				body.setAngularVelocity(0);
 		}
-
 		body.setLinearVelocity(touchpadX * maxVelocity, touchpadY * maxVelocity);
 	}
 

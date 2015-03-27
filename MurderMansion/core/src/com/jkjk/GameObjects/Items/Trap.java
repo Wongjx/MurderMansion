@@ -30,7 +30,7 @@ public class Trap extends Item {
 	@Override
 	public void use() {
 		System.out.println("Used trap");
-		gWorld.getPlayer().getBody().setUserData(AssetLoader.murPlantTrapAnimation);
+		//gWorld.getPlayer().getBody().setUserData(AssetLoader.murPlantTrapAnimation);
 		playerPosition = gWorld.getPlayer().getBody().getPosition();
 		playerAngle = gWorld.getPlayer().getBody().getAngle();
 		bdef.type = BodyType.StaticBody;
@@ -45,7 +45,7 @@ public class Trap extends Item {
 		fdef.filter.maskBits = 1;
 		
 		body.createFixture(fdef).setUserData("trap");
-		
+		body.setUserData(AssetLoader.plantedTrapTexture);
 		isCompleted = true;
 	}
 	

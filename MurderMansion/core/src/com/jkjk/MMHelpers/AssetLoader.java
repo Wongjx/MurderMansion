@@ -63,26 +63,24 @@ public class AssetLoader {
 	public static Texture time;
 	public static Texture civ_profile;
 	
-	// Animations
-	public static Texture civ_walk;
-	public static TextureRegion civ_rest;
-	public static TextureRegion civ_walk1;
-	public static TextureRegion civ_walk2;
-	public static TextureRegion civ_walk3;
-	public static TextureRegion civ_walk4;
-	public static TextureRegion civ_walk5;
-	public static TextureRegion[] civilians;
-	public static Animation civAnimation;
-	
+	public static TextureRegion civ_rest;	
 	public static Texture civ_dead_lines;
-	public static Texture civ_trapDeath;
-	public static Animation civTrapDeathAnimation;
 	
-	public static Texture civ_bat;
-	public static Animation civBatAnimation;
-	
+	// GENERAL ITEMS
+	public static Texture plantedTrapTexture;
+	public static Texture itemTexture;
+	public static Texture weaponTexture;
+	public static Texture shotgunItemTexture;
+
+	// Character Animations and Textures
+	public static Texture civ_walk;
+	public static Animation civAnimation;
 	public static Texture civ_disarm;
 	public static Animation civDisarmAnimation;
+	public static Texture civ_bat;
+	public static Animation civBatAnimation;
+	public static Texture civ_trapDeath;
+	public static Animation civTrapDeathAnimation;
 	public static Texture civ_knifeDeath;
 	public static Animation civKnifeDeathAnimation;
 	public static Texture civ_stun;
@@ -178,8 +176,16 @@ public class AssetLoader {
 		civ_profile = new Texture(Gdx.files.internal("HUD/civ_profile.png"));
 		civ_profile.setFilter(TextureFilter.Linear, TextureFilter.Linear);
 		
+		// MAP
 		tiledMap = new TmxMapLoader().load("map/mansion2.tmx");
 		
+		// PICK UP ITEM TEXTURES
+//		plantedTrapTexture = new Texture(Gdx.files.internal(""));
+//		itemTexture = new Texture(Gdx.files.internal(""));
+//		weaponTexture = new Texture(Gdx.files.internal(""));
+//		shotgunItemTexture = new Texture(Gdx.files.internal(""));
+//		
+		// CIVILIAN ANIMATIONS AND TEXTURE
 		civ_walk = new Texture(Gdx.files.internal("animation/civilians.png"));
 		civ_walk.setFilter(TextureFilter.Nearest, TextureFilter.Nearest);
 		TextureRegion[] civilians = TextureRegion.split(civ_walk, 32, 32)[0];

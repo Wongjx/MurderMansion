@@ -33,7 +33,7 @@ public class MMContactListener implements ContactListener {
 		weaponsToRemove = new Array<Body>();
 		weaponPartsToRemove = new Array<Body>();
 		trapToRemove = new Array<Body>();
-		bodiesToDraw = new Array<Body>();// need to permanently add player's own body inside here. but where?
+		bodiesToDraw = new Array<Body>();
 		this.gWorld = gWorld;
 		atStairs = false;
 		stairsName = null;

@@ -5,11 +5,11 @@ package com.jkjk.GameObjects;
 
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.BodyDef;
+import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
 import com.badlogic.gdx.physics.box2d.CircleShape;
 import com.badlogic.gdx.physics.box2d.FixtureDef;
-import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.badlogic.gdx.physics.box2d.World;
-import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
+import com.jkjk.MMHelpers.AssetLoader;
 
 /**
  * @author LeeJunXiang
@@ -37,6 +37,7 @@ public class WeaponPartSprite {
 		fdef.isSensor = true;
 		fdef.filter.maskBits = 1;
 		body.createFixture(fdef).setUserData("weapon part");
+		body.setUserData(AssetLoader.shotgunItemTexture);
 	}
 
 	public void spawn(float x, float y, float angle) {

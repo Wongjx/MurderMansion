@@ -1,6 +1,8 @@
 package com.jkjk.GameObjects.Characters;
 
 import box2dLight.ConeLight;
+
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
@@ -21,6 +23,8 @@ public class Civilian extends GameCharacter {
 	private Touchpad touchpad;
 	private Animation civAnimation;
 	private TextureRegion civ_rest;
+	private Animation currentAnimation;
+	private double hypothenuse;
 
 	Civilian(int id, World world) {
 
@@ -66,21 +70,36 @@ public class Civilian extends GameCharacter {
 
 	@Override
 	public void render(OrthographicCamera cam) {
-
-		// charAnim = (Animation) body.getUserData();
-
 		
+		super.render(cam);
+		runTime += Gdx.graphics.getRawDeltaTime();
 		batch.setProjectionMatrix(cam.combined);
 		batch.begin();
-		
-		if (touchpad.isTouched()){
-			batch.draw(civAnimation.getKeyFrame(runTime,true), body.getPosition().x-10, body.getPosition().y-10, 10, 10, 20, 20, 1, 1,(float) (body.getAngle()*180/Math.PI)-90);
+		currentAnimation = (Animation) body.getUserData();
+		if(currentAnimation==AssetLoader.civBatAnimation||
+				currentAnimation==AssetLoader.civDisarmAnimation||
+				currentAnimation==AssetLoader.civKnifeDeathAnimation||
+				currentAnimation==AssetLoader.civTrapDeathAnimation){
+			if(currentAnimation.isAnimationFinished(runTime)){
+				currentAnimation = AssetLoader.civAnimation;
+			}
+			else{
+				body.setLinearVelocity(0, 0);
+				body.setAngularVelocity(0);
+			}
 		}
-		else{
-			batch.draw(civ_rest, body.getPosition().x-10, body.getPosition().y-10, 10, 10, 20, 20, 1, 1,(float) (body.getAngle()*180/Math.PI)-90);
+		else{	
+			if (touchpad.isTouched()){
+				//hypothenuse = Math.sqrt((Math.pow(touchpad.getKnobPercentX(), 2)+Math.pow(touchpad.getKnobPercentY(),2)));
+				//currentAnimation.setFrameDuration((float)hypothenuse*5);
+				batch.draw(currentAnimation.getKeyFrame(runTime,true), body.getPosition().x-10, body.getPosition().y-10, 10, 10, 20, 20, 1, 1,(float) (body.getAngle()*180/Math.PI)-90);
+			}
+			else{
+				batch.draw(civ_rest, body.getPosition().x-10, body.getPosition().y-10, 10, 10, 20, 20, 1, 1,(float) (body.getAngle()*180/Math.PI)-90);
+			}
 		}
 
 		batch.end();
-		super.render(cam);
+		
 	}
 }

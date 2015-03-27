@@ -25,7 +25,7 @@ public class Bat extends Weapon {
 	@Override
 	public void use() {
 		System.out.println("Used bat");
-		gWorld.getPlayer().getBody().setUserData(AssetLoader.civBatAnimation);
+		//gWorld.getPlayer().getBody().setUserData(AssetLoader.civBatAnimation);
 		playerPosition = gWorld.getPlayer().getBody().getPosition();
 		playerAngle = gWorld.getPlayer().getBody().getAngle();
 		bdef.type = BodyType.DynamicBody;
