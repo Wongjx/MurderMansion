@@ -70,10 +70,10 @@ public class Civilian extends GameCharacter {
 	@Override
 	public void render(OrthographicCamera cam) {
 		
-		super.render(cam);
 		runTime += Gdx.graphics.getRawDeltaTime();
 		batch.setProjectionMatrix(cam.combined);
 		batch.begin();
+		System.out.println(body.getUserData());
 		currentAnimation = (Animation) body.getUserData();
 		if(currentAnimation==AssetLoader.civBatAnimation||
 				currentAnimation==AssetLoader.civDisarmAnimation||
@@ -99,6 +99,7 @@ public class Civilian extends GameCharacter {
 		}
 
 		batch.end();
+		super.render(cam);
 		
 	}
 }

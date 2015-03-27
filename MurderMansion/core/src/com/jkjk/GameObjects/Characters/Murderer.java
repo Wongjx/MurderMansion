@@ -22,6 +22,7 @@ public class Murderer extends GameCharacter {
 	private Touchpad touchpad;
 	private TextureRegion civ_rest;
 	private TextureRegion mur_rest;
+	private Animation charAnim;
 	
 	public Murderer(int id, World world) {
 		super("Murderer", id, world);
@@ -56,13 +57,8 @@ public class Murderer extends GameCharacter {
 		lightFdef.shape = circle;
 		lightFdef.filter.maskBits = 1;
 		body.createFixture(lightFdef).setUserData("lightBody");
-<<<<<<< HEAD
-		body.setUserData(AssetLoader.civAnimation);//starts disguised
-=======
 		charAnim = AssetLoader.civAnimation;
 		body.setUserData(charAnim);
-		
->>>>>>> 7a7674e5d78d0830322414956913ca10a63b9945
 		disguised = true;
 		
 		civ_rest = AssetLoader.civ_rest;
@@ -70,7 +66,6 @@ public class Murderer extends GameCharacter {
 	}
 	@Override
 	public void render(OrthographicCamera cam){
-		super.render(cam);
 		
 		//charAnim = (Animation) body.getUserData();
 		runTime += Gdx.graphics.getRawDeltaTime();
@@ -112,6 +107,7 @@ public class Murderer extends GameCharacter {
 		}
 
 		batch.end();
+		super.render(cam);
 
 	}
 	

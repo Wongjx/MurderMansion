@@ -57,8 +57,6 @@ public class Ghost extends GameCharacter {
 		
 		charAnim = AssetLoader.civAnimation;
 		body.setUserData(charAnim);
-		batch = new SpriteBatch();
-		runTime = 0;
 	}
 	
 	@Override
@@ -71,10 +69,6 @@ public class Ghost extends GameCharacter {
 		batch.end();
 		
 		super.render(cam);
-<<<<<<< HEAD
-		
-=======
->>>>>>> 7a7674e5d78d0830322414956913ca10a63b9945
 	}
 	
 }
