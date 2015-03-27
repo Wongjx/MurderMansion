@@ -92,6 +92,8 @@ public class AssetLoader {
 	public static Animation murToCivAnimation;
 	public static Texture civ_murTransformation;
 	public static Animation civToMurAnimation;
+	public static Texture ghost_haunt;
+	public static Animation ghostHaunt;
 	
 
 	public static void load() {
@@ -208,5 +210,6 @@ public class AssetLoader {
 //		mur_death.dispose();
 //		mur_civTransformation.dispose();
 //		civ_murTransformation.dispose();
+//		ghost_haunt.dispose();
 	}
 }
