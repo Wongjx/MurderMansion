@@ -222,21 +222,27 @@ public class HudRenderer {
 	 * to false and updating the new item for the player's ability slot.
 	 */
 	private void abilityCheck() {
+		System.out.println("CHECK ABILITY");
 		gWorld.getPlayer().setAbilityChange(false);
 		if (gWorld.getPlayer().getType().equals("Civilian")) {
+			System.out.println("CIV");
 			stage.addActor(getPanic());
 		} else if (gWorld.getPlayer().getType().equals("Murderer")) {
+			System.out.println("MUR");
 			for (Actor actors : stage.getActors()) {
 				if (actors.getName().equals("Disguise to civilian")
 						|| actors.getName().equals("Disguise to murderer"))
 					actors.remove();
 			}
 			if (gWorld.getPlayer().isDisguised()) {
+				System.out.println("TOMUR");
 				stage.addActor(getDisguiseToMur());
 			} else {
+				System.out.println("TOCIV");
 				stage.addActor(getDisguiseToCiv());
 			}
 		} else {
+			System.out.println("EMPTY");
 			for (Actor actors : stage.getActors()) {
 				if (actors.getName().equals("Disguise to civilian")
 						|| actors.getName().equals("Disguise to murderer")

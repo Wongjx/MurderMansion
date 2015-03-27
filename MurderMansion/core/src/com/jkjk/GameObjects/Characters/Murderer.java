@@ -52,6 +52,7 @@ public class Murderer extends GameCharacter {
 		body.createFixture(lightFdef).setUserData("lightBody");
 		charAnim = AssetLoader.civAnimation;
 		body.setUserData(charAnim);
+		
 		disguised = true;
 	}
 	@Override
@@ -71,6 +72,8 @@ public class Murderer extends GameCharacter {
 	@Override
 	public void useAbility() {
 		if (!ability.isOnCoolDown()) {
+			ability.use();
+			ability.cooldown();
 			abilityChange = true;
 		}
 	}
