@@ -6,35 +6,21 @@ import com.jkjk.GameWorld.GameWorld;
 
 public abstract class Item {
 
-	protected Duration hitBoxExposure;
+
 	protected GameWorld gWorld;
 	protected Body body;
-	private boolean isDestroy;
+	protected boolean isCompleted;
 
 	public Item(GameWorld gWorld) {
-		hitBoxExposure = new Duration(10);
 		this.gWorld = gWorld;
 	}
-
-	public boolean isHitBoxExposed() {
-		return hitBoxExposure.isCountingDown();
-	}
 	
-	public boolean isDestroy(){
-		return isDestroy;
+	public boolean isCompleted(){
+		return isCompleted;
 	}
 
 	public abstract void use();
 
 	public void update() {
-		hitBoxExposure.update();
-		if (!hitBoxExposure.isCountingDown()) {
-			if (body != null) {
-				gWorld.getWorld().destroyBody(body);
-				body = null;
-				isDestroy = true;
-			}
-		}
-
 	}
 }

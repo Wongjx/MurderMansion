@@ -2,6 +2,7 @@ package com.jkjk.GameObjects.Abilities;
 
 import com.jkjk.GameObjects.Duration;
 import com.jkjk.GameObjects.Characters.GameCharacter;
+import com.jkjk.MMHelpers.AssetLoader;
 
 public class Disguise extends Ability {
 	
@@ -12,6 +13,11 @@ public class Disguise extends Ability {
 	
 	@Override
 	public void use() {
+			if(gameCharacter.getBody().getUserData()== AssetLoader.murToCivAnimation){
+				gameCharacter.getBody().setUserData(AssetLoader.civToMurAnimation);
+			}else{
+				
+			}
 		if (gameCharacter.isDisguised()){
 			gameCharacter.setDisguise(false);
 			System.out.println("Change sprite to murderer");

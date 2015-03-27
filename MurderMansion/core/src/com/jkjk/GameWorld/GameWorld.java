@@ -151,8 +151,8 @@ public class GameWorld {
 	 * Creates the player in the Box2D world. User data is set as "player" and spawned at defined location.
 	 */
 	private void createPlayer() {
-		// player = gameCharFac.createCharacter("Murderer", 0, world);
-		player = gameCharFac.createCharacter("Civilian", 0, world);
+		player = gameCharFac.createCharacter("Murderer", 0, world);
+		//player = gameCharFac.createCharacter("Civilian", 0, world);
 		player.getBody().getFixtureList().get(0).setUserData("player");
 		player.spawn(1010, 515, 0);
 	}
@@ -266,12 +266,15 @@ public class GameWorld {
 		currentPositionX = player.getBody().getPosition().x;
 		currentPositionY = player.getBody().getPosition().y;
 		currentAngle = player.getBody().getAngle();
-
+		
 		world.destroyBody(player.getBody());
 
 		player = gameCharFac.createCharacter("Ghost", player.getId(), world);
+		player.set_deathPositionX(currentPositionX);
+		player.set_deathPositionY(currentPositionY);
 		player.getBody().getFixtureList().get(0).setUserData("player");
 		player.spawn(currentPositionX, currentPositionY, currentAngle);
+		
 	}
 
 	/**

@@ -10,6 +10,7 @@ public class Duration {
 
 		// get the time this cooldown should be on for
 		this.duration = duration;
+		isCountdown = false;
 
 	}
 
