@@ -80,21 +80,25 @@ public class MenuScreen implements Screen{
 
             }
         });
-        buttonQuick.addListener(new ClickListener(){
-            @Override
-            public void clicked(InputEvent event, float x, float y) {
-                //Host multiplayer game
-            	game.actionResolver.startQuickGame();
-            	game.mMultiplayerSeisson.mState=game.mMultiplayerSeisson.ROOM_WAIT;
-            	((Game)Gdx.app.getApplicationListener()).setScreen(new WaitScreen(game,gameWidth, gameHeight));
-            }
-        });
+        
         buttonLogout.addListener(new ClickListener(){
             @Override
             public void clicked(InputEvent event, float x, float y) {
             	game.actionResolver.logoutGPGS();
             }
         });
+        
+        buttonQuick.addListener(new ClickListener(){
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                //Host multiplayer game
+//            	game.actionResolver.startQuickGame();
+//            	game.mMultiplayerSeisson.mState=game.mMultiplayerSeisson.ROOM_WAIT;
+//            	((Game)Gdx.app.getApplicationListener()).setScreen(new WaitScreen(game,gameWidth, gameHeight));
+            	game.socketHelper.initServerSocket();
+            }
+        });
+        
         buttonInvite.addListener(new ClickListener(){
             @Override
             public void clicked(InputEvent event, float x, float y) {
@@ -103,6 +107,7 @@ public class MenuScreen implements Screen{
             	((Game)Gdx.app.getApplicationListener()).setScreen(new WaitScreen(game,gameWidth, gameHeight));
             }
         });
+        
         buttonJoin.addListener(new ClickListener(){
             @Override
             public void clicked(InputEvent event, float x, float y) {

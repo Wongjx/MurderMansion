@@ -49,6 +49,7 @@ public abstract class GameCharacter {
 	
 	protected SpriteBatch batch;
 	protected float runTime;
+	protected float ambientLightValue;
 	
 	public GameCharacter(String type, int id, World world) {
 		maxVelocity = 64;
@@ -65,6 +66,9 @@ public abstract class GameCharacter {
 
 		batch = new SpriteBatch();
 		rayHandler = new RayHandler(world);
+		ambientLightValue = 0;
+		rayHandler.setAmbientLight(ambientLightValue);
+		runTime = 0;
 		
 	}
 	
@@ -223,6 +227,11 @@ public abstract class GameCharacter {
 	public void render(OrthographicCamera cam) {
 		runTime += Gdx.graphics.getRawDeltaTime();
 		
+		if (runTime % 5.0 < 0.02){
+			ambientLightValue += 0.003;
+			System.out.println(ambientLightValue);
+			rayHandler.setAmbientLight(ambientLightValue);
+		}
 		
 		
 		if (!stun) {

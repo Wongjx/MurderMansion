@@ -170,7 +170,9 @@ public class GPSListeners implements RoomStatusUpdateListener, RoomUpdateListene
 
     @Override
     public void onPeerJoined(Room room, List<String> arg1) {
-        updateRoom(room);
+    	activity.mRealTimeCom.broadcastAddress();
+    	activity.mRealTimeCom.broadcastPort();
+    	updateRoom(room);
     }
 
     @Override
@@ -203,7 +205,6 @@ public class GPSListeners implements RoomStatusUpdateListener, RoomUpdateListene
         	mMultiplayerSeisson.mParticipants=room.getParticipants();
         }
         if (mMultiplayerSeisson.mParticipants!= null) {
-//            updatePeerScoresDisplay();
         }
     }
     

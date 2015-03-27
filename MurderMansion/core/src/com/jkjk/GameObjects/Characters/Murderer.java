@@ -52,12 +52,17 @@ public class Murderer extends GameCharacter {
 		CircleShape circle = new CircleShape();
 		lightFdef.isSensor = true;
 		circle.setPosition(getBody().getPosition());
-		;
 		circle.setRadius(150);
 		lightFdef.shape = circle;
 		lightFdef.filter.maskBits = 1;
 		body.createFixture(lightFdef).setUserData("lightBody");
+<<<<<<< HEAD
 		body.setUserData(AssetLoader.civAnimation);//starts disguised
+=======
+		charAnim = AssetLoader.civAnimation;
+		body.setUserData(charAnim);
+		
+>>>>>>> 7a7674e5d78d0830322414956913ca10a63b9945
 		disguised = true;
 		
 		civ_rest = AssetLoader.civ_rest;
@@ -113,6 +118,8 @@ public class Murderer extends GameCharacter {
 	@Override
 	public void useAbility() {
 		if (!ability.isOnCoolDown()) {
+			ability.use();
+			ability.cooldown();
 			abilityChange = true;
 		}
 	}

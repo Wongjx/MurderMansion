@@ -65,7 +65,6 @@ public class Civilian extends GameCharacter {
 		civ_rest = AssetLoader.civ_rest;
 		body.setUserData(civAnimation);
 		batch = new SpriteBatch();
-		runTime = 0;
 	}
 
 	@Override

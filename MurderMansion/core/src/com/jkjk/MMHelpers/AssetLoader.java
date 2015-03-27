@@ -111,8 +111,8 @@ public class AssetLoader {
 
 		menuBackground = new Texture(Gdx.files.internal("basic/menu.png"));
 		
-		basker32black = new BitmapFont(Gdx.files.internal("fonts/Basker32.fnt"));
-		basker45black = new BitmapFont(Gdx.files.internal("fonts/Baskek45.fnt"));
+		basker32black = new BitmapFont(Gdx.files.internal("Fonts/Basker32.fnt"));
+		basker45black = new BitmapFont(Gdx.files.internal("Fonts/Baskek45.fnt"));
 		basker32blackTime = new BitmapFont(Gdx.files.internal("Fonts/Basker32.fnt"));
 		basker32blackTime.scale((Gdx.graphics.getWidth() - gameWidth) / gameWidth /3);
 		
