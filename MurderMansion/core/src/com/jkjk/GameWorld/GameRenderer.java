@@ -30,8 +30,6 @@ public class GameRenderer {
 	// Game Assets
 	private TiledMap tiledMap; // Loaded map
 	private TiledMapRenderer tiledMapRenderer; // Renders the map
-	protected float ambientLightValue;
-	protected RayHandler rayHandler;
 
 	/**
 	 * Constructs the link from the Box2D world created in GameWorld to GameRenderer. Allows rendering of the
@@ -55,9 +53,6 @@ public class GameRenderer {
 		tiledMap = AssetLoader.tiledMap;
 		tiledMapRenderer = new OrthogonalTiledMapRenderer(tiledMap);
 
-		ambientLightValue = 0;
-		rayHandler = new RayHandler(gWorld.getWorld());
-		rayHandler.setAmbientLight(ambientLightValue);
 	}
 
 	/**
@@ -73,12 +68,6 @@ public class GameRenderer {
 
 		tiledMapRenderer.setView(cam);
 		tiledMapRenderer.render();
-		
-		if (runTime % 5.0 < 0.02){
-			ambientLightValue += 0.003;
-			System.out.println(ambientLightValue);
-			rayHandler.setAmbientLight(ambientLightValue);
-		}
 
 		if (gWorld.getPlayer().isAlive()) {
 			gWorld.getPlayer().render(cam);

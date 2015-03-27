@@ -36,9 +36,9 @@ public class MMServer {
 		playerPosition = new float[numOfPlayers];
 		playerAngle = new float[numOfPlayers];
 
-		itemSpawnLocations = new SpawnBuffer(numOfPlayers);
+		itemSpawnLocations = new SpawnBuffer(numOfPlayers*3);
 		weaponSpawnLocations = new SpawnBuffer(numOfPlayers);
-		weaponPartSpawnLocations = new SpawnBuffer(numOfPlayers);
+		weaponPartSpawnLocations = new SpawnBuffer(numOfPlayers*2);
 		trapLocations = new SpawnBuffer(numOfPlayers);
 		
 		murdererId = randMurderer.nextInt(numOfPlayers);
