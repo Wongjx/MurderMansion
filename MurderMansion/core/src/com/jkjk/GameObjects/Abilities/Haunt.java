@@ -18,7 +18,7 @@ public class Haunt extends Ability {
 
 	@Override
 	public void cooldown() {
-		cooldown.startCooldown();
+		cooldown.startCountdown();
 		
 	}
 

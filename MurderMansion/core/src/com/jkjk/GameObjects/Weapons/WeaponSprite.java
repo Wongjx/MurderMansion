@@ -2,6 +2,7 @@ package com.jkjk.GameObjects.Weapons;
 
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.BodyDef;
+import com.badlogic.gdx.physics.box2d.CircleShape;
 import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.badlogic.gdx.physics.box2d.World;
@@ -22,8 +23,9 @@ public class WeaponSprite {
 		bdef.type = BodyType.StaticBody;
 		body = world.createBody(bdef);
 
-		PolygonShape shape = new PolygonShape();
-		shape.setAsBox(7, 7);
+		
+		CircleShape shape = new CircleShape();
+		shape.setRadius(9);
 		fdef.shape = shape;
 		fdef.isSensor = true;
 		fdef.filter.maskBits = 1;
@@ -34,12 +36,7 @@ public class WeaponSprite {
 		body.setTransform(x, y, angle); // Spawn position
 	}
 
-
-	public void remove() {
-
-	}
-
-	public void update() {
+	public void render() {
 
 	}
 

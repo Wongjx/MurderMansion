@@ -1,5 +1,7 @@
 package com.jkjk.GameWorld;
 
+import box2dLight.RayHandler;
+
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
@@ -11,22 +13,37 @@ import com.jkjk.GameObjects.Characters.GameCharacter;
 import com.jkjk.MMHelpers.AssetLoader;
 
 /**
- * @author JunXiang GameRenderer's primary purpose is to render the graphics that are seen on your screen.
- *         This includes displaying the HUD, map, and sprites that exist in the world.
+ * GameRenderer's primary purpose is to render the graphics that are seen on your screen. This includes
+ * displaying the HUD, map, and sprites that exist in the world.
+ * 
+ * @author LeeJunXiang
  * 
  */
 public class GameRenderer {
-	private GameWorld gWorld;
-	private OrthographicCamera cam;
-	private Box2DDebugRenderer b2dr;
+	private GameWorld gWorld; // Box2D world. This will hold all objects (players, items, walls)
+	private OrthographicCamera cam; // Game camera. Views what is happening in the game.
+	private Box2DDebugRenderer b2dr; // Renders Box2D objects. (For debugging)
 
 	// Game Objects
-	private GameCharacter player;
+	private GameCharacter player; // Player's character
 
 	// Game Assets
-	private TiledMap tiledMap;
-	private TiledMapRenderer tiledMapRenderer;
+	private TiledMap tiledMap; // Loaded map
+	private TiledMapRenderer tiledMapRenderer; // Renders the map
+	protected float ambientLightValue;
+	protected RayHandler rayHandler;
 
+	/**
+	 * Constructs the link from the Box2D world created in GameWorld to GameRenderer. Allows rendering of the
+	 * player's actions, other players and map on the camera.
+	 * 
+	 * @param gWorld
+	 *            Link to the GameWorld, accessing box2d objected created in the world.
+	 * @param gameWidth
+	 *            Accesses the virtual game width.
+	 * @param gameHeight
+	 *            Accesses the virtual game height.
+	 */
 	public GameRenderer(GameWorld gWorld, float gameWidth, float gameHeight) {
 		this.gWorld = gWorld;
 		b2dr = new Box2DDebugRenderer();
@@ -35,19 +52,33 @@ public class GameRenderer {
 		cam = new OrthographicCamera();
 		cam.setToOrtho(false, (float) (gameWidth / (4.0 / 3)), (float) (gameHeight / (4.0 / 3)));
 
-		// Create player
-		player = gWorld.getPlayer();
-
 		tiledMap = AssetLoader.tiledMap;
 		tiledMapRenderer = new OrthogonalTiledMapRenderer(tiledMap);
 
+		ambientLightValue = 0;
+		rayHandler = new RayHandler(gWorld.getWorld());
+		rayHandler.setAmbientLight(ambientLightValue);
 	}
 
+	/**
+	 * Renders all images and actions on the player's screen.
+	 * 
+	 * @param delta
+	 *            The time between each render.
+	 * @param runTime
+	 *            The total runtime since start.
+	 */
 	public void render(float delta, float runTime) {
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT); // Clears screen everytime it renders
 
 		tiledMapRenderer.setView(cam);
 		tiledMapRenderer.render();
+		
+		if (runTime % 5.0 < 0.02){
+			ambientLightValue += 0.003;
+			System.out.println(ambientLightValue);
+			rayHandler.setAmbientLight(ambientLightValue);
+		}
 
 		if (gWorld.getPlayer().isAlive()) {
 			gWorld.getPlayer().render(cam);
@@ -58,9 +89,12 @@ public class GameRenderer {
 
 	}
 
+	/**
+	 * Releases the resources held by objects or images loaded.
+	 */
 	public void rendererDispose() {
 		gWorld.getWorld().dispose();
-		gWorld.getPlayer().dispose();
+		player.dispose();
 		b2dr.dispose();
 	}
 

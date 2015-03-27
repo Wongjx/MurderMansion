@@ -4,27 +4,15 @@ import com.badlogic.gdx.Screen;
 import com.jkjk.GameWorld.GameRenderer;
 import com.jkjk.GameWorld.GameWorld;
 import com.jkjk.GameWorld.HudRenderer;
-//import com.jkjk.GameWorld.mGameWorld;
-import com.jkjk.MMHelpers.MultiplayerSeissonInfo;
 import com.jkjk.MurderMansion.murdermansion;
 
 public class GameScreen implements Screen {
-	private murdermansion game;
-	
 	private GameWorld gWorld;
 	private GameRenderer renderer;
 	private HudRenderer hudRenderer;
 	private float runTime;
 
-	private float gameWidth;
-	private float gameHeight;
-	
 	public GameScreen(murdermansion game,float gameWidth, float gameHeight) {
-		this.game=game;
-		this.gameWidth = gameWidth;
-		this.gameHeight = gameHeight;
-		
-		
 		if(game.mMultiplayerSeisson.mState==game.mMultiplayerSeisson.ROOM_PLAY){
 			//gWorld = new mGameWorld(gameWidth, gameHeight,game);
 		}else{

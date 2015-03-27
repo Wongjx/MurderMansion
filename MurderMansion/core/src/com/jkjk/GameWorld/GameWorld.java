@@ -10,7 +10,7 @@ import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.Array;
-import com.jkjk.GameObjects.Abilities.AbilityFactory;
+import com.jkjk.GameObjects.WeaponPartSprite;
 import com.jkjk.GameObjects.Characters.Civilian;
 import com.jkjk.GameObjects.Characters.GameCharacter;
 import com.jkjk.GameObjects.Characters.GameCharacterFactory;
@@ -23,8 +23,14 @@ import com.jkjk.MMHelpers.AssetLoader;
 import com.jkjk.MMHelpers.MMContactListener;
 
 /**
- * @author JunXiang GameWorld's primary purpose is to update the results of interactions in the world. It
- *         deals with creation and destruction of Box2D bodies, and manages contact listeners.
+ * GameWorld's primary purpose is to update the results of interactions in the world. It deals with creation
+ * and destruction of Box2D bodies, and manages contact listeners.
+ * 
+ * @author LeeJunXiang
+ */
+/**
+ * @author LeeJunXiang
+ * 
  */
 public class GameWorld {
 	private GameCharacterFactory gameCharFac;
@@ -37,15 +43,18 @@ public class GameWorld {
 	private WeaponFactory weaponFac;
 	private Array<WeaponSprite> weaponList;
 
-	private AbilityFactory abilityFac;
+	private Array<WeaponPartSprite> weaponPartList;
+	private int numOfWeaponPartsCollected;
+	private boolean shotgunCreated;
 
 	private World world;
 	private MMContactListener cl;
 	private int numOfPlayers;
 	private int maxItems;
 	private int maxWeapons;
+	private int maxWeaponParts;
 
-	private Array<Body> itemsToRemove, weaponsToRemove, trapToRemove;
+	private Array<Body> itemsToRemove, weaponsToRemove, weaponPartsToRemove, trapToRemove;
 	private Body bodyToRemove;
 
 	private float currentPositionX;
@@ -57,6 +66,15 @@ public class GameWorld {
 	private Body body;
 	private FixtureDef fdef;
 
+	/**
+	 * Constructs the Box2D world, adding Box2D objects such as players, items and weapons. Attaches the
+	 * contact listener in the world to observe any contact between these objects.
+	 * 
+	 * @param gameWidth
+	 *            Accesses the virtual game width.
+	 * @param gameHeight
+	 *            Accesses the virtual game height.
+	 */
 	public GameWorld(float gameWidth, float gameHeight) {
 		world = new World(new Vector2(0, 0), true);
 		cl = new MMContactListener(this);
@@ -64,9 +82,8 @@ public class GameWorld {
 
 		itemsToRemove = cl.getItemsToRemove();
 		weaponsToRemove = cl.getWeaponsToRemove();
+		weaponPartsToRemove = cl.getWeaponPartsToRemove();
 		trapToRemove = cl.getTrapToRemove();
-
-		abilityFac = new AbilityFactory();
 
 		gameCharFac = new GameCharacterFactory();
 		playerList = new Array<GameCharacter>();
@@ -78,6 +95,9 @@ public class GameWorld {
 		weaponFac = new WeaponFactory();
 		weaponList = new Array<WeaponSprite>();
 		maxWeapons = (int) (numOfPlayers * 1.2);
+		numOfWeaponPartsCollected = 0;
+		weaponPartList = new Array<WeaponPartSprite>();
+		maxWeaponParts = numOfPlayers * 2;
 		createPlayer();
 		for (int i = 0; i < numOfPlayers - 1; i++) {
 			createOpponents(i);
@@ -88,6 +108,9 @@ public class GameWorld {
 		for (int i = 0; i < maxWeapons; i++) {
 			createWeapons(i);
 		}
+		for (int i = 0; i < maxWeaponParts; i++) {
+			createWeaponParts(i);
+		}
 
 		createTrap(); // FOR DEBUG PURPOSE
 
@@ -95,6 +118,13 @@ public class GameWorld {
 		parser.load(world, AssetLoader.tiledMap);
 	}
 
+	/**
+	 * Updates the state of Box2D objects, such as the consequence of a player picking up an item, or when a
+	 * player dies.
+	 * 
+	 * @param delta
+	 *            The time between each render.
+	 */
 	public void update(float delta) {
 		world.step(delta, 6, 2); // Step size|Steps for each body to check collision|Accuracy of body position
 									// after collision
@@ -110,13 +140,21 @@ public class GameWorld {
 		checkWeaponPartSprite();
 		checkTrap();
 
+		if (numOfWeaponPartsCollected == 8 && !shotgunCreated) {
+			createShotgun();
+			shotgunCreated = true;
+		}
+
 	}
 
+	/**
+	 * Creates the player in the Box2D world. User data is set as "player" and spawned at defined location.
+	 */
 	private void createPlayer() {
+		//player = gameCharFac.createCharacter("Murderer", 0, world);
 		player = gameCharFac.createCharacter("Civilian", 0, world);
 		player.getBody().getFixtureList().get(0).setUserData("player");
 		player.spawn(1010, 515, 0);
-		player.addAbility(abilityFac.createAbility(player));
 	}
 
 	// FOR DEBUG PURPOSE
@@ -139,11 +177,11 @@ public class GameWorld {
 	// FOR DEBUG PURPOSE
 	private void createOpponents(int i) {
 		if (i == 0) {
-			playerList.add((Murderer) gameCharFac.createCharacter("Murderer", world));
+			playerList.add((Murderer) gameCharFac.createCharacter("Murderer", i + 1, world));
 			playerList.get(i).getBody().setType(BodyType.KinematicBody);
 			playerList.get(i).spawn(1010 - ((i + 1) * 40), 515, 0);
 		} else {
-			playerList.add((Civilian) gameCharFac.createCharacter("Civilian", i, world));
+			playerList.add((Civilian) gameCharFac.createCharacter("Civilian", i + 1, world));
 			playerList.get(i).getBody().setType(BodyType.KinematicBody);
 			playerList.get(i).spawn(1010 - ((i + 1) * 40), 515, 0);
 		}
@@ -161,37 +199,87 @@ public class GameWorld {
 		weaponList.get(i).spawn(1100 - ((i + 1) * 40), 460, 0);
 	}
 
+	// FOR DEBUG PURPOSE
+	private void createWeaponParts(int i) {
+		weaponPartList.add(new WeaponPartSprite(world));
+		weaponPartList.get(i).spawn(1100 - ((i + 1) * 40), 430, 0);
+	}
+
+	/**
+	 * If the player is a civilian, his weapon will be replaced with a shotgun
+	 */
+	private void createShotgun() {
+		if (player.getType().equals("Civilian")) {
+			player.addWeapon(weaponFac.createWeapon("Shotgun", this));
+		}
+	}
+
+	/**
+	 * @return Box2D World
+	 */
 	public World getWorld() {
 		return world;
 	}
 
+	/**
+	 * @return Number of players playing the game.
+	 */
 	public int getNumOfPlayers() {
 		return numOfPlayers;
 	}
 
+	/**
+	 * @param i
+	 *            Number of players that will be playing the game.
+	 */
 	public void setNumOfPlayers(int i) {
 		numOfPlayers = i;
 	}
 
+	/**
+	 * @return Obtain list of players.
+	 */
 	public Array<GameCharacter> getPlayerList() {
 		return playerList;
 	}
 
+	/**
+	 * @return Obtain the player's instance.
+	 */
 	public GameCharacter getPlayer() {
 		return player;
 	}
 
+	public int getNumOfWeaponPartsCollected() {
+		return numOfWeaponPartsCollected;
+	}
+
+	public void weaponPartsCollected() {
+		this.numOfWeaponPartsCollected++;
+	}
+
+	/**
+	 * Creates a ghost by destroying the player's previous body. Sets the user data to "player", and spawns
+	 * him at the position and angle of his death.
+	 */
 	private void createGhost() {
 		currentPositionX = player.getBody().getPosition().x;
 		currentPositionY = player.getBody().getPosition().y;
 		currentAngle = player.getBody().getAngle();
+		
 		world.destroyBody(player.getBody());
-		player = gameCharFac.createCharacter("Ghost", world);
+
+		player = gameCharFac.createCharacter("Ghost", player.getId(), world);
+		player.set_deathPositionX(currentPositionX);
+		player.set_deathPositionY(currentPositionY);
 		player.getBody().getFixtureList().get(0).setUserData("player");
 		player.spawn(currentPositionX, currentPositionY, currentAngle);
-		player.addAbility(abilityFac.createAbility(player));
+		
 	}
 
+	/**
+	 * Checks to remove item sprites that have been contacted by the player.
+	 */
 	private void checkItemSprite() {
 		for (int i = 0; i < itemsToRemove.size; i++) {
 			bodyToRemove = itemsToRemove.get(i);
@@ -205,6 +293,9 @@ public class GameWorld {
 		itemsToRemove.clear();
 	}
 
+	/**
+	 * Checks to remove weapon sprites that have been contacted by the player.
+	 */
 	private void checkWeaponSprite() {
 		for (int i = 0; i < weaponsToRemove.size; i++) {
 			bodyToRemove = weaponsToRemove.get(i);
@@ -218,10 +309,24 @@ public class GameWorld {
 		weaponsToRemove.clear();
 	}
 
+	/**
+	 * Checks to remove weapon part sprites that have been contacted by the player.
+	 */
 	private void checkWeaponPartSprite() {
-
+		for (int i = 0; i < weaponPartsToRemove.size; i++) {
+			bodyToRemove = weaponPartsToRemove.get(i);
+			weaponPartList.removeValue((WeaponPartSprite) bodyToRemove.getUserData(), true);
+			world.destroyBody(bodyToRemove);
+			if (player.getType().equals("Civilian")) {
+				numOfWeaponPartsCollected++;
+			}
+		}
+		weaponPartsToRemove.clear();
 	}
 
+	/**
+	 * Checks to remove traps sprites that have been contacted by the player.
+	 */
 	private void checkTrap() {
 		for (int i = 0; i < trapToRemove.size; i++) {
 			bodyToRemove = trapToRemove.get(i);
@@ -231,6 +336,9 @@ public class GameWorld {
 		trapToRemove.clear();
 	}
 
+	/**
+	 * Teleports users between level 1 and 2 of the map when player comes in contact with the hitbox at stairs
+	 */
 	private void checkStairs() {
 		if (cl.getAtStairs()) {
 			cl.notAtStairs();

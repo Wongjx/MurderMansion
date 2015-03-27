@@ -3,22 +3,23 @@ package com.jkjk.GameObjects.Characters;
 import box2dLight.PointLight;
 import box2dLight.RayHandler;
 
-import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
 import com.badlogic.gdx.physics.box2d.CircleShape;
 import com.badlogic.gdx.physics.box2d.FixtureDef;
-import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.badlogic.gdx.physics.box2d.World;
+import com.jkjk.MMHelpers.AssetLoader;
 
 public class Murderer extends GameCharacter {
 
-	private boolean disguised;
-
 	private PointLight pointLight;
-
-	public Murderer(World world) {
-		setType("Murderer");
+	private Animation charAnim;
+	
+	public Murderer(int id, World world) {
+		super("Murderer", id, world);
 
 		// create body of murderer
 		BodyDef bdef = new BodyDef();
@@ -49,11 +50,31 @@ public class Murderer extends GameCharacter {
 		lightFdef.shape = circle;
 		lightFdef.filter.maskBits = 1;
 		body.createFixture(lightFdef).setUserData("lightBody");
+		charAnim = AssetLoader.civAnimation;
+		body.setUserData(charAnim);
+		
+		disguised = true;
+	}
+	@Override
+	public void render(OrthographicCamera cam){
+		super.render(cam);
+		
+		//charAnim = (Animation) body.getUserData();
+		
+		batch.setProjectionMatrix(cam.combined);
+		batch.begin();
+		runTime +=Gdx.graphics.getRawDeltaTime();
+		batch.draw(charAnim.getKeyFrame(runTime,true), body.getPosition().x-10, body.getPosition().y-10, 10, 10, 20, 20, 1, 1,(float) (body.getAngle()*180/Math.PI)-90);
+		batch.end();
 
 	}
-
-	public boolean isDisguised() {
-		return disguised;
+	
+	@Override
+	public void useAbility() {
+		if (!ability.isOnCoolDown()) {
+			ability.use();
+			ability.cooldown();
+			abilityChange = true;
+		}
 	}
-
 }

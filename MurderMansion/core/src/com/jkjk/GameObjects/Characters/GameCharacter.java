@@ -2,11 +2,15 @@ package com.jkjk.GameObjects.Characters;
 
 import box2dLight.RayHandler;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.physics.box2d.Body;
+import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.scenes.scene2d.ui.Touchpad;
 import com.jkjk.GameObjects.Duration;
 import com.jkjk.GameObjects.Abilities.Ability;
+import com.jkjk.GameObjects.Abilities.AbilityFactory;
 import com.jkjk.GameObjects.Items.Item;
 import com.jkjk.GameObjects.Weapons.Weapon;
 import com.jkjk.MMHelpers.AssetLoader;
@@ -20,9 +24,10 @@ public abstract class GameCharacter {
 	private String type;
 
 	protected boolean alive;
-	private boolean itemChange, weaponChange;
+	protected boolean itemChange, weaponChange, abilityChange;
 	private boolean stun;
 	private Duration stunDuration;
+	protected boolean disguised;	// true for civilian, false for murderer
 
 	private float maxVelocity;
 	private float touchpadX;
@@ -31,34 +36,65 @@ public abstract class GameCharacter {
 
 	private Weapon weapon;
 	private Item item;
-	private Ability ability;
+	protected Ability ability;
 	protected Body body;
 	protected RayHandler rayHandler;
 
 	private Touchpad touchpad;
+	
+	private float deathPositionX;
+	private float deathPositionY;
 
-	private int colour;
-
-	public GameCharacter() {
+	private int id;
+	
+	protected SpriteBatch batch;
+	protected float runTime;
+	
+	public GameCharacter(String type, int id, World world) {
 		maxVelocity = 64;
 		touchpad = AssetLoader.touchpad;
 		stunDuration = new Duration(5000);
+		
+		this.type = type;
+		this.id = id;
+		AbilityFactory af = new AbilityFactory();
+		ability = af.createAbility(this);
+		
+		this.deathPositionX = 0;
+		this.deathPositionY = 0;
+
+		batch = new SpriteBatch();
+		rayHandler = new RayHandler(world);
+		
+	}
+	
+	public float get_deathPositionX(){
+		return deathPositionX;
+	}
+	public float get_deathPositionY(){
+		return deathPositionY;
+	}
+	public void set_deathPositionX(float k){
+		deathPositionX = k;
+	}
+	public void set_deathPositionY(float k){
+		deathPositionY = k;
 	}
 
 	public String getType() {
 		return type;
 	}
 
-	public void setType(String type) {
-		this.type = type;
-	}
-
 	public void spawn(float x, float y, float angle) {
 		alive = true;
 		body.setTransform(x, y, angle); // Spawn position
+		abilityChange = true;
+		addWeapon(null);
+		addItem(null);
 	}
 
 	public void die() {
+		
 		alive = false;
 	}
 
@@ -76,27 +112,23 @@ public abstract class GameCharacter {
 
 	public void stun(boolean stun) {
 		this.stun = stun;
-		stunDuration.startCooldown();
+		stunDuration.startCountdown();
 	}
 
 	public boolean isStun() {
 		return stun;
 	}
 
-	public int getColour() {
-		return colour;
+	public int getId() {
+		return id;
 	}
 
-	public void setColour(int colour) {
-		this.colour = colour;
+	public void setId(int id) {
+		this.id = id;
 	}
 
 	public Body getBody() {
 		return body;
-	}
-
-	public void addAbility(Ability ability) {
-		this.ability = ability;
 	}
 
 	public Ability getAbility() {
@@ -154,13 +186,29 @@ public abstract class GameCharacter {
 	public void setItemChange(boolean itemChange) {
 		this.itemChange = itemChange;
 	}
+	
+	public boolean isDisguised(){
+		return disguised;
+	}
+	
+	public void setDisguise(boolean disguised){
+		this.disguised = disguised;
+	}
+	
+	public boolean getAbilityChange(){
+		return abilityChange;
+	}
+	
+	public void setAbilityChange(boolean abilityChange){
+		this.abilityChange = abilityChange;
+	}
 
 	public void update() {
 		if (weapon != null)
 			weapon.update();
 		if (item != null) {
 			item.update();
-			if (item.isDestroy()) {
+			if (item.isCompleted()){
 				item = null;
 				itemChange = true;
 			}
@@ -173,44 +221,55 @@ public abstract class GameCharacter {
 	}
 
 	public void render(OrthographicCamera cam) {
+		runTime += Gdx.graphics.getRawDeltaTime();
+		
+		
 		if (!stun) {
-			touchpadX = touchpad.getKnobPercentX();
-			touchpadY = touchpad.getKnobPercentY();
-			if (!touchpad.isTouched()) {
-				body.setAngularVelocity(0);
-			} else {
-				angleDiff = (Math.atan2(touchpadY, touchpadX) - (body.getAngle())) % (Math.PI * 2);
-				if (angleDiff > 0) {
-					if (angleDiff >= 3.14) {
-						if (angleDiff > 6.2)
-							body.setAngularVelocity((float) -angleDiff / 7);
-						else
-							body.setAngularVelocity(-5);
-					} else if (angleDiff < 0.4)
-						body.setAngularVelocity((float) angleDiff * 3);
-					else
-						body.setAngularVelocity(5);
-				} else if (angleDiff < 0) {
-					if (angleDiff <= -3.14) {
-						if (angleDiff < -6.2)
-							body.setAngularVelocity((float) -angleDiff / 7);
-						else
-							body.setAngularVelocity(5);
-					} else if (angleDiff > -0.4)
-						body.setAngularVelocity((float) angleDiff * 3);
-					else
-						body.setAngularVelocity(-5);
-				} else
-					body.setAngularVelocity(0);
-			}
-
-			body.setLinearVelocity(touchpadX * maxVelocity, touchpadY * maxVelocity);
+			playerMovement();
+		} else {
+			body.setAngularVelocity(0);
+			body.setLinearVelocity(0,0);
 		}
 
 		cam.position.set(body.getPosition(), 0); // Set cam position to be on player
 
 		rayHandler.setCombinedMatrix(cam.combined);
 		rayHandler.updateAndRender();
+		
+	}
+	
+	private void playerMovement(){
+		touchpadX = touchpad.getKnobPercentX();
+		touchpadY = touchpad.getKnobPercentY();
+		if (!touchpad.isTouched()) {
+			body.setAngularVelocity(0);
+		} else {
+			angleDiff = (Math.atan2(touchpadY, touchpadX) - (body.getAngle())) % (Math.PI * 2);
+			if (angleDiff > 0) {
+				if (angleDiff >= 3.14) {
+					if (angleDiff > 6.2)
+						body.setAngularVelocity((float) -angleDiff / 7);
+					else
+						body.setAngularVelocity(-5);
+				} else if (angleDiff < 0.4)
+					body.setAngularVelocity((float) angleDiff * 3);
+				else
+					body.setAngularVelocity(5);
+			} else if (angleDiff < 0) {
+				if (angleDiff <= -3.14) {
+					if (angleDiff < -6.2)
+						body.setAngularVelocity((float) -angleDiff / 7);
+					else
+						body.setAngularVelocity(5);
+				} else if (angleDiff > -0.4)
+					body.setAngularVelocity((float) angleDiff * 3);
+				else
+					body.setAngularVelocity(-5);
+			} else
+				body.setAngularVelocity(0);
+		}
+
+		body.setLinearVelocity(touchpadX * maxVelocity, touchpadY * maxVelocity);
 	}
 
 	public void dispose() {

@@ -2,11 +2,12 @@ package com.jkjk.GameObjects.Items;
 
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.BodyDef;
+import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
 import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.badlogic.gdx.physics.box2d.PolygonShape;
-import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
-import com.jkjk.GameObjects.HitBoxExposure;
+import com.jkjk.GameObjects.Duration;
 import com.jkjk.GameWorld.GameWorld;
+import com.jkjk.MMHelpers.AssetLoader;
 
 public class DisarmTrap extends Item {
 
@@ -14,17 +15,19 @@ public class DisarmTrap extends Item {
 	private FixtureDef fdef;
 	private Vector2 playerPosition;
 	private float playerAngle;
+	private Duration hitBoxExposure;
 
 	public DisarmTrap(GameWorld gWorld) {
 		super(gWorld);
 		bdef = new BodyDef();
 		fdef = new FixtureDef();
-		hitBoxExposure = new HitBoxExposure(10);
+		hitBoxExposure = new Duration(10);
 	}
-	
+
 	@Override
 	public void use() {
 		System.out.println("Used disarm trap");
+		gWorld.getPlayer().getBody().setUserData(AssetLoader.civDisarmAnimation);
 		playerPosition = gWorld.getPlayer().getBody().getPosition();
 		playerAngle = gWorld.getPlayer().getBody().getAngle();
 		bdef.type = BodyType.DynamicBody;
@@ -33,15 +36,29 @@ public class DisarmTrap extends Item {
 		body = gWorld.getWorld().createBody(bdef);
 
 		Vector2[] vertices = { new Vector2(11, 0), new Vector2(20, 8.9f), new Vector2(28, 5.6f),
-				new Vector2(32, 0), new Vector2(28,-5.6f), new Vector2(20, -8.9f) };
+				new Vector2(32, 0), new Vector2(28, -5.6f), new Vector2(20, -8.9f) };
 		PolygonShape shape = new PolygonShape();
 		shape.set(vertices);
 		fdef.shape = shape;
 		fdef.isSensor = true;
 		fdef.filter.maskBits = 1;
-		
+
 		body.createFixture(fdef).setUserData("disarm trap");
-		
-		hitBoxExposure.startExposure();
+
+		hitBoxExposure.startCountdown();
+	}
+
+	@Override
+	public void update() {
+		super.update();
+		hitBoxExposure.update();
+		if (!hitBoxExposure.isCountingDown()) {
+			if (body != null) {
+				gWorld.getWorld().destroyBody(body);
+				body = null;
+				isCompleted = true;
+			}
+		}
+
 	}
 }

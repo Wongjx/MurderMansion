@@ -12,27 +12,29 @@ public class WeaponSpawner {
 
 	WeaponSpawner() {
 		weaponLocations = new ArrayList<Location>();
-		weaponLocations.add(new Location(new float[] { 1, 1 }));
-		weaponLocations.add(new Location(new float[] { 1, 1 }));
-		weaponLocations.add(new Location(new float[] { 1, 1 }));
-		weaponLocations.add(new Location(new float[] { 1, 1 }));
-		weaponLocations.add(new Location(new float[] { 1, 1 }));
-		weaponLocations.add(new Location(new float[] { 1, 1 }));
-		weaponLocations.add(new Location(new float[] { 1, 1 }));
-		weaponLocations.add(new Location(new float[] { 1, 1 }));
-		weaponLocations.add(new Location(new float[] { 1, 1 }));
-		
+		weaponLocations.add(new Location(new float[] { 892.6f, 889.1f }));
+		weaponLocations.add(new Location(new float[] { 310.4f, 730.2f }));
+		weaponLocations.add(new Location(new float[] { 293.5f, 687.6f }));
+		weaponLocations.add(new Location(new float[] { 160, 204 }));
+		weaponLocations.add(new Location(new float[] { 709, 227 }));
+		weaponLocations.add(new Location(new float[] { 763.8f, 222 }));
+		weaponLocations.add(new Location(new float[] { 2237, 897 }));
+		weaponLocations.add(new Location(new float[] { 2820, 869 }));
+		weaponLocations.add(new Location(new float[] { 2675.7f, 229 }));
+		weaponLocations.add(new Location(new float[] { 2140.6f, 576.4f }));
+		weaponLocations.add(new Location(new float[] { 2073, 134 }));
+
 		randInt = new Random();
 	}
 
-	public Location spawn() {
+	public synchronized Location spawn() {
 		index = randInt.nextInt(weaponLocations.size());
 		location = weaponLocations.get(index);
 		weaponLocations.remove(index);
 		return location;
 	}
-	
-	public void restore(Location restoreLocation){
+
+	public synchronized void restore(Location restoreLocation) {
 		weaponLocations.add(restoreLocation);
 	}
 }

@@ -11,6 +11,7 @@ import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
 import com.jkjk.GameWorld.GameWorld;
+import com.jkjk.MMHelpers.AssetLoader;
 
 public class Trap extends Item {
 	
@@ -29,6 +30,7 @@ public class Trap extends Item {
 	@Override
 	public void use() {
 		System.out.println("Used trap");
+		gWorld.getPlayer().getBody().setUserData(AssetLoader.murPlantTrapAnimation);
 		playerPosition = gWorld.getPlayer().getBody().getPosition();
 		playerAngle = gWorld.getPlayer().getBody().getAngle();
 		bdef.type = BodyType.StaticBody;
@@ -43,6 +45,8 @@ public class Trap extends Item {
 		fdef.filter.maskBits = 1;
 		
 		body.createFixture(fdef).setUserData("trap");
+		
+		isCompleted = true;
 	}
 	
 	

@@ -4,6 +4,7 @@ import com.jkjk.GameObjects.Characters.GameCharacter;
 
 public class AbilityFactory {
 	public Ability createAbility(GameCharacter gameCharacter){
+		System.out.println(gameCharacter.getType());
 		if (gameCharacter.getType().equals("Civilian"))
 			return new Panic(gameCharacter);
 		else if (gameCharacter.getType().equals("Murderer"))
