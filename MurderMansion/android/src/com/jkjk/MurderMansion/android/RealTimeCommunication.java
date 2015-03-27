@@ -1,32 +1,28 @@
 package com.jkjk.MurderMansion.android;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+import java.net.InetAddress;
+import java.nio.charset.Charset;
+import java.util.Arrays;
 
-import android.app.Activity;
 import android.util.Log;
 
 import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.games.Games;
+import com.google.android.gms.games.multiplayer.Participant;
 import com.google.android.gms.games.multiplayer.realtime.RealTimeMessage;
 import com.google.android.gms.games.multiplayer.realtime.RealTimeMessageReceivedListener;
+import com.jkjk.MMHelpers.MultiplayerSeissonInfo;
 
 public class RealTimeCommunication implements RealTimeMessageReceivedListener{
 	private String TAG = "MurderMansion RealTime Communications";
-	private Activity activity;
 	private GoogleApiClient mGoogleApiClient;
+	private MultiplayerSeissonInfo info;
 
-    // Score of other participants. We update this as we receive their scores
-    // from the network.
-    Map<String, Integer> mParticipantScore = new HashMap<String, Integer>();
-
-    // Participants who sent us their final score.
-    Set<String> mFinishedParticipants = new HashSet<String>();
     
-    public RealTimeCommunication(GoogleApiClient api, Activity activity){
-    	this.activity=activity;
+    public RealTimeCommunication(GoogleApiClient api, MultiplayerSeissonInfo info){
+//    	this.activity=activity;
     	this.mGoogleApiClient=api;
+    	this.info=info;
     }
 
     // Called when we receive a real-time message from the network.
@@ -40,62 +36,81 @@ public class RealTimeCommunication implements RealTimeMessageReceivedListener{
     public void onRealTimeMessageReceived(RealTimeMessage rtm) {
         byte[] buf = rtm.getMessageData();
         String sender = rtm.getSenderParticipantId();
-        Log.d(TAG, "Message received: " + (char) buf[0] + "/" + (int) buf[1]);
-
-        if (buf[0] == 'F' || buf[0] == 'U') {
-            // score update.
-            int existingScore = mParticipantScore.containsKey(sender) ?
-                    mParticipantScore.get(sender) : 0;
-            int thisScore = (int) buf[1];
-            if (thisScore > existingScore) {
-                // this check is necessary because packets may arrive out of
-                // order, so we
-                // should only ever consider the highest score we received, as
-                // we know in our
-                // game there is no way to lose points. If there was a way to
-                // lose points,
-                // we'd have to add a "serial number" to the packet.
-                mParticipantScore.put(sender, thisScore);
-            }
-
-            // update the scores on the screen
-//            updatePeerScoresDisplay();
-
-            // if it's a final score, mark this participant as having finished
-            // the game
-            if ((char) buf[0] == 'F') {
-                mFinishedParticipants.add(rtm.getSenderParticipantId());
-            }
+        String Msg;
+        
+        try{
+    		String messageType = new String (Arrays.copyOfRange(buf,0,1),"UTF-8");
+    		Log.d(TAG,"MessageType: "+messageType);
+    		
+    		if (messageType.equals("A")){
+    			//Create a InetSocketAddress
+    			byte[] addr = Arrays.copyOfRange(buf, 1, buf.length-1);
+    			Msg = new String (addr,"UTF-8");
+    			Log.d(TAG,"Address received: "+Msg);
+    			
+    			InetAddress iAddress = InetAddress.getByAddress(addr);
+    			info.socketAddress= iAddress;
+    			
+    		}else if (messageType.equals("P")){
+    			//Retrieve and store port number
+    			byte[] port = Arrays.copyOfRange(buf, 1, buf.length-1);
+    			Msg = new String (port,"UTF-8");
+    			Log.d(TAG,"Port Number received: "+Msg);
+    			info.port=Integer.parseInt(Msg);
+    			
+    		}else{
+    			Log.d(TAG, "Message type is not recognised.");
+    		}
+        	
+        }catch (Exception e){
+        	Log.d(TAG, "Error reading from received message: "+e.getMessage());
         }
     }
 
-    // Broadcast my score to everybody else.
-    void broadcastScore(boolean finalScore) {
-//        if (!mMultiplayer)
-//            return; // playing single-player mode
-
-//        // First byte in message indicates whether it's a final score or not
-//        mMsgBuf[0] = (byte) (finalScore ? 'F' : 'U');
-//
-//        // Second byte is the score.
-//        mMsgBuf[1] = (byte) mScore;
-//
+    // Broadcast serverLocalAddress to all connected clients
+    void broadcastAddress() {
+        if (!info.isServer)
+            return; // Player is not server
+        
+        String Msg ="A";
+        Msg += info.socketAddress.toString();
+        byte[] mMsgBuf = new byte[Msg.length()];
+//        // Encode String Message in UTF_8 byte format for transmission
+        
+        mMsgBuf =Msg.getBytes(Charset.forName("UTF-8")); 
+        
 //        // Send to every other participant.
-//        for (Participant p : mParticipants) {
-//            if (p.getParticipantId().equals(mMyId))
-//                continue;
-//            if (p.getStatus() != Participant.STATUS_JOINED)
-//                continue;
-//            if (finalScore) {
-//                // final score notification must be sent via reliable message
-//                Games.RealTimeMultiplayer.sendReliableMessage(mGoogleApiClient, null, mMsgBuf,
-//                        mRoomId, p.getParticipantId());
-//            } else {
-//                // it's an interim score notification, so we can use unreliable
-//                Games.RealTimeMultiplayer.sendUnreliableMessage(mGoogleApiClient, mMsgBuf, mRoomId,
-//                        p.getParticipantId());
-//            }
-//        }
+        for (Object o : info.mParticipants) {
+        	Participant p = (Participant) o;
+        	if (p.getParticipantId().equals(info.mMyId))
+        		continue;
+        	if (p.getStatus() != Participant.STATUS_JOINED)
+        		continue;
+        	Games.RealTimeMultiplayer.sendReliableMessage(mGoogleApiClient, null, mMsgBuf,
+        			info.mRoomId, p.getParticipantId());
+        }
     }
 
+// Broadcast port Number to all connected clients
+void broadcastPort() {
+    if (!info.isServer)
+        return; // Player is not server
+    String Msg ="P";
+    Msg += String.valueOf(info.port);
+    
+    byte[] mMsgBuf = new byte[Msg.length()];
+    // Encode String Message in UTF_8 byte format for transmission    
+    mMsgBuf =Msg.getBytes(Charset.forName("UTF-8")); 
+    
+    // Send to every other participant.
+    for (Object o : info.mParticipants) {
+    	Participant p = (Participant) o;
+    	if (p.getParticipantId().equals(info.mMyId))
+    		continue;
+    	if (p.getStatus() != Participant.STATUS_JOINED)
+    		continue;
+    	Games.RealTimeMultiplayer.sendReliableMessage(mGoogleApiClient, null, mMsgBuf,
+    			info.mRoomId, p.getParticipantId());
+    }
+}
 }
