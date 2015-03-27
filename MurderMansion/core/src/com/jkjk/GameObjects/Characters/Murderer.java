@@ -6,7 +6,6 @@ import box2dLight.RayHandler;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.Animation;
-import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
 import com.badlogic.gdx.physics.box2d.CircleShape;
@@ -17,12 +16,10 @@ import com.jkjk.MMHelpers.AssetLoader;
 public class Murderer extends GameCharacter {
 
 	private PointLight pointLight;
-	private SpriteBatch batch;
-	private float runTime;
 	private Animation charAnim;
 	
 	public Murderer(int id, World world) {
-		super("Murderer", id);
+		super("Murderer", id, world);
 
 		// create body of murderer
 		BodyDef bdef = new BodyDef();
@@ -55,8 +52,7 @@ public class Murderer extends GameCharacter {
 		body.createFixture(lightFdef).setUserData("lightBody");
 		charAnim = AssetLoader.civAnimation;
 		body.setUserData(charAnim);
-		batch = new SpriteBatch();
-		runTime = 0;
+		disguised = true;
 	}
 	@Override
 	public void render(OrthographicCamera cam){
@@ -69,7 +65,6 @@ public class Murderer extends GameCharacter {
 		runTime +=Gdx.graphics.getRawDeltaTime();
 		batch.draw(charAnim.getKeyFrame(runTime,true), body.getPosition().x-10, body.getPosition().y-10, 10, 10, 20, 20, 1, 1,(float) (body.getAngle()*180/Math.PI)-90);
 		batch.end();
-		disguised = true;
 
 	}
 	

@@ -4,10 +4,9 @@ import box2dLight.RayHandler;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.OrthographicCamera;
-import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.physics.box2d.Body;
+import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.scenes.scene2d.ui.Touchpad;
 import com.jkjk.GameObjects.Duration;
 import com.jkjk.GameObjects.Abilities.Ability;
@@ -48,7 +47,10 @@ public abstract class GameCharacter {
 
 	private int id;
 	
-	public GameCharacter(String type, int id) {
+	protected SpriteBatch batch;
+	protected float runTime;
+	
+	public GameCharacter(String type, int id, World world) {
 		maxVelocity = 64;
 		touchpad = AssetLoader.touchpad;
 		stunDuration = new Duration(5000);
@@ -60,6 +62,9 @@ public abstract class GameCharacter {
 		
 		this.deathPositionX = 0;
 		this.deathPositionY = 0;
+
+		batch = new SpriteBatch();
+		rayHandler = new RayHandler(world);
 		
 	}
 	
@@ -203,7 +208,7 @@ public abstract class GameCharacter {
 			weapon.update();
 		if (item != null) {
 			item.update();
-			if (item.isDestroy()) {
+			if (item.isCompleted()){
 				item = null;
 				itemChange = true;
 			}
@@ -216,6 +221,8 @@ public abstract class GameCharacter {
 	}
 
 	public void render(OrthographicCamera cam) {
+		runTime += Gdx.graphics.getRawDeltaTime();
+		
 		
 		if (!stun) {
 			playerMovement();

@@ -45,6 +45,8 @@ public class Trap extends Item {
 		fdef.filter.maskBits = 1;
 		
 		body.createFixture(fdef).setUserData("trap");
+		
+		isCompleted = true;
 	}
 	
 	
