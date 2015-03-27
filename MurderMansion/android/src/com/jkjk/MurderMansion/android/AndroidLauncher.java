@@ -20,23 +20,26 @@ import com.google.example.games.basegameutils.GameHelper;
 import com.google.example.games.basegameutils.GameHelper.GameHelperListener;
 import com.jkjk.MMHelpers.ActionResolver;
 import com.jkjk.MMHelpers.MultiplayerSeissonInfo;
+import com.jkjk.MMHelpers.SocketHelper;
 import com.jkjk.MurderMansion.murdermansion;
 
 public class AndroidLauncher extends AndroidApplication implements GameHelperListener, ActionResolver{
 	
-	private String TAG = "MurderMansion Andriod Launcher";
+	private final String TAG = "MurderMansion Andriod Launcher";
     // Request codes for the UIs that we show with startActivityForResult:
     final static int RC_SELECT_PLAYERS = 10000;
     final static int RC_INVITATION_INBOX = 10001;
     final static int RC_WAITING_ROOM = 10002;
-    
-    // Request code used to invoke sign in user interactions.
     private static final int RC_SIGN_IN = 9001;
 
 	public GameHelper gameHelper;
+	public SocketHelper socketHelper;
+	
 	public GoogleApiClient mGoogleApiClient;
-	public GPSListeners mGooglePlayListeners;
-	public RealTimeCommunication mRealTimeListener;
+	public RealTimeCommunication mRealTimeCom;
+	private GPSListeners mGooglePlayListeners;
+	
+	
 	public MultiplayerSeissonInfo mMultiplayerSeisson;
 	
 	
@@ -48,29 +51,30 @@ public class AndroidLauncher extends AndroidApplication implements GameHelperLis
 			gameHelper.enableDebugLog(true);
 		}
 		gameHelper.setMaxAutoSignInAttempts(0);
-		gameHelper.setConnectOnStart(false);
 		gameHelper.setup(this);
-		Log.d(TAG,"Gamehelper setup");
 		
 		//Get and store api client for multi-player services
 		mGoogleApiClient=gameHelper.getApiClient();
-		Log.d(TAG,"Set Google API client");
+		
+		//Initalize helper class that stores all additional needed information for multiplayer games
+		if (mMultiplayerSeisson == null) {
+			mMultiplayerSeisson = new MultiplayerSeissonInfo();
+		}
+		
+		if (socketHelper == null) {
+			socketHelper = new SocketHelper(mMultiplayerSeisson);
+		}
 		
 		//Initialize listener helper class
 		if (mGooglePlayListeners == null) {
 			mGooglePlayListeners = new GPSListeners(mGoogleApiClient,this,mMultiplayerSeisson);
 		}		
-		if (mRealTimeListener == null) {
-			mRealTimeListener = new RealTimeCommunication(mGoogleApiClient,this);
+		if (mRealTimeCom == null) {
+			mRealTimeCom = new RealTimeCommunication(mGoogleApiClient,mMultiplayerSeisson);
 		}
-		//Initalize helper class that stores all additional needed information for multiplayer games
-		if (mMultiplayerSeisson == null) {
-			mMultiplayerSeisson = new MultiplayerSeissonInfo();
-		}
-
 		
 		AndroidApplicationConfiguration config = new AndroidApplicationConfiguration();
-		initialize(new murdermansion(this,mMultiplayerSeisson), config);
+		initialize(new murdermansion(this,mMultiplayerSeisson,socketHelper), config);
 
 	}
 
@@ -103,9 +107,13 @@ public class AndroidLauncher extends AndroidApplication implements GameHelperLis
          case RC_WAITING_ROOM:
              // we got the result from the "waiting room" UI.
              if (responseCode == Activity.RESULT_OK) {
-                 // ready to start playing
-                 Log.d(TAG, "Starting game (waiting room returned OK).");
+                 Log.d(TAG, "Start socket connections (waiting room returned OK).");
                  mMultiplayerSeisson.mState=mMultiplayerSeisson.ROOM_PLAY;
+                 //If not server, try to connect to server socket 
+                 if(!mMultiplayerSeisson.isServer){
+                	 socketHelper.setupSocket();
+                 }
+                 
 //                 startGame(true);
              } else if (responseCode == GamesActivityResultCodes.RESULT_LEFT_ROOM) {
                  // player indicated that they want to leave the room
@@ -209,7 +217,7 @@ public class AndroidLauncher extends AndroidApplication implements GameHelperLis
 			Bundle autoMatchCriteria = RoomConfig.createAutoMatchCriteria(MIN_OPPONENTS,MAX_OPPONENTS, 0);
 
 			RoomConfig.Builder rtmConfigBuilder = RoomConfig.builder(mGooglePlayListeners);
-			rtmConfigBuilder.setMessageReceivedListener(mRealTimeListener);
+			rtmConfigBuilder.setMessageReceivedListener(mRealTimeCom);
 			rtmConfigBuilder.setRoomStatusUpdateListener(mGooglePlayListeners);
 
 			rtmConfigBuilder.setAutoMatchCriteria(autoMatchCriteria);
@@ -224,6 +232,7 @@ public class AndroidLauncher extends AndroidApplication implements GameHelperLis
 	@Override
 	public void seeInvitations(){
 		if (gameHelper.isSignedIn()) {
+			mMultiplayerSeisson.isServer=false;
 			Intent intent = Games.Invitations.getInvitationInboxIntent(mGoogleApiClient);
 			startActivityForResult(intent, RC_INVITATION_INBOX);
 			// show list of pending invitations
@@ -237,16 +246,20 @@ public class AndroidLauncher extends AndroidApplication implements GameHelperLis
 
 	@Override 
 	public void sendInvitations(){
-		  if (gameHelper.isSignedIn()) {
-		        // show list of invitable players
-				//Choose from between 1 to 3 other opponents (apiclient,minOpponents, maxOpponents, boolean Automatch)
-		        Intent intent = Games.RealTimeMultiplayer.getSelectOpponentsIntent(mGoogleApiClient, 1, 3);
-		        startActivityForResult(intent, RC_SELECT_PLAYERS);
-			  }
-			  else if (!gameHelper.isConnecting()) {
-			    loginGPGS();
-			  }
-		  }
+		if (gameHelper.isSignedIn()) {
+			//Assign device as server and setup a socket to accept connections
+			mMultiplayerSeisson.isServer=true;
+			socketHelper.setupSocket();
+			// show list of invitable players
+			//Choose from between 1 to 3 other opponents (apiclient,minOpponents, maxOpponents, boolean Automatch)
+
+			Intent intent = Games.RealTimeMultiplayer.getSelectOpponentsIntent(mGoogleApiClient, 1, 3);
+			startActivityForResult(intent, RC_SELECT_PLAYERS);
+		}
+		else if (!gameHelper.isConnecting()) {
+			loginGPGS();
+		}
+	}
 	
     // Leave the room.
     void leaveRoom() {
@@ -254,6 +267,7 @@ public class AndroidLauncher extends AndroidApplication implements GameHelperLis
         if (mMultiplayerSeisson.mRoomId != null) {
             Games.RealTimeMultiplayer.leave(this.mGoogleApiClient, this.mGooglePlayListeners, mMultiplayerSeisson.mRoomId);  
             mMultiplayerSeisson.mRoomId=null;
+            mMultiplayerSeisson.isServer=false;
         } else {
         	mMultiplayerSeisson.mState=mMultiplayerSeisson.ROOM_MENU;
         }
@@ -288,7 +302,7 @@ public class AndroidLauncher extends AndroidApplication implements GameHelperLis
         Log.d(TAG, "Creating room...");
         RoomConfig.Builder rtmConfigBuilder = RoomConfig.builder(mGooglePlayListeners);
         rtmConfigBuilder.addPlayersToInvite(invitees);
-        rtmConfigBuilder.setMessageReceivedListener(mRealTimeListener);
+        rtmConfigBuilder.setMessageReceivedListener(mRealTimeCom);
         rtmConfigBuilder.setRoomStatusUpdateListener(mGooglePlayListeners);
         if (autoMatchCriteria != null) {
             rtmConfigBuilder.setAutoMatchCriteria(autoMatchCriteria);
@@ -321,7 +335,7 @@ public class AndroidLauncher extends AndroidApplication implements GameHelperLis
         Log.d(TAG, "Accepting invitation: " + invId);
         RoomConfig.Builder roomConfigBuilder = RoomConfig.builder(mGooglePlayListeners);
         roomConfigBuilder.setInvitationIdToAccept(invId)
-                .setMessageReceivedListener(mRealTimeListener)
+                .setMessageReceivedListener(mRealTimeCom)
                 .setRoomStatusUpdateListener(mGooglePlayListeners);
         Games.RealTimeMultiplayer.join(mGoogleApiClient, roomConfigBuilder.build());
     }
