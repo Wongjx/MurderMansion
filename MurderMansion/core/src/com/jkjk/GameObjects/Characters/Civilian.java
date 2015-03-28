@@ -45,7 +45,7 @@ public class Civilian extends GameCharacter {
 		body.createFixture(fdef).setUserData("civilian");
 
 		// Create Light for player
-		coneLight = new ConeLight(rayHandler, 100, null, 200, 0, 0, 0, 40);
+		coneLight = new ConeLight(rayHandler, 100, null, 130, 0, 0, 0, 40);
 		coneLight.attachToBody(body, 0, 0);
 		ConeLight.setContactFilter((short) 2, (short) 2, (short) 1);
 

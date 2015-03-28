@@ -36,9 +36,7 @@ public class Ghost extends GameCharacter {
 		body.createFixture(fdef).setUserData("ghost");
 
 		// create light
-		rayHandler = new RayHandler(world);
-		rayHandler.setAmbientLight(0.12f);
-		pointLight = new PointLight(rayHandler, 100, null, 150, 0, 0);
+		pointLight = new PointLight(rayHandler, 100, null, 100, 0, 0);
 		pointLight.attachToBody(body);
 		PointLight.setContactFilter((short) 2, (short) 2, (short) 0);
 
@@ -47,8 +45,7 @@ public class Ghost extends GameCharacter {
 		CircleShape circle = new CircleShape();
 		lightFdef.isSensor = true;
 		circle.setPosition(getBody().getPosition());
-		;
-		circle.setRadius(150);
+		circle.setRadius(100);
 		lightFdef.shape = circle;
 		lightFdef.filter.maskBits = 1;
 		body.createFixture(lightFdef).setUserData("lightBody");

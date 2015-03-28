@@ -40,7 +40,7 @@ public class Murderer extends GameCharacter {
 		body.createFixture(fdef).setUserData("murderer");
 
 		// create light
-		pointLight = new PointLight(rayHandler, 100, null, 150, 0, 0);
+		pointLight = new PointLight(rayHandler, 100, null, 100, 0, 0);
 		pointLight.attachToBody(body);
 		PointLight.setContactFilter((short) 2, (short) 2, (short) 1);
 
@@ -49,7 +49,7 @@ public class Murderer extends GameCharacter {
 		CircleShape circle = new CircleShape();
 		lightFdef.isSensor = true;
 		circle.setPosition(getBody().getPosition());
-		circle.setRadius(150);
+		circle.setRadius(100);
 		lightFdef.shape = circle;
 		lightFdef.filter.maskBits = 1;
 		body.createFixture(lightFdef).setUserData("lightBody");

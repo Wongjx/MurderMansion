@@ -48,7 +48,7 @@ public class GameRenderer {
 
 		// Create camera
 		cam = new OrthographicCamera();
-		cam.setToOrtho(false, (float) (gameWidth / (4.0 / 3)), (float) (gameHeight / (4.0 / 3)));
+		cam.setToOrtho(false, (float) (gameWidth / 1.5), (float) (gameHeight / 1.5));
 
 		tiledMap = AssetLoader.tiledMap;
 		tiledMapRenderer = new OrthogonalTiledMapRenderer(tiledMap);
@@ -74,7 +74,7 @@ public class GameRenderer {
 		}
 		cam.update(); // Update cam
 
-		b2dr.render(gWorld.getWorld(), cam.combined); // Renders box2d world
+		//b2dr.render(gWorld.getWorld(), cam.combined); // Renders box2d world
 
 	}
 

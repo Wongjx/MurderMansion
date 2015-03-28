@@ -233,7 +233,6 @@ public abstract class GameCharacter {
 
 		if (runTime % 5.0 < 0.02) {
 			ambientLightValue += 0.003;
-			System.out.println(ambientLightValue);
 			rayHandler.setAmbientLight(ambientLightValue);
 		}
 
@@ -291,6 +290,15 @@ public abstract class GameCharacter {
 				body.setAngularVelocity(0);
 		}
 		body.setLinearVelocity(touchpadX * maxVelocity, touchpadY * maxVelocity);
+	}
+	
+	public float getAmbientLightValue(){
+		return ambientLightValue;
+	}
+	
+	public void setAmbientLightValue(float ambientLightValue){
+		this.ambientLightValue = ambientLightValue;
+		rayHandler.setAmbientLight(ambientLightValue);
 	}
 
 	public void dispose() {
