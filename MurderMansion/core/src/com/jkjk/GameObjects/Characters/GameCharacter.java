@@ -25,9 +25,10 @@ public abstract class GameCharacter {
 
 	protected boolean alive;
 	protected boolean itemChange, weaponChange, abilityChange;
+	private boolean canMove;
 	private boolean stun;
 	private Duration stunDuration;
-	protected boolean disguised;	// true for civilian, false for murderer
+	protected boolean disguised; // true for civilian, false for murderer
 
 	private float maxVelocity;
 	private float touchpadX;
@@ -41,26 +42,26 @@ public abstract class GameCharacter {
 	protected RayHandler rayHandler;
 
 	private Touchpad touchpad;
-	
+
 	private float deathPositionX;
 	private float deathPositionY;
 
 	private int id;
-	
+
 	protected SpriteBatch batch;
 	protected float runTime;
 	protected float ambientLightValue;
-	
+
 	public GameCharacter(String type, int id, World world) {
 		maxVelocity = 64;
 		touchpad = AssetLoader.touchpad;
 		stunDuration = new Duration(5000);
-		
+
 		this.type = type;
 		this.id = id;
 		AbilityFactory af = new AbilityFactory();
 		ability = af.createAbility(this);
-		
+
 		this.deathPositionX = 0;
 		this.deathPositionY = 0;
 
@@ -69,19 +70,22 @@ public abstract class GameCharacter {
 		ambientLightValue = 0;
 		rayHandler.setAmbientLight(ambientLightValue);
 		runTime = 0;
-		
+
 	}
-	
-	public float get_deathPositionX(){
+
+	public float get_deathPositionX() {
 		return deathPositionX;
 	}
-	public float get_deathPositionY(){
+
+	public float get_deathPositionY() {
 		return deathPositionY;
 	}
-	public void set_deathPositionX(float k){
+
+	public void set_deathPositionX(float k) {
 		deathPositionX = k;
 	}
-	public void set_deathPositionY(float k){
+
+	public void set_deathPositionY(float k) {
 		deathPositionY = k;
 	}
 
@@ -98,7 +102,7 @@ public abstract class GameCharacter {
 	}
 
 	public void die() {
-		
+
 		alive = false;
 	}
 
@@ -180,7 +184,7 @@ public abstract class GameCharacter {
 	}
 
 	public void useItem() {
-		item.use();
+		item.startUse();
 	}
 
 	public boolean getItemChange() {
@@ -190,20 +194,20 @@ public abstract class GameCharacter {
 	public void setItemChange(boolean itemChange) {
 		this.itemChange = itemChange;
 	}
-	
-	public boolean isDisguised(){
+
+	public boolean isDisguised() {
 		return disguised;
 	}
-	
-	public void setDisguise(boolean disguised){
+
+	public void setDisguise(boolean disguised) {
 		this.disguised = disguised;
 	}
-	
-	public boolean getAbilityChange(){
+
+	public boolean getAbilityChange() {
 		return abilityChange;
 	}
-	
-	public void setAbilityChange(boolean abilityChange){
+
+	public void setAbilityChange(boolean abilityChange) {
 		this.abilityChange = abilityChange;
 	}
 
@@ -212,7 +216,7 @@ public abstract class GameCharacter {
 			weapon.update();
 		if (item != null) {
 			item.update();
-			if (item.isCompleted()){
+			if (!item.inUse() && item.isCompleted()) {
 				item = null;
 				itemChange = true;
 			}
@@ -226,29 +230,37 @@ public abstract class GameCharacter {
 
 	public void render(OrthographicCamera cam) {
 		runTime += Gdx.graphics.getRawDeltaTime();
-		
-		if (runTime % 5.0 < 0.02){
+
+		if (runTime % 5.0 < 0.02) {
 			ambientLightValue += 0.003;
 			System.out.println(ambientLightValue);
 			rayHandler.setAmbientLight(ambientLightValue);
 		}
-		
-		
-		if (!stun) {
+
+		if (checkMovable()) {
 			playerMovement();
 		} else {
 			body.setAngularVelocity(0);
-			body.setLinearVelocity(0,0);
+			body.setLinearVelocity(0, 0);
 		}
 
 		cam.position.set(body.getPosition(), 0); // Set cam position to be on player
 
 		rayHandler.setCombinedMatrix(cam.combined);
 		rayHandler.updateAndRender();
-		
+
 	}
-	
-	private void playerMovement(){
+
+	protected boolean checkMovable() {
+		if (stun)
+			return false;
+		if (item != null)
+			if (item.inUse())
+				return false;
+		return true;
+	}
+
+	private void playerMovement() {
 		touchpadX = touchpad.getKnobPercentX();
 		touchpadY = touchpad.getKnobPercentY();
 		if (!touchpad.isTouched()) {

@@ -102,7 +102,13 @@ public class MMContactListener implements ContactListener {
 					bodiesToDraw.add(fb.getBody());
 				}
 
-				if (faUD.equals("disarm trap") || fbUD.equals("disarm trap")) {
+				if (faUD.equals("pre disarm trap") || fbUD.equals("pre disarm trap")) {
+					if (faUD.equals("trap") || fbUD.equals("trap")) {
+						gWorld.getPlayer().getItem().foundTrap();
+					}
+				}
+
+				if (faUD.equals("post disarm trap") || fbUD.equals("post disarm trap")) {
 					if (faUD.equals("trap")) {
 						trapToRemove.add(fa.getBody());
 					} else if (fbUD.equals("trap")) {

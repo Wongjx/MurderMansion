@@ -1,8 +1,6 @@
 package com.jkjk.GameObjects.Characters;
 
 import box2dLight.PointLight;
-import box2dLight.RayHandler;
-
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.Animation;
@@ -42,8 +40,6 @@ public class Murderer extends GameCharacter {
 		body.createFixture(fdef).setUserData("murderer");
 
 		// create light
-		rayHandler = new RayHandler(world);
-		rayHandler.setAmbientLight(0.12f);
 		pointLight = new PointLight(rayHandler, 100, null, 150, 0, 0);
 		pointLight.attachToBody(body);
 		PointLight.setContactFilter((short) 2, (short) 2, (short) 1);
@@ -93,7 +89,7 @@ public class Murderer extends GameCharacter {
 			}
 		}
 		else{	
-			if (touchpad.isTouched()){
+			if (touchpad.isTouched() && checkMovable()){
 				batch.draw(currentAnimation.getKeyFrame(runTime,true), body.getPosition().x-10, body.getPosition().y-10, 10, 10, 20, 20, 1, 1,(float) (body.getAngle()*180/Math.PI)-90);
 			}
 			else{
