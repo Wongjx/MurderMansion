@@ -180,7 +180,7 @@ public class AssetLoader {
 		tiledMap = new TmxMapLoader().load("map/mansion2.tmx");
 		
 		// PICK UP ITEM TEXTURES
-//		plantedTrapTexture = new Texture(Gdx.files.internal(""));
+		plantedTrapTexture = new Texture(Gdx.files.internal("gamehelper/trap.png"));
 //		itemTexture = new Texture(Gdx.files.internal(""));
 //		weaponTexture = new Texture(Gdx.files.internal(""));
 //		shotgunItemTexture = new Texture(Gdx.files.internal(""));
@@ -196,9 +196,9 @@ public class AssetLoader {
 		
 		civ_bat = new Texture(Gdx.files.internal("animation/civ_bat.png"));
 		civ_bat.setFilter(TextureFilter.Nearest, TextureFilter.Nearest);
-		TextureRegion[] bat_swing = TextureRegion.split(civ_bat, 1241, 726)[0]; // HAVE TO SCALE IT DOWN LATER
-		civBatAnimation = new Animation(0.2f, bat_swing);
-		civBatAnimation.setPlayMode(Animation.PlayMode.NORMAL);
+		TextureRegion[] bat_swing = TextureRegion.split(civ_bat, 1241, 726)[0]; 
+		civBatAnimation = new Animation(0.5f, bat_swing);
+		civBatAnimation.setPlayMode(Animation.PlayMode.LOOP_PINGPONG);
 	}
 
 	public static void dispose() {
