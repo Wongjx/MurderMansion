@@ -41,14 +41,14 @@ public class Ghost extends GameCharacter {
 		PointLight.setContactFilter((short) 2, (short) 2, (short) 0);
 
 		// light fixture
-		FixtureDef lightFdef = new FixtureDef();
+/*		FixtureDef lightFdef = new FixtureDef();
 		CircleShape circle = new CircleShape();
 		lightFdef.isSensor = true;
 		circle.setPosition(getBody().getPosition());
 		circle.setRadius(100);
 		lightFdef.shape = circle;
 		lightFdef.filter.maskBits = 1;
-		body.createFixture(lightFdef).setUserData("lightBody");
+		body.createFixture(lightFdef).setUserData("lightBody");*/
 		
 		civ_dead_lines = AssetLoader.civ_dead_lines;
 		
@@ -66,6 +66,10 @@ public class Ghost extends GameCharacter {
 		batch.end();
 		
 		super.render(cam);
+	}
+	
+	public boolean lightContains(float x, float y){
+		return pointLight.contains(x, y);
 	}
 	
 }

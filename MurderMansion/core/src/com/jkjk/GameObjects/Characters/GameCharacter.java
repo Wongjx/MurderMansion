@@ -67,7 +67,7 @@ public abstract class GameCharacter {
 
 		batch = new SpriteBatch();
 		rayHandler = new RayHandler(world);
-		ambientLightValue = 0;
+		ambientLightValue = 0.05f;
 		rayHandler.setAmbientLight(ambientLightValue);
 		runTime = 0;
 
@@ -210,6 +210,8 @@ public abstract class GameCharacter {
 	public void setAbilityChange(boolean abilityChange) {
 		this.abilityChange = abilityChange;
 	}
+	
+	public abstract boolean lightContains(float x, float y);
 
 	public void update() {
 		if (weapon != null)

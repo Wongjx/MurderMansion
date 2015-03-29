@@ -1,6 +1,7 @@
 package com.jkjk.GameObjects.Characters;
 
 import box2dLight.ConeLight;
+import box2dLight.PointLight;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.OrthographicCamera;
@@ -18,7 +19,8 @@ import com.badlogic.gdx.scenes.scene2d.ui.Touchpad;
 import com.jkjk.MMHelpers.AssetLoader;
 
 public class Civilian extends GameCharacter {
-
+	
+	private PointLight pointLight;
 	private ConeLight coneLight;
 	private Touchpad touchpad;
 	private Animation civAnimation;
@@ -45,12 +47,14 @@ public class Civilian extends GameCharacter {
 		body.createFixture(fdef).setUserData("civilian");
 
 		// Create Light for player
-		coneLight = new ConeLight(rayHandler, 100, null, 130, 0, 0, 0, 40);
+		coneLight = new ConeLight(rayHandler, 100, null, 140, 0, 0, 0, 40);
 		coneLight.attachToBody(body, 0, 0);
 		ConeLight.setContactFilter((short) 2, (short) 2, (short) 1);
+		pointLight = new PointLight(rayHandler, 100, null, 30, 0, 0);
+		pointLight.attachToBody(body);
 
 		// cone-ish Torch light fixture
-		FixtureDef coneFdef = new FixtureDef();
+/*		FixtureDef coneFdef = new FixtureDef();
 		Vector2[] ConeLightVert = { new Vector2(0, 0), new Vector2(113, 99), new Vector2(122, 87),
 				new Vector2(146, 34), new Vector2(150, 0), new Vector2(146, -34), new Vector2(122, -87),
 				new Vector2(113, -99) };
@@ -59,7 +63,7 @@ public class Civilian extends GameCharacter {
 		coneShape.set(ConeLightVert);
 		coneFdef.shape = coneShape;
 		coneFdef.filter.maskBits = 1;// cannot bump into other light bodies.
-		body.createFixture(coneFdef).setUserData("lightBody");
+		body.createFixture(coneFdef).setUserData("lightBody");*/
 
 		civAnimation = AssetLoader.civAnimation;
 		civ_rest = AssetLoader.civ_rest;
@@ -101,5 +105,9 @@ public class Civilian extends GameCharacter {
 		batch.end();
 		super.render(cam);
 
+	}
+	
+	public boolean lightContains(float x, float y){
+		return coneLight.contains(x, y) || pointLight.contains(x, y);
 	}
 }

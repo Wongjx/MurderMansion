@@ -45,16 +45,20 @@ public class Murderer extends GameCharacter {
 		PointLight.setContactFilter((short) 2, (short) 2, (short) 1);
 
 		// light fixture
-		FixtureDef lightFdef = new FixtureDef();
+/*		FixtureDef lightFdef = new FixtureDef();
 		CircleShape circle = new CircleShape();
 		lightFdef.isSensor = true;
 		circle.setPosition(getBody().getPosition());
 		circle.setRadius(100);
 		lightFdef.shape = circle;
 		lightFdef.filter.maskBits = 1;
-		body.createFixture(lightFdef).setUserData("lightBody");
+		body.createFixture(lightFdef).setUserData("lightBody");*/
+		
+		
 		charAnim = AssetLoader.civAnimation;
 		body.setUserData(charAnim);
+		
+		
 		disguised = true;
 		
 		civ_rest = AssetLoader.civ_rest;
@@ -114,5 +118,9 @@ public class Murderer extends GameCharacter {
 			ability.cooldown();
 			abilityChange = true;
 		}
+	}
+	
+	public boolean lightContains(float x, float y){
+		return pointLight.contains(x, y);
 	}
 }
