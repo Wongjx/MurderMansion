@@ -88,19 +88,26 @@ public class MMContactListener implements ContactListener {
 				} else if (faUD.equals("bat") || fbUD.equals("bat")) {
 					if (!gWorld.getPlayer().getType().equals("Ghost"))
 						gWorld.getPlayer().stun(true);
-				} else if (faUD.equals("trap") || fbUD.equals("trap")) {
-					if (!gWorld.getPlayer().getType().equals("Ghost"))
+				} else if (faUD.equals("trap")) {
+					if (!gWorld.getPlayer().getType().equals("Ghost")) {
 						gWorld.getPlayer().die();
+						trapToRemove.add(fa.getBody());
+					}
+				} else if (fbUD.equals("trap")) {
+					if (!gWorld.getPlayer().getType().equals("Ghost")) {
+						gWorld.getPlayer().die();
+						trapToRemove.add(fb.getBody());
+					}
 				} else if (faUD.equals("knife") || fbUD.equals("knife")) {
 					if (!gWorld.getPlayer().getType().equals("Ghost"))
 						gWorld.getPlayer().die();
 				}
 			} else { // non player fixture interaction
 						// in contact with all other object fixtures but other light fixtures
-/*				if (faUD.equals("lightBody") && !fbUD.equals("lightBody")) {
-					System.out.println("FB: draw sprite of " + fbUD);
-					bodiesToDraw.add(fb.getBody());
-				}*/
+				/*
+				 * if (faUD.equals("lightBody") && !fbUD.equals("lightBody")) {
+				 * System.out.println("FB: draw sprite of " + fbUD); bodiesToDraw.add(fb.getBody()); }
+				 */
 
 				if (faUD.equals("pre disarm trap") || fbUD.equals("pre disarm trap")) {
 					if (faUD.equals("trap") || fbUD.equals("trap")) {
@@ -138,14 +145,14 @@ public class MMContactListener implements ContactListener {
 		fb = c.getFixtureB();
 		faUD = fa.getUserData();
 		fbUD = fb.getUserData();
-/*		if (faUD != null && fbUD != null) {
-			if (faUD.equals("lightBody") && !fbUD.equals("lightBody")) {
-				System.out.println("END contact: fa: " + faUD + ", fb: " + fbUD);
-				bodiesToDraw.removeValue(fb.getBody(), true);
-				System.out.println("FB: " + fbUD + " was removed from bodies to be drawn array.");
-
-			}
-		}*/
+		/*
+		 * if (faUD != null && fbUD != null) { if (faUD.equals("lightBody") && !fbUD.equals("lightBody")) {
+		 * System.out.println("END contact: fa: " + faUD + ", fb: " + fbUD);
+		 * bodiesToDraw.removeValue(fb.getBody(), true); System.out.println("FB: " + fbUD +
+		 * " was removed from bodies to be drawn array.");
+		 * 
+		 * } }
+		 */
 
 	}
 

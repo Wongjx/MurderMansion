@@ -69,7 +69,7 @@ public abstract class GameCharacter {
 
 		batch = new SpriteBatch();
 		rayHandler = new RayHandler(gWorld.getWorld());
-		ambientLightValue = 0.5f;
+		ambientLightValue = 0.05f;
 		rayHandler.setAmbientLight(ambientLightValue);
 		runTime = 0;
 
