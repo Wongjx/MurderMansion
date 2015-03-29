@@ -44,6 +44,7 @@ public class Civilian extends GameCharacter {
 		CircleShape shape = new CircleShape();
 		shape.setRadius(10);
 		fdef.shape = shape;
+		fdef.filter.maskBits = 1;
 		body.createFixture(fdef).setUserData("civilian");
 
 		// Create Light for player

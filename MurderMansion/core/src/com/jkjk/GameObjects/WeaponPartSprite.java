@@ -9,6 +9,7 @@ import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
 import com.badlogic.gdx.physics.box2d.CircleShape;
 import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.badlogic.gdx.physics.box2d.World;
+import com.jkjk.GameWorld.GameWorld;
 import com.jkjk.MMHelpers.AssetLoader;
 
 /**
@@ -19,16 +20,17 @@ public class WeaponPartSprite {
 
 	private Body body;
 	private BodyDef bdef;
-	private World world;
+	private GameWorld gWorld;
 	private FixtureDef fdef;
+	private float posX, posY;
 
-	public WeaponPartSprite(World world) {
-		this.world = world;
+	public WeaponPartSprite(GameWorld gWorld) {
+		this.gWorld = gWorld;
 		fdef = new FixtureDef();
 		bdef = new BodyDef();
 
 		bdef.type = BodyType.StaticBody;
-		body = world.createBody(bdef);
+		body = gWorld.getWorld().createBody(bdef);
 
 		
 		CircleShape shape = new CircleShape();
@@ -42,9 +44,13 @@ public class WeaponPartSprite {
 
 	public void spawn(float x, float y, float angle) {
 		body.setTransform(x, y, angle); // Spawn position
+		posX = x;
+		posY = y;
 	}
 
 	public void render() {
-
+		if (gWorld.getPlayer().lightContains(posX, posY)){
+			System.out.println("Render Weapon Part Sprite");
+		}
 	}
 }

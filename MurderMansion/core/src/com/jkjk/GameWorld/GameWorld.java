@@ -190,20 +190,32 @@ public class GameWorld {
 
 	// FOR DEBUG PURPOSE
 	private void createItems(int i) {
-		itemList.add(new ItemSprite(world));
+		itemList.add(new ItemSprite(this));
 		itemList.get(i).spawn(1100 - ((i + 1) * 40), 490, 0);
+	}
+	
+	public Array<ItemSprite> getItemList(){
+		return itemList;
 	}
 
 	// FOR DEBUG PURPOSE
 	private void createWeapons(int i) {
-		weaponList.add(new WeaponSprite(world));
+		weaponList.add(new WeaponSprite(this));
 		weaponList.get(i).spawn(1100 - ((i + 1) * 40), 460, 0);
+	}
+	
+	public Array<WeaponSprite> getWeaponList(){
+		return weaponList;
 	}
 
 	// FOR DEBUG PURPOSE
 	private void createWeaponParts(int i) {
-		weaponPartList.add(new WeaponPartSprite(world));
+		weaponPartList.add(new WeaponPartSprite(this));
 		weaponPartList.get(i).spawn(1100 - ((i + 1) * 40), 430, 0);
+	}
+	
+	public Array<WeaponPartSprite> getWeaponPartList(){
+		return weaponPartList;
 	}
 
 	/**

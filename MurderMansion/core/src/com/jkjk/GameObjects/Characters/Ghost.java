@@ -33,6 +33,7 @@ public class Ghost extends GameCharacter {
 		shape.setRadius(10);
 		fdef.shape = shape;
 		fdef.isSensor = true;
+		fdef.filter.maskBits = 1;
 		body.createFixture(fdef).setUserData("ghost");
 
 		// create light

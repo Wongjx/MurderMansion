@@ -37,6 +37,7 @@ public class Murderer extends GameCharacter {
 		CircleShape shape = new CircleShape();
 		shape.setRadius(10);
 		fdef.shape = shape;
+		fdef.filter.maskBits = 1;
 		body.createFixture(fdef).setUserData("murderer");
 
 		// create light
