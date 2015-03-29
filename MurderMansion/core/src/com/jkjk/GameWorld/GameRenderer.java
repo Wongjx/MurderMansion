@@ -81,6 +81,10 @@ public class GameRenderer {
 		for (WeaponPartSprite wPS: gWorld.getWeaponPartList()){
 			wPS.render();
 		}
+		
+		for (GameCharacter gc: gWorld.getPlayerList()){
+			gc.render(cam);
+		}
 
 		if (gWorld.getPlayer().isAlive()) {
 			gWorld.getPlayer().render(cam);

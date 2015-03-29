@@ -16,10 +16,11 @@ import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.scenes.scene2d.ui.Touchpad;
+import com.jkjk.GameWorld.GameWorld;
 import com.jkjk.MMHelpers.AssetLoader;
 
 public class Civilian extends GameCharacter {
-	
+
 	private PointLight pointLight;
 	private ConeLight coneLight;
 	private Touchpad touchpad;
@@ -27,17 +28,18 @@ public class Civilian extends GameCharacter {
 	private TextureRegion civ_rest;
 	private Animation currentAnimation;
 	private double hypothenuse;
+	private GameWorld gWorld;
 
-	Civilian(int id, World world) {
+	Civilian(int id, GameWorld gWorld, boolean isPlayer) {
 
-		super("Civilian", id, world);
-
+		super("Civilian", id, gWorld, isPlayer);
+		this.gWorld = gWorld;
 		touchpad = AssetLoader.touchpad;
 
 		// create body of civilian
 		BodyDef bdef = new BodyDef();
 		bdef.type = BodyType.DynamicBody;
-		body = world.createBody(bdef);
+		body = gWorld.getWorld().createBody(bdef);
 
 		// Circular body fixture
 		FixtureDef fdef = new FixtureDef();
@@ -55,16 +57,14 @@ public class Civilian extends GameCharacter {
 		pointLight.attachToBody(body);
 
 		// cone-ish Torch light fixture
-/*		FixtureDef coneFdef = new FixtureDef();
-		Vector2[] ConeLightVert = { new Vector2(0, 0), new Vector2(113, 99), new Vector2(122, 87),
-				new Vector2(146, 34), new Vector2(150, 0), new Vector2(146, -34), new Vector2(122, -87),
-				new Vector2(113, -99) };
-		PolygonShape coneShape = new PolygonShape();
-		coneFdef.isSensor = true;
-		coneShape.set(ConeLightVert);
-		coneFdef.shape = coneShape;
-		coneFdef.filter.maskBits = 1;// cannot bump into other light bodies.
-		body.createFixture(coneFdef).setUserData("lightBody");*/
+		/*
+		 * FixtureDef coneFdef = new FixtureDef(); Vector2[] ConeLightVert = { new Vector2(0, 0), new
+		 * Vector2(113, 99), new Vector2(122, 87), new Vector2(146, 34), new Vector2(150, 0), new Vector2(146,
+		 * -34), new Vector2(122, -87), new Vector2(113, -99) }; PolygonShape coneShape = new PolygonShape();
+		 * coneFdef.isSensor = true; coneShape.set(ConeLightVert); coneFdef.shape = coneShape;
+		 * coneFdef.filter.maskBits = 1;// cannot bump into other light bodies.
+		 * body.createFixture(coneFdef).setUserData("lightBody");
+		 */
 
 		civAnimation = AssetLoader.civAnimation;
 		civ_rest = AssetLoader.civ_rest;
@@ -75,40 +75,42 @@ public class Civilian extends GameCharacter {
 	@Override
 	public void render(OrthographicCamera cam) {
 
-		runTime += Gdx.graphics.getRawDeltaTime();
-		batch.setProjectionMatrix(cam.combined);
-		batch.begin();
-		currentAnimation = (Animation) body.getUserData();
-		if (currentAnimation == AssetLoader.civBatAnimation
-				|| currentAnimation == AssetLoader.civDisarmAnimation
-				|| currentAnimation == AssetLoader.civKnifeDeathAnimation
-				|| currentAnimation == AssetLoader.civTrapDeathAnimation) {
-			if (currentAnimation.isAnimationFinished(runTime)) {
-				currentAnimation = AssetLoader.civAnimation;
+		if (gWorld.getPlayer().lightContains(body.getPosition().x, body.getPosition().y)) {
+			runTime += Gdx.graphics.getRawDeltaTime();
+			batch.setProjectionMatrix(cam.combined);
+			batch.begin();
+			currentAnimation = (Animation) body.getUserData();
+			if (currentAnimation == AssetLoader.civBatAnimation
+					|| currentAnimation == AssetLoader.civDisarmAnimation
+					|| currentAnimation == AssetLoader.civKnifeDeathAnimation
+					|| currentAnimation == AssetLoader.civTrapDeathAnimation) {
+				if (currentAnimation.isAnimationFinished(runTime)) {
+					currentAnimation = AssetLoader.civAnimation;
+				} else {
+					body.setLinearVelocity(0, 0);
+					body.setAngularVelocity(0);
+				}
 			} else {
-				body.setLinearVelocity(0, 0);
-				body.setAngularVelocity(0);
+				if (!body.getLinearVelocity().isZero() && checkMovable()) {
+					// hypothenuse = Math.sqrt((Math.pow(touchpad.getKnobPercentX(),
+					// 2)+Math.pow(touchpad.getKnobPercentY(),2)));
+					// currentAnimation.setFrameDuration((float)hypothenuse*5);
+					batch.draw(currentAnimation.getKeyFrame(runTime, true), body.getPosition().x - 10,
+							body.getPosition().y - 10, 10, 10, 20, 20, 1, 1,
+							(float) (body.getAngle() * 180 / Math.PI) - 90);
+				} else {
+					batch.draw(civ_rest, body.getPosition().x - 10, body.getPosition().y - 10, 10, 10, 20,
+							20, 1, 1, (float) (body.getAngle() * 180 / Math.PI) - 90);
+				}
 			}
-		} else {
-			if (touchpad.isTouched() && checkMovable()) {
-				// hypothenuse = Math.sqrt((Math.pow(touchpad.getKnobPercentX(),
-				// 2)+Math.pow(touchpad.getKnobPercentY(),2)));
-				// currentAnimation.setFrameDuration((float)hypothenuse*5);
-				batch.draw(currentAnimation.getKeyFrame(runTime, true), body.getPosition().x - 10,
-						body.getPosition().y - 10, 10, 10, 20, 20, 1, 1,
-						(float) (body.getAngle() * 180 / Math.PI) - 90);
-			} else {
-				batch.draw(civ_rest, body.getPosition().x - 10, body.getPosition().y - 10, 10, 10, 20, 20, 1,
-						1, (float) (body.getAngle() * 180 / Math.PI) - 90);
-			}
-		}
 
-		batch.end();
+			batch.end();
+		}
 		super.render(cam);
 
 	}
-	
-	public boolean lightContains(float x, float y){
+
+	public boolean lightContains(float x, float y) {
 		return coneLight.contains(x, y) || pointLight.contains(x, y);
 	}
 }

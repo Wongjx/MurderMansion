@@ -11,6 +11,7 @@ import com.badlogic.gdx.physics.box2d.CircleShape;
 import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
+import com.jkjk.GameWorld.GameWorld;
 import com.jkjk.MMHelpers.AssetLoader;
 
 public class Ghost extends GameCharacter {
@@ -18,14 +19,16 @@ public class Ghost extends GameCharacter {
 	private PointLight pointLight;
 	private Texture civ_dead_lines;
 	private Animation charAnim;
-	
-	public Ghost(int id, World world) {
-		super("Ghost", id, world);
+	private GameWorld gWorld;
 
+	public Ghost(int id, GameWorld gWorld, boolean isPlayer) {
+		super("Ghost", id, gWorld, isPlayer);
+
+		this.gWorld = gWorld;
 		// create body of murderer
 		BodyDef bdef = new BodyDef();
 		bdef.type = BodyType.DynamicBody;
-		body = world.createBody(bdef);
+		body = gWorld.getWorld().createBody(bdef);
 
 		// triangular body fixture
 		FixtureDef fdef = new FixtureDef();
@@ -42,35 +45,33 @@ public class Ghost extends GameCharacter {
 		PointLight.setContactFilter((short) 2, (short) 2, (short) 0);
 
 		// light fixture
-/*		FixtureDef lightFdef = new FixtureDef();
-		CircleShape circle = new CircleShape();
-		lightFdef.isSensor = true;
-		circle.setPosition(getBody().getPosition());
-		circle.setRadius(100);
-		lightFdef.shape = circle;
-		lightFdef.filter.maskBits = 1;
-		body.createFixture(lightFdef).setUserData("lightBody");*/
-		
+		/*
+		 * FixtureDef lightFdef = new FixtureDef(); CircleShape circle = new CircleShape(); lightFdef.isSensor
+		 * = true; circle.setPosition(getBody().getPosition()); circle.setRadius(100); lightFdef.shape =
+		 * circle; lightFdef.filter.maskBits = 1; body.createFixture(lightFdef).setUserData("lightBody");
+		 */
+
 		civ_dead_lines = AssetLoader.civ_dead_lines;
-		
+
 		charAnim = AssetLoader.civAnimation;
 		body.setUserData(charAnim);
 	}
-	
+
 	@Override
-	public void render(OrthographicCamera cam){
-		
+	public void render(OrthographicCamera cam) {
+
 		batch.setProjectionMatrix(cam.combined);
-		
+
 		batch.begin();
-		batch.draw(civ_dead_lines, this.get_deathPositionX()-33/2, this.get_deathPositionY()-32/2, 33, 32);
+		batch.draw(civ_dead_lines, this.get_deathPositionX() - 33 / 2, this.get_deathPositionY() - 32 / 2,
+				33, 32);
 		batch.end();
-		
+
 		super.render(cam);
 	}
-	
-	public boolean lightContains(float x, float y){
+
+	public boolean lightContains(float x, float y) {
 		return pointLight.contains(x, y);
 	}
-	
+
 }

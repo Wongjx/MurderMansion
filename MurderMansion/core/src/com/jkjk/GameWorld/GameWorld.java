@@ -152,8 +152,8 @@ public class GameWorld {
 	 * Creates the player in the Box2D world. User data is set as "player" and spawned at defined location.
 	 */
 	private void createPlayer() {
-		//player = gameCharFac.createCharacter("Murderer", 0, world);
-		player = gameCharFac.createCharacter("Civilian", 0, world);
+		//player = gameCharFac.createCharacter("Murderer", 0, world, true);
+		player = gameCharFac.createCharacter("Civilian", 0, this, true);
 		player.getBody().getFixtureList().get(0).setUserData("player");
 		player.spawn(1010, 515, 0);
 	}
@@ -178,11 +178,11 @@ public class GameWorld {
 	// FOR DEBUG PURPOSE
 	private void createOpponents(int i) {
 		if (i == 0) {
-			playerList.add((Murderer) gameCharFac.createCharacter("Murderer", i + 1, world));
+			playerList.add((Murderer) gameCharFac.createCharacter("Murderer", i + 1, this, false));
 			playerList.get(i).getBody().setType(BodyType.KinematicBody);
 			playerList.get(i).spawn(1010 - ((i + 1) * 40), 515, 0);
 		} else {
-			playerList.add((Civilian) gameCharFac.createCharacter("Civilian", i + 1, world));
+			playerList.add((Civilian) gameCharFac.createCharacter("Civilian", i + 1, this, false));
 			playerList.get(i).getBody().setType(BodyType.KinematicBody);
 			playerList.get(i).spawn(1010 - ((i + 1) * 40), 515, 0);
 		}
@@ -283,7 +283,7 @@ public class GameWorld {
 		
 		world.destroyBody(player.getBody());
 
-		player = gameCharFac.createCharacter("Ghost", player.getId(), world);
+		player = gameCharFac.createCharacter("Ghost", player.getId(), this, true);
 		player.set_deathPositionX(currentPositionX);
 		player.set_deathPositionY(currentPositionY);
 		player.getBody().getFixtureList().get(0).setUserData("player");
