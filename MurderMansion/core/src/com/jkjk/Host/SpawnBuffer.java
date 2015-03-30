@@ -11,32 +11,30 @@ public class SpawnBuffer {
 		buffer = new ArrayList<Location>(capacity);
 	}
 
-	public void produce(Location location) throws InterruptedException {
-		synchronized (this) {
-			while (buffer.size() == capacity) {
-				wait();
-			}
+	public void produce(Location location) {
+		if (buffer.size() < capacity) {
 			buffer.add(location);
 			notify();
 		}
 
 	}
 
-	public void consume(Location location) throws InterruptedException {
-		synchronized (this) {
-			while (buffer.size() == 0) {
-				wait();
-			}
+	public void consume(Location location) {
+		if (buffer.size() > 0) {
 			buffer.remove(location);
 			notify();
 		}
-
 	}
 	
-	public ArrayList<Location> getItem(){
-		synchronized (this){
-			return buffer;
-		}
+	public boolean isEmpty(){
+		return buffer.size() == 0;
+	}
+	
+	public boolean isFull(){
+		return buffer.size() == capacity;
 	}
 
+	public ArrayList<Location> getBuffer() {
+			return buffer;
+	}
 }

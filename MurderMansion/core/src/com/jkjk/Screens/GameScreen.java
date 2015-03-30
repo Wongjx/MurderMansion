@@ -4,6 +4,7 @@ import com.badlogic.gdx.Screen;
 import com.jkjk.GameWorld.GameRenderer;
 import com.jkjk.GameWorld.GameWorld;
 import com.jkjk.GameWorld.HudRenderer;
+import com.jkjk.Host.MMServer;
 import com.jkjk.MurderMansion.murdermansion;
 
 public class GameScreen implements Screen {
@@ -12,15 +13,21 @@ public class GameScreen implements Screen {
 	private HudRenderer hudRenderer;
 	private float runTime;
 
-	public GameScreen(murdermansion game,float gameWidth, float gameHeight) {
-		if(game.mMultiplayerSeisson.mState==game.mMultiplayerSeisson.ROOM_PLAY){
-			//gWorld = new mGameWorld(gameWidth, gameHeight,game);
-		}else{
+	private MMServer server;
+
+	public GameScreen(murdermansion game, float gameWidth, float gameHeight) {
+		if (game.mMultiplayerSeisson.mState == game.mMultiplayerSeisson.ROOM_PLAY) {
+			// gWorld = new mGameWorld(gameWidth, gameHeight,game);
+		} else {
 			gWorld = new GameWorld(gameWidth, gameHeight);
 		}
-		
+
 		renderer = new GameRenderer(gWorld, gameWidth, gameHeight);
 		hudRenderer = new HudRenderer(gWorld, gameWidth, gameHeight);
+
+		server = new MMServer(4);
+		MMServerThread serverThread = new MMServerThread(server);
+		serverThread.start();
 	}
 
 	@Override
@@ -35,6 +42,7 @@ public class GameScreen implements Screen {
 		gWorld.update(delta);
 		renderer.render(delta, runTime);
 		hudRenderer.render(delta);
+
 	}
 
 	@Override
@@ -64,5 +72,26 @@ public class GameScreen implements Screen {
 	public void dispose() {
 		renderer.rendererDispose();
 		hudRenderer.hudDispose();
+	}
+}
+
+class MMServerThread extends Thread {
+
+	private MMServer server;
+
+	public MMServerThread(MMServer server) {
+		this.server = server;
+	}
+
+	public void run() {
+		while (true){
+			try {
+				Thread.sleep(2);
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			server.update();
+		}
 	}
 }
