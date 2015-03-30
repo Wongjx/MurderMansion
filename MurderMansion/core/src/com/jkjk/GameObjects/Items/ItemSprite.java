@@ -44,7 +44,7 @@ public class ItemSprite {
 
 	public void render() {
 		if (gWorld.getPlayer().lightContains(posX, posY)){
-			System.out.println("Render Item Sprite");
+			//System.out.println("Render Item Sprite");
 		}
 	}
 

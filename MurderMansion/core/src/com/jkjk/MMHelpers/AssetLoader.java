@@ -6,6 +6,7 @@ import com.badlogic.gdx.graphics.Texture.TextureFilter;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.graphics.g2d.Animation.PlayMode;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TmxMapLoader;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
@@ -63,6 +64,7 @@ public class AssetLoader {
 	public static Texture time;
 	public static Texture civ_profile;
 	
+	public static TextureRegion mur_rest;
 	public static TextureRegion civ_rest;	
 	public static Texture civ_dead_lines;
 	
@@ -102,7 +104,9 @@ public class AssetLoader {
 	public static Texture civ_murTransformation;
 	public static Animation civToMurAnimation;
 	public static Texture ghost_haunt;
-	public static Animation ghostHaunt;
+	public static Animation ghostHauntAnimation;
+	public static Texture ghost_float;
+	public static Animation ghostFloatAnimation;
 	
 
 	public static void load() {
@@ -197,8 +201,17 @@ public class AssetLoader {
 		civ_bat = new Texture(Gdx.files.internal("animation/civ_bat.png"));
 		civ_bat.setFilter(TextureFilter.Nearest, TextureFilter.Nearest);
 		TextureRegion[] bat_swing = TextureRegion.split(civ_bat, 1241, 726)[0]; 
-		civBatAnimation = new Animation(0.5f, bat_swing);
-		civBatAnimation.setPlayMode(Animation.PlayMode.LOOP_PINGPONG);
+		civBatAnimation = new Animation(1f, bat_swing);
+		civBatAnimation.setPlayMode(PlayMode.NORMAL);
+		
+		// ghost single frame animation tester.
+		
+		ghost_float = new Texture(Gdx.files.internal("animation/ghostSingleFrame.png"));
+		//ghost_float.setFilter(TextureFilter.Nearest, TextureFilter.Nearest);
+		//TextureRegion[] ghostFloat = TextureRegion.split(ghost_haunt,300,300)[0];
+		//ghostFloatAnimation = new Animation(1f, ghostFloat);
+		//ghostFloatAnimation.setPlayMode(PlayMode.LOOP);
+		System.out.println("help");
 	}
 
 	public static void dispose() {
@@ -234,5 +247,6 @@ public class AssetLoader {
 //		mur_civTransformation.dispose();
 //		civ_murTransformation.dispose();
 //		ghost_haunt.dispose();
+		ghost_float.dispose();
 	}
 }

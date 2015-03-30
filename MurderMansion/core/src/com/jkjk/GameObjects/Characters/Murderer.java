@@ -5,7 +5,7 @@ import box2dLight.PointLight;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.Animation;
-import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
 import com.badlogic.gdx.physics.box2d.CircleShape;
@@ -19,10 +19,8 @@ public class Murderer extends GameCharacter {
 	private PointLight pointLight;
 	private Animation currentAnimation;
 	private Touchpad touchpad;
-	private TextureRegion civ_rest;
-	private TextureRegion mur_rest;
-	private Animation charAnim;
 	private GameWorld gWorld;
+	private float animationRunTime;
 
 	public Murderer(int id, GameWorld gWorld, boolean isPlayer) {
 		super("Murderer", id, gWorld, isPlayer);
@@ -66,15 +64,14 @@ public class Murderer extends GameCharacter {
 		 */
 
 		disguised = true;
-
-		civ_rest = AssetLoader.civ_rest;
-		// mur_rest = AssetLoader.mur_rest;
+		animationRunTime = 0;
+	
 	}
 
 	@Override
 	public void render(OrthographicCamera cam) {
 		if (gWorld.getPlayer().lightContains(body.getPosition().x, body.getPosition().y)) {
-			// charAnim = (Animation) body.getUserData();
+			super.render(cam);
 			runTime += Gdx.graphics.getRawDeltaTime();
 			currentAnimation = (Animation) body.getUserData();
 			batch.setProjectionMatrix(cam.combined);
@@ -84,17 +81,19 @@ public class Murderer extends GameCharacter {
 					|| currentAnimation == AssetLoader.murDeathAnimation
 					|| currentAnimation == AssetLoader.murToCivAnimation
 					|| currentAnimation == AssetLoader.civToMurAnimation) {
-				if (currentAnimation.isAnimationFinished(runTime)) { // reset
+				if (currentAnimation.isAnimationFinished(animationRunTime)) { // reset
+					animationRunTime = 0;
 					if (isDisguised()) {
-						currentAnimation = AssetLoader.civAnimation;
 						body.setUserData(AssetLoader.civAnimation);
 					} else {
-						currentAnimation = AssetLoader.murAnimation;
 						body.setUserData(AssetLoader.murAnimation);
 					}
 				} else {// disable touchpad while special animation occurs.
 					body.setLinearVelocity(0, 0);
 					body.setAngularVelocity(0);
+					batch.draw(currentAnimation.getKeyFrame(animationRunTime, true), body.getPosition().x - 10,
+							body.getPosition().y - 10, 10, 10, 20, 20, 1, 1,
+							(float) (body.getAngle() * 180 / Math.PI) - 90);
 				}
 			} else {
 				if (!body.getLinearVelocity().isZero() && checkMovable()) {
@@ -103,10 +102,10 @@ public class Murderer extends GameCharacter {
 							(float) (body.getAngle() * 180 / Math.PI) - 90);
 				} else {
 					if (isDisguised()) {
-						batch.draw(civ_rest, body.getPosition().x - 10, body.getPosition().y - 10, 10, 10,
+						batch.draw(AssetLoader.civ_rest, body.getPosition().x - 10, body.getPosition().y - 10, 10, 10,
 								20, 20, 1, 1, (float) (body.getAngle() * 180 / Math.PI) - 90);
 					} else {
-						batch.draw(mur_rest, body.getPosition().x - 10, body.getPosition().y - 10, 10, 10,
+						batch.draw(AssetLoader.mur_rest, body.getPosition().x - 10, body.getPosition().y - 10, 10, 10,
 								20, 20, 1, 1, (float) (body.getAngle() * 180 / Math.PI) - 90);
 					}
 				}
@@ -114,7 +113,7 @@ public class Murderer extends GameCharacter {
 
 			batch.end();
 		}
-		super.render(cam);
+		
 
 	}
 
