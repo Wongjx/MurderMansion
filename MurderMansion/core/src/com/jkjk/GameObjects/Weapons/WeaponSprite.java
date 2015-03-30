@@ -43,7 +43,7 @@ public class WeaponSprite {
 
 	public void render() {
 		if (gWorld.getPlayer().lightContains(posX, posY)){
-			System.out.println("Render Weapon Sprite");
+			//System.out.println("Render Weapon Sprite");
 		}
 	}
 

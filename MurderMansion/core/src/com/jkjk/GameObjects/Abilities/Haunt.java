@@ -13,7 +13,7 @@ public class Haunt extends Ability {
 
 	@Override
 	public void use() {
-		gameCharacter.getBody().setUserData(AssetLoader.ghostHaunt);
+		//gameCharacter.getBody().setUserData(AssetLoader.ghostHaunt);
 		System.out.println("used haunt");
 		
 	}

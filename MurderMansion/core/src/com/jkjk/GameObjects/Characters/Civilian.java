@@ -6,6 +6,7 @@ import box2dLight.PointLight;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.Animation;
+import com.badlogic.gdx.graphics.g2d.Animation.PlayMode;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
@@ -24,11 +25,10 @@ public class Civilian extends GameCharacter {
 	private PointLight pointLight;
 	private ConeLight coneLight;
 	private Touchpad touchpad;
-	private Animation civAnimation;
-	private TextureRegion civ_rest;
 	private Animation currentAnimation;
 	private double hypothenuse;
 	private GameWorld gWorld;
+	private float animationRunTime;
 
 	Civilian(int id, GameWorld gWorld, boolean isPlayer) {
 
@@ -65,16 +65,15 @@ public class Civilian extends GameCharacter {
 		 * coneFdef.filter.maskBits = 1;// cannot bump into other light bodies.
 		 * body.createFixture(coneFdef).setUserData("lightBody");
 		 */
-
-		civAnimation = AssetLoader.civAnimation;
-		civ_rest = AssetLoader.civ_rest;
-		body.setUserData(civAnimation);
-		batch = new SpriteBatch();
+		animationRunTime = 0;
+		body.setUserData(AssetLoader.civAnimation);
 	}
 
 	@Override
 	public void render(OrthographicCamera cam) {
-
+		
+		super.render(cam);
+		
 		if (gWorld.getPlayer().lightContains(body.getPosition().x, body.getPosition().y)) {
 			runTime += Gdx.graphics.getRawDeltaTime();
 			batch.setProjectionMatrix(cam.combined);
@@ -84,29 +83,32 @@ public class Civilian extends GameCharacter {
 					|| currentAnimation == AssetLoader.civDisarmAnimation
 					|| currentAnimation == AssetLoader.civKnifeDeathAnimation
 					|| currentAnimation == AssetLoader.civTrapDeathAnimation) {
-				if (currentAnimation.isAnimationFinished(runTime)) {
-					currentAnimation = AssetLoader.civAnimation;
+				animationRunTime += Gdx.graphics.getRawDeltaTime();
+				if (currentAnimation.isAnimationFinished(animationRunTime)) {
+					animationRunTime = 0;
+					body.setUserData(AssetLoader.civAnimation);
 				} else {
 					body.setLinearVelocity(0, 0);
 					body.setAngularVelocity(0);
+					batch.draw(currentAnimation.getKeyFrame(animationRunTime, true), body.getPosition().x - 10,
+							body.getPosition().y - 10, 10, 10, 20, 20, 1, 1,
+							(float) (body.getAngle() * 180 / Math.PI) - 90);
 				}
+				
 			} else {
 				if (!body.getLinearVelocity().isZero() && checkMovable()) {
-					// hypothenuse = Math.sqrt((Math.pow(touchpad.getKnobPercentX(),
-					// 2)+Math.pow(touchpad.getKnobPercentY(),2)));
-					// currentAnimation.setFrameDuration((float)hypothenuse*5);
 					batch.draw(currentAnimation.getKeyFrame(runTime, true), body.getPosition().x - 10,
 							body.getPosition().y - 10, 10, 10, 20, 20, 1, 1,
 							(float) (body.getAngle() * 180 / Math.PI) - 90);
 				} else {
-					batch.draw(civ_rest, body.getPosition().x - 10, body.getPosition().y - 10, 10, 10, 20,
+					batch.draw(AssetLoader.civ_rest, body.getPosition().x - 10, body.getPosition().y - 10, 10, 10, 20,
 							20, 1, 1, (float) (body.getAngle() * 180 / Math.PI) - 90);
 				}
 			}
 
 			batch.end();
 		}
-		super.render(cam);
+		
 
 	}
 
