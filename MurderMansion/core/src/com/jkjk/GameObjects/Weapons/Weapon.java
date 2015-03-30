@@ -11,11 +11,13 @@ public abstract class Weapon {
 	protected GameWorld gWorld;
 	protected Body body;
 	protected String name;
+	protected float runTime;
 
 	public Weapon(GameWorld gWorld) {
 		cooldown = new Duration(5000);
 		hitBoxExposure = new Duration(10);
 		this.gWorld = gWorld;
+		runTime = 0;
 	}
 	
 	public String getName(){
@@ -42,6 +44,9 @@ public abstract class Weapon {
 			}
 		}
 
+	}
+	public void render(){
+		
 	}
 
 }

@@ -28,8 +28,18 @@ public class Trap extends Item {
 	}
 
 	@Override
-	public void use() {
+	public void startUse() {
 		System.out.println("Used trap");
+		
+		super.startUse();
+	}
+	
+	/* (non-Javadoc)
+	 * @see com.jkjk.GameObjects.Items.Item#endUse()
+	 */
+	@Override
+	public void endUse() {
+
 		//gWorld.getPlayer().getBody().setUserData(AssetLoader.murPlantTrapAnimation);
 		playerPosition = gWorld.getPlayer().getBody().getPosition();
 		playerAngle = gWorld.getPlayer().getBody().getAngle();

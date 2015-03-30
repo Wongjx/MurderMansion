@@ -1,16 +1,16 @@
 package com.jkjk.GameObjects.Characters;
 
-import com.badlogic.gdx.physics.box2d.World;
+import com.jkjk.GameWorld.GameWorld;
 
 public class GameCharacterFactory {
 
-	public GameCharacter createCharacter(String newCharacterType, int id, World world) {
+	public GameCharacter createCharacter(String newCharacterType, int id, GameWorld gWorld, boolean isPlayer) {
 		if (newCharacterType.equals("Civilian")) {
-			return new Civilian(id, world);
+			return new Civilian(id, gWorld, isPlayer);
 		} else if (newCharacterType.equals("Murderer"))
-			return new Murderer(id, world);
+			return new Murderer(id, gWorld, isPlayer);
 		else if (newCharacterType.equals("Ghost"))
-			return new Ghost(id, world);
+			return new Ghost(id, gWorld, isPlayer);
 		else
 			return null;
 	}

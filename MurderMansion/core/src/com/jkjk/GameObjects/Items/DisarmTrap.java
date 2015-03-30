@@ -7,7 +7,6 @@ import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.jkjk.GameObjects.Duration;
 import com.jkjk.GameWorld.GameWorld;
-import com.jkjk.MMHelpers.AssetLoader;
 
 public class DisarmTrap extends Item {
 
@@ -25,8 +24,9 @@ public class DisarmTrap extends Item {
 	}
 
 	@Override
-	public void use() {
+	public void startUse() {
 		System.out.println("Used disarm trap");
+
 		//gWorld.getPlayer().getBody().setUserData(AssetLoader.civDisarmAnimation);
 		playerPosition = gWorld.getPlayer().getBody().getPosition();
 		playerAngle = gWorld.getPlayer().getBody().getAngle();
@@ -43,8 +43,40 @@ public class DisarmTrap extends Item {
 		fdef.isSensor = true;
 		fdef.filter.maskBits = 1;
 
-		body.createFixture(fdef).setUserData("disarm trap");
+		body.createFixture(fdef).setUserData("pre disarm trap");
 		hitBoxExposure.startCountdown();
+		
+		isInterrupted = true;
+		
+		super.startUse();
+	}
+
+	/* (non-Javadoc)
+	 * @see com.jkjk.GameObjects.Items.Item#endUse()
+	 */
+	@Override
+	public void endUse() {
+
+		isCompleted = false;
+		//gWorld.getPlayer().getBody().setUserData(AssetLoader.civDisarmAnimation);
+		playerPosition = gWorld.getPlayer().getBody().getPosition();
+		playerAngle = gWorld.getPlayer().getBody().getAngle();
+		bdef.type = BodyType.DynamicBody;
+		bdef.position.set(playerPosition.x, playerPosition.y);
+		bdef.angle = playerAngle;
+		body = gWorld.getWorld().createBody(bdef);
+
+		Vector2[] vertices = { new Vector2(11, 0), new Vector2(20, 8.9f), new Vector2(28, 5.6f),
+				new Vector2(32, 0), new Vector2(28, -5.6f), new Vector2(20, -8.9f) };
+		PolygonShape shape = new PolygonShape();
+		shape.set(vertices);
+		fdef.shape = shape;
+		fdef.isSensor = true;
+		fdef.filter.maskBits = 1;
+
+		body.createFixture(fdef).setUserData("post disarm trap");
+		hitBoxExposure.startCountdown();
+		
 	}
 
 	@Override
@@ -59,5 +91,10 @@ public class DisarmTrap extends Item {
 			}
 		}
 
+	}
+	
+	@Override
+	public void foundTrap(){
+		isInterrupted = false;
 	}
 }

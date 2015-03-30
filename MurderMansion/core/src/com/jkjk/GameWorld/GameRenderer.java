@@ -1,7 +1,5 @@
 package com.jkjk.GameWorld;
 
-import box2dLight.RayHandler;
-
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
@@ -9,7 +7,10 @@ import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TiledMapRenderer;
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
 import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
+import com.jkjk.GameObjects.WeaponPartSprite;
 import com.jkjk.GameObjects.Characters.GameCharacter;
+import com.jkjk.GameObjects.Items.ItemSprite;
+import com.jkjk.GameObjects.Weapons.WeaponSprite;
 import com.jkjk.MMHelpers.AssetLoader;
 
 /**
@@ -48,7 +49,7 @@ public class GameRenderer {
 
 		// Create camera
 		cam = new OrthographicCamera();
-		cam.setToOrtho(false, (float) (gameWidth / (4.0 / 3)), (float) (gameHeight / (4.0 / 3)));
+		cam.setToOrtho(false, (float) (gameWidth / 1.5), (float) (gameHeight / 1.5));
 
 		tiledMap = AssetLoader.tiledMap;
 		tiledMapRenderer = new OrthogonalTiledMapRenderer(tiledMap);
@@ -68,13 +69,29 @@ public class GameRenderer {
 
 		tiledMapRenderer.setView(cam);
 		tiledMapRenderer.render();
+		
+		for (ItemSprite iS: gWorld.getItemList()){
+			iS.render();
+		}
+		
+		for (WeaponSprite wS: gWorld.getWeaponList()){
+			wS.render();
+		}
+		
+		for (WeaponPartSprite wPS: gWorld.getWeaponPartList()){
+			wPS.render();
+		}
+		
+		for (GameCharacter gc: gWorld.getPlayerList()){
+			gc.render(cam);
+		}
 
 		if (gWorld.getPlayer().isAlive()) {
 			gWorld.getPlayer().render(cam);
 		}
 		cam.update(); // Update cam
 
-		//b2dr.render(gWorld.getWorld(), cam.combined); // Renders box2d world
+		b2dr.render(gWorld.getWorld(), cam.combined); // Renders box2d world
 
 	}
 

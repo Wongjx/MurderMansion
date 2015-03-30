@@ -60,6 +60,7 @@ public class GameWorld {
 	private float currentPositionX;
 	private float currentPositionY;
 	private float currentAngle;
+	private float ambientLightValue;
 
 	// FOR DEBUG PURPOSE
 	private BodyDef bdef;
@@ -151,8 +152,8 @@ public class GameWorld {
 	 * Creates the player in the Box2D world. User data is set as "player" and spawned at defined location.
 	 */
 	private void createPlayer() {
-		//player = gameCharFac.createCharacter("Murderer", 0, world);
-		player = gameCharFac.createCharacter("Civilian", 0, world);
+		//player = gameCharFac.createCharacter("Murderer", 0, world, true);
+		player = gameCharFac.createCharacter("Civilian", 0, this, true);
 		player.getBody().getFixtureList().get(0).setUserData("player");
 		player.spawn(1010, 515, 0);
 	}
@@ -177,11 +178,11 @@ public class GameWorld {
 	// FOR DEBUG PURPOSE
 	private void createOpponents(int i) {
 		if (i == 0) {
-			playerList.add((Murderer) gameCharFac.createCharacter("Murderer", i + 1, world));
+			playerList.add((Murderer) gameCharFac.createCharacter("Murderer", i + 1, this, false));
 			playerList.get(i).getBody().setType(BodyType.KinematicBody);
 			playerList.get(i).spawn(1010 - ((i + 1) * 40), 515, 0);
 		} else {
-			playerList.add((Civilian) gameCharFac.createCharacter("Civilian", i + 1, world));
+			playerList.add((Civilian) gameCharFac.createCharacter("Civilian", i + 1, this, false));
 			playerList.get(i).getBody().setType(BodyType.KinematicBody);
 			playerList.get(i).spawn(1010 - ((i + 1) * 40), 515, 0);
 		}
@@ -189,20 +190,32 @@ public class GameWorld {
 
 	// FOR DEBUG PURPOSE
 	private void createItems(int i) {
-		itemList.add(new ItemSprite(world));
+		itemList.add(new ItemSprite(this));
 		itemList.get(i).spawn(1100 - ((i + 1) * 40), 490, 0);
+	}
+	
+	public Array<ItemSprite> getItemList(){
+		return itemList;
 	}
 
 	// FOR DEBUG PURPOSE
 	private void createWeapons(int i) {
-		weaponList.add(new WeaponSprite(world));
+		weaponList.add(new WeaponSprite(this));
 		weaponList.get(i).spawn(1100 - ((i + 1) * 40), 460, 0);
+	}
+	
+	public Array<WeaponSprite> getWeaponList(){
+		return weaponList;
 	}
 
 	// FOR DEBUG PURPOSE
 	private void createWeaponParts(int i) {
-		weaponPartList.add(new WeaponPartSprite(world));
+		weaponPartList.add(new WeaponPartSprite(this));
 		weaponPartList.get(i).spawn(1100 - ((i + 1) * 40), 430, 0);
+	}
+	
+	public Array<WeaponPartSprite> getWeaponPartList(){
+		return weaponPartList;
 	}
 
 	/**
@@ -266,14 +279,17 @@ public class GameWorld {
 		currentPositionX = player.getBody().getPosition().x;
 		currentPositionY = player.getBody().getPosition().y;
 		currentAngle = player.getBody().getAngle();
+		ambientLightValue = player.getAmbientLightValue();
 		
 		world.destroyBody(player.getBody());
 
-		player = gameCharFac.createCharacter("Ghost", player.getId(), world);
+		player = gameCharFac.createCharacter("Ghost", player.getId(), this, true);
 		player.set_deathPositionX(currentPositionX);
 		player.set_deathPositionY(currentPositionY);
 		player.getBody().getFixtureList().get(0).setUserData("player");
 		player.spawn(currentPositionX, currentPositionY, currentAngle);
+		player.setAmbientLightValue(ambientLightValue);
+		
 		
 	}
 

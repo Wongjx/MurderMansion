@@ -1,5 +1,8 @@
 package com.jkjk.GameObjects.Weapons;
 
+import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.graphics.g2d.Animation;
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.physics.box2d.PolygonShape;
@@ -20,12 +23,13 @@ public class Bat extends Weapon {
 		bdef = new BodyDef();
 		fdef = new FixtureDef();
 		name = "Bat";
+		
 	}
 
 	@Override
 	public void use() {
 		System.out.println("Used bat");
-		//gWorld.getPlayer().getBody().setUserData(AssetLoader.civBatAnimation);
+		gWorld.getPlayer().getBody().setUserData(AssetLoader.civBatAnimation);
 		playerPosition = gWorld.getPlayer().getBody().getPosition();
 		playerAngle = gWorld.getPlayer().getBody().getAngle();
 		bdef.type = BodyType.DynamicBody;
@@ -44,5 +48,6 @@ public class Bat extends Weapon {
 		
 		hitBoxExposure.startCountdown();
 	}
+	
 
 }
