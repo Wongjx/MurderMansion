@@ -5,7 +5,6 @@ import box2dLight.PointLight;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.Animation;
-import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
 import com.badlogic.gdx.physics.box2d.CircleShape;
@@ -46,13 +45,7 @@ public class Ghost extends GameCharacter {
 		pointLight = new PointLight(rayHandler, 100, null, 100, 0, 0);
 		pointLight.attachToBody(body);
 		PointLight.setContactFilter((short) 2, (short) 2, (short) 0);
-
-		// light fixture
-		/*
-		 * FixtureDef lightFdef = new FixtureDef(); CircleShape circle = new CircleShape(); lightFdef.isSensor
-		 * = true; circle.setPosition(getBody().getPosition()); circle.setRadius(100); lightFdef.shape =
-		 * circle; lightFdef.filter.maskBits = 1; body.createFixture(lightFdef).setUserData("lightBody");
-		 */
+		
 		body.setUserData(AssetLoader.ghostFloatAnimation);
 	}
 

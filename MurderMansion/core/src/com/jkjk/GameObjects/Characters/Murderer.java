@@ -5,12 +5,10 @@ import box2dLight.PointLight;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.Animation;
-import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
 import com.badlogic.gdx.physics.box2d.CircleShape;
 import com.badlogic.gdx.physics.box2d.FixtureDef;
-import com.badlogic.gdx.scenes.scene2d.ui.Touchpad;
 import com.jkjk.GameWorld.GameWorld;
 import com.jkjk.MMHelpers.AssetLoader;
 
@@ -18,7 +16,6 @@ public class Murderer extends GameCharacter {
 
 	private PointLight pointLight;
 	private Animation currentAnimation;
-	private Touchpad touchpad;
 	private GameWorld gWorld;
 	private float animationRunTime;
 
@@ -26,7 +23,6 @@ public class Murderer extends GameCharacter {
 		super("Murderer", id, gWorld, isPlayer);
 
 		this.gWorld = gWorld;
-		touchpad = AssetLoader.touchpad;
 
 		// create body of murderer
 		BodyDef bdef = new BodyDef();
@@ -45,33 +41,16 @@ public class Murderer extends GameCharacter {
 		pointLight = new PointLight(rayHandler, 100, null, 100, 0, 0);
 		pointLight.attachToBody(body);
 		PointLight.setContactFilter((short) 2, (short) 2, (short) 1);
-
-		// light fixture
-		FixtureDef lightFdef = new FixtureDef();
-		CircleShape circle = new CircleShape();
-		lightFdef.isSensor = true;
-		circle.setPosition(getBody().getPosition());
-		circle.setRadius(150);
-		lightFdef.shape = circle;
-		lightFdef.filter.maskBits = 1;
-		body.createFixture(lightFdef).setUserData("lightBody");
-		body.setUserData(AssetLoader.civAnimation);//starts disguised
-
-		/*
-		 * FixtureDef lightFdef = new FixtureDef(); CircleShape circle = new CircleShape(); lightFdef.isSensor
-		 * = true; circle.setPosition(getBody().getPosition()); circle.setRadius(100); lightFdef.shape =
-		 * circle; lightFdef.filter.maskBits = 1; body.createFixture(lightFdef).setUserData("lightBody");
-		 */
-
+		body.setUserData(AssetLoader.civAnimation);// starts disguised
 		disguised = true;
 		animationRunTime = 0;
-	
+
 	}
 
 	@Override
 	public void render(OrthographicCamera cam) {
+		super.render(cam);
 		if (gWorld.getPlayer().lightContains(body.getPosition().x, body.getPosition().y)) {
-			super.render(cam);
 			runTime += Gdx.graphics.getRawDeltaTime();
 			currentAnimation = (Animation) body.getUserData();
 			batch.setProjectionMatrix(cam.combined);
@@ -91,8 +70,8 @@ public class Murderer extends GameCharacter {
 				} else {// disable touchpad while special animation occurs.
 					body.setLinearVelocity(0, 0);
 					body.setAngularVelocity(0);
-					batch.draw(currentAnimation.getKeyFrame(animationRunTime, true), body.getPosition().x - 10,
-							body.getPosition().y - 10, 10, 10, 20, 20, 1, 1,
+					batch.draw(currentAnimation.getKeyFrame(animationRunTime, true),
+							body.getPosition().x - 10, body.getPosition().y - 10, 10, 10, 20, 20, 1, 1,
 							(float) (body.getAngle() * 180 / Math.PI) - 90);
 				}
 			} else {
@@ -102,18 +81,19 @@ public class Murderer extends GameCharacter {
 							(float) (body.getAngle() * 180 / Math.PI) - 90);
 				} else {
 					if (isDisguised()) {
-						batch.draw(AssetLoader.civ_rest, body.getPosition().x - 10, body.getPosition().y - 10, 10, 10,
-								20, 20, 1, 1, (float) (body.getAngle() * 180 / Math.PI) - 90);
+						batch.draw(AssetLoader.civ_rest, body.getPosition().x - 10,
+								body.getPosition().y - 10, 10, 10, 20, 20, 1, 1,
+								(float) (body.getAngle() * 180 / Math.PI) - 90);
 					} else {
-						batch.draw(AssetLoader.mur_rest, body.getPosition().x - 10, body.getPosition().y - 10, 10, 10,
-								20, 20, 1, 1, (float) (body.getAngle() * 180 / Math.PI) - 90);
+						batch.draw(AssetLoader.mur_rest, body.getPosition().x - 10,
+								body.getPosition().y - 10, 10, 10, 20, 20, 1, 1,
+								(float) (body.getAngle() * 180 / Math.PI) - 90);
 					}
 				}
 			}
 
 			batch.end();
 		}
-		
 
 	}
 
