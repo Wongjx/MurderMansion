@@ -6,11 +6,12 @@ import box2dLight.RayHandler;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Animation;
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.physics.box2d.BodyDef;
+import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
 import com.badlogic.gdx.physics.box2d.CircleShape;
 import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.badlogic.gdx.physics.box2d.World;
-import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
 import com.jkjk.MMHelpers.AssetLoader;
 
 public class Ghost extends GameCharacter {
@@ -18,6 +19,7 @@ public class Ghost extends GameCharacter {
 	private PointLight pointLight;
 	private Texture civ_dead_lines;
 	private Animation charAnim;
+	private SpriteBatch batch;
 	
 	public Ghost(int id, World world) {
 		super("Ghost", id, world);
@@ -71,10 +73,7 @@ public class Ghost extends GameCharacter {
 		batch.end();
 		
 		super.render(cam);
-<<<<<<< HEAD
-		
-=======
->>>>>>> 7a7674e5d78d0830322414956913ca10a63b9945
+
 	}
 	
 }
