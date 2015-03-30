@@ -13,22 +13,17 @@ public class Disguise extends Ability {
 
 	@Override
 	public void use() {
-<<<<<<< HEAD
-=======
-		if (gameCharacter.getBody().getUserData() == AssetLoader.murToCivAnimation) {
-			gameCharacter.getBody().setUserData(AssetLoader.civToMurAnimation);
-		} else {
->>>>>>> e4f585b1c9b22bf7b005b2698f0e0befc02f2a78
-
 		if (gameCharacter.isDisguised()) {
 			gameCharacter.setDisguise(false);
 			System.out.println("Change sprite to murderer");
 			gameCharacter.getBody().setUserData(AssetLoader.civToMurAnimation);
-		} else {
+		} 
+		else {
 			gameCharacter.setDisguise(true);
 			System.out.println("Change sprite to civilian");
 			gameCharacter.getBody().setUserData(AssetLoader.murToCivAnimation);
 		}
+
 
 	}
 

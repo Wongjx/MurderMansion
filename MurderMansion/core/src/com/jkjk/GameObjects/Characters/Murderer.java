@@ -49,7 +49,6 @@ public class Murderer extends GameCharacter {
 		PointLight.setContactFilter((short) 2, (short) 2, (short) 1);
 
 		// light fixture
-<<<<<<< HEAD
 		FixtureDef lightFdef = new FixtureDef();
 		CircleShape circle = new CircleShape();
 		lightFdef.isSensor = true;
@@ -59,17 +58,13 @@ public class Murderer extends GameCharacter {
 		lightFdef.filter.maskBits = 1;
 		body.createFixture(lightFdef).setUserData("lightBody");
 		body.setUserData(AssetLoader.civAnimation);//starts disguised
-=======
+
 		/*
 		 * FixtureDef lightFdef = new FixtureDef(); CircleShape circle = new CircleShape(); lightFdef.isSensor
 		 * = true; circle.setPosition(getBody().getPosition()); circle.setRadius(100); lightFdef.shape =
 		 * circle; lightFdef.filter.maskBits = 1; body.createFixture(lightFdef).setUserData("lightBody");
 		 */
 
-		charAnim = AssetLoader.civAnimation;
-		body.setUserData(charAnim);
-
->>>>>>> e4f585b1c9b22bf7b005b2698f0e0befc02f2a78
 		disguised = true;
 
 		civ_rest = AssetLoader.civ_rest;
