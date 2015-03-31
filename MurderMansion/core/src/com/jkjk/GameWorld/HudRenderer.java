@@ -284,6 +284,12 @@ public class HudRenderer {
 		weaponButton.setName("Weapon Button");
 
 		weaponButton.addListener(new ClickListener() {
+			@Override
+			public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
+				System.out.println("Bat button touch down, draw hitbox");
+				return super.touchDown(event, x, y, pointer, button);
+			}
+			
 			public void clicked(InputEvent event, float x, float y) {
 				System.out.println("Clicked on bat button");
 				gWorld.getPlayer().useWeapon();
@@ -309,6 +315,12 @@ public class HudRenderer {
 		weaponButton.setName("Weapon Button");
 
 		weaponButton.addListener(new ClickListener() {
+			@Override
+			public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
+				System.out.println("Shotgun button touch down, draw hitbox");
+				return super.touchDown(event, x, y, pointer, button);
+			}
+			
 			public void clicked(InputEvent event, float x, float y) {
 				System.out.println("Clicked on shotgun button");
 				gWorld.getPlayer().useWeapon();
@@ -334,6 +346,12 @@ public class HudRenderer {
 		itemButton.setName("Item Button");
 
 		itemButton.addListener(new ClickListener() {
+			@Override
+			public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
+				System.out.println("Disarm trap button touch down, draw hitbox");
+				return super.touchDown(event, x, y, pointer, button);
+			}
+			
 			public void clicked(InputEvent event, float x, float y) {
 				System.out.println("Clicked on disarm trap button");
 				gWorld.getPlayer().useItem();
@@ -385,6 +403,12 @@ public class HudRenderer {
 		itemButton.setName("Weapon Button");
 
 		itemButton.addListener(new ClickListener() {
+			@Override
+			public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
+				System.out.println("Knife button touch down, draw hitbox");
+				return super.touchDown(event, x, y, pointer, button);
+			}
+			
 			public void clicked(InputEvent event, float x, float y) {
 				System.out.println("Clicked on knife button");
 				gWorld.getPlayer().useWeapon();
@@ -410,6 +434,12 @@ public class HudRenderer {
 		itemButton.setName("Item Button");
 
 		itemButton.addListener(new ClickListener() {
+			@Override
+			public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
+				System.out.println("Trap button touch down, draw hitbox");
+				return super.touchDown(event, x, y, pointer, button);
+			}
+			
 			public void clicked(InputEvent event, float x, float y) {
 				System.out.println("Clicked on trap button");
 				gWorld.getPlayer().useItem();
