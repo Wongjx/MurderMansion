@@ -21,7 +21,12 @@ import com.google.example.games.basegameutils.GameHelper.GameHelperListener;
 import com.jkjk.GameWorld.MMClient;
 import com.jkjk.MMHelpers.ActionResolver;
 import com.jkjk.MMHelpers.MultiplayerSeissonInfo;
+<<<<<<< HEAD
 import com.jkjk.MurderMansion.murdermansion;
+=======
+import com.jkjk.MMHelpers.SocketHelper;
+import com.jkjk.MurderMansion.MurderMansion;
+>>>>>>> 61c721d73dbb14a95c1cfacd09a116d02e4a900b
 
 public class AndroidLauncher extends AndroidApplication implements GameHelperListener, ActionResolver{
 	
@@ -67,7 +72,9 @@ public class AndroidLauncher extends AndroidApplication implements GameHelperLis
 		}
 		
 		AndroidApplicationConfiguration config = new AndroidApplicationConfiguration();
+		
 		initialize(new murdermansion(this,mMultiplayerSeisson), config);
+
 
 	}
 

@@ -20,12 +20,14 @@ public class Bat extends Weapon {
 		bdef = new BodyDef();
 		fdef = new FixtureDef();
 		name = "Bat";
+		
 	}
 
 	@Override
 	public void use() {
+		super.use();
 		System.out.println("Used bat");
-		//gWorld.getPlayer().getBody().setUserData(AssetLoader.civBatAnimation);
+		gWorld.getPlayer().getBody().setUserData(AssetLoader.civBatAnimation);
 		playerPosition = gWorld.getPlayer().getBody().getPosition();
 		playerAngle = gWorld.getPlayer().getBody().getAngle();
 		bdef.type = BodyType.DynamicBody;
@@ -44,5 +46,6 @@ public class Bat extends Weapon {
 		
 		hitBoxExposure.startCountdown();
 	}
+	
 
 }

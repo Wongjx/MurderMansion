@@ -6,13 +6,13 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.physics.box2d.Body;
-import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.scenes.scene2d.ui.Touchpad;
 import com.jkjk.GameObjects.Duration;
 import com.jkjk.GameObjects.Abilities.Ability;
 import com.jkjk.GameObjects.Abilities.AbilityFactory;
 import com.jkjk.GameObjects.Items.Item;
 import com.jkjk.GameObjects.Weapons.Weapon;
+import com.jkjk.GameWorld.GameWorld;
 import com.jkjk.MMHelpers.AssetLoader;
 
 /**
@@ -22,6 +22,7 @@ import com.jkjk.MMHelpers.AssetLoader;
 public abstract class GameCharacter {
 
 	private String type;
+	private boolean isPlayer;
 
 	protected boolean alive;
 	protected boolean itemChange, weaponChange, abilityChange;
@@ -47,13 +48,16 @@ public abstract class GameCharacter {
 	private float deathPositionY;
 
 	private int id;
+	private int weaponUses;
 
 	protected SpriteBatch batch;
 	protected float runTime;
 	protected float ambientLightValue;
 
-	public GameCharacter(String type, int id, World world) {
+	public GameCharacter(String type, int id, GameWorld gWorld, boolean isPlayer) {
+		this.isPlayer = isPlayer;
 		maxVelocity = 64;
+		weaponUses = 3;
 		touchpad = AssetLoader.touchpad;
 		stunDuration = new Duration(5000);
 
@@ -66,8 +70,8 @@ public abstract class GameCharacter {
 		this.deathPositionY = 0;
 
 		batch = new SpriteBatch();
-		rayHandler = new RayHandler(world);
-		ambientLightValue = 0;
+		rayHandler = new RayHandler(gWorld.getWorld());
+		ambientLightValue = 0.05f;
 		rayHandler.setAmbientLight(ambientLightValue);
 		runTime = 0;
 
@@ -162,7 +166,10 @@ public abstract class GameCharacter {
 	public void useWeapon() {
 		if (!weapon.isOnCooldown()) {
 			weapon.use();
-			weapon.cooldown();
+			weaponUses--;
+			if (weaponUses > 0) {
+				weapon.cooldown();
+			}
 		}
 	}
 
@@ -211,43 +218,53 @@ public abstract class GameCharacter {
 		this.abilityChange = abilityChange;
 	}
 
+	public abstract boolean lightContains(float x, float y);
+
 	public void update() {
-		if (weapon != null)
-			weapon.update();
-		if (item != null) {
-			item.update();
-			if (!item.inUse() && item.isCompleted()) {
-				item = null;
-				itemChange = true;
+		if (isPlayer) {
+			if (weapon != null) {
+				weapon.update();
+				if (weapon.isCompleted() && weaponUses == 0) {
+					weapon = null;
+					weaponChange = true;
+				}
 			}
+			if (item != null) {
+				item.update();
+				if (!item.inUse() && item.isCompleted()) {
+					item = null;
+					itemChange = true;
+				}
+			}
+			if (ability != null) {
+				ability.update();
+			}
+			if (stun)
+				stunDuration.update();
 		}
-		if (ability != null) {
-			ability.update();
-		}
-		if (stun)
-			stunDuration.update();
 	}
 
 	public void render(OrthographicCamera cam) {
-		runTime += Gdx.graphics.getRawDeltaTime();
+		if (isPlayer) {
+			runTime += Gdx.graphics.getRawDeltaTime();
 
-		if (runTime % 5.0 < 0.02) {
-			ambientLightValue += 0.003;
-			rayHandler.setAmbientLight(ambientLightValue);
+			if (runTime % 5.0 < 0.02) {
+				ambientLightValue += 0.005;
+				rayHandler.setAmbientLight(ambientLightValue);
+			}
+
+			if (checkMovable()) {
+				playerMovement();
+			} else {
+				body.setAngularVelocity(0);
+				body.setLinearVelocity(0, 0);
+			}
+
+			cam.position.set(body.getPosition(), 0); // Set cam position to be on player
+
+			rayHandler.setCombinedMatrix(cam.combined);
+			rayHandler.updateAndRender();
 		}
-
-		if (checkMovable()) {
-			playerMovement();
-		} else {
-			body.setAngularVelocity(0);
-			body.setLinearVelocity(0, 0);
-		}
-
-		cam.position.set(body.getPosition(), 0); // Set cam position to be on player
-
-		rayHandler.setCombinedMatrix(cam.combined);
-		rayHandler.updateAndRender();
-
 	}
 
 	protected boolean checkMovable() {
@@ -291,12 +308,16 @@ public abstract class GameCharacter {
 		}
 		body.setLinearVelocity(touchpadX * maxVelocity, touchpadY * maxVelocity);
 	}
-	
-	public float getAmbientLightValue(){
+
+	public void setPosition(float x, float y, float angle) {
+		body.setTransform(x, y, angle);
+	}
+
+	public float getAmbientLightValue() {
 		return ambientLightValue;
 	}
-	
-	public void setAmbientLightValue(float ambientLightValue){
+
+	public void setAmbientLightValue(float ambientLightValue) {
 		this.ambientLightValue = ambientLightValue;
 		rayHandler.setAmbientLight(ambientLightValue);
 	}

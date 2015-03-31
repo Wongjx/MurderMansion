@@ -10,6 +10,19 @@ import java.net.Socket;
 
 import com.badlogic.gdx.Gdx;
 import com.jkjk.MMHelpers.MultiplayerSeissonInfo;
+import com.badlogic.gdx.physics.box2d.Body;
+import com.badlogic.gdx.physics.box2d.BodyDef;
+import com.badlogic.gdx.physics.box2d.CircleShape;
+import com.badlogic.gdx.physics.box2d.FixtureDef;
+import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
+import com.badlogic.gdx.utils.Array;
+import com.jkjk.GameObjects.WeaponPartSprite;
+import com.jkjk.GameObjects.Characters.Civilian;
+import com.jkjk.GameObjects.Characters.GameCharacter;
+import com.jkjk.GameObjects.Characters.Murderer;
+import com.jkjk.GameObjects.Items.ItemSprite;
+import com.jkjk.GameObjects.Weapons.WeaponSprite;
+import com.jkjk.Host.MMServer;
 
 /**
  * @author LeeJunXiang MMClient listens to input from the Server by the host. Inputs include sharable data
@@ -23,51 +36,220 @@ import com.jkjk.MMHelpers.MultiplayerSeissonInfo;
  * 
  */
 public class MMClient {
+<<<<<<< HEAD
 	private final String TAG = "MMClient"; 
 	private final MultiplayerSeissonInfo info;
 	
 	public Socket clientSocket;
 	private BufferedReader clientInput;
 	private PrintWriter clientOutput;
+
+	private GameWorld gWorld;
+	private GameRenderer renderer;
+
+	private Array<GameCharacter> playerList;
+	private int numOfPlayers;
+	private int id;
+
+	private BodyDef bdef;
+	private Body body;
+	private FixtureDef fdef;
 	
-	public MMClient(MultiplayerSeissonInfo info){
+	/**
+	 * Constructs the multiplayer world, including creation of opponents.
+	 * 
+	 * @param gWorld
+	 *            GameWorld instance
+	 * @param renderer
+	 *            GameRenderer instance
+	 */
+	public MMClient(GameWorld gWorld, GameRenderer renderer, MultiplayerSeissonInfo info) {
+		// Attempt to connect to Server
+		this.server = server;
+		this.gWorld = gWorld;
+		this.renderer = renderer;
 		this.info=info;
+		id = 0;		
+
+		playerList = new Array<GameCharacter>();
+		numOfPlayers = server.getNumOfPlayers();
+
+		gWorld.createPlayer(server.getPlayerType().get("Player " + id));
+
+		for (int i = 1; i < numOfPlayers; i++) {
+			createOpponents(server.getPlayerType().get("Player " + i));
+		}
+
+		createTrap(); // FOR DEBUG PURPOSE
+		for (int i = 0; i < numOfPlayers * 2; i++) {
+			createItems(1060 - (i * 40), 490);
+			createWeapons(1060 - (i * 40), 460);
+			createWeaponParts(1060 - (i * 40), 430);
+		}
+
 		initClientSocket(info.serverAddress, info.serverPort);
 	}
 
-	public void update() {
-		playerPositions();
-		playerAngles();
-		itemLocations();
-		weaponLocations();
-		weaponPartLocations();
-		trapLocations();
+	/**
+	 * Updates the GameWorld with other player's actions, such as player position, item positions and
+	 * item/weapon use.
+	 */
+	public void update() {/*
+						 * playerTransform();
+						 * 
+						 * // Upon receiving socket information, (if item added, etc.), run corresponding
+						 * method itemLocations(); weaponLocations(); weaponPartLocations(); trapLocations();
+						 * batUsed(); knifeUsed();
+						 */
 	}
 
+	/**
+	 * Renders the GameRenderer with other player's move.
+	 */
 	public void render() {
+		for (GameCharacter gc : getPlayerList()) {
+			gc.render(renderer.getCam());
+		}
 	}
 
-	private void playerPositions() {
+	// FOR DEBUG PURPOSE
+	private void createTrap() {
+		bdef = new BodyDef();
+		fdef = new FixtureDef();
+		bdef.type = BodyType.StaticBody;
+		bdef.position.set(1010, 570);
+		body = gWorld.getWorld().createBody(bdef);
 
+		CircleShape shape = new CircleShape();
+		shape.setRadius(10);
+		fdef.shape = shape;
+		fdef.isSensor = true;
+		fdef.filter.maskBits = 1;
+
+		body.createFixture(fdef).setUserData("trap");
 	}
 
-	private void playerAngles() {
-
+	// FOR DEBUG PURPOSE
+	private void createOpponents(int i) {
+		if (i == 0) {
+			playerList.add((Murderer) gWorld.getGameCharFac().createCharacter("Murderer", i, gWorld,
+					false));
+			playerList.get(playerList.size - 1).getBody().setType(BodyType.KinematicBody);
+			playerList.get(playerList.size - 1).spawn(1010 - (((playerList.size - 1) + 1) * 40), 515, 0);
+		} else {
+			playerList.add((Civilian) gWorld.getGameCharFac().createCharacter("Civilian", i, gWorld,
+					false));
+			playerList.get(playerList.size - 1).getBody().setType(BodyType.KinematicBody);
+			playerList.get(playerList.size - 1).spawn(1010 - (((playerList.size - 1) + 1) * 40), 515, 0);
+		}
 	}
 
+	/**
+	 * Create item sprites on the map.
+	 * 
+	 * @param x
+	 *            X coordinate on the map.
+	 * @param y
+	 *            Y coordinate on the map.
+	 */
+	private void createItems(float x, float y) {
+		gWorld.getItemList().add(new ItemSprite(gWorld));
+		gWorld.getItemList().get(gWorld.getItemList().size - 1).spawn(x, y, 0);
+	}
+
+	/**
+	 * Create weapon sprites on the map.
+	 * 
+	 * @param x
+	 *            X coordinate on the map.
+	 * @param y
+	 *            Y coordinate on the map.
+	 */
+	private void createWeapons(float x, float y) {
+		gWorld.getWeaponList().add(new WeaponSprite(gWorld));
+		gWorld.getWeaponList().get(gWorld.getItemList().size - 1).spawn(x, y, 0);
+	}
+
+	/**
+	 * Create weapon part sprites on the map.
+	 * 
+	 * @param x
+	 *            X coordinate on the map.
+	 * @param y
+	 *            Y coordinate on the map.
+	 */
+	private void createWeaponParts(float x, float y) {
+		gWorld.getWeaponPartList().add(new WeaponPartSprite(gWorld));
+		gWorld.getWeaponPartList().get(gWorld.getItemList().size - 1).spawn(x, y, 0);
+	}
+
+	/**
+	 * @return Number of players playing the game.
+	 */
+	public int getNumOfPlayers() {
+		return numOfPlayers;
+	}
+
+	/**
+	 * @return Obtain list of players.
+	 */
+	public Array<GameCharacter> getPlayerList() {
+		return playerList;
+	}
+
+	/**
+	 * Updates the locations of all players' position on the map.
+	 */
+	private void playerTransform() {
+		for (int i = 0; i < numOfPlayers; i++) {
+			playerList
+					.get(i)
+					.getBody()
+					.setTransform(server.getPlayerPosition().get("Player " + i)[0],
+							server.getPlayerPosition().get("Player " + i)[0],
+							server.getPlayerAngle().get("Player " + i));
+		}
+	}
+
+	/**
+	 * Updates the locations of all items on the map.
+	 */
 	private void itemLocations() {
-
+		server.getItemLocations();
 	}
 
+	/**
+	 * Updates the locations of all weapon on the map.
+	 */
 	private void weaponLocations() {
-
+		server.getWeaponLocations();
 	}
 
+	/**
+	 * Updates the locations of all weapon parts on the map.
+	 */
 	private void weaponPartLocations() {
+		server.getWeaponPartLocations();
+	}
+
+	/**
+	 * Updates the locations of all traps on the map.
+	 */
+	private void trapLocations() {
+		server.getTrapLocations();
+	}
+
+	/**
+	 * Produces knife body from the player that used the knife.
+	 */
+	private void knifeUsed() {
 
 	}
 
-	private void trapLocations() {
+	/**
+	 * Produces bat body from the player that used the bat.
+	 */
+	private void batUsed() {
 
 	}
 	

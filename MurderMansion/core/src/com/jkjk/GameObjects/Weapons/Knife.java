@@ -25,6 +25,7 @@ public class Knife extends Weapon {
 
 	@Override
 	public void use() {
+		super.use();
 		System.out.println("Used knife");
 		//gWorld.getPlayer().getBody().setUserData(AssetLoader.murKnifeAnimation);
 		playerPosition = gWorld.getPlayer().getBody().getPosition();

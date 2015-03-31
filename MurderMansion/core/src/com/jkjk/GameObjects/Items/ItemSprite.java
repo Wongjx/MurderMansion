@@ -5,26 +5,26 @@ import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
 import com.badlogic.gdx.physics.box2d.CircleShape;
 import com.badlogic.gdx.physics.box2d.FixtureDef;
-import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.badlogic.gdx.physics.box2d.World;
+import com.jkjk.GameWorld.GameWorld;
 import com.jkjk.MMHelpers.AssetLoader;
 
 public class ItemSprite {
 
 	private Body body;
 	private BodyDef bdef;
-	private World world;
+	private GameWorld gWorld;
 	private FixtureDef fdef;
-	
-	public ItemSprite(World world) {
-		this.world = world;
+	private float posX, posY;
+
+	public ItemSprite(GameWorld gWorld) {
+		this.gWorld = gWorld;
 		fdef = new FixtureDef();
 		bdef = new BodyDef();
-		
 
 		bdef.type = BodyType.StaticBody;
-		body = world.createBody(bdef);
-		
+		body = gWorld.getWorld().createBody(bdef);
+
 		CircleShape shape = new CircleShape();
 		shape.setRadius(9);
 		fdef.shape = shape;
@@ -32,15 +32,23 @@ public class ItemSprite {
 		fdef.filter.maskBits = 1;
 		body.createFixture(fdef).setUserData("item");
 		body.setUserData(AssetLoader.itemTexture);
-	
+
 	}
 
 	public void spawn(float x, float y, float angle) {
 		body.setTransform(x, y, angle); // Spawn position
+		posX = x;
+		posY = y;
+	}
+
+	public float[] getLocation() {
+		return new float[] { posX, posY };
 	}
 
 	public void render() {
-
+		if (gWorld.getPlayer().lightContains(posX, posY)) {
+			// System.out.println("Render Item Sprite");
+		}
 	}
 
 }

@@ -4,17 +4,11 @@ import net.dermetfan.gdx.physics.box2d.Box2DMapObjectParser;
 
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
-import com.badlogic.gdx.physics.box2d.BodyDef;
-import com.badlogic.gdx.physics.box2d.CircleShape;
-import com.badlogic.gdx.physics.box2d.FixtureDef;
-import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.Array;
 import com.jkjk.GameObjects.WeaponPartSprite;
-import com.jkjk.GameObjects.Characters.Civilian;
 import com.jkjk.GameObjects.Characters.GameCharacter;
 import com.jkjk.GameObjects.Characters.GameCharacterFactory;
-import com.jkjk.GameObjects.Characters.Murderer;
 import com.jkjk.GameObjects.Items.ItemFactory;
 import com.jkjk.GameObjects.Items.ItemSprite;
 import com.jkjk.GameObjects.Weapons.WeaponFactory;
@@ -27,15 +21,11 @@ import com.jkjk.MMHelpers.MMContactListener;
  * and destruction of Box2D bodies, and manages contact listeners.
  * 
  * @author LeeJunXiang
- */
-/**
- * @author LeeJunXiang
  * 
  */
 public class GameWorld {
 	private GameCharacterFactory gameCharFac;
 	private GameCharacter player;
-	private Array<GameCharacter> playerList;
 
 	private ItemFactory itemFac;
 	private Array<ItemSprite> itemList;
@@ -49,10 +39,6 @@ public class GameWorld {
 
 	private World world;
 	private MMContactListener cl;
-	private int numOfPlayers;
-	private int maxItems;
-	private int maxWeapons;
-	private int maxWeaponParts;
 
 	private Array<Body> itemsToRemove, weaponsToRemove, weaponPartsToRemove, trapToRemove;
 	private Body bodyToRemove;
@@ -61,11 +47,6 @@ public class GameWorld {
 	private float currentPositionY;
 	private float currentAngle;
 	private float ambientLightValue;
-
-	// FOR DEBUG PURPOSE
-	private BodyDef bdef;
-	private Body body;
-	private FixtureDef fdef;
 
 	/**
 	 * Constructs the Box2D world, adding Box2D objects such as players, items and weapons. Attaches the
@@ -87,33 +68,15 @@ public class GameWorld {
 		trapToRemove = cl.getTrapToRemove();
 
 		gameCharFac = new GameCharacterFactory();
-		playerList = new Array<GameCharacter>();
-		numOfPlayers = 4;
 
 		itemFac = new ItemFactory();
 		itemList = new Array<ItemSprite>();
-		maxItems = numOfPlayers * 2;
+
 		weaponFac = new WeaponFactory();
 		weaponList = new Array<WeaponSprite>();
-		maxWeapons = (int) (numOfPlayers * 1.2);
+
 		numOfWeaponPartsCollected = 0;
 		weaponPartList = new Array<WeaponPartSprite>();
-		maxWeaponParts = numOfPlayers * 2;
-		createPlayer();
-		for (int i = 0; i < numOfPlayers - 1; i++) {
-			createOpponents(i);
-		}
-		for (int i = 0; i < maxItems; i++) {
-			createItems(i);
-		}
-		for (int i = 0; i < maxWeapons; i++) {
-			createWeapons(i);
-		}
-		for (int i = 0; i < maxWeaponParts; i++) {
-			createWeaponParts(i);
-		}
-
-		createTrap(); // FOR DEBUG PURPOSE
 
 		Box2DMapObjectParser parser = new Box2DMapObjectParser();
 		parser.load(world, AssetLoader.tiledMap);
@@ -126,9 +89,11 @@ public class GameWorld {
 	 * @param delta
 	 *            The time between each render.
 	 */
-	public void update(float delta) {
+	public void update(float delta, MMClient client) {
 		world.step(delta, 6, 2); // Step size|Steps for each body to check collision|Accuracy of body position
 									// after collision
+
+		client.update();
 
 		if (player.isAlive()) {
 			player.update();
@@ -150,60 +115,17 @@ public class GameWorld {
 
 	/**
 	 * Creates the player in the Box2D world. User data is set as "player" and spawned at defined location.
+	 * 
+	 * @param type
+	 *            0 for murderer, 1 for civilian
 	 */
-	private void createPlayer() {
-		//player = gameCharFac.createCharacter("Murderer", 0, world);
-		player = gameCharFac.createCharacter("Civilian", 0, world);
+	public void createPlayer(int type) {
+		if (type == 0)
+			player = gameCharFac.createCharacter("Murderer", 0, this, true);
+		else
+			player = gameCharFac.createCharacter("Civilian", 0, this, true);
 		player.getBody().getFixtureList().get(0).setUserData("player");
 		player.spawn(1010, 515, 0);
-	}
-
-	// FOR DEBUG PURPOSE
-	private void createTrap() {
-		bdef = new BodyDef();
-		fdef = new FixtureDef();
-		bdef.type = BodyType.StaticBody;
-		bdef.position.set(1010, 570);
-		body = world.createBody(bdef);
-
-		CircleShape shape = new CircleShape();
-		shape.setRadius(10);
-		fdef.shape = shape;
-		fdef.isSensor = true;
-		fdef.filter.maskBits = 1;
-
-		body.createFixture(fdef).setUserData("trap");
-	}
-
-	// FOR DEBUG PURPOSE
-	private void createOpponents(int i) {
-		if (i == 0) {
-			playerList.add((Murderer) gameCharFac.createCharacter("Murderer", i + 1, world));
-			playerList.get(i).getBody().setType(BodyType.KinematicBody);
-			playerList.get(i).spawn(1010 - ((i + 1) * 40), 515, 0);
-		} else {
-			playerList.add((Civilian) gameCharFac.createCharacter("Civilian", i + 1, world));
-			playerList.get(i).getBody().setType(BodyType.KinematicBody);
-			playerList.get(i).spawn(1010 - ((i + 1) * 40), 515, 0);
-		}
-	}
-
-	// FOR DEBUG PURPOSE
-	private void createItems(int i) {
-		itemList.add(new ItemSprite(world));
-		itemList.get(i).spawn(1100 - ((i + 1) * 40), 490, 0);
-	}
-
-	// FOR DEBUG PURPOSE
-	private void createWeapons(int i) {
-		weaponList.add(new WeaponSprite(world));
-		weaponList.get(i).spawn(1100 - ((i + 1) * 40), 460, 0);
-	}
-
-	// FOR DEBUG PURPOSE
-	private void createWeaponParts(int i) {
-		weaponPartList.add(new WeaponPartSprite(world));
-		weaponPartList.get(i).spawn(1100 - ((i + 1) * 40), 430, 0);
 	}
 
 	/**
@@ -216,50 +138,6 @@ public class GameWorld {
 	}
 
 	/**
-	 * @return Box2D World
-	 */
-	public World getWorld() {
-		return world;
-	}
-
-	/**
-	 * @return Number of players playing the game.
-	 */
-	public int getNumOfPlayers() {
-		return numOfPlayers;
-	}
-
-	/**
-	 * @param i
-	 *            Number of players that will be playing the game.
-	 */
-	public void setNumOfPlayers(int i) {
-		numOfPlayers = i;
-	}
-
-	/**
-	 * @return Obtain list of players.
-	 */
-	public Array<GameCharacter> getPlayerList() {
-		return playerList;
-	}
-
-	/**
-	 * @return Obtain the player's instance.
-	 */
-	public GameCharacter getPlayer() {
-		return player;
-	}
-
-	public int getNumOfWeaponPartsCollected() {
-		return numOfWeaponPartsCollected;
-	}
-
-	public void weaponPartsCollected() {
-		this.numOfWeaponPartsCollected++;
-	}
-
-	/**
 	 * Creates a ghost by destroying the player's previous body. Sets the user data to "player", and spawns
 	 * him at the position and angle of his death.
 	 */
@@ -268,17 +146,16 @@ public class GameWorld {
 		currentPositionY = player.getBody().getPosition().y;
 		currentAngle = player.getBody().getAngle();
 		ambientLightValue = player.getAmbientLightValue();
-		
+
 		world.destroyBody(player.getBody());
 
-		player = gameCharFac.createCharacter("Ghost", player.getId(), world);
+		player = gameCharFac.createCharacter("Ghost", player.getId(), this, true);
 		player.set_deathPositionX(currentPositionX);
 		player.set_deathPositionY(currentPositionY);
 		player.getBody().getFixtureList().get(0).setUserData("player");
 		player.spawn(currentPositionX, currentPositionY, currentAngle);
 		player.setAmbientLightValue(ambientLightValue);
-		
-		
+
 	}
 
 	/**
@@ -365,4 +242,61 @@ public class GameWorld {
 			}
 		}
 	}
+
+	/**
+	 * @return Box2D World
+	 */
+	public World getWorld() {
+		return world;
+	}
+
+	/**
+	 * @return Obtain the player's instance.
+	 */
+	public GameCharacter getPlayer() {
+		return player;
+	}
+
+	/**
+	 * @return Number of Weapon Parts Collected
+	 */
+	public int getNumOfWeaponPartsCollected() {
+		return numOfWeaponPartsCollected;
+	}
+
+	/**
+	 * Adds 1 to number of weapon parts collected.
+	 */
+	public void weaponPartsCollected() {
+		this.numOfWeaponPartsCollected++;
+	}
+
+	/**
+	 * @return GameCharacter Factory to create game characters.
+	 */
+	public GameCharacterFactory getGameCharFac() {
+		return gameCharFac;
+	}
+
+	/**
+	 * @return List of items on the map.
+	 */
+	public Array<ItemSprite> getItemList() {
+		return itemList;
+	}
+
+	/**
+	 * @return List of weapons on the map.
+	 */
+	public Array<WeaponSprite> getWeaponList() {
+		return weaponList;
+	}
+
+	/**
+	 * @return List of weapon parts on the map.
+	 */
+	public Array<WeaponPartSprite> getWeaponPartList() {
+		return weaponPartList;
+	}
+
 }
