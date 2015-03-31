@@ -18,9 +18,9 @@ import com.google.android.gms.games.multiplayer.Multiplayer;
 import com.google.android.gms.games.multiplayer.realtime.RoomConfig;
 import com.google.example.games.basegameutils.GameHelper;
 import com.google.example.games.basegameutils.GameHelper.GameHelperListener;
+import com.jkjk.GameWorld.MMClient;
 import com.jkjk.MMHelpers.ActionResolver;
 import com.jkjk.MMHelpers.MultiplayerSeissonInfo;
-import com.jkjk.MMHelpers.SocketHelper;
 import com.jkjk.MurderMansion.murdermansion;
 
 public class AndroidLauncher extends AndroidApplication implements GameHelperListener, ActionResolver{
@@ -33,19 +33,18 @@ public class AndroidLauncher extends AndroidApplication implements GameHelperLis
     private static final int RC_SIGN_IN = 9001;
 
 	public GameHelper gameHelper;
-	public SocketHelper socketHelper;
-	
 	public GoogleApiClient mGoogleApiClient;
 	public RealTimeCommunication mRealTimeCom;
 	private GPSListeners mGooglePlayListeners;
-	
-	
 	public MultiplayerSeissonInfo mMultiplayerSeisson;
 	
 	
 	@Override
 	protected void onCreate (Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+		//Set log level to debug to let all gdx messages through
+		this.setLogLevel(LOG_DEBUG);
+		
 		if (gameHelper == null) {
 			gameHelper = new GameHelper(this, GameHelper.CLIENT_GAMES);
 			gameHelper.enableDebugLog(true);
@@ -57,24 +56,18 @@ public class AndroidLauncher extends AndroidApplication implements GameHelperLis
 		mGoogleApiClient=gameHelper.getApiClient();
 		
 		//Initalize helper class that stores all additional needed information for multiplayer games
-		if (mMultiplayerSeisson == null) {
-			mMultiplayerSeisson = new MultiplayerSeissonInfo();
-		}
-		
-		if (socketHelper == null) {
-			socketHelper = new SocketHelper(mMultiplayerSeisson);
-		}
+		mMultiplayerSeisson = new MultiplayerSeissonInfo();
 		
 		//Initialize listener helper class
 		if (mGooglePlayListeners == null) {
-			mGooglePlayListeners = new GPSListeners(mGoogleApiClient,this,mMultiplayerSeisson);
+			mGooglePlayListeners = new GPSListeners(mGoogleApiClient,this);
 		}		
 		if (mRealTimeCom == null) {
-			mRealTimeCom = new RealTimeCommunication(mGoogleApiClient,mMultiplayerSeisson);
+			mRealTimeCom = new RealTimeCommunication(mGoogleApiClient,this.mMultiplayerSeisson);
 		}
 		
 		AndroidApplicationConfiguration config = new AndroidApplicationConfiguration();
-		initialize(new murdermansion(this,mMultiplayerSeisson,socketHelper), config);
+		initialize(new murdermansion(this,mMultiplayerSeisson), config);
 
 	}
 
@@ -107,12 +100,10 @@ public class AndroidLauncher extends AndroidApplication implements GameHelperLis
          case RC_WAITING_ROOM:
              // we got the result from the "waiting room" UI.
              if (responseCode == Activity.RESULT_OK) {
-                 Log.d(TAG, "Start socket connections (waiting room returned OK).");
+                 Log.d(TAG, "GPS room returned OK");
+                 //Change screen to game screen
                  mMultiplayerSeisson.mState=mMultiplayerSeisson.ROOM_PLAY;
-                 //If not server, try to connect to server socket 
-                 if(!mMultiplayerSeisson.isServer){
-                	 socketHelper.setupSocket();
-                 }
+
                  
 //                 startGame(true);
              } else if (responseCode == GamesActivityResultCodes.RESULT_LEFT_ROOM) {
@@ -249,11 +240,9 @@ public class AndroidLauncher extends AndroidApplication implements GameHelperLis
 		if (gameHelper.isSignedIn()) {
 			//Assign device as server and setup a socket to accept connections
 			mMultiplayerSeisson.isServer=true;
-			socketHelper.setupSocket();
 			// show list of invitable players
-			//Choose from between 1 to 3 other opponents (apiclient,minOpponents, maxOpponents, boolean Automatch)
-
-			Intent intent = Games.RealTimeMultiplayer.getSelectOpponentsIntent(mGoogleApiClient, 1, 3);
+			//Choose from between 1 to 3 other opponents (APIclient,minOpponents, maxOpponents, boolean Automatch)
+			Intent intent = Games.RealTimeMultiplayer.getSelectOpponentsIntent(mGoogleApiClient, 1, 1);
 			startActivityForResult(intent, RC_SELECT_PLAYERS);
 		}
 		else if (!gameHelper.isConnecting()) {

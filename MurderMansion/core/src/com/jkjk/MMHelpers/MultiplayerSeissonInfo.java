@@ -1,13 +1,12 @@
 package com.jkjk.MMHelpers;
 
-import java.io.BufferedReader;
-import java.io.PrintWriter;
 import java.net.InetAddress;
-import java.net.ServerSocket;
-import java.net.Socket;
 import java.util.ArrayList;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.ReentrantLock;
+
+import com.jkjk.GameWorld.MMClient;
+import com.jkjk.Host.MMServer;
 
 
 /**
@@ -16,36 +15,42 @@ import java.util.concurrent.locks.ReentrantLock;
  *
  */
 public class MultiplayerSeissonInfo {
-	public volatile String mIncomingInvitationId;
-	public volatile String mRoomId;
-	public volatile ArrayList mParticipants;
-	public volatile Object mMyId; 
-	public volatile int mState=1000;
-	
+	public String mIncomingInvitationId;
+	public String mRoomId;
+	public ArrayList mParticipants;
+//	public Object mMyId; 
+	public int mState=1000;
+
 	public boolean isServer;
-	public InetAddress socketAddress;
-	public int port;
-	public Condition isMessaged;
-	public ReentrantLock lock;
+	public InetAddress serverAddress;
+	public int serverPort=0;
 	
-	public ServerSocket serverSocket;
-	public ArrayList<Socket> clients;
-	public ArrayList<PrintWriter> serverOutput;
-	public ArrayList<BufferedReader> serverInput;
-	
-	public Socket clientSocket;
-	public BufferedReader clientInput;
-	public PrintWriter clientOuput;
+	private MMServer server;
+	private MMClient client;
 	
 	public final int ROOM_NULL=1000;
 	public final int ROOM_WAIT=1001;
 	public final int ROOM_PLAY=1002;
-	public final int ROOM_SOCKET=1003;
-	public final int ROOM_MENU=1004;
-	
+	public final int ROOM_MENU=1003;
 	
 	public MultiplayerSeissonInfo(){
-		this.lock=new ReentrantLock();
-		this.isMessaged=this.lock.newCondition();
 	}
+
+	public MMServer getServer() {
+		return server;
+	}
+
+	public void setServer(MMServer server) {
+		this.server = server;
+	}
+
+	public MMClient getClient() {
+		return client;
+	}
+
+	public void setClient(MMClient client) {
+		this.client = client;
+	}
+
+
 }

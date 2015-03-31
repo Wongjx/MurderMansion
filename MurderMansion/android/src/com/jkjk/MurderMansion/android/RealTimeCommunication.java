@@ -11,6 +11,7 @@ import com.google.android.gms.games.Games;
 import com.google.android.gms.games.multiplayer.Participant;
 import com.google.android.gms.games.multiplayer.realtime.RealTimeMessage;
 import com.google.android.gms.games.multiplayer.realtime.RealTimeMessageReceivedListener;
+import com.jkjk.Host.MMServer;
 import com.jkjk.MMHelpers.MultiplayerSeissonInfo;
 
 public class RealTimeCommunication implements RealTimeMessageReceivedListener{
@@ -49,14 +50,14 @@ public class RealTimeCommunication implements RealTimeMessageReceivedListener{
     			Log.d(TAG,"Address received: "+Msg);
     			
     			InetAddress iAddress = InetAddress.getByAddress(addr);
-    			info.socketAddress= iAddress;
+    			info.serverAddress=iAddress;
     			
     		}else if (messageType.equals("P")){
     			//Retrieve and store port number
     			byte[] port = Arrays.copyOfRange(buf, 1, buf.length-1);
     			Msg = new String (port,"UTF-8");
     			Log.d(TAG,"Port Number received: "+Msg);
-    			info.port=Integer.parseInt(Msg);
+    			info.serverPort=Integer.parseInt(Msg);
     			
     		}else{
     			Log.d(TAG, "Message type is not recognised.");
@@ -68,12 +69,12 @@ public class RealTimeCommunication implements RealTimeMessageReceivedListener{
     }
 
     // Broadcast serverLocalAddress to all connected clients
-    void broadcastAddress() {
+    void broadcastAddress(MMServer server) {
         if (!info.isServer)
             return; // Player is not server
         
         String Msg ="A";
-        Msg += info.socketAddress.toString();
+        Msg += server.getServerAddress().toString();
         byte[] mMsgBuf = new byte[Msg.length()];
 //        // Encode String Message in UTF_8 byte format for transmission
         
@@ -82,8 +83,6 @@ public class RealTimeCommunication implements RealTimeMessageReceivedListener{
 //        // Send to every other participant.
         for (Object o : info.mParticipants) {
         	Participant p = (Participant) o;
-        	if (p.getParticipantId().equals(info.mMyId))
-        		continue;
         	if (p.getStatus() != Participant.STATUS_JOINED)
         		continue;
         	Games.RealTimeMultiplayer.sendReliableMessage(mGoogleApiClient, null, mMsgBuf,
@@ -92,11 +91,11 @@ public class RealTimeCommunication implements RealTimeMessageReceivedListener{
     }
 
 // Broadcast port Number to all connected clients
-void broadcastPort() {
+void broadcastPort(MMServer server) {
     if (!info.isServer)
         return; // Player is not server
     String Msg ="P";
-    Msg += String.valueOf(info.port);
+    Msg += String.valueOf(server.getServerPort());
     
     byte[] mMsgBuf = new byte[Msg.length()];
     // Encode String Message in UTF_8 byte format for transmission    
@@ -105,8 +104,6 @@ void broadcastPort() {
     // Send to every other participant.
     for (Object o : info.mParticipants) {
     	Participant p = (Participant) o;
-    	if (p.getParticipantId().equals(info.mMyId))
-    		continue;
     	if (p.getStatus() != Participant.STATUS_JOINED)
     		continue;
     	Games.RealTimeMultiplayer.sendReliableMessage(mGoogleApiClient, null, mMsgBuf,

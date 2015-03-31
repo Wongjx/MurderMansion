@@ -92,10 +92,9 @@ public class MenuScreen implements Screen{
             @Override
             public void clicked(InputEvent event, float x, float y) {
                 //Host multiplayer game
-//            	game.actionResolver.startQuickGame();
-//            	game.mMultiplayerSeisson.mState=game.mMultiplayerSeisson.ROOM_WAIT;
-//            	((Game)Gdx.app.getApplicationListener()).setScreen(new WaitScreen(game,gameWidth, gameHeight));
-            	game.socketHelper.initServerSocket();
+            	game.actionResolver.startQuickGame();
+            	game.mMultiplayerSeisson.mState=game.mMultiplayerSeisson.ROOM_WAIT;
+            	((Game)Gdx.app.getApplicationListener()).setScreen(new WaitScreen(game,gameWidth, gameHeight));
             }
         });
         
