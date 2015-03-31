@@ -48,6 +48,7 @@ public abstract class GameCharacter {
 	private float deathPositionY;
 
 	private int id;
+	private int weaponUses;
 
 	protected SpriteBatch batch;
 	protected float runTime;
@@ -56,6 +57,7 @@ public abstract class GameCharacter {
 	public GameCharacter(String type, int id, GameWorld gWorld, boolean isPlayer) {
 		this.isPlayer = isPlayer;
 		maxVelocity = 64;
+		weaponUses = 3;
 		touchpad = AssetLoader.touchpad;
 		stunDuration = new Duration(5000);
 
@@ -164,7 +166,10 @@ public abstract class GameCharacter {
 	public void useWeapon() {
 		if (!weapon.isOnCooldown()) {
 			weapon.use();
-			weapon.cooldown();
+			weaponUses--;
+			if (weaponUses > 0) {
+				weapon.cooldown();
+			}
 		}
 	}
 
@@ -217,8 +222,13 @@ public abstract class GameCharacter {
 
 	public void update() {
 		if (isPlayer) {
-			if (weapon != null)
+			if (weapon != null) {
 				weapon.update();
+				if (weapon.isCompleted() && weaponUses == 0) {
+					weapon = null;
+					weaponChange = true;
+				}
+			}
 			if (item != null) {
 				item.update();
 				if (!item.inUse() && item.isCompleted()) {
@@ -298,8 +308,8 @@ public abstract class GameCharacter {
 		}
 		body.setLinearVelocity(touchpadX * maxVelocity, touchpadY * maxVelocity);
 	}
-	
-	public void setPosition(float x, float y, float angle){
+
+	public void setPosition(float x, float y, float angle) {
 		body.setTransform(x, y, angle);
 	}
 

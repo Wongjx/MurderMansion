@@ -12,6 +12,7 @@ public abstract class Weapon {
 	protected Body body;
 	protected String name;
 	protected float runTime;
+	private boolean isCompleted;
 
 	public Weapon(GameWorld gWorld) {
 		cooldown = new Duration(5000);
@@ -28,10 +29,16 @@ public abstract class Weapon {
 		return cooldown.isCountingDown();
 	}
 
-	public abstract void use();
+	public void use(){
+		isCompleted = false;
+	}
 
 	public void cooldown() {
 		cooldown.startCountdown();
+	}
+	
+	public boolean isCompleted(){
+		return isCompleted;
 	}
 
 	public void update() {
@@ -41,6 +48,7 @@ public abstract class Weapon {
 			if (body != null){
 				gWorld.getWorld().destroyBody(body);
 				body = null;
+				isCompleted = true;
 			}
 		}
 
