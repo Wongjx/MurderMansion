@@ -1,22 +1,25 @@
 package com.jkjk.Host;
 
 import java.util.Random;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class MMServer {
 
 	private long startTime;
 	private long runTime;
-	private long prevRunTime;
+	private long nextItemSpawnTime;
+	private long nextObstacleRemoveTime;
 
 	private final int numOfPlayers;
 	private Random randMurderer;
 	private int murdererId;
 
-	private final int[] playerIsAlive; // If 1 -> true; If 0 -> false;
-	private final int[] playerIsStun; // If 1 -> true; If 0 -> false;
-	private final int[] playerType; // If 0 -> civilian; If 1 -> murderer; If 2 -> Ghost
-	private final float[] playerPosition;
-	private final float[] playerAngle;
+	private final ConcurrentHashMap<String, Integer> playerIsAlive; // If 1 -> true; If 0 -> false;
+	private final ConcurrentHashMap<String, Integer> playerIsStun; // If 1 -> true; If 0 -> false;
+	private final ConcurrentHashMap<String, Integer> playerType; // If 0 -> murderer; If 1 -> civilian; If 2
+																	// -> Ghost
+	private final ConcurrentHashMap<String, float[]> playerPosition;
+	private final ConcurrentHashMap<String, Float> playerAngle;
 
 	// private ArrayList<Location> playerLocations;
 	private final SpawnBuffer itemLocations;
@@ -35,11 +38,11 @@ public class MMServer {
 	public MMServer(int numOfPlayers) {
 		startTime = System.currentTimeMillis();
 		this.numOfPlayers = numOfPlayers;
-		playerIsAlive = new int[numOfPlayers];
-		playerIsStun = new int[numOfPlayers];
-		playerType = new int[numOfPlayers];
-		playerPosition = new float[numOfPlayers];
-		playerAngle = new float[numOfPlayers];
+		playerIsAlive = new ConcurrentHashMap<String, Integer>(numOfPlayers);
+		playerIsStun = new ConcurrentHashMap<String, Integer>(numOfPlayers);
+		playerType = new ConcurrentHashMap<String, Integer>(numOfPlayers);
+		playerPosition = new ConcurrentHashMap<String, float[]>(numOfPlayers);
+		playerAngle = new ConcurrentHashMap<String, Float>(numOfPlayers);
 
 		itemLocations = new SpawnBuffer(numOfPlayers * 3);
 		weaponLocations = new SpawnBuffer(numOfPlayers);
@@ -57,14 +60,19 @@ public class MMServer {
 		spawnWeapons(numOfPlayers);
 		spawnWeaponParts(numOfPlayers);
 
+		nextItemSpawnTime = 10000;
+		nextObstacleRemoveTime = 60000;
+
+		initPlayers();
+
 		// Attempt to connect to clients (numOfPlayers)
 	}
 
 	public void update() {
 		runTime = System.currentTimeMillis() - startTime;
-		
+
 		// Item/Weapon/WeaponPart Spawn *NEEDS TO BE BALANCED TO FIT GAMEPLAY
-		if (runTime%10000 < prevRunTime%10000) {
+		if (runTime > nextItemSpawnTime) {
 			System.out.println("SPAWN!");
 			if (!itemLocations.isFull())
 				spawnItems(1);
@@ -72,14 +80,28 @@ public class MMServer {
 				spawnWeapons(1);
 			if (!weaponPartLocations.isFull())
 				spawnWeaponParts(1);
+			nextItemSpawnTime = new Random().nextInt(10000) + runTime + 5000;
 		}
-		
+
 		// Opens random door in mansion *TO BE IMPLEMENTED
-		if (runTime%60000 < prevRunTime%60000){
+		if (runTime > nextObstacleRemoveTime) {
 			System.out.println("NEW DOOR OPENS!");
+			nextObstacleRemoveTime = new Random().nextInt(10000) + runTime + 60000;
 		}
-		
-		prevRunTime = runTime;
+	}
+
+	private void initPlayers() {
+		for (int i = 0; i < numOfPlayers; i++) {
+			playerIsAlive.put("Player " + i, 1);
+			playerIsStun.put("Player " + i, 0);
+			if (i == murdererId) {
+				playerType.put("Player " + i, 0);
+			} else {
+				playerType.put("Player " + i, 1);
+			}
+			playerPosition.put("Player " + i, new float[] { 1010 - ((i + 1) * 40), 515 });
+			playerAngle.put("Player " + i, 0f);
+		}
 	}
 
 	private void spawnItems(int numOfItems) {
@@ -104,64 +126,44 @@ public class MMServer {
 		return numOfPlayers;
 	}
 
-	public int[] getPlayerIsAlive() {
-		synchronized (playerIsAlive) {
-			return playerIsAlive;
-		}
+	public ConcurrentHashMap<String, Integer> getPlayerIsAlive() {
+		return playerIsAlive;
 	}
 
-	public void setPlayerIsAlive(int position, int value) {
-		synchronized (playerIsAlive) {
-			playerIsAlive[position] = value;
-		}
+	public void setPlayerIsAlive(String key, int value) {
+		playerIsAlive.put(key, value);
 	}
 
-	public int[] getPlayerIsStun() {
-		synchronized (playerIsStun) {
-			return playerIsStun;
-		}
+	public ConcurrentHashMap<String, Integer> getPlayerIsStun() {
+		return playerIsStun;
 	}
 
-	public void setPlayerIsStun(int position, int value) {
-		synchronized (playerIsStun) {
-			playerIsStun[position] = value;
-		}
+	public void setPlayerIsStun(String key, int value) {
+		playerIsAlive.put(key, value);
 	}
 
-	public int[] getPlayerType() {
-		synchronized (playerType) {
-			return playerType;
-		}
+	public ConcurrentHashMap<String, Integer> getPlayerType() {
+		return playerType;
 	}
 
-	public void setPlayerType(int position, int value) {
-		synchronized (playerType) {
-			playerType[position] = value;
-		}
+	public void setPlayerType(String key, int value) {
+		playerType.put(key, value);
 	}
 
-	public float[] getPlayerPosition() {
-		synchronized (playerPosition) {
-			return playerPosition;
-		}
+	public ConcurrentHashMap<String, float[]> getPlayerPosition() {
+		return playerPosition;
 	}
 
-	public void setPlayerPosition(int position, float value) {
-		synchronized (playerPosition) {
-			playerPosition[position] = value;
-		}
+	public void setPlayerPosition(String key, float[] value) {
+		playerPosition.put(key, value);
 	}
 
-	public float[] getPlayerAngle() {
-		synchronized (playerAngle) {
-			return playerAngle;
-		}
+	public ConcurrentHashMap<String, Float> getPlayerAngle() {
+		return playerAngle;
 	}
 
-	public void setPlayerAngle(int position, float value) {
-		synchronized (playerAngle) {
-			playerAngle[position] = value;
-		}
+	public void setPlayerAngle(String key, float value) {
+		playerAngle.put(key, value);
 	}
 
 	public SpawnBuffer getItemLocations() {

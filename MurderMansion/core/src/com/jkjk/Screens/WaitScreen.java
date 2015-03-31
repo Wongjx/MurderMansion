@@ -11,19 +11,19 @@ import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.utils.SpriteDrawable;
 import com.jkjk.MMHelpers.AssetLoader;
-import com.jkjk.MurderMansion.murdermansion;
+import com.jkjk.MurderMansion.MurderMansion;
 
 public class WaitScreen implements Screen {
 
 	private Stage stage = new Stage();
 	private SpriteBatch batcher;
 	private Sprite sprite;
-	private murdermansion game;
+	private MurderMansion game;
 	
 	private float gameWidth;
 	private float gameHeight;
 
-	public WaitScreen(murdermansion game, float gameWidth, float gameHeight) {
+	public WaitScreen(MurderMansion game, float gameWidth, float gameHeight) {
 		this.game = game;
 		this.gameWidth = gameWidth;
 		this.gameHeight = gameHeight;

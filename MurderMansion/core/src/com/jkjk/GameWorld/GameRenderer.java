@@ -64,26 +64,24 @@ public class GameRenderer {
 	 * @param runTime
 	 *            The total runtime since start.
 	 */
-	public void render(float delta, float runTime) {
+	public void render(float delta, float runTime, MMClient client) {
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT); // Clears screen everytime it renders
 
 		tiledMapRenderer.setView(cam);
 		tiledMapRenderer.render();
-		
-		for (ItemSprite iS: gWorld.getItemList()){
+
+		client.render();
+
+		for (ItemSprite iS : gWorld.getItemList()) {
 			iS.render();
 		}
-		
-		for (WeaponSprite wS: gWorld.getWeaponList()){
+
+		for (WeaponSprite wS : gWorld.getWeaponList()) {
 			wS.render();
 		}
-		
-		for (WeaponPartSprite wPS: gWorld.getWeaponPartList()){
+
+		for (WeaponPartSprite wPS : gWorld.getWeaponPartList()) {
 			wPS.render();
-		}
-		
-		for (GameCharacter gc: gWorld.getPlayerList()){
-			gc.render(cam);
 		}
 
 		if (gWorld.getPlayer().isAlive()) {
@@ -93,6 +91,13 @@ public class GameRenderer {
 
 		b2dr.render(gWorld.getWorld(), cam.combined); // Renders box2d world
 
+	}
+
+	/**
+	 * @return Camera for the game.
+	 */
+	public OrthographicCamera getCam() {
+		return cam;
 	}
 
 	/**

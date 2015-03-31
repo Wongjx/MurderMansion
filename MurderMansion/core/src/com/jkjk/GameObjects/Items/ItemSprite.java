@@ -16,16 +16,15 @@ public class ItemSprite {
 	private GameWorld gWorld;
 	private FixtureDef fdef;
 	private float posX, posY;
-	
+
 	public ItemSprite(GameWorld gWorld) {
 		this.gWorld = gWorld;
 		fdef = new FixtureDef();
 		bdef = new BodyDef();
-		
 
 		bdef.type = BodyType.StaticBody;
 		body = gWorld.getWorld().createBody(bdef);
-		
+
 		CircleShape shape = new CircleShape();
 		shape.setRadius(9);
 		fdef.shape = shape;
@@ -33,7 +32,7 @@ public class ItemSprite {
 		fdef.filter.maskBits = 1;
 		body.createFixture(fdef).setUserData("item");
 		body.setUserData(AssetLoader.itemTexture);
-	
+
 	}
 
 	public void spawn(float x, float y, float angle) {
@@ -42,9 +41,13 @@ public class ItemSprite {
 		posY = y;
 	}
 
+	public float[] getLocation() {
+		return new float[] { posX, posY };
+	}
+
 	public void render() {
-		if (gWorld.getPlayer().lightContains(posX, posY)){
-			//System.out.println("Render Item Sprite");
+		if (gWorld.getPlayer().lightContains(posX, posY)) {
+			// System.out.println("Render Item Sprite");
 		}
 	}
 

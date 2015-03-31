@@ -17,7 +17,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Touchpad;
 import com.badlogic.gdx.scenes.scene2d.ui.Touchpad.TouchpadStyle;
 import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
-import com.jkjk.MurderMansion.murdermansion;
+import com.jkjk.MurderMansion.MurderMansion;
 
 public class AssetLoader {
 	
@@ -111,7 +111,7 @@ public class AssetLoader {
 
 	public static void load() {
 
-		int gameWidth = (murdermansion.V_WIDTH * murdermansion.SCALE);
+		int gameWidth = (MurderMansion.V_WIDTH * MurderMansion.SCALE);
 
 		menuBackground = new Texture(Gdx.files.internal("basic/menu.png"));
 		

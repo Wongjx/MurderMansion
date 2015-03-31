@@ -25,7 +25,6 @@ public class WeaponSprite {
 		bdef.type = BodyType.StaticBody;
 		body = gWorld.getWorld().createBody(bdef);
 
-		
 		CircleShape shape = new CircleShape();
 		shape.setRadius(9);
 		fdef.shape = shape;
@@ -41,9 +40,13 @@ public class WeaponSprite {
 		posY = y;
 	}
 
+	public float[] getLocation() {
+		return new float[] { posX, posY };
+	}
+
 	public void render() {
-		if (gWorld.getPlayer().lightContains(posX, posY)){
-			//System.out.println("Render Weapon Sprite");
+		if (gWorld.getPlayer().lightContains(posX, posY)) {
+			// System.out.println("Render Weapon Sprite");
 		}
 	}
 
