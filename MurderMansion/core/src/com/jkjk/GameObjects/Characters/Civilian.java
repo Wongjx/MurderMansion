@@ -79,12 +79,13 @@ public class Civilian extends GameCharacter {
 				
 			} else {
 				if (!body.getLinearVelocity().isZero() && checkMovable()) {
-					batch.draw(currentAnimation.getKeyFrame(runTime, true), body.getPosition().x - 10,
-							body.getPosition().y - 10, 10, 10, 20, 20, 1.5f, 1.5f,
+					batch.draw(currentAnimation.getKeyFrame(runTime, true), body.getPosition().x-40,
+							body.getPosition().y, +40, -10, 45, 45, 2f, 2f,
 							(float) (body.getAngle() * 180 / Math.PI) - 90);
 				} else {
-					batch.draw(AssetLoader.civ_rest, body.getPosition().x - 10, body.getPosition().y - 10, 10, 10, 20,
-							20, 1.5f, 1.5f, (float) (body.getAngle() * 180 / Math.PI) - 90);
+					batch.draw(AssetLoader.civ_rest,  body.getPosition().x-40 ,body.getPosition().y,
+							+40, -10, 45, 45, 2f, 2f,
+							(float) (body.getAngle() * 180 / Math.PI) - 90);
 				}
 			}
 
