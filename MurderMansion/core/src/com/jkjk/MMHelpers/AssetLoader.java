@@ -193,7 +193,7 @@ public class AssetLoader {
 		civ_walk = new Texture(Gdx.files.internal("animation/walk_animation_civ.png"));
 		civ_walk.setFilter(TextureFilter.Nearest, TextureFilter.Nearest);
 		TextureRegion[] civilians = TextureRegion.split(civ_walk, 2258, 2258)[0];
-		civAnimation = new Animation(0.2f, civilians);
+		civAnimation = new Animation(0.4f, civilians);
 		civAnimation.setPlayMode(Animation.PlayMode.LOOP_PINGPONG);
 		civ_rest = civilians[0];
 		civ_dead_lines = new Texture(Gdx.files.internal("gamehelper/dead_lines.png"));
@@ -211,7 +211,6 @@ public class AssetLoader {
 		//TextureRegion[] ghostFloat = TextureRegion.split(ghost_haunt,300,300)[0];
 		//ghostFloatAnimation = new Animation(1f, ghostFloat);
 		//ghostFloatAnimation.setPlayMode(PlayMode.LOOP);
-		System.out.println("help");
 	}
 
 	public static void dispose() {
