@@ -9,7 +9,7 @@ import com.jkjk.MMHelpers.AssetLoader;
 import com.jkjk.MMHelpers.MultiplayerSeissonInfo;
 import com.jkjk.Screens.MenuScreen;
 
-public class murdermansion extends Game {
+public class MurderMansion extends Game {
 	public ActionResolver actionResolver;
 	public MultiplayerSeissonInfo mMultiplayerSeisson;
 
@@ -19,7 +19,7 @@ public class murdermansion extends Game {
 	public static final int SCALE = 2;
 	
 
-	public murdermansion(ActionResolver actionResolver, MultiplayerSeissonInfo mMultiplayerSeisson){
+	public MurderMansion(ActionResolver actionResolver, MultiplayerSeissonInfo mMultiplayerSeisson){
 		this.actionResolver=actionResolver;
 		this.mMultiplayerSeisson=mMultiplayerSeisson; 
 	}

@@ -2,8 +2,6 @@ package com.jkjk.MurderMansion.desktop;
 
 import com.badlogic.gdx.backends.lwjgl.LwjglApplication;
 import com.badlogic.gdx.backends.lwjgl.LwjglApplicationConfiguration;
-import com.jkjk.MurderMansion.murdermansion;
-import com.jkjk.MMHelpers.SocketHelper;
 import com.jkjk.MurderMansion.MurderMansion;
 
 public class DesktopLauncher {
@@ -15,6 +13,6 @@ public class DesktopLauncher {
 		config.height = 180 * 2;
 		desktopMultiplayer mMultiplayerSeisson = new desktopMultiplayer();
 
-		new LwjglApplication(new murdermansion(new ActionResolverDesktop(mMultiplayerSeisson),mMultiplayerSeisson), config);
+		new LwjglApplication(new MurderMansion(new ActionResolverDesktop(mMultiplayerSeisson),mMultiplayerSeisson), config);
 	}
 }

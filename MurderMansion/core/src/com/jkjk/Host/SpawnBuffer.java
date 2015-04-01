@@ -14,7 +14,6 @@ public class SpawnBuffer {
 	public void produce(Location location) {
 		if (buffer.size() < capacity) {
 			buffer.put(location.toString(), new Location(location.get()));
-			notify();
 		}
 
 	}

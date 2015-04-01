@@ -45,16 +45,14 @@ public class RealTimeCommunication implements RealTimeMessageReceivedListener{
     		
     		if (messageType.equals("A")){
     			//Create a InetSocketAddress
-    			byte[] addr = Arrays.copyOfRange(buf, 1, buf.length-1);
+    			byte[] addr = Arrays.copyOfRange(buf, 1, buf.length);
     			Msg = new String (addr,"UTF-8");
     			Log.d(TAG,"Address received: "+Msg);
-    			
-    			InetAddress iAddress = InetAddress.getByAddress(addr);
-    			info.serverAddress=iAddress;
+    			info.serverAddress=Msg;
     			
     		}else if (messageType.equals("P")){
     			//Retrieve and store port number
-    			byte[] port = Arrays.copyOfRange(buf, 1, buf.length-1);
+    			byte[] port = Arrays.copyOfRange(buf, 1, buf.length);
     			Msg = new String (port,"UTF-8");
     			Log.d(TAG,"Port Number received: "+Msg);
     			info.serverPort=Integer.parseInt(Msg);
@@ -74,13 +72,13 @@ public class RealTimeCommunication implements RealTimeMessageReceivedListener{
             return; // Player is not server
         
         String Msg ="A";
-        Msg += server.getServerAddress().toString();
+        Msg += server.getServerAddress();
         byte[] mMsgBuf = new byte[Msg.length()];
 //        // Encode String Message in UTF_8 byte format for transmission
         
         mMsgBuf =Msg.getBytes(Charset.forName("UTF-8")); 
         
-//        // Send to every other participant.
+//        // Send to every participant.
         for (Object o : info.mParticipants) {
         	Participant p = (Participant) o;
         	if (p.getStatus() != Participant.STATUS_JOINED)

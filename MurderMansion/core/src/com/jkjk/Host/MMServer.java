@@ -3,14 +3,18 @@ package com.jkjk.Host;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
+import java.net.Inet4Address;
 import java.net.InetAddress;
+import java.net.NetworkInterface;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.net.SocketException;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Enumeration;
 import java.util.Random;
 import java.util.concurrent.ConcurrentHashMap;
 
-import com.badlogic.gdx.Application;
 import com.badlogic.gdx.Gdx;
 
 
@@ -18,21 +22,20 @@ public class MMServer {
 	private final String TAG = "MMServer";
 	
 	public ServerSocket serverSocket;
-	private InetAddress serverAddress;
+	private String serverAddress;
 	private int serverPort;	
 	
 	private ArrayList<Socket> clients;
 	private ArrayList<PrintWriter> serverOutput;
 	private ArrayList<BufferedReader> serverInput;
+	
+	private final int numOfPlayers;
+	private int murdererId;
 
 	private long startTime;
 	private long runTime;
 	private long nextItemSpawnTime;
 	private long nextObstacleRemoveTime;
-
-	private final int numOfPlayers;
-	private Random randMurderer;
-	private int murdererId;
 
 	private final ConcurrentHashMap<String, Integer> playerIsAlive; // If 1 -> true; If 0 -> false;
 	private final ConcurrentHashMap<String, Integer> playerIsStun; // If 1 -> true; If 0 -> false;
@@ -41,6 +44,8 @@ public class MMServer {
 	private final ConcurrentHashMap<String, float[]> playerPosition;
 	private final ConcurrentHashMap<String, Float> playerAngle;
 
+	
+		
 	// private ArrayList<Location> playerLocations;
 	private final SpawnBuffer itemLocations;
 	private final SpawnBuffer weaponLocations;
@@ -55,41 +60,41 @@ public class MMServer {
 	// animation
 	// HOW?!!?!?!?!?!?!!
 
-<<<<<<< HEAD
 	public MMServer(int numOfPlayers) throws InterruptedException {
 		System.out.println("Server instantized.");
 		this.numOfPlayers = numOfPlayers;
 		
-		System.out.println("Initialize fields");
+//		System.out.println("Initialize Client list and listeners");
+		clients = new ArrayList<Socket> ();
+		serverOutput= new ArrayList<PrintWriter>();
+		serverInput= new ArrayList<BufferedReader>();
+		
+//		System.out.println("Initialize fields");
 		startTime = System.currentTimeMillis();
-		this.numOfPlayers = numOfPlayers;
 		playerIsAlive = new ConcurrentHashMap<String, Integer>(numOfPlayers);
 		playerIsStun = new ConcurrentHashMap<String, Integer>(numOfPlayers);
 		playerType = new ConcurrentHashMap<String, Integer>(numOfPlayers);
 		playerPosition = new ConcurrentHashMap<String, float[]>(numOfPlayers);
 		playerAngle = new ConcurrentHashMap<String, Float>(numOfPlayers);
 
-		System.out.println("Creating item spawn buffers");
-		itemSpawnLocations = new SpawnBuffer(numOfPlayers*3);
-		weaponSpawnLocations = new SpawnBuffer(numOfPlayers);
-		weaponPartSpawnLocations = new SpawnBuffer(numOfPlayers*2);
+//		System.out.println("Creating item spawn buffers");
+		itemLocations = new SpawnBuffer(numOfPlayers*3);
+		weaponLocations = new SpawnBuffer(numOfPlayers);
+		weaponPartLocations = new SpawnBuffer(numOfPlayers*2);
 		trapLocations = new SpawnBuffer(numOfPlayers);
 
-
+//		System.out.println("Instantiate spawner");
 		itemSpawner = new ItemSpawner();
 		weaponSpawner = new WeaponSpawner();
 		weaponPartSpawner = new WeaponPartSpawner();
-		
 
-		System.out.println("Assigning murderer");
+//		System.out.println("Assigning murderer");
 		murdererId = new Random().nextInt(numOfPlayers);
 		
-		System.out.println("Spawning items");
-
+//		System.out.println("Spawning items");
 		spawnItems(numOfPlayers * 2);
 		spawnWeapons(numOfPlayers);
 		spawnWeaponParts(numOfPlayers);
-
 		nextItemSpawnTime = 10000;
 		nextObstacleRemoveTime = 60000;
 
@@ -158,6 +163,10 @@ public class MMServer {
 	public int getNumOfPlayers() {
 		return numOfPlayers;
 	}
+	
+	public int getMurdererId() {
+		return murdererId;
+	}
 
 	public ConcurrentHashMap<String, Integer> getPlayerIsAlive() {
 		return playerIsAlive;
@@ -204,6 +213,7 @@ public class MMServer {
 			return itemLocations;
 		}
 	}
+	
 
 	public void produceItem(Location location) {
 		synchronized (itemLocations) {
@@ -273,16 +283,13 @@ public class MMServer {
 		}
 	}
 	
-	public InetAddress getServerAddress() {
-		synchronized(serverAddress){
+	public String getServerAddress() {
 			return serverAddress;
-		}
 	}
 
-	public void setServerAddress(InetAddress socketAddress) {
-		synchronized(serverAddress){
+	public void setServerAddress(String socketAddress) {
+		System.out.println("Setting server adddress "+socketAddress);	
 			this.serverAddress = socketAddress;
-		}
 	}
 
 	public int getServerPort() {
@@ -333,13 +340,13 @@ public class MMServer {
 	//Initialize server socket 
 	public void initServerSocket() {
 		try{
-			System.out.println("Creating server");
 			//Randomly server to an open port
 			ServerSocket sock = new ServerSocket(0);
-			System.out.println("Server created at port "+sock.getLocalPort());
 			this.serverSocket=sock;
-			setServerAddress(sock.getInetAddress());
+			
+			setServerAddress(getLocalIpAddress());
 			setServerPort(sock.getLocalPort());
+			
 			System.out.println("Server Socket created. Port: "+serverPort+" address: "+serverAddress);
 			
 			
@@ -355,7 +362,7 @@ public class MMServer {
 			Thread thread = new serverAcceptThread(this);
 			thread.start();
 		} else{
-			System.out.println( "Server is not ready");
+			System.out.println( "Server not instantated yet.");
 		}
 	}
 	//Send a string message out to all connected clients
@@ -366,11 +373,22 @@ public class MMServer {
 		}
 	}
 	
-//	public void sendPlayerPosition(int position, float x_position, float y_position, float player_angle  ){
-//		String message="pp_"+position+"_"+Float.toString(x_position);
-//		sendToClients
-//	}
-	
+	public static String getLocalIpAddress() {
+	    try {
+	        for (Enumeration<NetworkInterface> en = NetworkInterface.getNetworkInterfaces(); en.hasMoreElements();) {
+	            NetworkInterface intf = en.nextElement();
+	            for (Enumeration<InetAddress> enumIpAddr = intf.getInetAddresses(); enumIpAddr.hasMoreElements();) {
+	                InetAddress inetAddress = enumIpAddr.nextElement();
+	                if (!inetAddress.isLoopbackAddress() && inetAddress instanceof Inet4Address) {
+	                    return inetAddress.getHostAddress();
+	                }
+	            }
+	        }
+	    } catch (SocketException ex) {
+	        ex.printStackTrace();
+	    }
+	    return null;
+	}
 }
 
 
@@ -388,6 +406,7 @@ class serverAcceptThread extends Thread{
 	}
 	@Override
 	public void run(){
+		int idCount =0;
 		while(server.getClients().size()<server.getNumOfPlayers()){
 			try{
 				Socket socket = server.serverSocket.accept();
@@ -397,23 +416,87 @@ class serverAcceptThread extends Thread{
 				server.setClients(temp);
 				//Add input stream
 				ArrayList<BufferedReader> tempInput = server.getServerInput();
-				tempInput.add(new BufferedReader(new InputStreamReader(socket.getInputStream())));
+				BufferedReader reader=new BufferedReader(new InputStreamReader(socket.getInputStream())); 
+				tempInput.add(reader);
 				server.setServerInput(tempInput);
 				//Add output stream
 				ArrayList<PrintWriter> tempOutput = server.getServerOutput();
-				tempOutput.add(new PrintWriter(socket.getOutputStream(),true));
+				PrintWriter writer =new PrintWriter(socket.getOutputStream(),true); 
+				tempOutput.add(writer);
 				server.setServerOutput(tempOutput);
+				
+				//Send out initializing information to client
+				writer.println(server.getNumOfPlayers());
+				writer.println(idCount);
+				writer.println(server.getMurdererId());
+				
+				//TODO Send item spawn locations
+				String message ="";
+				float[] position = null;
+				Collection<Location> locations=null;
+				//Send item spawn locations 
+				writer.println("itemLocations");
+				locations =server.getItemLocations().getBuffer().values();
+				message="";
+				for (Location location:locations){
+					position = location.get();
+					for(float coordinate:position){
+						message+=String.valueOf(coordinate)+",";
+					}
+					message=message.substring(0, message.length()-1);
+					message+="_";
+				}
+				message=message.substring(0, message.length()-1);
+				System.out.println(message);
+				writer.println(message);
+				writer.println("end");
+				//Send weapon spawn locations
+				writer.println("weaponLocations");
+				locations =server.getWeaponLocations().getBuffer().values();
+				message="";
+				for (Location location:locations){
+					position = location.get();
+					for(float coordinate:position){
+						message+=String.valueOf(coordinate)+",";
+					}
+					message=message.substring(0, message.length()-1);
+					message+="_";
+				}
+				message=message.substring(0, message.length()-1);
+				System.out.println(message);
+				writer.println(message);
+				writer.println("end");
+				//Send weapon parts spawn locations
+				writer.println("weaponPartLocations");
+				locations =server.getWeaponPartLocations().getBuffer().values();
+				message="";
+				for (Location location:locations){
+					position = location.get();
+					for(float coordinate:position){
+						message+=String.valueOf(coordinate)+",";
+					}
+					message=message.substring(0, message.length()-1);
+					message+="_";
+				}
+				message=message.substring(0, message.length()-1);
+				System.out.println(message);
+				writer.println(message);
+				writer.println("end");
+				
+				//TODO Send spawn positions and angle
+				
+				idCount++;
 				
 			}catch(Exception e){
 				Gdx.app.log(TAG, "Error creating server socket: " +e.getMessage());
 			}
 		}
+		
 		//Start a listener thread for each client socket connected
 		for (BufferedReader read:server.getServerInput()){
 			Thread thread = new serverListener(read);
 			thread.start();
 		}
-		
 	}
 }
 

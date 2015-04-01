@@ -22,7 +22,7 @@ public class MultiplayerSeissonInfo {
 	public int mState=1000;
 
 	public boolean isServer;
-	public InetAddress serverAddress;
+	public String serverAddress;
 	public int serverPort=0;
 	
 	private MMServer server;

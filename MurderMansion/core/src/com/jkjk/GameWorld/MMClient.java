@@ -7,22 +7,21 @@ import java.io.PrintWriter;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.Socket;
+import java.util.ArrayList;
+import java.util.concurrent.ConcurrentHashMap;
 
 import com.badlogic.gdx.Gdx;
-import com.jkjk.MMHelpers.MultiplayerSeissonInfo;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.BodyDef;
-import com.badlogic.gdx.physics.box2d.CircleShape;
 import com.badlogic.gdx.physics.box2d.FixtureDef;
-import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
 import com.badlogic.gdx.utils.Array;
 import com.jkjk.GameObjects.WeaponPartSprite;
-import com.jkjk.GameObjects.Characters.Civilian;
 import com.jkjk.GameObjects.Characters.GameCharacter;
-import com.jkjk.GameObjects.Characters.Murderer;
+import com.jkjk.GameObjects.Characters.GameCharacterFactory;
 import com.jkjk.GameObjects.Items.ItemSprite;
 import com.jkjk.GameObjects.Weapons.WeaponSprite;
-import com.jkjk.Host.MMServer;
+import com.jkjk.Host.Location;
+import com.jkjk.Host.SpawnBuffer;
 
 /**
  * @author LeeJunXiang MMClient listens to input from the Server by the host. Inputs include sharable data
@@ -36,20 +35,36 @@ import com.jkjk.Host.MMServer;
  * 
  */
 public class MMClient {
-<<<<<<< HEAD
 	private final String TAG = "MMClient"; 
-	private final MultiplayerSeissonInfo info;
+//	private final MultiplayerSeissonInfo info;
+	
+	private GameWorld gWorld;
+	private GameRenderer renderer;
+	
+	private String serverAddress;
+	private int serverPort;
 	
 	public Socket clientSocket;
 	private BufferedReader clientInput;
 	private PrintWriter clientOutput;
-
-	private GameWorld gWorld;
-	private GameRenderer renderer;
-
-	private Array<GameCharacter> playerList;
+	
 	private int numOfPlayers;
-	private int id;
+	private int id;	
+	private int murdererId;
+	private ArrayList<GameCharacter> playerList;
+
+	private final ConcurrentHashMap<String, Integer> playerIsAlive; // If 1 -> true; If 0 -> false;
+	private final ConcurrentHashMap<String, Integer> playerIsStun; // If 1 -> true; If 0 -> false;
+	private final ConcurrentHashMap<String, Integer> playerType; // If 0 -> murderer; If 1 -> civilian; If 2
+																	// -> Ghost
+	private final ConcurrentHashMap<String, float[]> playerPosition;
+	private final ConcurrentHashMap<String, Float> playerAngle;
+
+	// private ArrayList<Location> playerLocations;
+	private final SpawnBuffer itemLocations;
+	private final SpawnBuffer weaponLocations;
+	private final SpawnBuffer weaponPartLocations;
+	private final SpawnBuffer trapLocations;
 
 	private BodyDef bdef;
 	private Body body;
@@ -62,32 +77,117 @@ public class MMClient {
 	 *            GameWorld instance
 	 * @param renderer
 	 *            GameRenderer instance
+	 * @throws Exception 
 	 */
-	public MMClient(GameWorld gWorld, GameRenderer renderer, MultiplayerSeissonInfo info) {
-		// Attempt to connect to Server
-		this.server = server;
+	public MMClient(GameWorld gWorld, GameRenderer renderer, String serverAddress, int serverPort) throws Exception {
+
 		this.gWorld = gWorld;
 		this.renderer = renderer;
-		this.info=info;
-		id = 0;		
-
-		playerList = new Array<GameCharacter>();
-		numOfPlayers = server.getNumOfPlayers();
-
-		gWorld.createPlayer(server.getPlayerType().get("Player " + id));
-
-		for (int i = 1; i < numOfPlayers; i++) {
-			createOpponents(server.getPlayerType().get("Player " + i));
+		this.serverAddress=serverAddress;
+		this.serverPort=serverPort;
+				
+		//Connect to server
+		initClientSocket(this.serverAddress, this.serverPort);
+		
+		//Receive initialzation parameters
+		numOfPlayers=Integer.parseInt(clientInput.readLine());
+		id=Integer.parseInt(clientInput.readLine());
+		murdererId=Integer.parseInt(clientInput.readLine());
+		
+		System.out.println("Creating item spawn buffers");
+		itemLocations = new SpawnBuffer(numOfPlayers*3);
+		weaponLocations = new SpawnBuffer(numOfPlayers);
+		weaponPartLocations = new SpawnBuffer(numOfPlayers*2);
+		trapLocations = new SpawnBuffer(numOfPlayers);
+		
+		String message;
+		//Receive item locations
+		if((message=clientInput.readLine()).equals("itemLocations")){
+			while (!(message=clientInput.readLine()).equals("end")){
+				String[] locations=message.split("_");
+				for (String coordinates:locations){
+					String[] XY = coordinates.split(",");
+					itemLocations.produce(new Location(new float[] {Float.parseFloat(XY[0]),Float.parseFloat(XY[1])}));
+				}
+			}
 		}
-
-		createTrap(); // FOR DEBUG PURPOSE
-		for (int i = 0; i < numOfPlayers * 2; i++) {
-			createItems(1060 - (i * 40), 490);
-			createWeapons(1060 - (i * 40), 460);
-			createWeaponParts(1060 - (i * 40), 430);
+		//Receive weapon locations
+		if((message=clientInput.readLine()).equals("weaponLocations")){
+			while (!(message=clientInput.readLine()).equals("end")){
+				String[] locations=message.split("_");
+				for (String coordinates:locations){
+					String[] XY = coordinates.split(",");
+					weaponLocations.produce(new Location(new float[] {Float.parseFloat(XY[0]),Float.parseFloat(XY[1])}));
+				}
+			}
 		}
+		//Receive weaponPart locations
+		if((message=clientInput.readLine()).equals("weaponPartLocations")){
+			while (!(message=clientInput.readLine()).equals("end")){
+				String[] locations=message.split("_");
+				for (String coordinates:locations){
+					String[] XY = coordinates.split(",");
+					weaponPartLocations.produce(new Location(new float[] {Float.parseFloat(XY[0]),Float.parseFloat(XY[1])}));
+				}
+			}
+		}
+		System.out.println("Number of players before: "+numOfPlayers);
+		playerList= new ArrayList<GameCharacter>(numOfPlayers);
+		System.out.println("Creating concurrent hashmaps for player condition.");
+		playerType = new ConcurrentHashMap<String, Integer>(numOfPlayers);
+		playerIsAlive = new ConcurrentHashMap<String, Integer>(numOfPlayers);
+		playerIsStun = new ConcurrentHashMap<String, Integer>(numOfPlayers);
+		playerPosition = new ConcurrentHashMap<String, float[]>(numOfPlayers);
+		playerAngle = new ConcurrentHashMap<String, Float>(numOfPlayers);
+		
+		initPlayers();
+		
+		//Create and start extra thread that reads any incoming messages
+		Thread thread = new clientListener(clientInput);
+		thread.start();
+		
+		//Create player's body
 
-		initClientSocket(info.serverAddress, info.serverPort);
+//
+//		for (int i = 0; i < numOfPlayers; i++) {
+//			//Create body for opponents, if not your id
+//			if (i!=this.id){
+//				createOpponents(this.getPlayerType().get("Player " + i));
+//			}			
+//		}
+
+//		createTrap(); // FOR DEBUG PURPOSE
+//		for (int i = 0; i < numOfPlayers * 2; i++) {
+//			createItems(1060 - (i * 40), 490);
+//			createWeapons(1060 - (i * 40), 460);
+//			createWeaponParts(1060 - (i * 40), 430);
+//		}
+
+	}
+	
+	private void initPlayers() {
+		GameCharacterFactory factory = new GameCharacterFactory();
+		boolean isPlayer;
+		System.out.println("Number of players "+numOfPlayers);
+		System.out.println("Player list size "+playerList.size());
+		for (int i = 0; i < numOfPlayers; i++) {
+			playerIsAlive.put("Player " + i, 1);
+			playerIsStun.put("Player " + i, 0);
+			if (i == id) {
+				playerType.put("Player " + i, 0);
+				playerList.add(	gWorld.createPlayer(playerType.get("Player " + id)));
+			} else {
+				if(i== murdererId){
+					playerList.add(factory.createCharacter("Murderer", i, gWorld, false));
+				}else{
+					playerList.add(factory.createCharacter("Civilian", i, gWorld, false));
+				}
+				playerType.put("Player " + i, 1);
+				
+			}
+			playerPosition.put("Player " + i, new float[] { 1010 - ((i + 1) * 40), 515 });
+			playerAngle.put("Player " + i, 0f);
+		}
 	}
 
 	/**
@@ -112,37 +212,37 @@ public class MMClient {
 		}
 	}
 
-	// FOR DEBUG PURPOSE
-	private void createTrap() {
-		bdef = new BodyDef();
-		fdef = new FixtureDef();
-		bdef.type = BodyType.StaticBody;
-		bdef.position.set(1010, 570);
-		body = gWorld.getWorld().createBody(bdef);
-
-		CircleShape shape = new CircleShape();
-		shape.setRadius(10);
-		fdef.shape = shape;
-		fdef.isSensor = true;
-		fdef.filter.maskBits = 1;
-
-		body.createFixture(fdef).setUserData("trap");
-	}
-
-	// FOR DEBUG PURPOSE
-	private void createOpponents(int i) {
-		if (i == 0) {
-			playerList.add((Murderer) gWorld.getGameCharFac().createCharacter("Murderer", i, gWorld,
-					false));
-			playerList.get(playerList.size - 1).getBody().setType(BodyType.KinematicBody);
-			playerList.get(playerList.size - 1).spawn(1010 - (((playerList.size - 1) + 1) * 40), 515, 0);
-		} else {
-			playerList.add((Civilian) gWorld.getGameCharFac().createCharacter("Civilian", i, gWorld,
-					false));
-			playerList.get(playerList.size - 1).getBody().setType(BodyType.KinematicBody);
-			playerList.get(playerList.size - 1).spawn(1010 - (((playerList.size - 1) + 1) * 40), 515, 0);
-		}
-	}
+//	// FOR DEBUG PURPOSE
+//	private void createTrap() {
+//		bdef = new BodyDef();
+//		fdef = new FixtureDef();
+//		bdef.type = BodyType.StaticBody;
+//		bdef.position.set(1010, 570);
+//		body = gWorld.getWorld().createBody(bdef);
+//
+//		CircleShape shape = new CircleShape();
+//		shape.setRadius(10);
+//		fdef.shape = shape;
+//		fdef.isSensor = true;
+//		fdef.filter.maskBits = 1;
+//
+//		body.createFixture(fdef).setUserData("trap");
+//	}
+//
+//	// FOR DEBUG PURPOSE
+//	private void createOpponents(int i) {
+//		if (i == 0) {
+//			playerList.add((Murderer) gWorld.getGameCharFac().createCharacter("Murderer", i, gWorld,
+//					false));
+//			playerList.get(playerList.size - 1).getBody().setType(BodyType.KinematicBody);
+//			playerList.get(playerList.size - 1).spawn(1010 - (((playerList.size - 1) + 1) * 40), 515, 0);
+//		} else {
+//			playerList.add((Civilian) gWorld.getGameCharFac().createCharacter("Civilian", i, gWorld,
+//					false));
+//			playerList.get(playerList.size - 1).getBody().setType(BodyType.KinematicBody);
+//			playerList.get(playerList.size - 1).spawn(1010 - (((playerList.size - 1) + 1) * 40), 515, 0);
+//		}
+//	}
 
 	/**
 	 * Create item sprites on the map.
@@ -193,7 +293,7 @@ public class MMClient {
 	/**
 	 * @return Obtain list of players.
 	 */
-	public Array<GameCharacter> getPlayerList() {
+	public ArrayList<GameCharacter> getPlayerList() {
 		return playerList;
 	}
 
@@ -202,42 +302,39 @@ public class MMClient {
 	 */
 	private void playerTransform() {
 		for (int i = 0; i < numOfPlayers; i++) {
-			playerList
-					.get(i)
-					.getBody()
-					.setTransform(server.getPlayerPosition().get("Player " + i)[0],
-							server.getPlayerPosition().get("Player " + i)[0],
-							server.getPlayerAngle().get("Player " + i));
+			playerList.get(i).getBody().setTransform(playerPosition.get("Player " + i)[0],
+							playerPosition.get("Player " + i)[0],
+							playerAngle.get("Player " + i));
 		}
 	}
 
-	/**
-	 * Updates the locations of all items on the map.
-	 */
-	private void itemLocations() {
-		server.getItemLocations();
-	}
-
-	/**
-	 * Updates the locations of all weapon on the map.
-	 */
-	private void weaponLocations() {
-		server.getWeaponLocations();
-	}
-
-	/**
-	 * Updates the locations of all weapon parts on the map.
-	 */
-	private void weaponPartLocations() {
-		server.getWeaponPartLocations();
-	}
-
-	/**
-	 * Updates the locations of all traps on the map.
-	 */
-	private void trapLocations() {
-		server.getTrapLocations();
-	}
+//	/**
+//	 * Updates the locations of all items on the map.
+//	 */
+//	private void itemLocations() {
+//		return itemLocations;
+//	}
+//
+//	/**
+//	 * Updates the locations of all weapon on the map.
+//	 */
+//	private void weaponLocations() {
+//		server.getWeaponLocations();
+//	}
+//
+//	/**
+//	 * Updates the locations of all weapon parts on the map.
+//	 */
+//	private void weaponPartLocations() {
+//		server.getWeaponPartLocations();
+//	}
+//
+//	/**
+//	 * Updates the locations of all traps on the map.
+//	 */
+//	private void trapLocations() {
+//		server.getTrapLocations();
+//	}
 
 	/**
 	 * Produces knife body from the player that used the knife.
@@ -289,20 +386,24 @@ public class MMClient {
 	
 	/**
 	 * Precondition: Message containing socket address received from server
-	 * Postcondition: MultiplayerSeissonInfo.socket == ClientSocket 
+	 * @throws Exception 
 	 */
-	public void initClientSocket(InetAddress address, int port){
+	public void initClientSocket(String address, int port) throws Exception{
 		if (address != null){
-			Thread thread = new clientConnectThread(address,port,this);
-			thread.start();
-			//TODO change multiplayerroomstatus to PLAY once connected
+			clientSocket=new Socket();
+			//Create InetSocketAddress and connect to server socket
+			InetAddress addr = InetAddress.getByName(address);
+			InetSocketAddress iAddress = new InetSocketAddress(addr,port);
+			clientSocket.connect(iAddress);
+			
+			setClientInput(new BufferedReader(new InputStreamReader(clientSocket.getInputStream())));
+			setClientOutput(new PrintWriter(clientSocket.getOutputStream(),true));
 			
 		} else {
 			Gdx.app.log(TAG, "Server Address/Port is null");
 			//TODO Request information from server again
 		}		
 	}
-	
 	
 	public void closeSocket() throws IOException{
 			clientInput.close();
@@ -311,45 +412,6 @@ public class MMClient {
 	}
 }
 
-/**
- * Thread used to connect to server socket
- * Precondition: GPS room is in play mode && Server has sent out SocketAddress to clients
- * @author Wong
- *
- */
-class clientConnectThread extends Thread{
-	private final String TAG = "clientConnectThread";
-	private InetAddress address;
-	private int port;
-	private MMClient client;
-	
-	
-	public clientConnectThread(InetAddress address, int port, MMClient client){
-		this.address=address;
-		this.port = port;
-		this.client=client;
-	}
-	
-	@Override
-	public void run(){
-		try{
-			client.clientSocket=new Socket();
-			//Create InetSocketAddress then connect to server socket
-			InetSocketAddress addr = new InetSocketAddress(address,port);
-			client.clientSocket.connect(addr);
-			client.setClientInput(new BufferedReader(new InputStreamReader(client.clientSocket.getInputStream())));
-			client.setClientOutput(new PrintWriter(client.clientSocket.getOutputStream(),true));
-			
-			//Create and start extra thread that reads any incoming messages
-			Thread thread = new clientListener(client.getClientInput());
-			thread.start();
-			
-		}catch(Exception e){
-			Gdx.app.log(TAG, "Error connecting to server socket: " +e.getMessage());
-			//TODO Do something about connection error!
-		}
-	}
-}
 
 class clientListener extends Thread{
 	private BufferedReader input;
@@ -369,8 +431,7 @@ class clientListener extends Thread{
 				}
 			}catch(Exception e){
 				Gdx.app.log(TAG, "Error while reading: "+e.getMessage());
-			}
-			
+			}			
 		}
 	}
 }

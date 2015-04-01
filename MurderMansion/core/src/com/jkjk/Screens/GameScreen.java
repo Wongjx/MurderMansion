@@ -6,6 +6,7 @@ import com.jkjk.GameWorld.GameWorld;
 import com.jkjk.GameWorld.HudRenderer;
 import com.jkjk.GameWorld.MMClient;
 import com.jkjk.Host.MMServer;
+import com.jkjk.MMHelpers.MultiplayerSeissonInfo;
 import com.jkjk.MurderMansion.MurderMansion;
 
 public class GameScreen implements Screen {
@@ -17,15 +18,16 @@ public class GameScreen implements Screen {
 	private MMServer server;
 	private MMClient client;
 
-	public GameScreen(MurderMansion game, float gameWidth, float gameHeight) {
-		gWorld = new GameWorld(gameWidth, gameHeight);
-		renderer = new GameRenderer(gWorld, gameWidth, gameHeight);
+	public GameScreen(MurderMansion game, float gameWidth, float gameHeight, GameWorld world, GameRenderer renderer) {
 
-		server = new MMServer(4);
-		MMServerThread serverThread = new MMServerThread(server);
-		serverThread.start();
+		this.gWorld=world;
+		this.renderer=renderer;
+		this.client=game.mMultiplayerSeisson.getClient();
+		
+//		MMServerThread serverThread = new MMServerThread(game.mMultiplayerSeisson.getServer());
+//		serverThread.start();
 
-		client = new MMClient(server, gWorld, renderer);
+//		client = new MMClient(server, gWorld, renderer);
 		hudRenderer = new HudRenderer(gWorld, gameWidth, gameHeight);
 	}
 
