@@ -14,7 +14,7 @@ import com.jkjk.MMHelpers.AssetLoader;
 
 /**
  * @author LeeJunXiang
- *
+ * 
  */
 public class WeaponPartSprite {
 
@@ -32,14 +32,12 @@ public class WeaponPartSprite {
 		bdef.type = BodyType.StaticBody;
 		body = gWorld.getWorld().createBody(bdef);
 
-		
 		CircleShape shape = new CircleShape();
 		shape.setRadius(9);
 		fdef.shape = shape;
 		fdef.isSensor = true;
 		fdef.filter.maskBits = 1;
 		body.createFixture(fdef).setUserData("weapon part");
-//		body.setUserData(AssetLoader.shotgunItemTexture);
 	}
 
 	public void spawn(float x, float y, float angle) {
@@ -48,12 +46,15 @@ public class WeaponPartSprite {
 		posY = y;
 	}
 
+	public float[] getLocation() {
+		return new float[] { posX, posY };
+	}
+
 	public void render(SpriteBatch batch) {
-		if (gWorld.getPlayer().lightContains(posX, posY)){
+		if (gWorld.getPlayer().lightContains(posX, posY)) {
 			batch.begin();
-			//batch.draw(AssetLoader.shotgunItemTexture, posX, posX);
+			batch.draw(AssetLoader.shotgunPartTexture, posX-12, posY-12, 25, 25);
 			batch.end();
-			//System.out.println("Render Weapon Part Sprite");
 		}
 	}
 }

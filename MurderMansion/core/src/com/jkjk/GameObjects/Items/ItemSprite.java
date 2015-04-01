@@ -31,7 +31,6 @@ public class ItemSprite {
 		fdef.isSensor = true;
 		fdef.filter.maskBits = 1;
 		body.createFixture(fdef).setUserData("item");
-//		body.setUserData(AssetLoader.itemTexture);
 
 	}
 
@@ -48,9 +47,11 @@ public class ItemSprite {
 	public void render(SpriteBatch batch) {
 		if (gWorld.getPlayer().lightContains(posX, posY)) {
 			batch.begin();
-			//batch.draw(AssetLoader.itemTexture, posX, posX);
+			if (gWorld.getPlayer().getType().equals("Murderer"))
+				batch.draw(AssetLoader.trapSpriteTexture, posX-12, posY-12, 25, 25);
+			else
+				batch.draw(AssetLoader.disarmTrapSpriteTexture, posX-12, posY-12, 25, 25);
 			batch.end();
-			// System.out.println("Render Item Sprite");
 		}
 	}
 

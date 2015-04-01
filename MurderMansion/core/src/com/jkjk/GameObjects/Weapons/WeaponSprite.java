@@ -31,7 +31,6 @@ public class WeaponSprite {
 		fdef.isSensor = true;
 		fdef.filter.maskBits = 1;
 		body.createFixture(fdef).setUserData("weapon");
-//		body.setUserData(AssetLoader.weaponTexture);
 	}
 
 	public void spawn(float x, float y, float angle) {
@@ -47,9 +46,11 @@ public class WeaponSprite {
 	public void render(SpriteBatch batch) {
 		if (gWorld.getPlayer().lightContains(posX, posY)) {
 			batch.begin();
-			//batch.draw(AssetLoader.weaponTexture, posX, posX);
+			if (gWorld.getPlayer().getType().equals("Murderer"))
+				batch.draw(AssetLoader.knifeSpriteTexture, posX-12, posY-12, 25, 25);
+			else
+				batch.draw(AssetLoader.batSpriteTexture, posX-12, posY-12, 25, 25);
 			batch.end();
-			// System.out.println("Render Weapon Sprite");
 		}
 	}
 

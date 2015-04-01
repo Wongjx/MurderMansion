@@ -138,9 +138,9 @@ public class MMClient {
 	 *            Y coordinate on the map.
 	 */
 	private void createWeapons(float x, float y) {
-		WeaponSprite is = new WeaponSprite(gWorld);
-		gWorld.getWeaponList().put(new Vector2(x,y), is);
-		is.spawn(x, y, 0);
+		WeaponSprite ws = new WeaponSprite(gWorld);
+		gWorld.getWeaponList().put(new Vector2(x,y), ws);
+		ws.spawn(x, y, 0);
 	}
 
 	/**
@@ -152,9 +152,9 @@ public class MMClient {
 	 *            Y coordinate on the map.
 	 */
 	private void createWeaponParts(float x, float y) {
-		WeaponPartSprite is = new WeaponPartSprite(gWorld);
-		gWorld.getWeaponPartList().put(new Vector2(x,y), is);
-		is.spawn(x, y, 0);
+		WeaponPartSprite wps = new WeaponPartSprite(gWorld);
+		gWorld.getWeaponPartList().put(new Vector2(x,y), wps);
+		wps.spawn(x, y, 0);
 	}
 
 	/**

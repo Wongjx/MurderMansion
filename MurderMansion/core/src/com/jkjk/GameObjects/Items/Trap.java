@@ -11,7 +11,7 @@ import com.jkjk.GameWorld.GameWorld;
 import com.jkjk.MMHelpers.AssetLoader;
 
 public class Trap extends Item {
-	
+
 	private BodyDef bdef;
 	private Body body;
 	private FixtureDef fdef;
@@ -27,17 +27,19 @@ public class Trap extends Item {
 	@Override
 	public void startUse() {
 		System.out.println("Used trap");
-		
+
 		super.startUse();
 	}
-	
-	/* (non-Javadoc)
+
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see com.jkjk.GameObjects.Items.Item#endUse()
 	 */
 	@Override
 	public void endUse() {
 
-		//gWorld.getPlayer().getBody().setUserData(AssetLoader.murPlantTrapAnimation);
+		// gWorld.getPlayer().getBody().setUserData(AssetLoader.murPlantTrapAnimation);
 		playerPosition = gWorld.getPlayer().getBody().getPosition();
 		playerAngle = gWorld.getPlayer().getBody().getAngle();
 		bdef.type = BodyType.StaticBody;
@@ -46,22 +48,24 @@ public class Trap extends Item {
 
 		CircleShape shape = new CircleShape();
 		shape.setRadius(10);
-		shape.setPosition(new Vector2((float) (25f*Math.cos(playerAngle)),(float) (25f*Math.sin(playerAngle))));
+		shape.setPosition(new Vector2((float) (25f * Math.cos(playerAngle)), (float) (25f * Math
+				.sin(playerAngle))));
 		fdef.shape = shape;
 		fdef.isSensor = true;
 		fdef.filter.maskBits = 1;
-		
+
 		body.createFixture(fdef).setUserData("trap");
 		gWorld.getTrapList().put(body.getPosition(), this);
 		isCompleted = true;
 	}
-	
-	public void render(SpriteBatch batch){
+
+	public void render(SpriteBatch batch) {
 		if (gWorld.getPlayer().lightContains(body.getPosition().x, body.getPosition().y)) {
 			batch.begin();
-			batch.draw(AssetLoader.plantedTrapTexture, body.getPosition().x + 10, body.getPosition().y + 10,20,20);
+			batch.draw(AssetLoader.plantedTrapTexture, body.getPosition().x + 9, body.getPosition().y - 16,
+					32, 32);
 			batch.end();
 		}
 	}
-	
+
 }
