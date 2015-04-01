@@ -192,7 +192,7 @@ public class AssetLoader {
 		// CIVILIAN ANIMATIONS AND TEXTURE
 		civ_walk = new Texture(Gdx.files.internal("animation/walk_animation_civ.png"));
 		civ_walk.setFilter(TextureFilter.Nearest, TextureFilter.Nearest);
-		TextureRegion[] civilians = TextureRegion.split(civ_walk, 416, 500)[0];
+		TextureRegion[] civilians = TextureRegion.split(civ_walk, 1000, 1800)[0];
 		civAnimation = new Animation(0.9f, civilians);
 		civAnimation.setPlayMode(Animation.PlayMode.LOOP_PINGPONG);
 		civ_rest = civilians[1];
@@ -200,7 +200,7 @@ public class AssetLoader {
 		
 		civ_bat = new Texture(Gdx.files.internal("animation/bat_animation.png"));
 		civ_bat.setFilter(TextureFilter.Nearest, TextureFilter.Nearest);
-		TextureRegion[] bat_swing = TextureRegion.split(civ_bat, 416, 500)[0]; 
+		TextureRegion[] bat_swing = TextureRegion.split(civ_bat, 1000, 1800)[0]; 
 		civBatAnimation = new Animation(1f, bat_swing);
 		civBatAnimation.setPlayMode(PlayMode.NORMAL);
 		
