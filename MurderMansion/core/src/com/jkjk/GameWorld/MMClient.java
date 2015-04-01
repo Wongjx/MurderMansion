@@ -1,16 +1,19 @@
 package com.jkjk.GameWorld;
 
+import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.BodyDef;
-import com.badlogic.gdx.physics.box2d.CircleShape;
-import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
+import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.badlogic.gdx.utils.Array;
 import com.jkjk.GameObjects.WeaponPartSprite;
 import com.jkjk.GameObjects.Characters.Civilian;
 import com.jkjk.GameObjects.Characters.GameCharacter;
 import com.jkjk.GameObjects.Characters.Murderer;
 import com.jkjk.GameObjects.Items.ItemSprite;
+import com.jkjk.GameObjects.Items.Trap;
 import com.jkjk.GameObjects.Weapons.WeaponSprite;
 import com.jkjk.Host.MMServer;
 
@@ -63,12 +66,16 @@ public class MMClient {
 			createOpponents(server.getPlayerType().get("Player " + i));
 		}
 
-		createTrap(); // FOR DEBUG PURPOSE
 		for (int i = 0; i < numOfPlayers * 2; i++) {
 			createItems(1060 - (i * 40), 490);
 			createWeapons(1060 - (i * 40), 460);
 			createWeaponParts(1060 - (i * 40), 430);
 		}
+		
+
+		// DEBUG
+		Trap trap = new Trap(gWorld);
+		trap.endUse();
 	}
 
 	/**
@@ -87,27 +94,10 @@ public class MMClient {
 	/**
 	 * Renders the GameRenderer with other player's move.
 	 */
-	public void render() {
+	public void render(OrthographicCamera cam, SpriteBatch batch) {
 		for (GameCharacter gc : getPlayerList()) {
-			gc.render(renderer.getCam());
+			gc.render(cam, batch);
 		}
-	}
-
-	// FOR DEBUG PURPOSE
-	private void createTrap() {
-		bdef = new BodyDef();
-		fdef = new FixtureDef();
-		bdef.type = BodyType.StaticBody;
-		bdef.position.set(1010, 570);
-		body = gWorld.getWorld().createBody(bdef);
-
-		CircleShape shape = new CircleShape();
-		shape.setRadius(10);
-		fdef.shape = shape;
-		fdef.isSensor = true;
-		fdef.filter.maskBits = 1;
-
-		body.createFixture(fdef).setUserData("trap");
 	}
 
 	// FOR DEBUG PURPOSE
@@ -134,8 +124,9 @@ public class MMClient {
 	 *            Y coordinate on the map.
 	 */
 	private void createItems(float x, float y) {
-		gWorld.getItemList().add(new ItemSprite(gWorld));
-		gWorld.getItemList().get(gWorld.getItemList().size - 1).spawn(x, y, 0);
+		ItemSprite is = new ItemSprite(gWorld);
+		gWorld.getItemList().put(new Vector2(x,y), is);
+		is.spawn(x, y, 0);
 	}
 
 	/**
@@ -147,8 +138,9 @@ public class MMClient {
 	 *            Y coordinate on the map.
 	 */
 	private void createWeapons(float x, float y) {
-		gWorld.getWeaponList().add(new WeaponSprite(gWorld));
-		gWorld.getWeaponList().get(gWorld.getItemList().size - 1).spawn(x, y, 0);
+		WeaponSprite is = new WeaponSprite(gWorld);
+		gWorld.getWeaponList().put(new Vector2(x,y), is);
+		is.spawn(x, y, 0);
 	}
 
 	/**
@@ -160,8 +152,9 @@ public class MMClient {
 	 *            Y coordinate on the map.
 	 */
 	private void createWeaponParts(float x, float y) {
-		gWorld.getWeaponPartList().add(new WeaponPartSprite(gWorld));
-		gWorld.getWeaponPartList().get(gWorld.getItemList().size - 1).spawn(x, y, 0);
+		WeaponPartSprite is = new WeaponPartSprite(gWorld);
+		gWorld.getWeaponPartList().put(new Vector2(x,y), is);
+		is.spawn(x, y, 0);
 	}
 
 	/**

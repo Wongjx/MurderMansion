@@ -184,7 +184,7 @@ public class AssetLoader {
 		tiledMap = new TmxMapLoader().load("map/mansion2.tmx");
 		
 		// PICK UP ITEM TEXTURES
-		plantedTrapTexture = new Texture(Gdx.files.internal("gamehelper/trap.png"));
+		plantedTrapTexture = new Texture(Gdx.files.internal("gamehelper/planted_trap.png"));
 //		itemTexture = new Texture(Gdx.files.internal(""));
 //		weaponTexture = new Texture(Gdx.files.internal(""));
 //		shotgunItemTexture = new Texture(Gdx.files.internal(""));

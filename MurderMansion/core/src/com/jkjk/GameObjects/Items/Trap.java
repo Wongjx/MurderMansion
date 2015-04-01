@@ -1,15 +1,12 @@
 package com.jkjk.GameObjects.Items;
 
-import java.util.concurrent.Executor;
-import java.util.concurrent.Executors;
-
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.BodyDef;
+import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
 import com.badlogic.gdx.physics.box2d.CircleShape;
 import com.badlogic.gdx.physics.box2d.FixtureDef;
-import com.badlogic.gdx.physics.box2d.PolygonShape;
-import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
 import com.jkjk.GameWorld.GameWorld;
 import com.jkjk.MMHelpers.AssetLoader;
 
@@ -55,9 +52,16 @@ public class Trap extends Item {
 		fdef.filter.maskBits = 1;
 		
 		body.createFixture(fdef).setUserData("trap");
-		body.setUserData(AssetLoader.plantedTrapTexture);
+		gWorld.getTrapList().put(body.getPosition(), this);
 		isCompleted = true;
 	}
 	
+	public void render(SpriteBatch batch){
+		if (gWorld.getPlayer().lightContains(body.getPosition().x, body.getPosition().y)) {
+			batch.begin();
+			batch.draw(AssetLoader.plantedTrapTexture, body.getPosition().x + 10, body.getPosition().y + 10,20,20);
+			batch.end();
+		}
+	}
 	
 }

@@ -3,12 +3,12 @@
  */
 package com.jkjk.GameObjects;
 
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
 import com.badlogic.gdx.physics.box2d.CircleShape;
 import com.badlogic.gdx.physics.box2d.FixtureDef;
-import com.badlogic.gdx.physics.box2d.World;
 import com.jkjk.GameWorld.GameWorld;
 import com.jkjk.MMHelpers.AssetLoader;
 
@@ -39,7 +39,7 @@ public class WeaponPartSprite {
 		fdef.isSensor = true;
 		fdef.filter.maskBits = 1;
 		body.createFixture(fdef).setUserData("weapon part");
-		body.setUserData(AssetLoader.shotgunItemTexture);
+//		body.setUserData(AssetLoader.shotgunItemTexture);
 	}
 
 	public void spawn(float x, float y, float angle) {
@@ -48,8 +48,11 @@ public class WeaponPartSprite {
 		posY = y;
 	}
 
-	public void render() {
+	public void render(SpriteBatch batch) {
 		if (gWorld.getPlayer().lightContains(posX, posY)){
+			batch.begin();
+			//batch.draw(AssetLoader.shotgunItemTexture, posX, posX);
+			batch.end();
 			//System.out.println("Render Weapon Part Sprite");
 		}
 	}
