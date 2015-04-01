@@ -47,9 +47,9 @@ public class WeaponSprite {
 		if (gWorld.getPlayer().lightContains(posX, posY)) {
 			batch.begin();
 			if (gWorld.getPlayer().getType().equals("Murderer"))
-				batch.draw(AssetLoader.knifeSpriteTexture, posX-12, posY-12, 25, 25);
+				batch.draw(AssetLoader.knifeSpriteTexture, posX-12, posY-12, 24, 24);
 			else
-				batch.draw(AssetLoader.batSpriteTexture, posX-12, posY-12, 25, 25);
+				batch.draw(AssetLoader.batSpriteTexture, posX-12, posY-12, 24, 24);
 			batch.end();
 		}
 	}

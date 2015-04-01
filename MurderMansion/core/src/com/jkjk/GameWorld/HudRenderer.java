@@ -30,8 +30,8 @@ public class HudRenderer {
 	private Actor emptySlot_actor;
 	private Texture timebox;
 	private Actor timebox_actor;
-	private Texture civ_profile;
-	private Actor civ_profile_actor;
+	private Texture weapon_parts_counter;
+	private Actor counter_actor;
 	private BitmapFont font;
 	private String time;
 	private Float playTime;
@@ -73,7 +73,7 @@ public class HudRenderer {
 		stage = new Stage(new ExtendViewport(gameWidth, gameHeight, hudCam), batch);
 		stage.addActor(touchpad);
 		stage.addActor(getTimebox());
-		stage.addActor(getProfile());
+		stage.addActor(getWeaponPartsCounter());
 		stage.addActor(getEmptySlot());
 		abilityCheck();
 
@@ -108,7 +108,7 @@ public class HudRenderer {
 
 		// Top Left of the screen
 		timebox = AssetLoader.time;
-		civ_profile = AssetLoader.civ_profile;
+		weapon_parts_counter = AssetLoader.weapon_parts_counter;
 		font = AssetLoader.basker32blackTime;
 
 	}
@@ -123,8 +123,8 @@ public class HudRenderer {
 
 		batch.begin();
 		batch.draw(timebox, 55, 280);
-		batch.draw(civ_profile, 180, 282);
-		batch.draw(emptySlot, 485, 25);
+		batch.draw(weapon_parts_counter, 480, 235);
+		batch.draw(emptySlot, 460, 22, 150, 150);
 		font.draw(batch, getTime(), 75, 330);
 		batch.end();
 
@@ -168,13 +168,13 @@ public class HudRenderer {
 	/**
 	 * @return Actor for displaying the profile of the player.
 	 */
-	public Actor getProfile() {
+	public Actor getWeaponPartsCounter() {
 
-		civ_profile_actor = new Actor();
-		civ_profile_actor.draw(batch, 1);
-		civ_profile_actor.setName("civ profile actor");
+		counter_actor = new Actor();
+		counter_actor.draw(batch, 1);
+		counter_actor.setName("civ profile actor"); //what to put ah?
 
-		return civ_profile_actor;
+		return counter_actor;
 	}
 
 	/**
@@ -279,8 +279,8 @@ public class HudRenderer {
 	 */
 	public ImageButton getBat() {
 
-		x = 505;
-		y = 41;
+		x = 490;
+		y = 48;
 
 		weaponButton = new ImageButton(civ_bat);
 		weaponButton.setX(x);
@@ -310,8 +310,8 @@ public class HudRenderer {
 	 */
 	public ImageButton getShotgun() {
 
-		x = 505;
-		y = 41;
+		x = 490;
+		y = 48;
 
 		weaponButton = new ImageButton(civ_item);
 		weaponButton.setX(x);
@@ -341,8 +341,8 @@ public class HudRenderer {
 	 */
 	public ImageButton getDisarmTrap() {
 
-		x = 567;
-		y = 43;
+		x = 557;
+		y = 53;
 
 		itemButton = new ImageButton(civ_item);
 		itemButton.setX(x);
@@ -372,8 +372,8 @@ public class HudRenderer {
 	 */
 	public ImageButton getPanic() {
 
-		x = 528;
-		y = 100;
+		x = 517;
+		y = 113;
 
 		dashButton = new ImageButton(civ_dash);
 		dashButton.setX(x);
@@ -398,8 +398,8 @@ public class HudRenderer {
 	 * @return Actor for Knife slot
 	 */
 	public ImageButton getKnife() {
-		x = 505;
-		y = 41;
+		x = 490;
+		y = 498;
 
 		itemButton = new ImageButton(mur_knife);
 		itemButton.setX(x);

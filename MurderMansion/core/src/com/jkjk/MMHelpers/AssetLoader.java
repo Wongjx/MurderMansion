@@ -62,7 +62,7 @@ public class AssetLoader {
 	public static TiledMap tiledMap;
 
 	public static Texture time;
-	public static Texture civ_profile;
+	public static Texture weapon_parts_counter;
 
 	public static TextureRegion mur_rest;
 	public static TextureRegion civ_rest;
@@ -178,8 +178,8 @@ public class AssetLoader {
 		// TIMER
 		time = new Texture(Gdx.files.internal("HUD/countdown.png"));
 		time.setFilter(TextureFilter.Linear, TextureFilter.Linear);
-		civ_profile = new Texture(Gdx.files.internal("HUD/civ_profile.png"));
-		civ_profile.setFilter(TextureFilter.Linear, TextureFilter.Linear);
+		weapon_parts_counter = new Texture(Gdx.files.internal("HUD/weapon_parts_counter.png"));
+		weapon_parts_counter.setFilter(TextureFilter.Linear, TextureFilter.Linear);
 
 		// MAP
 		tiledMap = new TmxMapLoader().load("map/mansion2.tmx");
@@ -224,7 +224,7 @@ public class AssetLoader {
 		touchpadSkin.dispose();
 		menuBackground.dispose();
 		time.dispose();
-		civ_profile.dispose();
+		weapon_parts_counter.dispose();
 		tiledMap.dispose();
 		emptySlot.dispose();
 		civ_weapon_bat_tex.dispose();
