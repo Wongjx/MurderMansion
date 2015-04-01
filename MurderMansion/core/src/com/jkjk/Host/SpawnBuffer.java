@@ -1,19 +1,19 @@
 package com.jkjk.Host;
 
-import java.util.ArrayList;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class SpawnBuffer {
 	private int capacity;
-	private ArrayList<Location> buffer;
+	private ConcurrentHashMap<String, Location> buffer;
 
 	public SpawnBuffer(int capacity) {
 		this.capacity = capacity;
-		buffer = new ArrayList<Location>(capacity);
+		buffer = new ConcurrentHashMap<String, Location>(capacity);
 	}
 
 	public void produce(Location location) {
 		if (buffer.size() < capacity) {
-			buffer.add(location);
+			buffer.put(location.toString(), new Location(location.get()));
 			notify();
 		}
 
@@ -21,7 +21,7 @@ public class SpawnBuffer {
 
 	public void consume(Location location) {
 		if (buffer.size() > 0) {
-			buffer.remove(location);
+			buffer.remove(location.toString());
 			notify();
 		}
 	}
@@ -34,7 +34,7 @@ public class SpawnBuffer {
 		return buffer.size() == capacity;
 	}
 
-	public ArrayList<Location> getBuffer() {
+	public ConcurrentHashMap<String, Location> getBuffer() {
 			return buffer;
 	}
 }

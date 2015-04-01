@@ -4,8 +4,9 @@ import com.badlogic.gdx.Screen;
 import com.jkjk.GameWorld.GameRenderer;
 import com.jkjk.GameWorld.GameWorld;
 import com.jkjk.GameWorld.HudRenderer;
+import com.jkjk.GameWorld.MMClient;
 import com.jkjk.Host.MMServer;
-import com.jkjk.MurderMansion.murdermansion;
+import com.jkjk.MurderMansion.MurderMansion;
 
 public class GameScreen implements Screen {
 	private GameWorld gWorld;
@@ -14,20 +15,18 @@ public class GameScreen implements Screen {
 	private float runTime;
 
 	private MMServer server;
+	private MMClient client;
 
-	public GameScreen(murdermansion game, float gameWidth, float gameHeight) {
-		if (game.mMultiplayerSeisson.mState == game.mMultiplayerSeisson.ROOM_PLAY) {
-			// gWorld = new mGameWorld(gameWidth, gameHeight,game);
-		} else {
-			gWorld = new GameWorld(gameWidth, gameHeight);
-		}
-
+	public GameScreen(MurderMansion game, float gameWidth, float gameHeight) {
+		gWorld = new GameWorld(gameWidth, gameHeight);
 		renderer = new GameRenderer(gWorld, gameWidth, gameHeight);
-		hudRenderer = new HudRenderer(gWorld, gameWidth, gameHeight);
 
 		server = new MMServer(4);
 		MMServerThread serverThread = new MMServerThread(server);
 		serverThread.start();
+
+		client = new MMClient(server, gWorld, renderer);
+		hudRenderer = new HudRenderer(gWorld, gameWidth, gameHeight);
 	}
 
 	@Override
@@ -39,8 +38,8 @@ public class GameScreen implements Screen {
 	@Override
 	public void render(float delta) {
 		runTime += delta;
-		gWorld.update(delta);
-		renderer.render(delta, runTime);
+		gWorld.update(delta, client);
+		renderer.render(delta, runTime, client);
 		hudRenderer.render(delta);
 
 	}
@@ -84,7 +83,7 @@ class MMServerThread extends Thread {
 	}
 
 	public void run() {
-		while (true){
+		while (true) {
 			try {
 				Thread.sleep(2);
 			} catch (InterruptedException e) {

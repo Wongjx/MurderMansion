@@ -48,14 +48,15 @@ public abstract class GameCharacter {
 	private float deathPositionY;
 
 	private int id;
-
-	protected SpriteBatch batch;
+	private int weaponUses;
+	
 	protected float runTime;
 	protected float ambientLightValue;
 
 	public GameCharacter(String type, int id, GameWorld gWorld, boolean isPlayer) {
 		this.isPlayer = isPlayer;
 		maxVelocity = 64;
+		weaponUses = 3;
 		touchpad = AssetLoader.touchpad;
 		stunDuration = new Duration(5000);
 
@@ -67,7 +68,6 @@ public abstract class GameCharacter {
 		this.deathPositionX = 0;
 		this.deathPositionY = 0;
 
-		batch = new SpriteBatch();
 		rayHandler = new RayHandler(gWorld.getWorld());
 		ambientLightValue = 0.05f;
 		rayHandler.setAmbientLight(ambientLightValue);
@@ -164,7 +164,10 @@ public abstract class GameCharacter {
 	public void useWeapon() {
 		if (!weapon.isOnCooldown()) {
 			weapon.use();
-			weapon.cooldown();
+			weaponUses--;
+			if (weaponUses > 0) {
+				weapon.cooldown();
+			}
 		}
 	}
 
@@ -217,8 +220,13 @@ public abstract class GameCharacter {
 
 	public void update() {
 		if (isPlayer) {
-			if (weapon != null)
+			if (weapon != null) {
 				weapon.update();
+				if (weapon.isCompleted() && weaponUses == 0) {
+					weapon = null;
+					weaponChange = true;
+				}
+			}
 			if (item != null) {
 				item.update();
 				if (!item.inUse() && item.isCompleted()) {
@@ -234,7 +242,7 @@ public abstract class GameCharacter {
 		}
 	}
 
-	public void render(OrthographicCamera cam) {
+	public void render(OrthographicCamera cam, SpriteBatch batch) {
 		if (isPlayer) {
 			runTime += Gdx.graphics.getRawDeltaTime();
 
@@ -298,8 +306,8 @@ public abstract class GameCharacter {
 		}
 		body.setLinearVelocity(touchpadX * maxVelocity, touchpadY * maxVelocity);
 	}
-	
-	public void setPosition(float x, float y, float angle){
+
+	public void setPosition(float x, float y, float angle) {
 		body.setTransform(x, y, angle);
 	}
 

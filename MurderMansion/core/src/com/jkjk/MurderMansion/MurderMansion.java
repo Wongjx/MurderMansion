@@ -8,7 +8,7 @@ import com.jkjk.MMHelpers.MultiplayerSeissonInfo;
 import com.jkjk.MMHelpers.SocketHelper;
 import com.jkjk.Screens.MenuScreen;
 
-public class murdermansion extends Game {
+public class MurderMansion extends Game {
 	public ActionResolver actionResolver;
 	public MultiplayerSeissonInfo mMultiplayerSeisson;
 	public SocketHelper socketHelper;
@@ -19,7 +19,7 @@ public class murdermansion extends Game {
 	public static final int SCALE = 2;
 	
 
-	public murdermansion(ActionResolver actionResolver, MultiplayerSeissonInfo mMultiplayerSeisson,SocketHelper sock){
+	public MurderMansion(ActionResolver actionResolver, MultiplayerSeissonInfo mMultiplayerSeisson,SocketHelper sock){
 		this.actionResolver=actionResolver;
 		this.mMultiplayerSeisson=mMultiplayerSeisson; 
 		this.socketHelper= sock;

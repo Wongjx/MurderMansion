@@ -5,6 +5,7 @@ import box2dLight.PointLight;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.Animation;
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
 import com.badlogic.gdx.physics.box2d.CircleShape;
@@ -50,10 +51,9 @@ public class Ghost extends GameCharacter {
 	}
 
 	@Override
-	public void render(OrthographicCamera cam) {
+	public void render(OrthographicCamera cam, SpriteBatch batch) {
 		runTime += Gdx.graphics.getRawDeltaTime();
 		currentAnimation = (Animation) body.getUserData();
-		batch.setProjectionMatrix(cam.combined);
 		batch.begin();
 		batch.draw(AssetLoader.civ_dead_lines, this.get_deathPositionX() - 33 / 2, this.get_deathPositionY() - 32 / 2, 33, 32);
 		batch.draw(AssetLoader.ghost_float, body.getPosition().x-16, 
@@ -61,7 +61,7 @@ public class Ghost extends GameCharacter {
 				//(float) (body.getAngle()*180/Math.PI)-90);
 		batch.end();
 
-		super.render(cam);
+		super.render(cam, batch);
 
 	}
 

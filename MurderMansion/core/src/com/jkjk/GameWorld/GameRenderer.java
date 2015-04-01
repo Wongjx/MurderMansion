@@ -3,6 +3,7 @@ package com.jkjk.GameWorld;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TiledMapRenderer;
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
@@ -10,6 +11,7 @@ import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
 import com.jkjk.GameObjects.WeaponPartSprite;
 import com.jkjk.GameObjects.Characters.GameCharacter;
 import com.jkjk.GameObjects.Items.ItemSprite;
+import com.jkjk.GameObjects.Items.Trap;
 import com.jkjk.GameObjects.Weapons.WeaponSprite;
 import com.jkjk.MMHelpers.AssetLoader;
 
@@ -31,6 +33,8 @@ public class GameRenderer {
 	// Game Assets
 	private TiledMap tiledMap; // Loaded map
 	private TiledMapRenderer tiledMapRenderer; // Renders the map
+
+	private SpriteBatch batch;
 
 	/**
 	 * Constructs the link from the Box2D world created in GameWorld to GameRenderer. Allows rendering of the
@@ -54,6 +58,8 @@ public class GameRenderer {
 		tiledMap = AssetLoader.tiledMap;
 		tiledMapRenderer = new OrthogonalTiledMapRenderer(tiledMap);
 
+		batch = new SpriteBatch();
+
 	}
 
 	/**
@@ -64,30 +70,34 @@ public class GameRenderer {
 	 * @param runTime
 	 *            The total runtime since start.
 	 */
-	public void render(float delta, float runTime) {
+	public void render(float delta, float runTime, MMClient client) {
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT); // Clears screen everytime it renders
 
 		tiledMapRenderer.setView(cam);
 		tiledMapRenderer.render();
-		
-		for (ItemSprite iS: gWorld.getItemList()){
-			iS.render();
+
+		batch.setProjectionMatrix(cam.combined);
+
+		client.render(cam, batch);
+
+		for (ItemSprite iS : gWorld.getItemList().values()) {
+			iS.render(batch);
+		}
+
+		for (WeaponSprite wS : gWorld.getWeaponList().values()) {
+			wS.render(batch);
+		}
+
+		for (WeaponPartSprite wPS : gWorld.getWeaponPartList().values()) {
+			wPS.render(batch);
 		}
 		
-		for (WeaponSprite wS: gWorld.getWeaponList()){
-			wS.render();
-		}
-		
-		for (WeaponPartSprite wPS: gWorld.getWeaponPartList()){
-			wPS.render();
-		}
-		
-		for (GameCharacter gc: gWorld.getPlayerList()){
-			gc.render(cam);
+		for (Trap trap : gWorld.getTrapList().values()) {
+			trap.render(batch);
 		}
 
 		if (gWorld.getPlayer().isAlive()) {
-			gWorld.getPlayer().render(cam);
+			gWorld.getPlayer().render(cam, batch);
 		}
 		cam.update(); // Update cam
 

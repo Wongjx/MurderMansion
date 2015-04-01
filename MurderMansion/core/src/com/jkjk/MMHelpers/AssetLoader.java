@@ -17,18 +17,18 @@ import com.badlogic.gdx.scenes.scene2d.ui.Touchpad;
 import com.badlogic.gdx.scenes.scene2d.ui.Touchpad.TouchpadStyle;
 import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
-import com.jkjk.MurderMansion.murdermansion;
+import com.jkjk.MurderMansion.MurderMansion;
 
 public class AssetLoader {
-	
-	public static Texture  menuBackground;
-	
+
+	public static Texture menuBackground;
+
 	public static Touchpad touchpad;
 	public static TouchpadStyle touchpadStyle;
 	public static Drawable touchBackground;
 	public static Drawable touchKnob;
 	public static Texture emptySlot;
-	
+
 	// CIVILIAN
 	public static Texture civ_weapon_bat_tex;
 	public static TextureRegionDrawable civ_weapon_bat_draw;
@@ -36,7 +36,7 @@ public class AssetLoader {
 	public static TextureRegionDrawable civ_item_draw;
 	public static Texture civ_dash_tex;
 	public static TextureRegionDrawable civ_dash_draw;
-	
+
 	// MURDERER
 	public static Texture mur_weapon_tex;
 	public static TextureRegionDrawable mur_weapon_draw;
@@ -58,21 +58,23 @@ public class AssetLoader {
 
 	public static Skin touchpadSkin;
 	public static Skin menuSkin;
-	
+
 	public static TiledMap tiledMap;
-	
+
 	public static Texture time;
 	public static Texture civ_profile;
-	
+
 	public static TextureRegion mur_rest;
-	public static TextureRegion civ_rest;	
+	public static TextureRegion civ_rest;
 	public static Texture civ_dead_lines;
-	
+
 	// GENERAL ITEMS
 	public static Texture plantedTrapTexture;
-	public static Texture itemTexture;
-	public static Texture weaponTexture;
-	public static Texture shotgunItemTexture;
+	public static Texture trapSpriteTexture;
+	public static Texture disarmTrapSpriteTexture;
+	public static Texture batSpriteTexture;
+	public static Texture knifeSpriteTexture;
+	public static Texture shotgunPartTexture;
 
 	// Character Animations and Textures
 	public static Texture civ_walk;
@@ -107,19 +109,18 @@ public class AssetLoader {
 	public static Animation ghostHauntAnimation;
 	public static Texture ghost_float;
 	public static Animation ghostFloatAnimation;
-	
 
 	public static void load() {
 
-		int gameWidth = (murdermansion.V_WIDTH * murdermansion.SCALE);
+		int gameWidth = (MurderMansion.V_WIDTH * MurderMansion.SCALE);
 
 		menuBackground = new Texture(Gdx.files.internal("basic/menu.png"));
-		
+
 		basker32black = new BitmapFont(Gdx.files.internal("Fonts/Basker32.fnt"));
 		basker45black = new BitmapFont(Gdx.files.internal("Fonts/Baskek45.fnt"));
 		basker32blackTime = new BitmapFont(Gdx.files.internal("Fonts/Basker32.fnt"));
-		basker32blackTime.scale((Gdx.graphics.getWidth() - gameWidth) / gameWidth /3);
-		
+		basker32blackTime.scale((Gdx.graphics.getWidth() - gameWidth) / gameWidth / 3);
+
 		logoTexture = new Texture(Gdx.files.internal("basic/logo.png"));
 		logoTexture.setFilter(TextureFilter.Linear, TextureFilter.Linear);
 
@@ -128,8 +129,8 @@ public class AssetLoader {
 		// Create new skin for menu screen
 		menuSkin = new Skin();
 		// Set menu font
-		menuSkin.add("basker32", basker32black );
-		menuSkin.add("basker45", basker45black );
+		menuSkin.add("basker32", basker32black);
+		menuSkin.add("basker45", basker45black);
 		// Set menu buttons
 		menuSkin.add("buttonUp", new Texture("basic/butt1.png"));
 		menuSkin.add("buttonDown", new Texture("basic/butt2.png"));
@@ -156,61 +157,76 @@ public class AssetLoader {
 		touchpadStyle.knob = touchKnob;
 		touchpad = new Touchpad(5, touchpadStyle);
 
-		emptySlot = new Texture (Gdx.files.internal("HUD/slots.png"));
-		
-		//CIVILIANS HUD
+		emptySlot = new Texture(Gdx.files.internal("HUD/slots.png"));
+
+		// CIVILIANS HUD
 		civ_weapon_bat_tex = new Texture(Gdx.files.internal("HUD/civ_weapon_bat.png"));
 		civ_weapon_bat_draw = new TextureRegionDrawable(new TextureRegion(civ_weapon_bat_tex));
 		civ_item_tex = new Texture(Gdx.files.internal("HUD/civ_item.png"));
-		civ_item_draw = new TextureRegionDrawable (new TextureRegion(civ_item_tex));
+		civ_item_draw = new TextureRegionDrawable(new TextureRegion(civ_item_tex));
 		civ_dash_tex = new Texture(Gdx.files.internal("HUD/civ_dash.png"));
-		civ_dash_draw = new TextureRegionDrawable (new TextureRegion(civ_dash_tex));
-		
+		civ_dash_draw = new TextureRegionDrawable(new TextureRegion(civ_dash_tex));
+
 		// MURDERER HUD
 		mur_weapon_tex = new Texture(Gdx.files.internal("HUD/mur_weapon.png"));
 		mur_weapon_draw = new TextureRegionDrawable(new TextureRegion(mur_weapon_tex));
 		mur_item_tex = new Texture(Gdx.files.internal("HUD/mur_item.png"));
-		mur_item_draw = new TextureRegionDrawable (new TextureRegion(mur_item_tex));
+		mur_item_draw = new TextureRegionDrawable(new TextureRegion(mur_item_tex));
 		mur_swap_tex = new Texture(Gdx.files.internal("HUD/mur_swap.png"));
-		mur_swap_draw = new TextureRegionDrawable (new TextureRegion(mur_swap_tex));
-		
+		mur_swap_draw = new TextureRegionDrawable(new TextureRegion(mur_swap_tex));
+
 		// TIMER
 		time = new Texture(Gdx.files.internal("HUD/countdown.png"));
 		time.setFilter(TextureFilter.Linear, TextureFilter.Linear);
 		civ_profile = new Texture(Gdx.files.internal("HUD/civ_profile.png"));
 		civ_profile.setFilter(TextureFilter.Linear, TextureFilter.Linear);
-		
+
 		// MAP
 		tiledMap = new TmxMapLoader().load("map/mansion2.tmx");
-		
+
 		// PICK UP ITEM TEXTURES
-		plantedTrapTexture = new Texture(Gdx.files.internal("gamehelper/trap.png"));
-//		itemTexture = new Texture(Gdx.files.internal(""));
-//		weaponTexture = new Texture(Gdx.files.internal(""));
-//		shotgunItemTexture = new Texture(Gdx.files.internal(""));
-//		
+		plantedTrapTexture = new Texture(Gdx.files.internal("gamehelper/planted_trap.png"));
+		trapSpriteTexture = new Texture(Gdx.files.internal("gamehelper/resting_trap.png"));
+		disarmTrapSpriteTexture = new Texture(Gdx.files.internal("gamehelper/disarm.png"));
+		batSpriteTexture = new Texture(Gdx.files.internal("gamehelper/knife.png"));
+		knifeSpriteTexture = new Texture(Gdx.files.internal("gamehelper/knife.png"));
+		shotgunPartTexture = new Texture(Gdx.files.internal("gamehelper/shotgun.png"));
+
 		// CIVILIAN ANIMATIONS AND TEXTURE
 		civ_walk = new Texture(Gdx.files.internal("animation/walk_animation_civ.png"));
 		civ_walk.setFilter(TextureFilter.Nearest, TextureFilter.Nearest);
+<<<<<<< HEAD
 		TextureRegion[] civilians = TextureRegion.split(civ_walk, 2258, 2258)[0];
 		civAnimation = new Animation(0.4f, civilians);
+=======
+		TextureRegion[] civilians = TextureRegion.split(civ_walk, 1000, 1800)[0];
+		civAnimation = new Animation(0.9f, civilians);
+>>>>>>> 3a696c2954e8d8ddd9dca4c3997ff14904b40d3e
 		civAnimation.setPlayMode(Animation.PlayMode.LOOP_PINGPONG);
-		civ_rest = civilians[0];
+		civ_rest = civilians[1];
 		civ_dead_lines = new Texture(Gdx.files.internal("gamehelper/dead_lines.png"));
-		
+
 		civ_bat = new Texture(Gdx.files.internal("animation/bat_animation.png"));
 		civ_bat.setFilter(TextureFilter.Nearest, TextureFilter.Nearest);
-		TextureRegion[] bat_swing = TextureRegion.split(civ_bat, 1241, 726)[0]; 
+		TextureRegion[] bat_swing = TextureRegion.split(civ_bat, 1000, 1800)[0];
 		civBatAnimation = new Animation(1f, bat_swing);
 		civBatAnimation.setPlayMode(PlayMode.NORMAL);
-		
+
 		// ghost single frame animation tester.
-		
+
 		ghost_float = new Texture(Gdx.files.internal("animation/ghostSingleFrame.png"));
+<<<<<<< HEAD
 		//ghost_float.setFilter(TextureFilter.Nearest, TextureFilter.Nearest);
 		//TextureRegion[] ghostFloat = TextureRegion.split(ghost_haunt,300,300)[0];
 		//ghostFloatAnimation = new Animation(1f, ghostFloat);
 		//ghostFloatAnimation.setPlayMode(PlayMode.LOOP);
+=======
+		// ghost_float.setFilter(TextureFilter.Nearest, TextureFilter.Nearest);
+		// TextureRegion[] ghostFloat = TextureRegion.split(ghost_haunt,300,300)[0];
+		// ghostFloatAnimation = new Animation(1f, ghostFloat);
+		// ghostFloatAnimation.setPlayMode(PlayMode.LOOP);
+		System.out.println("help");
+>>>>>>> 3a696c2954e8d8ddd9dca4c3997ff14904b40d3e
 	}
 
 	public static void dispose() {
@@ -232,20 +248,20 @@ public class AssetLoader {
 		civ_walk.dispose();
 		civ_dead_lines.dispose();
 		civ_bat.dispose();
-//		civ_bat.dispose();
-//		civ_disarm.dispose();
-//		civ_knifeDeath.dispose();
-//		civ_trapDeath.dispose();
-//		civ_stun.dispose();
-//		civ_panic.dispose();
-//		civ_shotgun.dispose();
-//		mur_walk.dispose();
-//		mur_knife.dispose();
-//		mur_plantTrap.dispose();
-//		mur_death.dispose();
-//		mur_civTransformation.dispose();
-//		civ_murTransformation.dispose();
-//		ghost_haunt.dispose();
+		// civ_bat.dispose();
+		// civ_disarm.dispose();
+		// civ_knifeDeath.dispose();
+		// civ_trapDeath.dispose();
+		// civ_stun.dispose();
+		// civ_panic.dispose();
+		// civ_shotgun.dispose();
+		// mur_walk.dispose();
+		// mur_knife.dispose();
+		// mur_plantTrap.dispose();
+		// mur_death.dispose();
+		// mur_civTransformation.dispose();
+		// civ_murTransformation.dispose();
+		// ghost_haunt.dispose();
 		ghost_float.dispose();
 	}
 }

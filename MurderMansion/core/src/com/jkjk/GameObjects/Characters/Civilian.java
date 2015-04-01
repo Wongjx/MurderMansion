@@ -6,6 +6,7 @@ import box2dLight.PointLight;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.Animation;
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
 import com.badlogic.gdx.physics.box2d.CircleShape;
@@ -80,12 +81,22 @@ public class Civilian extends GameCharacter {
 			} else {
 				
 				if (!body.getLinearVelocity().isZero() && checkMovable()) {
+<<<<<<< HEAD
 					batch.draw(currentAnimation.getKeyFrame(runTime, true), body.getPosition().x - 10,
 							body.getPosition().y - 10, 10, 10, 20, 20, 1.5f, 1.5f,
 							(float) (body.getAngle() * 180 / Math.PI) - 90);
 				} else {
 					batch.draw(AssetLoader.civ_rest, body.getPosition().x - 10, body.getPosition().y - 10, 10, 10, 20,
 							20, 1.5f, 1.5f, (float) (body.getAngle() * 180 / Math.PI) - 90);
+=======
+					batch.draw(currentAnimation.getKeyFrame(runTime, true), body.getPosition().x-20,
+							body.getPosition().y-40, 10, 10, 60, 108, 1, 1,
+							(float) (body.getAngle() * 180 / Math.PI) - 90);
+				} else {
+					batch.draw(AssetLoader.civ_rest,  body.getPosition().x-20,
+							body.getPosition().y-40, 10, 10, 60, 108, 1, 1,
+							(float) (body.getAngle() * 180 / Math.PI) - 90);
+>>>>>>> 3a696c2954e8d8ddd9dca4c3997ff14904b40d3e
 				}
 			}
 
