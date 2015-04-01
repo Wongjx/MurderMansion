@@ -195,13 +195,8 @@ public class AssetLoader {
 		// CIVILIAN ANIMATIONS AND TEXTURE
 		civ_walk = new Texture(Gdx.files.internal("animation/walk_animation_civ.png"));
 		civ_walk.setFilter(TextureFilter.Nearest, TextureFilter.Nearest);
-<<<<<<< HEAD
-		TextureRegion[] civilians = TextureRegion.split(civ_walk, 2258, 2258)[0];
-		civAnimation = new Animation(0.4f, civilians);
-=======
 		TextureRegion[] civilians = TextureRegion.split(civ_walk, 1000, 1800)[0];
 		civAnimation = new Animation(0.9f, civilians);
->>>>>>> 3a696c2954e8d8ddd9dca4c3997ff14904b40d3e
 		civAnimation.setPlayMode(Animation.PlayMode.LOOP_PINGPONG);
 		civ_rest = civilians[1];
 		civ_dead_lines = new Texture(Gdx.files.internal("gamehelper/dead_lines.png"));
@@ -212,21 +207,8 @@ public class AssetLoader {
 		civBatAnimation = new Animation(1f, bat_swing);
 		civBatAnimation.setPlayMode(PlayMode.NORMAL);
 
-		// ghost single frame animation tester.
-
+		// ghost 
 		ghost_float = new Texture(Gdx.files.internal("animation/ghostSingleFrame.png"));
-<<<<<<< HEAD
-		//ghost_float.setFilter(TextureFilter.Nearest, TextureFilter.Nearest);
-		//TextureRegion[] ghostFloat = TextureRegion.split(ghost_haunt,300,300)[0];
-		//ghostFloatAnimation = new Animation(1f, ghostFloat);
-		//ghostFloatAnimation.setPlayMode(PlayMode.LOOP);
-=======
-		// ghost_float.setFilter(TextureFilter.Nearest, TextureFilter.Nearest);
-		// TextureRegion[] ghostFloat = TextureRegion.split(ghost_haunt,300,300)[0];
-		// ghostFloatAnimation = new Animation(1f, ghostFloat);
-		// ghostFloatAnimation.setPlayMode(PlayMode.LOOP);
-		System.out.println("help");
->>>>>>> 3a696c2954e8d8ddd9dca4c3997ff14904b40d3e
 	}
 
 	public static void dispose() {

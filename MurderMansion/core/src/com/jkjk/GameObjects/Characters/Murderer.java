@@ -72,22 +72,22 @@ public class Murderer extends GameCharacter {
 					body.setLinearVelocity(0, 0);
 					body.setAngularVelocity(0);
 					batch.draw(currentAnimation.getKeyFrame(animationRunTime, true),
-							body.getPosition().x - 10, body.getPosition().y - 10, 10, 10, 20, 20, 1, 1,
+							body.getPosition().x - 10, body.getPosition().y - 10, 10, 10, 20, 30, 3, 3,
 							(float) (body.getAngle() * 180 / Math.PI) - 90);
 				}
 			} else {
 				if (!body.getLinearVelocity().isZero() && checkMovable()) {
 					batch.draw(currentAnimation.getKeyFrame(runTime, true), body.getPosition().x - 10,
-							body.getPosition().y - 10, 10, 10, 20, 20, 1, 1,
+							body.getPosition().y - 10, 10, 10, 20, 30, 3, 3,
 							(float) (body.getAngle() * 180 / Math.PI) - 90);
 				} else {
 					if (isDisguised()) {
 						batch.draw(AssetLoader.civ_rest, body.getPosition().x - 10,
-								body.getPosition().y - 10, 10, 10, 20, 20, 1, 1,
+								body.getPosition().y - 10, 10, 10, 20, 30, 3, 3,
 								(float) (body.getAngle() * 180 / Math.PI) - 90);
 					} else {
 						batch.draw(AssetLoader.mur_rest, body.getPosition().x - 10,
-								body.getPosition().y - 10, 10, 10, 20, 20, 1, 1,
+								body.getPosition().y - 10, 10, 10, 20, 30, 1, 1,
 								(float) (body.getAngle() * 180 / Math.PI) - 90);
 					}
 				}

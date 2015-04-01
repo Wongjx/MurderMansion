@@ -53,9 +53,9 @@ public class Civilian extends GameCharacter {
 	}
 
 	@Override
-	public void render(OrthographicCamera cam) {
+	public void render(OrthographicCamera cam, SpriteBatch batch) {
 		
-		super.render(cam);
+		super.render(cam, batch);
 		
 		if (gWorld.getPlayer().lightContains(body.getPosition().x, body.getPosition().y)) {
 			runTime += Gdx.graphics.getRawDeltaTime();
@@ -74,29 +74,20 @@ public class Civilian extends GameCharacter {
 					body.setLinearVelocity(0, 0);
 					body.setAngularVelocity(0);
 					batch.draw(currentAnimation.getKeyFrame(animationRunTime, true), body.getPosition().x - 10,
-							body.getPosition().y - 10, 10, 10, 20, 30, 1, 1,
+							body.getPosition().y - 10, 10, 10, 20, 20, 1, 1,
 							(float) (body.getAngle() * 180 / Math.PI) - 90);
 				}
 				
 			} else {
 				
 				if (!body.getLinearVelocity().isZero() && checkMovable()) {
-<<<<<<< HEAD
-					batch.draw(currentAnimation.getKeyFrame(runTime, true), body.getPosition().x - 10,
-							body.getPosition().y - 10, 10, 10, 20, 20, 1.5f, 1.5f,
+					batch.draw(currentAnimation.getKeyFrame(runTime, true), body.getPosition().x -4,
+							body.getPosition().y - 10, 5, 8, 10, 18, 5f, 5f,
 							(float) (body.getAngle() * 180 / Math.PI) - 90);
 				} else {
-					batch.draw(AssetLoader.civ_rest, body.getPosition().x - 10, body.getPosition().y - 10, 10, 10, 20,
-							20, 1.5f, 1.5f, (float) (body.getAngle() * 180 / Math.PI) - 90);
-=======
-					batch.draw(currentAnimation.getKeyFrame(runTime, true), body.getPosition().x-20,
-							body.getPosition().y-40, 10, 10, 60, 108, 1, 1,
+					batch.draw(AssetLoader.civ_rest,  body.getPosition().x-4,
+							body.getPosition().y-10, 5, 8, 10, 18, 5f, 5f,
 							(float) (body.getAngle() * 180 / Math.PI) - 90);
-				} else {
-					batch.draw(AssetLoader.civ_rest,  body.getPosition().x-20,
-							body.getPosition().y-40, 10, 10, 60, 108, 1, 1,
-							(float) (body.getAngle() * 180 / Math.PI) - 90);
->>>>>>> 3a696c2954e8d8ddd9dca4c3997ff14904b40d3e
 				}
 			}
 
