@@ -25,7 +25,7 @@ public class HudRenderer {
 
 	private GameWorld gWorld;
 	
-	private TextureRegionDrawable civ_bat, civ_item, civ_dash;
+	private TextureRegionDrawable civ_bat, civ_item, civ_dash, mur_knife, mur_item, mur_CtM, mur_MtC;
 	private Texture emptySlot;
 	private Actor emptySlot_actor;
 	private Texture timebox;
@@ -93,6 +93,10 @@ public class HudRenderer {
 		civ_bat = AssetLoader.civ_weapon_bat_draw;
 		civ_item = AssetLoader.civ_item_draw;
 		civ_dash = AssetLoader.civ_dash_draw;
+		mur_knife = AssetLoader.mur_weapon_draw;
+		mur_item = AssetLoader.mur_item_draw;
+		mur_CtM = AssetLoader.mur_weapon_draw;
+		mur_MtC = AssetLoader.mur_item_draw;
 
 		// Touchpad stuff
 		touchpad = AssetLoader.touchpad;
@@ -397,7 +401,7 @@ public class HudRenderer {
 		x = 505;
 		y = 41;
 
-		itemButton = new ImageButton(civ_bat);
+		itemButton = new ImageButton(mur_knife);
 		itemButton.setX(x);
 		itemButton.setY(y);
 		itemButton.setName("Weapon Button");
@@ -428,7 +432,7 @@ public class HudRenderer {
 		x = 567;
 		y = 43;
 
-		itemButton = new ImageButton(civ_item);
+		itemButton = new ImageButton(mur_item);
 		itemButton.setX(x);
 		itemButton.setY(y);
 		itemButton.setName("Item Button");
@@ -458,7 +462,7 @@ public class HudRenderer {
 		x = 528;
 		y = 100;
 
-		disguiseToCiv = new ImageButton(civ_dash);
+		disguiseToCiv = new ImageButton(mur_MtC);
 		disguiseToCiv.setX(x);
 		disguiseToCiv.setY(y);
 		disguiseToCiv.setName("Disguise to civilian");
@@ -484,7 +488,7 @@ public class HudRenderer {
 		x = 528;
 		y = 100;
 
-		disguiseToMur = new ImageButton(civ_bat);
+		disguiseToMur = new ImageButton(mur_CtM);
 		disguiseToMur.setX(x);
 		disguiseToMur.setY(y);
 		disguiseToMur.setName("Disguise to murderer");

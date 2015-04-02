@@ -1,11 +1,11 @@
 package com.jkjk.GameObjects.Weapons;
 
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
 import com.badlogic.gdx.physics.box2d.CircleShape;
 import com.badlogic.gdx.physics.box2d.FixtureDef;
-import com.badlogic.gdx.physics.box2d.World;
 import com.jkjk.GameWorld.GameWorld;
 import com.jkjk.MMHelpers.AssetLoader;
 
@@ -31,7 +31,6 @@ public class WeaponSprite {
 		fdef.isSensor = true;
 		fdef.filter.maskBits = 1;
 		body.createFixture(fdef).setUserData("weapon");
-		body.setUserData(AssetLoader.weaponTexture);
 	}
 
 	public void spawn(float x, float y, float angle) {
@@ -44,9 +43,14 @@ public class WeaponSprite {
 		return new float[] { posX, posY };
 	}
 
-	public void render() {
+	public void render(SpriteBatch batch) {
 		if (gWorld.getPlayer().lightContains(posX, posY)) {
-			// System.out.println("Render Weapon Sprite");
+			batch.begin();
+			if (gWorld.getPlayer().getType().equals("Murderer"))
+				batch.draw(AssetLoader.knifeSpriteTexture, posX-12, posY-12, 25, 25);
+			else
+				batch.draw(AssetLoader.batSpriteTexture, posX-12, posY-12, 25, 25);
+			batch.end();
 		}
 	}
 

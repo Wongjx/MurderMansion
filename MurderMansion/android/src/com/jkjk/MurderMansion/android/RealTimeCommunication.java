@@ -27,9 +27,9 @@ public class RealTimeCommunication implements RealTimeMessageReceivedListener{
     }
 
     // Called when we receive a real-time message from the network.
-    // Messages in our game are made up of 2 bytes: the first one is 'F' or 'U'
+    // Messages in our game are made up of 2 bytes: the first one is 'A' or 'P'
     // indicating
-    // whether it's a final or interim score. The second byte is the score.
+    // whether it's a serverAdress or serverPort. The rest of the byte array is the message.
     // There is also the
     // 'S' message, which indicates that the game should start.
     
@@ -74,14 +74,16 @@ public class RealTimeCommunication implements RealTimeMessageReceivedListener{
         String Msg ="A";
         Msg += server.getServerAddress();
         byte[] mMsgBuf = new byte[Msg.length()];
-//        // Encode String Message in UTF_8 byte format for transmission
         
+//        // Encode String Message in UTF_8 byte format for transmission
         mMsgBuf =Msg.getBytes(Charset.forName("UTF-8")); 
         
 //        // Send to every participant.
         for (Object o : info.mParticipants) {
         	Participant p = (Participant) o;
         	if (p.getStatus() != Participant.STATUS_JOINED)
+        		continue;
+        	if(p.getParticipantId().equals(info.mId))
         		continue;
         	Games.RealTimeMultiplayer.sendReliableMessage(mGoogleApiClient, null, mMsgBuf,
         			info.mRoomId, p.getParticipantId());
@@ -94,8 +96,8 @@ void broadcastPort(MMServer server) {
         return; // Player is not server
     String Msg ="P";
     Msg += String.valueOf(server.getServerPort());
-    
     byte[] mMsgBuf = new byte[Msg.length()];
+    
     // Encode String Message in UTF_8 byte format for transmission    
     mMsgBuf =Msg.getBytes(Charset.forName("UTF-8")); 
     
@@ -103,6 +105,8 @@ void broadcastPort(MMServer server) {
     for (Object o : info.mParticipants) {
     	Participant p = (Participant) o;
     	if (p.getStatus() != Participant.STATUS_JOINED)
+    		continue;
+    	if(p.getParticipantId().equals(info.mId))
     		continue;
     	Games.RealTimeMultiplayer.sendReliableMessage(mGoogleApiClient, null, mMsgBuf,
     			info.mRoomId, p.getParticipantId());

@@ -15,6 +15,8 @@ import com.jkjk.Host.MMServer;
  *
  */
 public class MultiplayerSeissonInfo {
+	
+	public String mId;
 	public String mIncomingInvitationId;
 	public String mRoomId;
 	public ArrayList mParticipants;

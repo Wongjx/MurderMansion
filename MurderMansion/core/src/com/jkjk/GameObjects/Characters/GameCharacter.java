@@ -49,8 +49,7 @@ public abstract class GameCharacter {
 
 	private int id;
 	private int weaponUses;
-
-	protected SpriteBatch batch;
+	
 	protected float runTime;
 	protected float ambientLightValue;
 
@@ -69,7 +68,6 @@ public abstract class GameCharacter {
 		this.deathPositionX = 0;
 		this.deathPositionY = 0;
 
-		batch = new SpriteBatch();
 		rayHandler = new RayHandler(gWorld.getWorld());
 		ambientLightValue = 0.05f;
 		rayHandler.setAmbientLight(ambientLightValue);
@@ -244,7 +242,7 @@ public abstract class GameCharacter {
 		}
 	}
 
-	public void render(OrthographicCamera cam) {
+	public void render(OrthographicCamera cam, SpriteBatch batch) {
 		if (isPlayer) {
 			runTime += Gdx.graphics.getRawDeltaTime();
 

@@ -16,11 +16,13 @@ import java.util.Random;
 import java.util.concurrent.ConcurrentHashMap;
 
 import com.badlogic.gdx.Gdx;
+import com.jkjk.MMHelpers.MultiplayerSeissonInfo;
 
 
 public class MMServer {
 	private final String TAG = "MMServer";
 	
+	private MultiplayerSeissonInfo info;
 	public ServerSocket serverSocket;
 	private String serverAddress;
 	private int serverPort;	
@@ -60,9 +62,10 @@ public class MMServer {
 	// animation
 	// HOW?!!?!?!?!?!?!!
 
-	public MMServer(int numOfPlayers) throws InterruptedException {
+	public MMServer(int numOfPlayers,MultiplayerSeissonInfo info) throws InterruptedException {
 		System.out.println("Server instantized.");
 		this.numOfPlayers = numOfPlayers;
+		this.info=info;
 		
 //		System.out.println("Initialize Client list and listeners");
 		clients = new ArrayList<Socket> ();
@@ -102,7 +105,7 @@ public class MMServer {
 
 		// Attempt to connect to clients (numOfPlayers)
 		System.out.println("Creating server socket");
-		initServerSocket();
+		initServerSocket(info);
 		acceptServerConnections();
 	}
 
@@ -338,14 +341,19 @@ public class MMServer {
 	}
 	
 	//Initialize server socket 
-	public void initServerSocket() {
+	public void initServerSocket(MultiplayerSeissonInfo info) {
 		try{
-			//Randomly server to an open port
+			//Randomly assign server to an open port
 			ServerSocket sock = new ServerSocket(0);
 			this.serverSocket=sock;
+			info.setServer(this);
 			
+			//Get ip address and port number
 			setServerAddress(getLocalIpAddress());
 			setServerPort(sock.getLocalPort());
+			//Set info into multiplayerseissoninfo for local client to read
+			info.serverAddress=getServerAddress();
+			info.serverPort=getServerPort();
 			
 			System.out.println("Server Socket created. Port: "+serverPort+" address: "+serverAddress);
 			
@@ -434,6 +442,7 @@ class serverAcceptThread extends Thread{
 				String message ="";
 				float[] position = null;
 				Collection<Location> locations=null;
+				
 				//Send item spawn locations 
 				writer.println("itemLocations");
 				locations =server.getItemLocations().getBuffer().values();
@@ -484,7 +493,36 @@ class serverAcceptThread extends Thread{
 				writer.println("end");
 				
 				//TODO Send spawn positions and angle
+				writer.println("spawnPositions");
+				message="";
+				for (int i =0;i<server.getNumOfPlayers();i++){
+					//Get float[] of position x and y from concurrent hashmap
+					position= server.getPlayerPosition().get("Player "+i);
+					for(float coordinate:position){
+						message+=String.valueOf(coordinate)+",";
+					}
+					message=message.substring(0, message.length()-1);
+					message+="_";
+				}
+				message=message.substring(0, message.length()-1);
+				System.out.println(message);
+				writer.println(message);
+				writer.println("end");
 				
+				//Send spawn angles
+				writer.println("spawnAngles");
+				message="";
+				for (int i =0;i<server.getNumOfPlayers();i++){
+					//Get float[] of position x and y from concurrent hashmap
+					float angle= server.getPlayerAngle().get("Player "+i);
+					message+=String.valueOf(angle)+",";
+				}
+				message=message.substring(0, message.length()-1);
+				System.out.println(message);
+				writer.println(message);
+				writer.println("end");
+				
+				//Increase id count 
 				idCount++;
 				
 			}catch(Exception e){

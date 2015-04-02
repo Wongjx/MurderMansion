@@ -1,5 +1,7 @@
 package com.jkjk.GameWorld;
 
+import java.util.HashMap;
+
 import net.dermetfan.gdx.physics.box2d.Box2DMapObjectParser;
 
 import com.badlogic.gdx.math.Vector2;
@@ -11,6 +13,7 @@ import com.jkjk.GameObjects.Characters.GameCharacter;
 import com.jkjk.GameObjects.Characters.GameCharacterFactory;
 import com.jkjk.GameObjects.Items.ItemFactory;
 import com.jkjk.GameObjects.Items.ItemSprite;
+import com.jkjk.GameObjects.Items.Trap;
 import com.jkjk.GameObjects.Weapons.WeaponFactory;
 import com.jkjk.GameObjects.Weapons.WeaponSprite;
 import com.jkjk.MMHelpers.AssetLoader;
@@ -28,12 +31,13 @@ public class GameWorld {
 	private GameCharacter player;
 
 	private ItemFactory itemFac;
-	private Array<ItemSprite> itemList;
+	private HashMap<Vector2, ItemSprite> itemList;
+	private HashMap<Vector2, Trap> trapList;
 
 	private WeaponFactory weaponFac;
-	private Array<WeaponSprite> weaponList;
+	private HashMap<Vector2, WeaponSprite> weaponList;
 
-	private Array<WeaponPartSprite> weaponPartList;
+	private HashMap<Vector2, WeaponPartSprite> weaponPartList;
 	private int numOfWeaponPartsCollected;
 	private boolean shotgunCreated;
 
@@ -70,13 +74,14 @@ public class GameWorld {
 		gameCharFac = new GameCharacterFactory();
 
 		itemFac = new ItemFactory();
-		itemList = new Array<ItemSprite>();
+		itemList = new HashMap<Vector2, ItemSprite>();
+		trapList = new HashMap<Vector2, Trap>();
 
 		weaponFac = new WeaponFactory();
-		weaponList = new Array<WeaponSprite>();
+		weaponList = new HashMap<Vector2, WeaponSprite>();
 
 		numOfWeaponPartsCollected = 0;
-		weaponPartList = new Array<WeaponPartSprite>();
+		weaponPartList = new HashMap<Vector2, WeaponPartSprite>();
 
 		Box2DMapObjectParser parser = new Box2DMapObjectParser();
 		parser.load(world, AssetLoader.tiledMap);
@@ -119,13 +124,13 @@ public class GameWorld {
 	 * @param type
 	 *            0 for murderer, 1 for civilian
 	 */
-	public GameCharacter createPlayer(int type) {
+	public GameCharacter createPlayer(int type, float x, float y,float angle) {
 		if (type == 0)
 			player = gameCharFac.createCharacter("Murderer", 0, this, true);
 		else
 			player = gameCharFac.createCharacter("Civilian", 0, this, true);
 		player.getBody().getFixtureList().get(0).setUserData("player");
-		player.spawn(1010, 515, 0);
+		player.spawn(x, y, angle);
 		return player;
 	}
 
@@ -165,7 +170,7 @@ public class GameWorld {
 	private void checkItemSprite() {
 		for (int i = 0; i < itemsToRemove.size; i++) {
 			bodyToRemove = itemsToRemove.get(i);
-			itemList.removeValue((ItemSprite) bodyToRemove.getUserData(), true);
+			itemList.remove(bodyToRemove.getPosition());
 			world.destroyBody(bodyToRemove);
 			if (player.getType().equals("Civilian"))
 				player.addItem(itemFac.createItem("Disarm Trap", this));
@@ -181,7 +186,7 @@ public class GameWorld {
 	private void checkWeaponSprite() {
 		for (int i = 0; i < weaponsToRemove.size; i++) {
 			bodyToRemove = weaponsToRemove.get(i);
-			weaponList.removeValue((WeaponSprite) bodyToRemove.getUserData(), true);
+			weaponList.remove(bodyToRemove.getPosition());
 			world.destroyBody(bodyToRemove);
 			if (player.getType().equals("Civilian"))
 				player.addWeapon(weaponFac.createWeapon("Bat", this));
@@ -197,7 +202,7 @@ public class GameWorld {
 	private void checkWeaponPartSprite() {
 		for (int i = 0; i < weaponPartsToRemove.size; i++) {
 			bodyToRemove = weaponPartsToRemove.get(i);
-			weaponPartList.removeValue((WeaponPartSprite) bodyToRemove.getUserData(), true);
+			weaponPartList.remove(bodyToRemove.getPosition());
 			world.destroyBody(bodyToRemove);
 			if (player.getType().equals("Civilian")) {
 				numOfWeaponPartsCollected++;
@@ -212,7 +217,7 @@ public class GameWorld {
 	private void checkTrap() {
 		for (int i = 0; i < trapToRemove.size; i++) {
 			bodyToRemove = trapToRemove.get(i);
-			weaponList.removeValue((WeaponSprite) bodyToRemove.getUserData(), true);
+			trapList.remove(bodyToRemove.getPosition());
 			world.destroyBody(bodyToRemove);
 		}
 		trapToRemove.clear();
@@ -282,22 +287,26 @@ public class GameWorld {
 	/**
 	 * @return List of items on the map.
 	 */
-	public Array<ItemSprite> getItemList() {
+	public HashMap<Vector2, ItemSprite> getItemList() {
 		return itemList;
 	}
 
 	/**
 	 * @return List of weapons on the map.
 	 */
-	public Array<WeaponSprite> getWeaponList() {
+	public HashMap<Vector2, WeaponSprite> getWeaponList() {
 		return weaponList;
 	}
 
 	/**
 	 * @return List of weapon parts on the map.
 	 */
-	public Array<WeaponPartSprite> getWeaponPartList() {
+	public HashMap<Vector2, WeaponPartSprite> getWeaponPartList() {
 		return weaponPartList;
+	}
+
+	public HashMap<Vector2, Trap> getTrapList() {
+		return trapList;
 	}
 
 }

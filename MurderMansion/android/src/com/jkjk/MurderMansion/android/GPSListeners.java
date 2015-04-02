@@ -79,6 +79,7 @@ public class GPSListeners implements RoomStatusUpdateListener, RoomUpdateListene
     	Log.d(TAG, "onLeftRoom, code " + statusCode);
     	activity.mMultiplayerSeisson.setClient(null);
     	activity.mMultiplayerSeisson.setServer(null);
+    	activity.mMultiplayerSeisson.mId=null;
     	activity.mMultiplayerSeisson.mRoomId=null;
     	activity.mMultiplayerSeisson.mParticipants=null;
     	activity.mMultiplayerSeisson.serverAddress=null;
@@ -103,7 +104,7 @@ public class GPSListeners implements RoomStatusUpdateListener, RoomUpdateListene
     	if(activity.mMultiplayerSeisson.isServer){
     		try{
         		//Create MMServer with current number of players and broadcast server details
-    			MMServer server = new MMServer(room.getParticipants().size());
+    			MMServer server = new MMServer(room.getParticipants().size(),activity.mMultiplayerSeisson);
         		activity.mMultiplayerSeisson.setServer(server);
         		Log.d(TAG,"Server created.");
         		
@@ -114,7 +115,6 @@ public class GPSListeners implements RoomStatusUpdateListener, RoomUpdateListene
     			Log.d(TAG,"Error creating server "+e.getMessage());
     		}
     	}
-
     }
 
     // Called when room has been created
@@ -142,6 +142,7 @@ public class GPSListeners implements RoomStatusUpdateListener, RoomUpdateListene
         // get room ID, participants and my ID:
         activity.mMultiplayerSeisson.mRoomId=room.getRoomId();
         activity.mMultiplayerSeisson.mParticipants=room.getParticipants();
+        activity.mMultiplayerSeisson.mId=room.getParticipantId(Games.Players.getCurrentPlayerId(mGoogleApiClient));
 
         // print out the list of participants (for debug purposes)
         Log.d(TAG, "Room ID: " +activity.mMultiplayerSeisson.mRoomId);

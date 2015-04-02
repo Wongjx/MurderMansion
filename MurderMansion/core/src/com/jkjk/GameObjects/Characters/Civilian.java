@@ -6,6 +6,7 @@ import box2dLight.PointLight;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.Animation;
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
 import com.badlogic.gdx.physics.box2d.CircleShape;
@@ -52,13 +53,12 @@ public class Civilian extends GameCharacter {
 	}
 
 	@Override
-	public void render(OrthographicCamera cam) {
+	public void render(OrthographicCamera cam, SpriteBatch batch) {
 		
-		super.render(cam);
+		super.render(cam, batch);
 		
 		if (gWorld.getPlayer().lightContains(body.getPosition().x, body.getPosition().y)) {
 			runTime += Gdx.graphics.getRawDeltaTime();
-			batch.setProjectionMatrix(cam.combined);
 			batch.begin();
 			currentAnimation = (Animation) body.getUserData();
 			if (currentAnimation == AssetLoader.civBatAnimation
@@ -79,12 +79,13 @@ public class Civilian extends GameCharacter {
 				
 			} else {
 				if (!body.getLinearVelocity().isZero() && checkMovable()) {
-					batch.draw(currentAnimation.getKeyFrame(runTime, true), body.getPosition().x - 10,
-							body.getPosition().y - 10, 10, 10, 20, 20, 1.5f, 1.5f,
+					batch.draw(currentAnimation.getKeyFrame(runTime, true), body.getPosition().x-20,
+							body.getPosition().y-40, 10, 10, 60, 108, 1, 1,
 							(float) (body.getAngle() * 180 / Math.PI) - 90);
 				} else {
-					batch.draw(AssetLoader.civ_rest, body.getPosition().x - 10, body.getPosition().y - 10, 10, 10, 20,
-							20, 1.5f, 1.5f, (float) (body.getAngle() * 180 / Math.PI) - 90);
+					batch.draw(AssetLoader.civ_rest,  body.getPosition().x-20,
+							body.getPosition().y-40, 10, 10, 60, 108, 1, 1,
+							(float) (body.getAngle() * 180 / Math.PI) - 90);
 				}
 			}
 
