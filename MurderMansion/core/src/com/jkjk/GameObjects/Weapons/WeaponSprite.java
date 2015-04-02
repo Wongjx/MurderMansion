@@ -19,6 +19,7 @@ public class WeaponSprite {
 	private FixtureDef fdef;
 	private float posX, posY;
 	private Animation batSpriteAnimation;
+	private Animation knifeSpriteAnimation;
 	private float animationRunTime;
 
 	public WeaponSprite(GameWorld gWorld) {
@@ -37,6 +38,7 @@ public class WeaponSprite {
 		body.createFixture(fdef).setUserData("weapon");
 		
 		batSpriteAnimation = AssetLoader.batSpriteAnimation;
+		knifeSpriteAnimation = AssetLoader.knifeSpriteAnimation;
 		animationRunTime = 0;
 	}
 
@@ -53,9 +55,10 @@ public class WeaponSprite {
 	public void render(SpriteBatch batch) {
 		if (gWorld.getPlayer().lightContains(posX, posY)) {
 			batch.begin();
-			if (gWorld.getPlayer().getType().equals("Murderer"))
-				batch.draw(AssetLoader.knifeSpriteTexture, posX-12, posY-12, 24, 24);
-			else{
+			if (gWorld.getPlayer().getType().equals("Murderer")){
+				animationRunTime += Gdx.graphics.getRawDeltaTime();
+				batch.draw(knifeSpriteAnimation.getKeyFrame(animationRunTime), posX-12, posY-12, 24, 24);
+			}else{
 				animationRunTime += Gdx.graphics.getRawDeltaTime();
 				batch.draw(batSpriteAnimation.getKeyFrame(animationRunTime), posX-12, posY-12, 24, 24);
 			}

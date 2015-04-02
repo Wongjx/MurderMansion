@@ -55,13 +55,13 @@ public class MMClient {
 		this.server = server;
 		this.gWorld = gWorld;
 		this.renderer = renderer;
-		id = 0;
+		id = 1;
 
 		playerList = new Array<GameCharacter>();
 		numOfPlayers = server.getNumOfPlayers();
 
 //		gWorld.createPlayer(server.getPlayerType().get("Player " + id));
-		gWorld.createPlayer(1);
+		gWorld.createPlayer(0);
 
 		for (int i = 1; i < numOfPlayers; i++) {
 			createOpponents(server.getPlayerType().get("Player " + i));

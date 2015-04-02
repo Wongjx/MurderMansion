@@ -82,7 +82,7 @@ public class AssetLoader {
 	public static Texture batSpriteTexture;
 	public static Animation batSpriteAnimation;
 	public static Texture knifeSpriteTexture;
-	//animation for knife sprite
+	public static Animation knifeSpriteAnimation;
 	public static Texture shotgunPartTexture;
 	public static Animation shotgunPartSpriteAnimation;
 
@@ -221,7 +221,11 @@ public class AssetLoader {
 		batSpriteAnimation = new Animation(0.4f, bat_sprite);
 		batSpriteAnimation.setPlayMode(Animation.PlayMode.LOOP_PINGPONG);
 		
-		knifeSpriteTexture = new Texture(Gdx.files.internal("gamehelper/knife.png"));
+		knifeSpriteTexture = new Texture(Gdx.files.internal("gamehelper/knife_sprite_animation.png"));
+		knifeSpriteTexture.setFilter(TextureFilter.Nearest, TextureFilter.Nearest);
+		TextureRegion[] knife_sprite = TextureRegion.split(knifeSpriteTexture, 120, 120)[0];
+		knifeSpriteAnimation = new Animation(0.4f, knife_sprite);
+		knifeSpriteAnimation.setPlayMode(Animation.PlayMode.LOOP_PINGPONG);
 		
 		shotgunPartTexture = new Texture(Gdx.files.internal("gamehelper/shotgun_sprite_animation.png"));
 		shotgunPartTexture.setFilter(TextureFilter.Nearest, TextureFilter.Nearest);

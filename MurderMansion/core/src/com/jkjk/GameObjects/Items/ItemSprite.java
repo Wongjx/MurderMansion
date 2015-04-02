@@ -18,7 +18,7 @@ public class ItemSprite {
 	private GameWorld gWorld;
 	private FixtureDef fdef;
 	private float posX, posY;
-	private Animation plantedTrapAnimation;
+	private Animation restingTrapAnimation;
 	private float animationRunTime;
 	private Animation disarmTrapSpriteAnimation;
 
@@ -37,7 +37,7 @@ public class ItemSprite {
 		fdef.filter.maskBits = 1;
 		body.createFixture(fdef).setUserData("item");
 		
-		plantedTrapAnimation = AssetLoader.plantedTrapAnimation;
+		restingTrapAnimation = AssetLoader.restingTrapAnimation;
 		disarmTrapSpriteAnimation = AssetLoader.disarmTrapSpriteAnimation;
 		animationRunTime = 0;
 
@@ -58,12 +58,12 @@ public class ItemSprite {
 			batch.begin();
 			if (gWorld.getPlayer().getType().equals("Murderer")){
 				animationRunTime += Gdx.graphics.getRawDeltaTime();
-				batch.draw(plantedTrapAnimation.getKeyFrame(animationRunTime), posX-12, posY-12, 25, 25);
+				batch.draw(restingTrapAnimation.getKeyFrame(animationRunTime), posX-12, posY-12, 25, 25);
 			}else{
 				animationRunTime += Gdx.graphics.getRawDeltaTime();
 				batch.draw(disarmTrapSpriteAnimation.getKeyFrame(animationRunTime), posX-12, posY-12, 25, 25);
-			batch.end();
 			}
+			batch.end();
 		}
 	}
 
