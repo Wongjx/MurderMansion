@@ -84,11 +84,19 @@ public class Civilian extends GameCharacter {
 					batch.draw(currentAnimation.getKeyFrame(runTime, true), body.getPosition().x -9,
 							body.getPosition().y - 9, 9, 9, 18, 18, 6f, 6f,
 							(float) (body.getAngle() * 180 / Math.PI) - 90);
-				} else {
+				} 
+				else if(isStun()){
 					batch.draw(AssetLoader.civ_rest,  body.getPosition().x-9,
 							body.getPosition().y-9, 9, 9, 18, 18, 6f, 6f,
 							(float) (body.getAngle() * 180 / Math.PI) - 90);
 				}
+				
+				else {
+					batch.draw(AssetLoader.civ_rest,  body.getPosition().x-9,
+							body.getPosition().y-9, 9, 9, 18, 18, 6f, 6f,
+							(float) (body.getAngle() * 180 / Math.PI) - 90);
+				}
+				
 			}
 
 			batch.end();
