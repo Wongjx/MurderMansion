@@ -124,7 +124,7 @@ public class HudRenderer {
 		batch.begin();
 		batch.draw(timebox, 55, 280);
 		batch.draw(weapon_parts_counter, 480, 235);
-		batch.draw(emptySlot, 460, 22, 150, 150);
+		batch.draw(emptySlot, 480, 22, 120, 120);
 		font.draw(batch, getTime(), 75, 330);
 		batch.end();
 
@@ -279,8 +279,8 @@ public class HudRenderer {
 	 */
 	public ImageButton getBat() {
 
-		x = 490;
-		y = 48;
+		x = 480;
+		y = 44;
 
 		weaponButton = new ImageButton(civ_bat);
 		weaponButton.setX(x);
@@ -311,7 +311,7 @@ public class HudRenderer {
 	public ImageButton getShotgun() {
 
 		x = 490;
-		y = 48;
+		y = 44;
 
 		weaponButton = new ImageButton(civ_item);
 		weaponButton.setX(x);
@@ -372,8 +372,8 @@ public class HudRenderer {
 	 */
 	public ImageButton getPanic() {
 
-		x = 517;
-		y = 113;
+		x = 530;
+		y = 100;
 
 		dashButton = new ImageButton(civ_dash);
 		dashButton.setX(x);
