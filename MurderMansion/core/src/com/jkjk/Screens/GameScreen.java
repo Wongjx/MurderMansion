@@ -19,13 +19,12 @@ public class GameScreen implements Screen {
 	private MMClient client;
 
 	public GameScreen(MurderMansion game, float gameWidth, float gameHeight, GameWorld world, GameRenderer renderer) {
-
-		this.gWorld=world;
-		this.renderer=renderer;
-		this.client=game.mMultiplayerSeisson.getClient();
 		
-//		MMServerThread serverThread = new MMServerThread(game.mMultiplayerSeisson.getServer());
-//		serverThread.start();
+		this.client=game.mMultiplayerSeisson.getClient();
+		this.gWorld=client.getgWorld();
+		this.renderer=client.getRenderer();
+//		this.gWorld=world;		
+//		this.renderer=renderer;
 
 //		client = new MMClient(server, gWorld, renderer);
 		hudRenderer = new HudRenderer(gWorld, gameWidth, gameHeight);

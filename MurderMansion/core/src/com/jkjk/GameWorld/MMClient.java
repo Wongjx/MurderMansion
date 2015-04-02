@@ -11,8 +11,6 @@ import java.util.ArrayList;
 import java.util.concurrent.ConcurrentHashMap;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.physics.box2d.Body;
-import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
@@ -20,12 +18,9 @@ import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
 import com.badlogic.gdx.physics.box2d.FixtureDef;
-import com.badlogic.gdx.utils.Array;
 import com.jkjk.GameObjects.WeaponPartSprite;
 import com.jkjk.GameObjects.Characters.GameCharacter;
-import com.jkjk.GameObjects.Characters.GameCharacterFactory;
 import com.jkjk.GameObjects.Items.ItemSprite;
-import com.jkjk.GameObjects.Items.Trap;
 import com.jkjk.GameObjects.Weapons.WeaponSprite;
 import com.jkjk.Host.Location;
 import com.jkjk.Host.SpawnBuffer;
@@ -198,7 +193,7 @@ public class MMClient {
 		
 
 		// Create and start extra thread that reads any incoming messages
-		Thread thread = new clientListener(clientInput);
+		Thread thread = new clientListener(clientInput,this);
 		thread.start();
 
 
@@ -246,6 +241,7 @@ public class MMClient {
 				}
 				playerList.add(gWorld.createPlayer(playerType.get("Player "+ id),playerPosition.get("Player "+i)[0], playerPosition.get("Player "+i)[1], playerAngle.get("Player "+i)));
 			} else {
+				//Create opponent bodies 
 				if (i == murdererId) {
 					playerList.add(gWorld.getGameCharFac().createCharacter("Murderer", i,gWorld, false));
 					playerList.get(playerList.size()-1).getBody().setType(BodyType.KinematicBody);
@@ -275,6 +271,20 @@ public class MMClient {
 						 * weaponLocations(); weaponPartLocations();
 						 * trapLocations(); batUsed(); knifeUsed();
 						 */
+		updatePlayerLocation();
+
+		
+	}
+	
+	private void updatePlayerLocation(){
+		//Get player postion
+		float angle =gWorld.getPlayer().getBody().getAngle();
+		float[] position ={gWorld.getPlayer().getBody().getPosition().x,gWorld.getPlayer().getBody().getPosition().y};
+		//Update client Hashmap
+		playerPosition.put("Player "+id, position);
+		playerAngle.put("Player "+id, angle);
+		//Update server
+		clientOutput.println("loc_"+id+"_"+Float.toString(position[0])+"_"+Float.toString(position[1])+"_"+Float.toString(angle));
 	}
 
 	/**
@@ -366,12 +376,7 @@ public class MMClient {
 	 */
 	private void playerTransform() {
 		for (int i = 0; i < numOfPlayers; i++) {
-			playerList
-					.get(i)
-					.getBody()
-					.setTransform(playerPosition.get("Player " + i)[0],
-							playerPosition.get("Player " + i)[0],
-							playerAngle.get("Player " + i));
+			playerList.get(i).getBody().setTransform(playerPosition.get("Player " + i)[0],playerPosition.get("Player " + i)[0],playerAngle.get("Player " + i));
 		}
 	}
 
@@ -440,15 +445,29 @@ public class MMClient {
 			this.clientOutput = clientOutput;
 		}
 	}
+	
+	public GameWorld getgWorld() {
+		return gWorld;
+	}
+
+	public void setgWorld(GameWorld gWorld) {
+		this.gWorld = gWorld;
+	}
+
+	public GameRenderer getRenderer() {
+		return renderer;
+	}
+
+	public void setRenderer(GameRenderer renderer) {
+		this.renderer = renderer;
+	}
 
 	public void sendToServer(String message) {
 		clientOutput.println(message);
 		clientOutput.flush();
 	}
 
-	/**
-	 * Precondition: Message containing socket address received from server
-	 * 
+	/** Initialize client socket 
 	 * @throws Exception
 	 */
 	public void initClientSocket(String address, int port) throws Exception {
@@ -475,28 +494,44 @@ public class MMClient {
 		clientOutput.close();
 		clientSocket.close();
 	}
+	
+	public void handleMessage(String message){
+		String[] msg = message.split("_");
+		//if player position update message
+		if (msg[0].equals("loc")){
+			float[] position = {Float.parseFloat(msg[2]),Float.parseFloat(msg[3])};
+			float angle = Float.parseFloat(msg[4]);
+			playerPosition.put("Player "+msg[1], position);
+			playerAngle.put("Player "+msg[1], angle);
+			//Get and change position of opponent
+			playerList.get(Integer.parseInt(msg[1])).spawn(position[0], position[1], angle);
+		}
+		
+	}
 }
 
 class clientListener extends Thread {
 	private BufferedReader input;
+	private MMClient client;
 	private String msg;
-	private String TAG = "serverListener Thread";
 
-	public clientListener(BufferedReader inputStream) {
+	public clientListener(BufferedReader inputStream, MMClient client) {
 		this.input = inputStream;
+		this.client=client;
 	}
 
 	@Override
 	public void run() {
-		Gdx.app.log(TAG, "Starting client listener thread.");
+		System.out.println("Starting client listener thread.");
 		while (!isInterrupted()) {
 			try {
 				if ((msg = input.readLine()) != null) {
-					Gdx.app.log(TAG, "Message received: " + msg);
+					System.out.println("Message received: "+msg);
 					// TODO something with message
+					client.handleMessage(msg);
 				}
 			} catch (Exception e) {
-				Gdx.app.log(TAG, "Error while reading: " + e.getMessage());
+				System.out.println("Error while reading: " + e.getMessage());
 			}
 		}
 	}

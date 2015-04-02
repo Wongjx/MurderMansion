@@ -373,15 +373,37 @@ public class MMServer {
 			System.out.println( "Server not instantated yet.");
 		}
 	}
-	//Send a string message out to all connected clients
+	
+	/**Send a string message out to all connected clients
+	 * @param Message Message to send out
+	 */
 	public void sendToClients(String Message){
 		for (PrintWriter write: this.serverOutput){
 			write.println(Message);
 			write.flush();
 		}
 	}
+
+	/**Send a string message out to all other clients
+	 * @param Message Message to send out 
+	 * @param id Client to skip
+	 */
+	public void updateClients(String Message, int id){
+		PrintWriter writer=null;
+		for (int i=0;i<serverOutput.size();i++){
+			if(i==id){
+				continue;
+			}
+			writer=serverOutput.get(i);
+			writer.println(Message);
+			writer.flush();
+		}
+	}
 	
-	public static String getLocalIpAddress() {
+	/** Get local ip address in IPV4 format
+	 * @return IPV4 of device in string
+	 */
+	private String getLocalIpAddress() {
 	    try {
 	        for (Enumeration<NetworkInterface> en = NetworkInterface.getNetworkInterfaces(); en.hasMoreElements();) {
 	            NetworkInterface intf = en.nextElement();
@@ -396,6 +418,21 @@ public class MMServer {
 	        ex.printStackTrace();
 	    }
 	    return null;
+	}
+	
+	/** Called to handle message sent by clients
+	 * @param message
+	 */
+	public void handleMessage(String message){
+		String[] msg=message.split("_");
+		//If player position update message
+		if(msg[0].equals("loc")){
+			float[] position = {Float.parseFloat(msg[2]),Float.parseFloat(msg[3])};
+			float angle = Float.parseFloat(msg[4]);
+			playerPosition.put("Player "+msg[1], position);
+			playerAngle.put("Player "+msg[1], angle);
+			updateClients(message, Integer.parseInt(msg[1]));
+		}
 	}
 }
 
@@ -532,7 +569,7 @@ class serverAcceptThread extends Thread{
 		
 		//Start a listener thread for each client socket connected
 		for (BufferedReader read:server.getServerInput()){
-			Thread thread = new serverListener(read);
+			Thread thread = new serverListener(read,server);
 			thread.start();
 		}
 	}
@@ -540,10 +577,11 @@ class serverAcceptThread extends Thread{
 
 
 class serverListener extends Thread{
+	private MMServer server;
 	private BufferedReader input;
 	private String msg;
-	private String TAG = "serverListener Thread";
-	public serverListener(BufferedReader inputStream){
+	public serverListener(BufferedReader inputStream, MMServer server){
+		this.server=server;
 		this.input=inputStream;
 	}
 	@Override
@@ -551,11 +589,12 @@ class serverListener extends Thread{
 		while(!isInterrupted()){
 			try{
 				if((msg=input.readLine())!=null){
-					Gdx.app.log(TAG, "Message received: "+msg);
+					System.out.println("Message received: "+msg);
 					//Do something with message
+					server.handleMessage(msg);
 				}
 			}catch(Exception e){
-				Gdx.app.log(TAG, "Error while reading: "+e.getMessage());
+				System.out.println( "Error while reading: "+e.getMessage());
 			}
 			
 		}

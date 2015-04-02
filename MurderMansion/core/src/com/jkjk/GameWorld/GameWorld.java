@@ -97,7 +97,6 @@ public class GameWorld {
 	public void update(float delta, MMClient client) {
 		world.step(delta, 6, 2); // Step size|Steps for each body to check collision|Accuracy of body position
 									// after collision
-
 		client.update();
 
 		if (player.isAlive()) {

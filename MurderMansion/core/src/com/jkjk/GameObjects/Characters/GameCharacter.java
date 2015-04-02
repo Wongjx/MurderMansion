@@ -260,7 +260,7 @@ public abstract class GameCharacter {
 			}
 
 			cam.position.set(body.getPosition(), 0); // Set cam position to be on player
-
+			
 			rayHandler.setCombinedMatrix(cam.combined);
 			rayHandler.updateAndRender();
 		}

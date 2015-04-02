@@ -17,6 +17,8 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextButton.TextButtonStyle;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.jkjk.GameWorld.GameRenderer;
 import com.jkjk.GameWorld.GameWorld;
+import com.jkjk.GameWorld.MMClient;
+import com.jkjk.Host.MMServer;
 import com.jkjk.MMHelpers.AssetLoader;
 import com.jkjk.MurderMansion.MurderMansion;
 
@@ -73,6 +75,15 @@ public class MenuScreen implements Screen{
             public void clicked(InputEvent event, float x, float y) {
         		GameWorld world = new GameWorld(gameWidth, gameHeight);
         		GameRenderer renderer= new GameRenderer(world, gameWidth, gameHeight);
+        		
+        		
+                try {
+                	game.mMultiplayerSeisson.setServer(new MMServer(1,game.mMultiplayerSeisson));
+    				game.mMultiplayerSeisson.setClient(new MMClient(world, renderer, game.mMultiplayerSeisson.serverAddress,game.mMultiplayerSeisson.serverPort));
+    			} catch (Exception e) {
+    				e.printStackTrace();
+    			}
+        		
                 ((Game)Gdx.app.getApplicationListener()).setScreen(new GameScreen(game,gameWidth, gameHeight,world,renderer));
             }
         });
