@@ -27,7 +27,7 @@ public abstract class GameCharacter {
 	protected boolean alive;
 	protected boolean itemChange, weaponChange, abilityChange;
 	private boolean canMove;
-	private boolean stun;
+	protected boolean stun;
 	private Duration stunDuration;
 	protected boolean disguised; // true for civilian, false for murderer
 
@@ -122,6 +122,7 @@ public abstract class GameCharacter {
 
 	public void stun(boolean stun) {
 		this.stun = stun;
+		body.setUserData(AssetLoader.civStunAnimation);
 		stunDuration.startCountdown();
 	}
 

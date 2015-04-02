@@ -374,6 +374,8 @@ public class HudRenderer {
 
 		x = 518;
 		y = 97;
+//		x = 530;
+//		y = 100;
 
 		dashButton = new ImageButton(civ_dash);
 		dashButton.setX(x);
