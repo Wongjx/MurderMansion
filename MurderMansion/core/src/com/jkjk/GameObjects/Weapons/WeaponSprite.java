@@ -1,5 +1,7 @@
 package com.jkjk.GameObjects.Weapons;
 
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.BodyDef;
@@ -16,6 +18,8 @@ public class WeaponSprite {
 	private GameWorld gWorld;
 	private FixtureDef fdef;
 	private float posX, posY;
+	private Animation batSpriteAnimation;
+	private float animationRunTime;
 
 	public WeaponSprite(GameWorld gWorld) {
 		this.gWorld = gWorld;
@@ -31,6 +35,9 @@ public class WeaponSprite {
 		fdef.isSensor = true;
 		fdef.filter.maskBits = 1;
 		body.createFixture(fdef).setUserData("weapon");
+		
+		batSpriteAnimation = AssetLoader.batSpriteAnimation;
+		animationRunTime = 0;
 	}
 
 	public void spawn(float x, float y, float angle) {
@@ -48,8 +55,10 @@ public class WeaponSprite {
 			batch.begin();
 			if (gWorld.getPlayer().getType().equals("Murderer"))
 				batch.draw(AssetLoader.knifeSpriteTexture, posX-12, posY-12, 24, 24);
-			else
-				batch.draw(AssetLoader.batSpriteTexture, posX-12, posY-12, 24, 24);
+			else{
+				animationRunTime += Gdx.graphics.getRawDeltaTime();
+				batch.draw(batSpriteAnimation.getKeyFrame(animationRunTime), posX-12, posY-12, 24, 24);
+			}
 			batch.end();
 		}
 	}
