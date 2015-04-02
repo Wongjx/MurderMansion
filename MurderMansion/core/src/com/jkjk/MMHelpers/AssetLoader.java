@@ -193,7 +193,7 @@ public class AssetLoader {
 		shotgunPartTexture = new Texture(Gdx.files.internal("gamehelper/shotgun.png"));
 
 		// CIVILIAN ANIMATIONS AND TEXTURE
-		civ_walk = new Texture(Gdx.files.internal("animation/test1.png"));
+		civ_walk = new Texture(Gdx.files.internal("animation/walk_animation_civ.png"));
 		civ_walk.setFilter(TextureFilter.Nearest, TextureFilter.Nearest);
 		TextureRegion[] civilians = TextureRegion.split(civ_walk, 1800, 1800)[0];
 		civAnimation = new Animation(0.9f, civilians);
@@ -203,9 +203,34 @@ public class AssetLoader {
 
 		civ_bat = new Texture(Gdx.files.internal("animation/bat_animation.png"));
 		civ_bat.setFilter(TextureFilter.Nearest, TextureFilter.Nearest);
-		TextureRegion[] bat_swing = TextureRegion.split(civ_bat, 1000, 1800)[0];
+		TextureRegion[] bat_swing = TextureRegion.split(civ_bat, 1800, 1800)[0];
 		civBatAnimation = new Animation(1f, bat_swing);
 		civBatAnimation.setPlayMode(PlayMode.NORMAL);
+		
+		civ_disarm = new Texture(Gdx.files.internal("animation/disarm_animation.png"));
+		civ_disarm.setFilter(TextureFilter.Nearest, TextureFilter.Nearest);
+		TextureRegion[] disarm_swing = TextureRegion.split(civ_disarm, 1800, 1800)[0];
+		civDisarmAnimation = new Animation(1f, disarm_swing);
+		civDisarmAnimation.setPlayMode(PlayMode.NORMAL);
+		
+		
+		civ_panic= new Texture(Gdx.files.internal("animation/panic_animation.png"));
+		civ_panic.setFilter(TextureFilter.Nearest, TextureFilter.Nearest);
+		TextureRegion[] panic_region = TextureRegion.split(civ_panic, 1800, 1800)[0];
+		civPanicAnimation = new Animation(1f, panic_region);
+		civPanicAnimation.setPlayMode(PlayMode.NORMAL);
+		
+		civ_shotgun= new Texture(Gdx.files.internal("animation/shotgun_animation.png"));
+		civ_shotgun.setFilter(TextureFilter.Nearest, TextureFilter.Nearest);
+		TextureRegion[] shotgun_blast = TextureRegion.split(civ_panic, 1800, 1800)[0];
+		civShotgunAnimation = new Animation(1f, shotgun_blast);
+		civShotgunAnimation.setPlayMode(PlayMode.NORMAL);
+		
+		civ_stun= new Texture(Gdx.files.internal("animation/stun_animation.png"));
+		civ_stun.setFilter(TextureFilter.Nearest, TextureFilter.Nearest);
+		TextureRegion[] stun_region = TextureRegion.split(civ_panic, 1800, 1800)[0];
+		civStunAnimation = new Animation(1f, stun_region);
+		civStunAnimation.setPlayMode(PlayMode.NORMAL);
 
 		// ghost 
 		ghost_float = new Texture(Gdx.files.internal("animation/ghostSingleFrame.png"));
