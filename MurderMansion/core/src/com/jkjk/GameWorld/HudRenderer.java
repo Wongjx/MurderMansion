@@ -3,6 +3,7 @@ package com.jkjk.GameWorld;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.scenes.scene2d.Actor;
@@ -27,11 +28,12 @@ public class HudRenderer {
 	
 	private TextureRegionDrawable civ_bat, civ_item, civ_dash, mur_knife, mur_item, mur_CtM, mur_MtC;
 	private Texture emptySlot;
+	private Animation coolDownAnimation;
 	private Actor emptySlot_actor;
 	private Texture timebox;
 	private Actor timebox_actor;
-	private Texture civ_profile;
-	private Actor civ_profile_actor;
+	private Texture weapon_parts_counter;
+	private Actor counter_actor;
 	private BitmapFont font;
 	private String time;
 	private Float playTime;
@@ -45,6 +47,8 @@ public class HudRenderer {
 
 	private Touchpad touchpad;
 	private Drawable touchKnob;
+	
+	private float animationRunTime;
 
 	/**
 	 * Constructs the link from the Box2D world created in GameWorld to HudRenderer. Allows rendering of the
@@ -73,9 +77,11 @@ public class HudRenderer {
 		stage = new Stage(new ExtendViewport(gameWidth, gameHeight, hudCam), batch);
 		stage.addActor(touchpad);
 		stage.addActor(getTimebox());
-		stage.addActor(getProfile());
+		stage.addActor(getWeaponPartsCounter());
 		stage.addActor(getEmptySlot());
 		abilityCheck();
+		
+		
 
 		Gdx.input.setInputProcessor(stage);
 	}
@@ -90,6 +96,7 @@ public class HudRenderer {
 	 */
 	private void initAssets(float w, float h) {
 		emptySlot = AssetLoader.emptySlot;
+		coolDownAnimation = AssetLoader.coolDownAnimation;
 		civ_bat = AssetLoader.civ_weapon_bat_draw;
 		civ_item = AssetLoader.civ_item_draw;
 		civ_dash = AssetLoader.civ_dash_draw;
@@ -108,7 +115,7 @@ public class HudRenderer {
 
 		// Top Left of the screen
 		timebox = AssetLoader.time;
-		civ_profile = AssetLoader.civ_profile;
+		weapon_parts_counter = AssetLoader.weapon_parts_counter;
 		font = AssetLoader.basker32blackTime;
 
 	}
@@ -123,9 +130,11 @@ public class HudRenderer {
 
 		batch.begin();
 		batch.draw(timebox, 55, 280);
-		batch.draw(civ_profile, 180, 282);
-		batch.draw(emptySlot, 485, 25);
+		batch.draw(weapon_parts_counter, 480, 235);
+		batch.draw(emptySlot, 480, 22, 120, 120);
 		font.draw(batch, getTime(), 75, 330);
+		
+		
 		batch.end();
 
 		if (gWorld.getPlayer().getItemChange())
@@ -168,13 +177,13 @@ public class HudRenderer {
 	/**
 	 * @return Actor for displaying the profile of the player.
 	 */
-	public Actor getProfile() {
+	public Actor getWeaponPartsCounter() {
 
-		civ_profile_actor = new Actor();
-		civ_profile_actor.draw(batch, 1);
-		civ_profile_actor.setName("civ profile actor");
+		counter_actor = new Actor();
+		counter_actor.draw(batch, 1);
+		counter_actor.setName("civ profile actor"); //what to put ah?
 
-		return civ_profile_actor;
+		return counter_actor;
 	}
 
 	/**
@@ -279,9 +288,9 @@ public class HudRenderer {
 	 */
 	public ImageButton getBat() {
 
-		x = 505;
-		y = 41;
-
+		x = 499;
+		y = 44;
+		
 		weaponButton = new ImageButton(civ_bat);
 		weaponButton.setX(x);
 		weaponButton.setY(y);
@@ -290,11 +299,13 @@ public class HudRenderer {
 		weaponButton.addListener(new ClickListener() {
 			@Override
 			public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
+				
 				System.out.println("Bat button touch down, draw hitbox");
 				return super.touchDown(event, x, y, pointer, button);
 			}
 			
 			public void clicked(InputEvent event, float x, float y) {
+				
 				System.out.println("Clicked on bat button");
 				gWorld.getPlayer().useWeapon();
 			}
@@ -310,10 +321,10 @@ public class HudRenderer {
 	 */
 	public ImageButton getShotgun() {
 
-		x = 505;
-		y = 41;
+		x = 501;
+		y = 44;
 
-		weaponButton = new ImageButton(civ_item);
+		weaponButton = new ImageButton(AssetLoader.civ_weapon_gun_draw);
 		weaponButton.setX(x);
 		weaponButton.setY(y);
 		weaponButton.setName("Weapon Button");
@@ -341,8 +352,8 @@ public class HudRenderer {
 	 */
 	public ImageButton getDisarmTrap() {
 
-		x = 567;
-		y = 43;
+		x = 557;
+		y = 48;
 
 		itemButton = new ImageButton(civ_item);
 		itemButton.setX(x);
@@ -372,8 +383,10 @@ public class HudRenderer {
 	 */
 	public ImageButton getPanic() {
 
-		x = 528;
-		y = 100;
+		x = 518;
+		y = 97;
+//		x = 530;
+//		y = 100;
 
 		dashButton = new ImageButton(civ_dash);
 		dashButton.setX(x);
@@ -398,8 +411,8 @@ public class HudRenderer {
 	 * @return Actor for Knife slot
 	 */
 	public ImageButton getKnife() {
-		x = 505;
-		y = 41;
+		x = 490;
+		y = 498;
 
 		itemButton = new ImageButton(mur_knife);
 		itemButton.setX(x);

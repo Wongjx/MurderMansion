@@ -22,6 +22,7 @@ public class Civilian extends GameCharacter {
 	private double hypothenuse;
 	private GameWorld gWorld;
 	private float animationRunTime;
+	
 
 	Civilian(int id, GameWorld gWorld, boolean isPlayer) {
 
@@ -50,6 +51,7 @@ public class Civilian extends GameCharacter {
 		
 		animationRunTime = 0;
 		body.setUserData(AssetLoader.civAnimation);
+		
 	}
 
 	@Override
@@ -59,6 +61,7 @@ public class Civilian extends GameCharacter {
 		
 		if (gWorld.getPlayer().lightContains(body.getPosition().x, body.getPosition().y)) {
 			runTime += Gdx.graphics.getRawDeltaTime();
+			batch.setProjectionMatrix(cam.combined);
 			batch.begin();
 			currentAnimation = (Animation) body.getUserData();
 			if (currentAnimation == AssetLoader.civBatAnimation
@@ -78,23 +81,29 @@ public class Civilian extends GameCharacter {
 				}
 				
 			} else {
+				
 				if (!body.getLinearVelocity().isZero() && checkMovable()) {
-					batch.draw(currentAnimation.getKeyFrame(runTime, true), body.getPosition().x-20,
-							body.getPosition().y-40, 10, 10, 60, 108, 1, 1,
+					batch.draw(currentAnimation.getKeyFrame(runTime, true), body.getPosition().x -9,
+							body.getPosition().y - 9, 9, 9, 18, 18, 6f, 6f,
 							(float) (body.getAngle() * 180 / Math.PI) - 90);
-				} else {
-					batch.draw(AssetLoader.civ_rest,  body.getPosition().x-20,
-							body.getPosition().y-40, 10, 10, 60, 108, 1, 1,
+				} 
+				else if(isStun()){
+					batch.draw(AssetLoader.civ_rest,  body.getPosition().x-9,
+							body.getPosition().y-9, 9, 9, 18, 18, 6f, 6f,
 							(float) (body.getAngle() * 180 / Math.PI) - 90);
 				}
+				
+				else {
+					batch.draw(AssetLoader.civ_rest,  body.getPosition().x-9,
+							body.getPosition().y-9, 9, 9, 18, 18, 6f, 6f,
+							(float) (body.getAngle() * 180 / Math.PI) - 90);
+				}
+				
 			}
 
 			batch.end();
 			
 		}
-		
-		
-		
 
 	}
 

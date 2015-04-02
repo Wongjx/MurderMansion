@@ -103,6 +103,7 @@ public class MMClient {
 
 		this.gWorld = gWorld;
 		this.renderer = renderer;
+		
 		this.serverAddress = serverAddress;
 		this.serverPort = serverPort;
 
@@ -119,6 +120,7 @@ public class MMClient {
 		weaponLocations = new SpawnBuffer(numOfPlayers);
 		weaponPartLocations = new SpawnBuffer(numOfPlayers * 2);
 		trapLocations = new SpawnBuffer(numOfPlayers);
+
 
 		String message;
 		// Receive item locations
@@ -208,9 +210,9 @@ public class MMClient {
 		// createWeaponParts(1060 - (i * 40), 430);
 		// }
 		
-		// DEBUG
-		Trap trap = new Trap(gWorld);
-		trap.endUse();
+//		// DEBUG
+//		Trap trap = new Trap(gWorld);
+//		trap.endUse();
 		
 		
 	}

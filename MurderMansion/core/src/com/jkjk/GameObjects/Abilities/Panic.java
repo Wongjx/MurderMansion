@@ -17,7 +17,7 @@ public class Panic extends Ability {
 	
 	@Override
 	public void use() {
-		//gameCharacter.getBody().setUserData(AssetLoader.civPanicAnimation);
+		gameCharacter.getBody().setUserData(AssetLoader.civPanicAnimation);
 		gameCharacter.setVelocity(gameCharacter.getVelocity()*1.5f);
 		duration.startCountdown();
 		active = true;

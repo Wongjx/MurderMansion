@@ -27,10 +27,14 @@ public class AssetLoader {
 	public static Drawable touchBackground;
 	public static Drawable touchKnob;
 	public static Texture emptySlot;
+	public static Texture civ_walk;
+	public static Animation civAnimation;
 
 	// CIVILIAN
 	public static Texture civ_weapon_bat_tex;
 	public static TextureRegionDrawable civ_weapon_bat_draw;
+	public static Texture civ_weapon_gun_tex;
+	public static TextureRegionDrawable civ_weapon_gun_draw;
 	public static Texture civ_item_tex;
 	public static TextureRegionDrawable civ_item_draw;
 	public static Texture civ_dash_tex;
@@ -61,7 +65,7 @@ public class AssetLoader {
 	public static TiledMap tiledMap;
 
 	public static Texture time;
-	public static Texture civ_profile;
+	public static Texture weapon_parts_counter;
 
 	public static TextureRegion mur_rest;
 	public static TextureRegion civ_rest;
@@ -69,15 +73,21 @@ public class AssetLoader {
 
 	// GENERAL ITEMS
 	public static Texture plantedTrapTexture;
-	public static Texture trapSpriteTexture;
+	public static Animation plantedTrapAnimation;
+	public static Texture restingTrapTexture;
+	public static Animation restingTrapAnimation;
 	public static Texture disarmTrapSpriteTexture;
+	public static Animation disarmTrapSpriteAnimation;
 	public static Texture batSpriteTexture;
+	public static Animation batSpriteAnimation;
 	public static Texture knifeSpriteTexture;
+	public static Animation knifeSpriteAnimation;
 	public static Texture shotgunPartTexture;
+	public static Animation shotgunPartSpriteAnimation;
 
 	// Character Animations and Textures
-	public static Texture civ_walk;
-	public static Animation civAnimation;
+	public static Texture cooldown_animation;
+	public static Animation coolDownAnimation;
 	public static Texture civ_disarm;
 	public static Animation civDisarmAnimation;
 	public static Texture civ_bat;
@@ -165,6 +175,8 @@ public class AssetLoader {
 		civ_item_draw = new TextureRegionDrawable(new TextureRegion(civ_item_tex));
 		civ_dash_tex = new Texture(Gdx.files.internal("HUD/civ_dash.png"));
 		civ_dash_draw = new TextureRegionDrawable(new TextureRegion(civ_dash_tex));
+		civ_weapon_gun_tex = new Texture(Gdx.files.internal("HUD/civ_weapon_gun.png"));
+		civ_weapon_gun_draw = new TextureRegionDrawable(new TextureRegion(civ_weapon_gun_tex));
 
 		// MURDERER HUD
 		mur_weapon_tex = new Texture(Gdx.files.internal("HUD/mur_weapon.png"));
@@ -177,24 +189,53 @@ public class AssetLoader {
 		// TIMER
 		time = new Texture(Gdx.files.internal("HUD/countdown.png"));
 		time.setFilter(TextureFilter.Linear, TextureFilter.Linear);
-		civ_profile = new Texture(Gdx.files.internal("HUD/civ_profile.png"));
-		civ_profile.setFilter(TextureFilter.Linear, TextureFilter.Linear);
+		weapon_parts_counter = new Texture(Gdx.files.internal("HUD/weapon_parts_counter.png"));
+		weapon_parts_counter.setFilter(TextureFilter.Linear, TextureFilter.Linear);
 
 		// MAP
 		tiledMap = new TmxMapLoader().load("map/mansion2.tmx");
 
 		// PICK UP ITEM TEXTURES
-		plantedTrapTexture = new Texture(Gdx.files.internal("gamehelper/planted_trap.png"));
-		trapSpriteTexture = new Texture(Gdx.files.internal("gamehelper/resting_trap.png"));
-		disarmTrapSpriteTexture = new Texture(Gdx.files.internal("gamehelper/disarm.png"));
-		batSpriteTexture = new Texture(Gdx.files.internal("gamehelper/knife.png"));
-		knifeSpriteTexture = new Texture(Gdx.files.internal("gamehelper/knife.png"));
-		shotgunPartTexture = new Texture(Gdx.files.internal("gamehelper/shotgun.png"));
+		plantedTrapTexture = new Texture(Gdx.files.internal("gamehelper/planted_trap_animation.png"));
+		plantedTrapTexture.setFilter(TextureFilter.Nearest, TextureFilter.Nearest);
+		TextureRegion[] planted_trap = TextureRegion.split(plantedTrapTexture, 120, 120)[0];
+		plantedTrapAnimation = new Animation(0.4f, planted_trap);
+		plantedTrapAnimation.setPlayMode(Animation.PlayMode.LOOP_PINGPONG);
+		
+		restingTrapTexture = new Texture(Gdx.files.internal("gamehelper/resting_trap_animation.png"));
+		restingTrapTexture.setFilter(TextureFilter.Nearest, TextureFilter.Nearest);
+		TextureRegion[] trap_sprite = TextureRegion.split(restingTrapTexture, 120, 120)[0];
+		restingTrapAnimation = new Animation(0.4f, trap_sprite);
+		restingTrapAnimation.setPlayMode(Animation.PlayMode.LOOP_PINGPONG);
+		
+		disarmTrapSpriteTexture = new Texture(Gdx.files.internal("gamehelper/disarm_sprite_animation.png"));
+		disarmTrapSpriteTexture.setFilter(TextureFilter.Nearest, TextureFilter.Nearest);
+		TextureRegion[] disarm_trap = TextureRegion.split(disarmTrapSpriteTexture, 120, 120)[0];
+		disarmTrapSpriteAnimation = new Animation(0.4f, disarm_trap);
+		disarmTrapSpriteAnimation.setPlayMode(Animation.PlayMode.LOOP_PINGPONG);
+		
+		batSpriteTexture = new Texture(Gdx.files.internal("gamehelper/bat_sprite_animation.png"));
+		batSpriteTexture.setFilter(TextureFilter.Nearest, TextureFilter.Nearest);
+		TextureRegion[] bat_sprite = TextureRegion.split(batSpriteTexture, 120, 120)[0];
+		batSpriteAnimation = new Animation(0.4f, bat_sprite);
+		batSpriteAnimation.setPlayMode(Animation.PlayMode.LOOP_PINGPONG);
+		
+		knifeSpriteTexture = new Texture(Gdx.files.internal("gamehelper/knife_sprite_animation.png"));
+		knifeSpriteTexture.setFilter(TextureFilter.Nearest, TextureFilter.Nearest);
+		TextureRegion[] knife_sprite = TextureRegion.split(knifeSpriteTexture, 120, 120)[0];
+		knifeSpriteAnimation = new Animation(0.4f, knife_sprite);
+		knifeSpriteAnimation.setPlayMode(Animation.PlayMode.LOOP_PINGPONG);
+		
+		shotgunPartTexture = new Texture(Gdx.files.internal("gamehelper/shotgun_sprite_animation.png"));
+		shotgunPartTexture.setFilter(TextureFilter.Nearest, TextureFilter.Nearest);
+		TextureRegion[] shotgun_sprite = TextureRegion.split(shotgunPartTexture, 120, 120)[0];
+		shotgunPartSpriteAnimation = new Animation(0.4f, shotgun_sprite);
+		shotgunPartSpriteAnimation.setPlayMode(Animation.PlayMode.LOOP_PINGPONG);
 
 		// CIVILIAN ANIMATIONS AND TEXTURE
 		civ_walk = new Texture(Gdx.files.internal("animation/walk_animation_civ.png"));
 		civ_walk.setFilter(TextureFilter.Nearest, TextureFilter.Nearest);
-		TextureRegion[] civilians = TextureRegion.split(civ_walk, 1000, 1800)[0];
+		TextureRegion[] civilians = TextureRegion.split(civ_walk, 90, 90)[0];
 		civAnimation = new Animation(0.9f, civilians);
 		civAnimation.setPlayMode(Animation.PlayMode.LOOP_PINGPONG);
 		civ_rest = civilians[1];
@@ -202,19 +243,44 @@ public class AssetLoader {
 
 		civ_bat = new Texture(Gdx.files.internal("animation/bat_animation.png"));
 		civ_bat.setFilter(TextureFilter.Nearest, TextureFilter.Nearest);
-
-		TextureRegion[] bat_swing = TextureRegion.split(civ_bat, 1000, 1800)[0];
+		TextureRegion[] bat_swing = TextureRegion.split(civ_bat, 90, 90)[0];
 		civBatAnimation = new Animation(1f, bat_swing);
 		civBatAnimation.setPlayMode(PlayMode.NORMAL);
+		
+		civ_disarm = new Texture(Gdx.files.internal("animation/disarm_animation.png"));
+		civ_disarm.setFilter(TextureFilter.Nearest, TextureFilter.Nearest);
+		TextureRegion[] disarm_swing = TextureRegion.split(civ_disarm, 90, 90)[0];
+		civDisarmAnimation = new Animation(1f, disarm_swing);
+		civDisarmAnimation.setPlayMode(PlayMode.NORMAL);
+		
+		
+		civ_panic= new Texture(Gdx.files.internal("animation/panic_animation.png"));
+		civ_panic.setFilter(TextureFilter.Nearest, TextureFilter.Nearest);
+		TextureRegion[] panic_region = TextureRegion.split(civ_panic, 90, 90)[0];
+		civPanicAnimation = new Animation(1f, panic_region);
+		civPanicAnimation.setPlayMode(PlayMode.NORMAL);
+		
+		civ_shotgun= new Texture(Gdx.files.internal("animation/shotgun_animation.png"));
+		civ_shotgun.setFilter(TextureFilter.Nearest, TextureFilter.Nearest);
+		TextureRegion[] shotgun_blast = TextureRegion.split(civ_panic, 90, 90)[0];
+		civShotgunAnimation = new Animation(1f, shotgun_blast);
+		civShotgunAnimation.setPlayMode(PlayMode.NORMAL);
+		
+		civ_stun= new Texture(Gdx.files.internal("animation/stun_animation_civ.png"));
+		civ_stun.setFilter(TextureFilter.Nearest, TextureFilter.Nearest);
+		TextureRegion[] stun_region = TextureRegion.split(civ_panic, 90, 90)[0];
+		civStunAnimation = new Animation(1f, stun_region);
+		civStunAnimation.setPlayMode(PlayMode.NORMAL);
+		
+		// HUD COOLDOWN
+		cooldown_animation = new Texture(Gdx.files.internal("animation/cooldown_animation.png"));
+		cooldown_animation.setFilter(TextureFilter.Nearest, TextureFilter.Nearest);
+		TextureRegion[] cooldown = TextureRegion.split(cooldown_animation, 50, 50)[0];
+		coolDownAnimation = new Animation(1f, cooldown);
+		coolDownAnimation.setPlayMode(PlayMode.NORMAL);
 
-		// ghost single frame animation tester.
-
+		// ghost 
 		ghost_float = new Texture(Gdx.files.internal("animation/ghostSingleFrame.png"));
-		// ghost_float.setFilter(TextureFilter.Nearest, TextureFilter.Nearest);
-		// TextureRegion[] ghostFloat = TextureRegion.split(ghost_haunt,300,300)[0];
-		// ghostFloatAnimation = new Animation(1f, ghostFloat);
-		// ghostFloatAnimation.setPlayMode(PlayMode.LOOP);
-		System.out.println("help");
 	}
 
 	public static void dispose() {
@@ -223,8 +289,9 @@ public class AssetLoader {
 		logoTexture.dispose();
 		touchpadSkin.dispose();
 		menuBackground.dispose();
+		cooldown_animation.dispose();
 		time.dispose();
-		civ_profile.dispose();
+		weapon_parts_counter.dispose();
 		tiledMap.dispose();
 		emptySlot.dispose();
 		civ_weapon_bat_tex.dispose();
