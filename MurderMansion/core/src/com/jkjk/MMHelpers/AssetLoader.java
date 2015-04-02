@@ -193,9 +193,9 @@ public class AssetLoader {
 		shotgunPartTexture = new Texture(Gdx.files.internal("gamehelper/shotgun.png"));
 
 		// CIVILIAN ANIMATIONS AND TEXTURE
-		civ_walk = new Texture(Gdx.files.internal("animation/walk_animation_civ.png"));
+		civ_walk = new Texture(Gdx.files.internal("animation/test1.png"));
 		civ_walk.setFilter(TextureFilter.Nearest, TextureFilter.Nearest);
-		TextureRegion[] civilians = TextureRegion.split(civ_walk, 1000, 1800)[0];
+		TextureRegion[] civilians = TextureRegion.split(civ_walk, 1800, 1800)[0];
 		civAnimation = new Animation(0.9f, civilians);
 		civAnimation.setPlayMode(Animation.PlayMode.LOOP_PINGPONG);
 		civ_rest = civilians[1];
