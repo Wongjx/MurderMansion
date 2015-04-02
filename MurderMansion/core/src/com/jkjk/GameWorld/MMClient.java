@@ -60,7 +60,8 @@ public class MMClient {
 		playerList = new Array<GameCharacter>();
 		numOfPlayers = server.getNumOfPlayers();
 
-		gWorld.createPlayer(server.getPlayerType().get("Player " + id));
+//		gWorld.createPlayer(server.getPlayerType().get("Player " + id));
+		gWorld.createPlayer(1);
 
 		for (int i = 1; i < numOfPlayers; i++) {
 			createOpponents(server.getPlayerType().get("Player " + i));
