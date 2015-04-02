@@ -279,7 +279,7 @@ public class HudRenderer {
 	 */
 	public ImageButton getBat() {
 
-		x = 480;
+		x = 499;
 		y = 44;
 
 		weaponButton = new ImageButton(civ_bat);
@@ -310,10 +310,10 @@ public class HudRenderer {
 	 */
 	public ImageButton getShotgun() {
 
-		x = 490;
+		x = 501;
 		y = 44;
 
-		weaponButton = new ImageButton(civ_item);
+		weaponButton = new ImageButton(AssetLoader.civ_weapon_gun_draw);
 		weaponButton.setX(x);
 		weaponButton.setY(y);
 		weaponButton.setName("Weapon Button");
@@ -342,7 +342,7 @@ public class HudRenderer {
 	public ImageButton getDisarmTrap() {
 
 		x = 557;
-		y = 53;
+		y = 48;
 
 		itemButton = new ImageButton(civ_item);
 		itemButton.setX(x);
@@ -372,8 +372,10 @@ public class HudRenderer {
 	 */
 	public ImageButton getPanic() {
 
-		x = 530;
-		y = 100;
+		x = 518;
+		y = 97;
+//		x = 530;
+//		y = 100;
 
 		dashButton = new ImageButton(civ_dash);
 		dashButton.setX(x);

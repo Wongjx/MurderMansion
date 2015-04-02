@@ -32,6 +32,8 @@ public class AssetLoader {
 	// CIVILIAN
 	public static Texture civ_weapon_bat_tex;
 	public static TextureRegionDrawable civ_weapon_bat_draw;
+	public static Texture civ_weapon_gun_tex;
+	public static TextureRegionDrawable civ_weapon_gun_draw;
 	public static Texture civ_item_tex;
 	public static TextureRegionDrawable civ_item_draw;
 	public static Texture civ_dash_tex;
@@ -166,6 +168,8 @@ public class AssetLoader {
 		civ_item_draw = new TextureRegionDrawable(new TextureRegion(civ_item_tex));
 		civ_dash_tex = new Texture(Gdx.files.internal("HUD/civ_dash.png"));
 		civ_dash_draw = new TextureRegionDrawable(new TextureRegion(civ_dash_tex));
+		civ_weapon_gun_tex = new Texture(Gdx.files.internal("HUD/civ_weapon_gun.png"));
+		civ_weapon_gun_draw = new TextureRegionDrawable(new TextureRegion(civ_weapon_gun_tex));
 
 		// MURDERER HUD
 		mur_weapon_tex = new Texture(Gdx.files.internal("HUD/mur_weapon.png"));
@@ -226,7 +230,7 @@ public class AssetLoader {
 		civShotgunAnimation = new Animation(1f, shotgun_blast);
 		civShotgunAnimation.setPlayMode(PlayMode.NORMAL);
 		
-		civ_stun= new Texture(Gdx.files.internal("animation/stun_animation.png"));
+		civ_stun= new Texture(Gdx.files.internal("animation/stun_animation_civ.png"));
 		civ_stun.setFilter(TextureFilter.Nearest, TextureFilter.Nearest);
 		TextureRegion[] stun_region = TextureRegion.split(civ_panic, 1800, 1800)[0];
 		civStunAnimation = new Animation(1f, stun_region);
