@@ -10,6 +10,9 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.utils.SpriteDrawable;
+import com.jkjk.GameWorld.GameRenderer;
+import com.jkjk.GameWorld.GameWorld;
+import com.jkjk.GameWorld.MMClient;
 import com.jkjk.MMHelpers.AssetLoader;
 import com.jkjk.MurderMansion.MurderMansion;
 
@@ -51,8 +54,22 @@ public class WaitScreen implements Screen {
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
         stage.act();
         stage.draw();
-        if (game.mMultiplayerSeisson.mState==game.mMultiplayerSeisson.ROOM_PLAY){
-        	((Game)Gdx.app.getApplicationListener()).setScreen(new GameScreen(game,gameWidth, gameHeight));
+        if ((game.mMultiplayerSeisson.mState==game.mMultiplayerSeisson.ROOM_PLAY) && 
+        		(game.mMultiplayerSeisson.serverAddress!=null) &&
+        		(game.mMultiplayerSeisson.serverPort!=0)){
+        	
+            //Create MMClient and connect to server
+    		GameWorld gWorld = new GameWorld(gameWidth, gameHeight);
+    		GameRenderer renderer= new GameRenderer(gWorld, gameWidth, gameHeight);
+        	
+            try {
+				game.mMultiplayerSeisson.setClient(new MMClient(gWorld, renderer, game.mMultiplayerSeisson.serverAddress,game.mMultiplayerSeisson.serverPort));
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+        	
+        	((Game)Gdx.app.getApplicationListener()).setScreen(new GameScreen(game,gameWidth, gameHeight,gWorld,renderer));
+        	
         } else if (game.mMultiplayerSeisson.mState==game.mMultiplayerSeisson.ROOM_MENU){
         	game.mMultiplayerSeisson.mState=game.mMultiplayerSeisson.ROOM_NULL;
         	((Game)Gdx.app.getApplicationListener()).setScreen(new MenuScreen(game,gameWidth, gameHeight));

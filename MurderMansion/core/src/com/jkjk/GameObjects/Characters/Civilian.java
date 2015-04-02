@@ -22,6 +22,7 @@ public class Civilian extends GameCharacter {
 	private double hypothenuse;
 	private GameWorld gWorld;
 	private float animationRunTime;
+	
 
 	Civilian(int id, GameWorld gWorld, boolean isPlayer) {
 
@@ -50,6 +51,7 @@ public class Civilian extends GameCharacter {
 		
 		animationRunTime = 0;
 		body.setUserData(AssetLoader.civAnimation);
+		
 	}
 
 	@Override

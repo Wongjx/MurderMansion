@@ -10,12 +10,13 @@ import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
-import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Label.LabelStyle;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton.TextButtonStyle;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
+import com.jkjk.GameWorld.GameRenderer;
+import com.jkjk.GameWorld.GameWorld;
 import com.jkjk.MMHelpers.AssetLoader;
 import com.jkjk.MurderMansion.MurderMansion;
 
@@ -70,7 +71,9 @@ public class MenuScreen implements Screen{
     	buttonPlay.addListener(new ClickListener(){
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                ((Game)Gdx.app.getApplicationListener()).setScreen(new GameScreen(game,gameWidth, gameHeight));
+        		GameWorld world = new GameWorld(gameWidth, gameHeight);
+        		GameRenderer renderer= new GameRenderer(world, gameWidth, gameHeight);
+                ((Game)Gdx.app.getApplicationListener()).setScreen(new GameScreen(game,gameWidth, gameHeight,world,renderer));
             }
         });
         buttonLogin.addListener(new ClickListener(){
@@ -92,10 +95,9 @@ public class MenuScreen implements Screen{
             @Override
             public void clicked(InputEvent event, float x, float y) {
                 //Host multiplayer game
-//            	game.actionResolver.startQuickGame();
-//            	game.mMultiplayerSeisson.mState=game.mMultiplayerSeisson.ROOM_WAIT;
-//            	((Game)Gdx.app.getApplicationListener()).setScreen(new WaitScreen(game,gameWidth, gameHeight));
-            	game.socketHelper.initServerSocket();
+            	game.actionResolver.startQuickGame();
+            	game.mMultiplayerSeisson.mState=game.mMultiplayerSeisson.ROOM_WAIT;
+            	((Game)Gdx.app.getApplicationListener()).setScreen(new WaitScreen(game,gameWidth, gameHeight));
             }
         });
         

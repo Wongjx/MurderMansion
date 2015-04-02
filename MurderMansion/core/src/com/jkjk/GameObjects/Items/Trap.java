@@ -1,5 +1,7 @@
 package com.jkjk.GameObjects.Items;
 
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
@@ -17,11 +19,16 @@ public class Trap extends Item {
 	private FixtureDef fdef;
 	private Vector2 playerPosition;
 	private float playerAngle;
+	private Animation plantedTrapAnimation;
+	private float animationRunTime;
 
 	public Trap(GameWorld gWorld) {
 		super(gWorld);
 		bdef = new BodyDef();
 		fdef = new FixtureDef();
+		
+		plantedTrapAnimation = AssetLoader.plantedTrapAnimation;
+		animationRunTime = 0;
 	}
 
 	@Override
@@ -62,8 +69,8 @@ public class Trap extends Item {
 	public void render(SpriteBatch batch) {
 		if (gWorld.getPlayer().lightContains(body.getPosition().x, body.getPosition().y)) {
 			batch.begin();
-			batch.draw(AssetLoader.plantedTrapTexture, body.getPosition().x + 9, body.getPosition().y - 16,
-					32, 32);
+			animationRunTime += Gdx.graphics.getRawDeltaTime();
+			batch.draw(plantedTrapAnimation.getKeyFrame(animationRunTime), body.getPosition().x, body.getPosition().y, 32, 32);
 			batch.end();
 		}
 	}

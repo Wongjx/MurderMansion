@@ -3,12 +3,15 @@
  */
 package com.jkjk.GameObjects;
 
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
 import com.badlogic.gdx.physics.box2d.CircleShape;
 import com.badlogic.gdx.physics.box2d.FixtureDef;
+import com.jkjk.GameObjects.Weapons.Shotgun;
 import com.jkjk.GameWorld.GameWorld;
 import com.jkjk.MMHelpers.AssetLoader;
 
@@ -23,6 +26,8 @@ public class WeaponPartSprite {
 	private GameWorld gWorld;
 	private FixtureDef fdef;
 	private float posX, posY;
+	private Animation shotgunPartSpriteAnimation;
+	private float animationRunTime;
 
 	public WeaponPartSprite(GameWorld gWorld) {
 		this.gWorld = gWorld;
@@ -38,6 +43,9 @@ public class WeaponPartSprite {
 		fdef.isSensor = true;
 		fdef.filter.maskBits = 1;
 		body.createFixture(fdef).setUserData("weapon part");
+		
+		shotgunPartSpriteAnimation = AssetLoader.shotgunPartSpriteAnimation;
+		animationRunTime = 0;
 	}
 
 	public void spawn(float x, float y, float angle) {
@@ -53,7 +61,8 @@ public class WeaponPartSprite {
 	public void render(SpriteBatch batch) {
 		if (gWorld.getPlayer().lightContains(posX, posY)) {
 			batch.begin();
-			batch.draw(AssetLoader.shotgunPartTexture, posX-12, posY-12, 25, 25);
+			animationRunTime += Gdx.graphics.getRawDeltaTime();
+			batch.draw(shotgunPartSpriteAnimation.getKeyFrame(animationRunTime), posX-12, posY-12, 25, 25);
 			batch.end();
 		}
 	}

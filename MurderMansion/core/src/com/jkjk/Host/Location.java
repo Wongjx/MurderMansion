@@ -5,7 +5,7 @@ public class Location {
 
 	private float x, y;
 
-	Location(float[] a) {
+	public Location(float[] a) {
 		this.x = a[0];
 		this.y = a[1];
 	}

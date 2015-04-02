@@ -3,6 +3,7 @@ package com.jkjk.GameWorld;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.scenes.scene2d.Actor;
@@ -27,6 +28,7 @@ public class HudRenderer {
 	
 	private TextureRegionDrawable civ_bat, civ_item, civ_dash, mur_knife, mur_item, mur_CtM, mur_MtC;
 	private Texture emptySlot;
+	private Animation coolDownAnimation;
 	private Actor emptySlot_actor;
 	private Texture timebox;
 	private Actor timebox_actor;
@@ -45,6 +47,8 @@ public class HudRenderer {
 
 	private Touchpad touchpad;
 	private Drawable touchKnob;
+	
+	private float animationRunTime;
 
 	/**
 	 * Constructs the link from the Box2D world created in GameWorld to HudRenderer. Allows rendering of the
@@ -76,6 +80,8 @@ public class HudRenderer {
 		stage.addActor(getWeaponPartsCounter());
 		stage.addActor(getEmptySlot());
 		abilityCheck();
+		
+		
 
 		Gdx.input.setInputProcessor(stage);
 	}
@@ -90,6 +96,7 @@ public class HudRenderer {
 	 */
 	private void initAssets(float w, float h) {
 		emptySlot = AssetLoader.emptySlot;
+		coolDownAnimation = AssetLoader.coolDownAnimation;
 		civ_bat = AssetLoader.civ_weapon_bat_draw;
 		civ_item = AssetLoader.civ_item_draw;
 		civ_dash = AssetLoader.civ_dash_draw;
@@ -126,6 +133,8 @@ public class HudRenderer {
 		batch.draw(weapon_parts_counter, 480, 235);
 		batch.draw(emptySlot, 480, 22, 120, 120);
 		font.draw(batch, getTime(), 75, 330);
+		
+		
 		batch.end();
 
 		if (gWorld.getPlayer().getItemChange())
@@ -281,7 +290,7 @@ public class HudRenderer {
 
 		x = 499;
 		y = 44;
-
+		
 		weaponButton = new ImageButton(civ_bat);
 		weaponButton.setX(x);
 		weaponButton.setY(y);
@@ -290,11 +299,13 @@ public class HudRenderer {
 		weaponButton.addListener(new ClickListener() {
 			@Override
 			public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
+				
 				System.out.println("Bat button touch down, draw hitbox");
 				return super.touchDown(event, x, y, pointer, button);
 			}
 			
 			public void clicked(InputEvent event, float x, float y) {
+				
 				System.out.println("Clicked on bat button");
 				gWorld.getPlayer().useWeapon();
 			}
