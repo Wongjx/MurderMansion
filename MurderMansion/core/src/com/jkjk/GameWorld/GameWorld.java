@@ -8,13 +8,14 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.Array;
-import com.jkjk.GameObjects.WeaponPartSprite;
+import com.jkjk.GameObjects.Obstacles;
 import com.jkjk.GameObjects.Characters.GameCharacter;
 import com.jkjk.GameObjects.Characters.GameCharacterFactory;
 import com.jkjk.GameObjects.Items.ItemFactory;
 import com.jkjk.GameObjects.Items.ItemSprite;
 import com.jkjk.GameObjects.Items.Trap;
 import com.jkjk.GameObjects.Weapons.WeaponFactory;
+import com.jkjk.GameObjects.Weapons.WeaponPartSprite;
 import com.jkjk.GameObjects.Weapons.WeaponSprite;
 import com.jkjk.MMHelpers.AssetLoader;
 import com.jkjk.MMHelpers.MMContactListener;
@@ -42,6 +43,8 @@ public class GameWorld {
 	private HashMap<Vector2, WeaponPartSprite> weaponPartList;
 	private int numOfWeaponPartsCollected;
 	private boolean shotgunCreated;
+	
+	private HashMap<Vector2, Obstacles> obstacleList;
 
 	private World world;
 	private MMContactListener cl;
@@ -84,9 +87,12 @@ public class GameWorld {
 
 		numOfWeaponPartsCollected = 0;
 		weaponPartList = new HashMap<Vector2, WeaponPartSprite>();
+		
+		obstacleList = new HashMap<Vector2, Obstacles>();
 
 		Box2DMapObjectParser parser = new Box2DMapObjectParser();
 		parser.load(world, AssetLoader.tiledMap);
+		
 	}
 	
 	public static GameWorld getInstance(){
@@ -315,6 +321,10 @@ public class GameWorld {
 
 	public HashMap<Vector2, Trap> getTrapList() {
 		return trapList;
+	}
+	
+	public HashMap<Vector2, Obstacles> getObstacleList() {
+		return obstacleList;
 	}
 
 }

@@ -8,10 +8,11 @@ import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TiledMapRenderer;
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
 import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
-import com.jkjk.GameObjects.WeaponPartSprite;
+import com.jkjk.GameObjects.Obstacles;
 import com.jkjk.GameObjects.Characters.GameCharacter;
 import com.jkjk.GameObjects.Items.ItemSprite;
 import com.jkjk.GameObjects.Items.Trap;
+import com.jkjk.GameObjects.Weapons.WeaponPartSprite;
 import com.jkjk.GameObjects.Weapons.WeaponSprite;
 import com.jkjk.MMHelpers.AssetLoader;
 
@@ -86,6 +87,10 @@ public class GameRenderer {
 		tiledMapRenderer.render();
 
 		client.render(cam, batch);
+		
+		for (Obstacles ob: gWorld.getObstacleList().values()) {
+			ob.render(batch);
+		}
 
 		for (ItemSprite iS : gWorld.getItemList().values()) {
 			iS.render(batch);

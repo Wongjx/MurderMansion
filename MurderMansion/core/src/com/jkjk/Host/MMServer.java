@@ -58,6 +58,7 @@ public class MMServer {
 	private final ItemSpawner itemSpawner;
 	private final WeaponSpawner weaponSpawner;
 	private final WeaponPartSpawner weaponPartSpawner;
+	private final ObstaclesHandler obstaclesHandler;
 
 	// To Pass: Sprites of objects (items, weapons, players, bat swing, knife stab, shotgun blast, disguise
 	// animation
@@ -85,12 +86,13 @@ public class MMServer {
 		itemLocations = new SpawnBuffer(numOfPlayers*3);
 		weaponLocations = new SpawnBuffer(numOfPlayers);
 		weaponPartLocations = new SpawnBuffer(numOfPlayers*2);
-		trapLocations = new SpawnBuffer(numOfPlayers);
+		trapLocations = new SpawnBuffer(numOfPlayers*2);
 
 //		System.out.println("Instantiate spawner");
 		itemSpawner = new ItemSpawner();
 		weaponSpawner = new WeaponSpawner();
 		weaponPartSpawner = new WeaponPartSpawner();
+		obstaclesHandler = new ObstaclesHandler();
 
 //		System.out.println("Assigning murderer");
 		murdererId = new Random().nextInt(numOfPlayers);
@@ -117,6 +119,9 @@ public class MMServer {
 		return instance;
 	}
 
+	/**
+	 * Start updating only when all clients have successfully synchronized.
+	 */
 	public void update() {
 		runTime = System.currentTimeMillis() - startTime;
 
@@ -135,7 +140,8 @@ public class MMServer {
 		// Opens random door in mansion *TO BE IMPLEMENTED
 		if (runTime > nextObstacleRemoveTime) {
 			System.out.println("NEW DOOR OPENS!");
-			nextObstacleRemoveTime = new Random().nextInt(10000) + runTime + 60000;
+			obstaclesHandler.destroyObstacle();
+			nextObstacleRemoveTime = runTime + 60000;
 		}
 	}
 
@@ -148,7 +154,7 @@ public class MMServer {
 			} else {
 				playerType.put("Player " + i, 1);
 			}
-			playerPosition.put("Player " + i, new float[] { 1010 - ((i + 1) * 40), 515 });
+			playerPosition.put("Player " + i, new float[] { 900 - ((i + 1) * 40), 515 });
 			playerAngle.put("Player " + i, 0f);
 		}
 	}
@@ -220,78 +226,54 @@ public class MMServer {
 	}
 
 	public SpawnBuffer getItemLocations() {
-		synchronized (itemLocations) {
 			return itemLocations;
-		}
 	}
 	
 
 	public void produceItem(Location location) {
-		synchronized (itemLocations) {
 			itemLocations.produce(location);
-		}
 	}
 
-	public void consumeItem(Location location) throws InterruptedException {
-		synchronized (itemLocations) {
+	public void consumeItem(Location location) {
 			itemLocations.consume(location);
 			itemSpawner.restore(location);
-		}
 	}
 
 	public SpawnBuffer getWeaponLocations() {
-		synchronized (weaponLocations) {
 			return weaponLocations;
-		}
 	}
 
 	public void produceWeapon(Location location) {
-		synchronized (weaponLocations) {
 			weaponLocations.produce(location);
-		}
 	}
 
 	public void consumeWeapon(Location location) {
-		synchronized (weaponLocations) {
 			weaponLocations.consume(location);
 			weaponSpawner.restore(location);
-		}
 	}
 
 	public SpawnBuffer getWeaponPartLocations() {
-		synchronized (weaponPartLocations) {
 			return weaponPartLocations;
-		}
 	}
 
 	public void produceWeaponPart(Location location) {
-		synchronized (weaponPartLocations) {
 			weaponPartLocations.produce(location);
-		}
 	}
 
 	public void consumeWeaponPart(Location location) {
-		synchronized (weaponPartLocations) {
 			weaponPartLocations.consume(location);
-		}
 	}
 
 	public SpawnBuffer getTrapLocations() {
-		synchronized (trapLocations) {
 			return trapLocations;
-		}
 	}
 
 	public void produceTrap(Location location) throws InterruptedException {
-		synchronized (trapLocations) {
 			trapLocations.produce(location);
-		}
 	}
 
 	public void consumeTrap(Location location) throws InterruptedException {
-		synchronized (trapLocations) {
 			trapLocations.consume(location);
-		}
 	}
 	
 	public String getServerAddress() {
