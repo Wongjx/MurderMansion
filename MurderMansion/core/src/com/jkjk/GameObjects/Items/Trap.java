@@ -22,7 +22,7 @@ public class Trap extends Item {
 	private Animation plantedTrapAnimation;
 	private float animationRunTime;
 
-	public Trap(GameWorld gWorld) {
+	Trap(GameWorld gWorld) {
 		super(gWorld);
 		bdef = new BodyDef();
 		fdef = new FixtureDef();

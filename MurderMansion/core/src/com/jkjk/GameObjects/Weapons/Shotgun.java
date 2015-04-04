@@ -15,7 +15,7 @@ public class Shotgun extends Weapon {
 	private Vector2 playerPosition;
 	private float playerAngle;
 
-	public Shotgun(GameWorld gWorld) {
+	Shotgun(GameWorld gWorld) {
 		super(gWorld);
 		bdef = new BodyDef();
 		fdef = new FixtureDef();

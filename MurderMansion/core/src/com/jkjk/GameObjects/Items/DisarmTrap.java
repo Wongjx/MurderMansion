@@ -16,7 +16,7 @@ public class DisarmTrap extends Item {
 	private float playerAngle;
 	private Duration hitBoxExposure;
 
-	public DisarmTrap(GameWorld gWorld) {
+	DisarmTrap(GameWorld gWorld) {
 		super(gWorld);
 		bdef = new BodyDef();
 		fdef = new FixtureDef();

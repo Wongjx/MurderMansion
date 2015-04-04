@@ -27,7 +27,7 @@ public class GameScreen implements Screen {
 //		this.renderer=renderer;
 
 //		client = new MMClient(server, gWorld, renderer);
-		hudRenderer = new HudRenderer(gWorld, gameWidth, gameHeight);
+		hudRenderer = HudRenderer.getInstance(gWorld, gameWidth, gameHeight);
 	}
 
 	@Override

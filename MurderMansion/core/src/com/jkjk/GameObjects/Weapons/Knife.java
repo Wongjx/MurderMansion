@@ -16,7 +16,7 @@ public class Knife extends Weapon {
 	private Vector2 playerPosition;
 	private float playerAngle;
 
-	public Knife(GameWorld gWorld) {
+	Knife(GameWorld gWorld) {
 		super(gWorld);
 		bdef = new BodyDef();
 		fdef = new FixtureDef();

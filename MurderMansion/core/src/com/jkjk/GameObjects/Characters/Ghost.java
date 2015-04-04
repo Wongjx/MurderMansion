@@ -24,7 +24,7 @@ public class Ghost extends GameCharacter {
 //	}
 //	
 
-	public Ghost(int id, GameWorld gWorld, boolean isPlayer) {
+	Ghost(int id, GameWorld gWorld, boolean isPlayer) {
 		super("Ghost", id, gWorld, isPlayer);
 
 		this.gWorld = gWorld;
