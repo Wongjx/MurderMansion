@@ -59,11 +59,11 @@ public class WaitScreen implements Screen {
         		(game.mMultiplayerSeisson.serverPort!=0)){
         	
             //Create MMClient and connect to server
-    		GameWorld gWorld = new GameWorld(gameWidth, gameHeight);
-    		GameRenderer renderer= new GameRenderer(gWorld, gameWidth, gameHeight);
+    		GameWorld gWorld = GameWorld.getInstance();
+    		GameRenderer renderer= GameRenderer.getInstance(gWorld, gameWidth, gameHeight);
         	
             try {
-				game.mMultiplayerSeisson.setClient(new MMClient(gWorld, renderer, game.mMultiplayerSeisson.serverAddress,game.mMultiplayerSeisson.serverPort));
+				game.mMultiplayerSeisson.setClient(MMClient.getInstance(gWorld, renderer, game.mMultiplayerSeisson.serverAddress,game.mMultiplayerSeisson.serverPort));
 			} catch (Exception e) {
 				e.printStackTrace();
 			}

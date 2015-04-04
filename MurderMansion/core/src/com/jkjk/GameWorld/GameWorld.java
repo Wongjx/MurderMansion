@@ -27,6 +27,8 @@ import com.jkjk.MMHelpers.MMContactListener;
  * 
  */
 public class GameWorld {
+	private static GameWorld instance;
+
 	private GameCharacterFactory gameCharFac;
 	private GameCharacter player;
 
@@ -61,7 +63,7 @@ public class GameWorld {
 	 * @param gameHeight
 	 *            Accesses the virtual game height.
 	 */
-	public GameWorld(float gameWidth, float gameHeight) {
+	private GameWorld() {
 		world = new World(new Vector2(0, 0), true);
 		cl = new MMContactListener(this);
 		world.setContactListener(cl);
@@ -85,6 +87,13 @@ public class GameWorld {
 
 		Box2DMapObjectParser parser = new Box2DMapObjectParser();
 		parser.load(world, AssetLoader.tiledMap);
+	}
+	
+	public static GameWorld getInstance(){
+		if (instance==null){
+			instance = new GameWorld();
+		}
+		return instance;
 	}
 
 	/**

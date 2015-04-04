@@ -13,7 +13,7 @@ public abstract class Item {
 	private boolean wasInUse;
 	protected boolean isInterrupted;
 
-	public Item(GameWorld gWorld) {
+	Item(GameWorld gWorld) {
 		this.gWorld = gWorld;
 		executionTime = new Duration(2000);
 	}

@@ -26,10 +26,8 @@ public abstract class GameCharacter {
 
 	protected boolean alive;
 	protected boolean itemChange, weaponChange, abilityChange;
-	private boolean canMove;
 	protected boolean stun;
 	private Duration stunDuration;
-	protected boolean disguised; // true for civilian, false for murderer
 
 	private float maxVelocity;
 	private float touchpadX;
@@ -51,9 +49,9 @@ public abstract class GameCharacter {
 	private int weaponUses;
 	
 	protected float runTime;
-	protected float ambientLightValue;
+	private float ambientLightValue;
 
-	public GameCharacter(String type, int id, GameWorld gWorld, boolean isPlayer) {
+	GameCharacter(String type, int id, GameWorld gWorld, boolean isPlayer) {
 		this.isPlayer = isPlayer;
 		maxVelocity = 64;
 		weaponUses = 3;
@@ -104,7 +102,6 @@ public abstract class GameCharacter {
 	}
 
 	public void die() {
-
 		alive = false;
 	}
 
@@ -203,14 +200,6 @@ public abstract class GameCharacter {
 
 	public void setItemChange(boolean itemChange) {
 		this.itemChange = itemChange;
-	}
-
-	public boolean isDisguised() {
-		return disguised;
-	}
-
-	public void setDisguise(boolean disguised) {
-		this.disguised = disguised;
 	}
 
 	public boolean getAbilityChange() {

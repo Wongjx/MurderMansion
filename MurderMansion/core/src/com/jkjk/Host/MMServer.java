@@ -20,6 +20,7 @@ import com.jkjk.MMHelpers.MultiplayerSeissonInfo;
 
 
 public class MMServer {
+	private static MMServer instance;
 	private final String TAG = "MMServer";
 	
 	private MultiplayerSeissonInfo info;
@@ -62,7 +63,7 @@ public class MMServer {
 	// animation
 	// HOW?!!?!?!?!?!?!!
 
-	public MMServer(int numOfPlayers,MultiplayerSeissonInfo info) throws InterruptedException {
+	private MMServer(int numOfPlayers,MultiplayerSeissonInfo info) throws InterruptedException {
 		System.out.println("Server instantized.");
 		this.numOfPlayers = numOfPlayers;
 		this.info=info;
@@ -107,6 +108,13 @@ public class MMServer {
 		System.out.println("Creating server socket");
 		initServerSocket(info);
 		acceptServerConnections();
+	}
+	
+	public static MMServer getInstance(int numOfPlayers,MultiplayerSeissonInfo info) throws InterruptedException{
+		if (instance == null){
+			instance = new MMServer(numOfPlayers,info);
+		}
+		return instance;
 	}
 
 	public void update() {

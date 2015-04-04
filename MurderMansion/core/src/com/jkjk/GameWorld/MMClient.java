@@ -39,6 +39,7 @@ import com.jkjk.Host.SpawnBuffer;
  * 
  */
 public class MMClient {
+	private static MMClient instance;
 	private final String TAG = "MMClient";
 	// private final MultiplayerSeissonInfo info;
 
@@ -93,7 +94,7 @@ public class MMClient {
 	 *            GameRenderer instance
 	 * @throws Exception
 	 */
-	public MMClient(GameWorld gWorld, GameRenderer renderer,
+	private MMClient(GameWorld gWorld, GameRenderer renderer,
 			String serverAddress, int serverPort) throws Exception {
 
 		this.gWorld = gWorld;
@@ -190,27 +191,21 @@ public class MMClient {
 		}
 		
 		initPlayers();
-		
 
 		// Create and start extra thread that reads any incoming messages
 		Thread thread = new clientListener(clientInput,this);
-		thread.start();
-
-
-
-		// createTrap(); // FOR DEBUG PURPOSE
-		// for (int i = 0; i < numOfPlayers * 2; i++) {
-		// createItems(1060 - (i * 40), 490);
-		// createWeapons(1060 - (i * 40), 460);
-		// createWeaponParts(1060 - (i * 40), 430);
-		// }
-		
-//		// DEBUG
-//		Trap trap = new Trap(gWorld);
-//		trap.endUse();
-		
+		thread.start();		
 		
 	}
+	
+	public static MMClient getInstance(GameWorld gWorld, GameRenderer renderer,
+			String serverAddress, int serverPort) throws Exception{
+		if (instance == null){
+			instance = new MMClient(gWorld, renderer, serverAddress, serverPort);
+		}
+		return instance;
+	}
+	
 	
 //	private void createBodies(int i) {
 //		if (i == 0) {
