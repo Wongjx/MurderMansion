@@ -596,7 +596,7 @@ class serverListener extends Thread{
 		while(!isInterrupted()){
 			try{
 				if((msg=input.readLine())!=null){
-					System.out.println("Message received: "+msg);
+					//System.out.println("MMServer Message received: "+msg);
 					//Do something with message
 					server.handleMessage(msg);
 				}

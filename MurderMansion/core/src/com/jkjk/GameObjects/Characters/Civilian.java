@@ -57,8 +57,6 @@ public class Civilian extends GameCharacter {
 	@Override
 	public void render(OrthographicCamera cam, SpriteBatch batch) {
 		
-		super.render(cam, batch);
-		
 		if (gWorld.getPlayer().lightContains(body.getPosition().x, body.getPosition().y)) {
 			runTime += Gdx.graphics.getRawDeltaTime();
 			batch.setProjectionMatrix(cam.combined);
@@ -104,6 +102,8 @@ public class Civilian extends GameCharacter {
 			batch.end();
 			
 		}
+		
+		super.render(cam, batch);
 
 	}
 

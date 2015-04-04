@@ -76,8 +76,6 @@ public class GameRenderer {
 		tiledMapRenderer.setView(cam);
 		tiledMapRenderer.render();
 
-		batch.setProjectionMatrix(cam.combined);
-
 		client.render(cam, batch);
 
 		for (ItemSprite iS : gWorld.getItemList().values()) {
@@ -95,10 +93,11 @@ public class GameRenderer {
 		for (Trap trap : gWorld.getTrapList().values()) {
 			trap.render(batch);
 		}
-
-		if (gWorld.getPlayer().isAlive()) {
+		
+		if (gWorld.getPlayer().isAlive()){
 			gWorld.getPlayer().render(cam, batch);
 		}
+		
 		cam.update(); // Update cam
 
 		b2dr.render(gWorld.getWorld(), cam.combined); // Renders box2d world

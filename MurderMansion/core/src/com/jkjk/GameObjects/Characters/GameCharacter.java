@@ -137,6 +137,10 @@ public abstract class GameCharacter {
 	public void setId(int id) {
 		this.id = id;
 	}
+	
+	public boolean isPlayer(){
+		return isPlayer;
+	}
 
 	public Body getBody() {
 		return body;
