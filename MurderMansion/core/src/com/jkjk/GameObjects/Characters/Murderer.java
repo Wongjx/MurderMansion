@@ -50,7 +50,6 @@ public class Murderer extends GameCharacter {
 
 	@Override
 	public void render(OrthographicCamera cam, SpriteBatch batch) {
-		super.render(cam, batch);
 		if (gWorld.getPlayer().lightContains(body.getPosition().x, body.getPosition().y)) {
 			runTime += Gdx.graphics.getRawDeltaTime();
 			currentAnimation = (Animation) body.getUserData();
@@ -96,6 +95,8 @@ public class Murderer extends GameCharacter {
 
 			batch.end();
 		}
+		
+		super.render(cam, batch);
 
 	}
 

@@ -94,6 +94,10 @@ public class GameRenderer {
 			trap.render(batch);
 		}
 		
+		if (gWorld.getPlayer().isAlive()){
+			gWorld.getPlayer().render(cam, batch);
+		}
+		
 		cam.update(); // Update cam
 
 		b2dr.render(gWorld.getWorld(), cam.combined); // Renders box2d world

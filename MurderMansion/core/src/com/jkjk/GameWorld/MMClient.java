@@ -292,7 +292,8 @@ public class MMClient {
 	 */
 	public void render(OrthographicCamera cam, SpriteBatch batch) {
 		for (GameCharacter gc : getPlayerList()) {
-			gc.render(cam, batch);
+			if (gc.isAlive() && !gc.isPlayer())
+				gc.render(cam, batch);
 		}
 	}
 
@@ -526,7 +527,7 @@ class clientListener extends Thread {
 		while (!isInterrupted()) {
 			try {
 				if ((msg = input.readLine()) != null) {
-					System.out.println("MMClient Message received: "+msg);
+					//System.out.println("MMClient Message received: "+msg);
 					// TODO something with message
 					client.handleMessage(msg);
 				}
