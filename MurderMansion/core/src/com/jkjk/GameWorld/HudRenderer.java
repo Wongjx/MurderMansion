@@ -412,7 +412,7 @@ public class HudRenderer {
 	 */
 	public ImageButton getKnife() {
 		x = 490;
-		y = 498;
+		y = 44;
 
 		itemButton = new ImageButton(mur_knife);
 		itemButton.setX(x);

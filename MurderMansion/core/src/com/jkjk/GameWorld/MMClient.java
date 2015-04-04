@@ -526,7 +526,7 @@ class clientListener extends Thread {
 		while (!isInterrupted()) {
 			try {
 				if ((msg = input.readLine()) != null) {
-					System.out.println("Message received: "+msg);
+					System.out.println("MMClient Message received: "+msg);
 					// TODO something with message
 					client.handleMessage(msg);
 				}
