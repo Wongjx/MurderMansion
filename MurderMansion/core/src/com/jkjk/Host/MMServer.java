@@ -433,6 +433,13 @@ public class MMServer {
 			playerAngle.put("Player "+msg[1], angle);
 			updateClients(message, Integer.parseInt(msg[1]));
 		}
+		//If item consumption or production message
+		else if(msg[0].equals("item")){
+			if (msg[3].equals("con")){
+				itemLocations.consume(new Location(new float[]{Float.parseFloat(msg[3]),Float.parseFloat(msg[4])}));
+			}
+			updateClients(message, Integer.parseInt(msg[1]));
+		}
 	}
 }
 

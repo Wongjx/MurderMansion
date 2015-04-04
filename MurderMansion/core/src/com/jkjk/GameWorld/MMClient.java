@@ -110,7 +110,7 @@ public class MMClient {
 		id = Integer.parseInt(clientInput.readLine());
 		murdererId = Integer.parseInt(clientInput.readLine());
 
-		System.out.println("Creating item spawn buffers");
+//		System.out.println("Creating item spawn buffers");
 		itemLocations = new SpawnBuffer(numOfPlayers * 3);
 		weaponLocations = new SpawnBuffer(numOfPlayers);
 		weaponPartLocations = new SpawnBuffer(numOfPlayers * 2);
@@ -159,7 +159,7 @@ public class MMClient {
 		}
 		
 		playerList = new ArrayList<GameCharacter>(numOfPlayers);
-		System.out.println("Creating concurrent hashmaps for player condition.");
+//		System.out.println("Creating concurrent hashmaps for player condition.");
 		playerType = new ConcurrentHashMap<String, Integer>(numOfPlayers);
 		playerIsAlive = new ConcurrentHashMap<String, Integer>(numOfPlayers);
 		playerIsStun = new ConcurrentHashMap<String, Integer>(numOfPlayers);
@@ -271,9 +271,15 @@ public class MMClient {
 						 * weaponLocations(); weaponPartLocations();
 						 * trapLocations(); batUsed(); knifeUsed();
 						 */
-		updatePlayerLocation();
-
-		
+		updatePlayerLocation();		
+	}
+	
+	/**Remove item from MMClient item buffer and update server about consumption
+	 * @param position
+	 */
+	public void removeItemLocation(Vector2 position){
+		itemLocations.consume(new Location(new float[]{position.x,position.y}));
+		clientOutput.println("item_"+id+"_con_"+Float.toString(position.x)+"_"+Float.toString(position.y));		
 	}
 	
 	private void updatePlayerLocation(){
@@ -506,6 +512,16 @@ public class MMClient {
 			//Get and change position of opponent
 			playerList.get(Integer.parseInt(msg[1])).spawn(position[0], position[1], angle);
 		}
+		//If item consumption or production message
+		else if(msg[0].equals("item")){
+			System.out.println(msg);
+			if (msg[3].equals("con")){
+				Vector2 position = new Vector2(Float.parseFloat(msg[3]),Float.parseFloat(msg[4]));
+				itemLocations.consume(new Location(new float[]{Float.parseFloat(msg[3]),Float.parseFloat(msg[4])}));
+				gWorld.getWorld().destroyBody(gWorld.getItemList().get(position).getBody());
+				gWorld.getItemList().remove(position);
+			}
+		}
 		
 	}
 }
@@ -526,7 +542,7 @@ class clientListener extends Thread {
 		while (!isInterrupted()) {
 			try {
 				if ((msg = input.readLine()) != null) {
-					System.out.println("Message received: "+msg);
+//					System.out.println("Message received: "+msg);
 					// TODO something with message
 					client.handleMessage(msg);
 				}

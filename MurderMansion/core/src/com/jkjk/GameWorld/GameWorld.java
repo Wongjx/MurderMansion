@@ -105,7 +105,7 @@ public class GameWorld {
 			createGhost();
 		}
 		checkStairs();
-		checkItemSprite();
+		checkItemSprite(client);
 		checkWeaponSprite();
 		checkWeaponPartSprite();
 		checkTrap();
@@ -166,9 +166,11 @@ public class GameWorld {
 	/**
 	 * Checks to remove item sprites that have been contacted by the player.
 	 */
-	private void checkItemSprite() {
+	private void checkItemSprite(MMClient client) {
 		for (int i = 0; i < itemsToRemove.size; i++) {
 			bodyToRemove = itemsToRemove.get(i);
+			//Call MMclient to remove item
+			client.removeItemLocation(bodyToRemove.getPosition());
 			itemList.remove(bodyToRemove.getPosition());
 			world.destroyBody(bodyToRemove);
 			if (player.getType().equals("Civilian"))
