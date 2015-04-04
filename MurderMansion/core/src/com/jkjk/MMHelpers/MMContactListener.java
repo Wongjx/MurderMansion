@@ -7,6 +7,8 @@ import com.badlogic.gdx.physics.box2d.ContactListener;
 import com.badlogic.gdx.physics.box2d.Fixture;
 import com.badlogic.gdx.physics.box2d.Manifold;
 import com.badlogic.gdx.utils.Array;
+import com.jkjk.GameObjects.Items.ItemFactory;
+import com.jkjk.GameObjects.Items.Trap;
 import com.jkjk.GameWorld.GameWorld;
 
 /**
@@ -89,12 +91,12 @@ public class MMContactListener implements ContactListener {
 					if (!gWorld.getPlayer().getType().equals("Ghost"))
 						gWorld.getPlayer().stun(true);
 				} else if (faUD.equals("trap")) {
-					if (!gWorld.getPlayer().getType().equals("Ghost")) {
+					if (gWorld.getPlayer().getType().equals("Civilian")) {
 						gWorld.getPlayer().die();
 						trapToRemove.add(fa.getBody());
 					}
 				} else if (fbUD.equals("trap")) {
-					if (!gWorld.getPlayer().getType().equals("Ghost")) {
+					if (gWorld.getPlayer().getType().equals("Civilian")) {
 						gWorld.getPlayer().die();
 						trapToRemove.add(fb.getBody());
 					}
