@@ -57,13 +57,17 @@ public class Obstacles {
 		}
 	}
 
+	public Body getBody() {
+		return body;
+	}
+
 	public void render(SpriteBatch batch) {
 		// System.out.println((Texture) body.getUserData());
 		batch.begin();
 		if (type == 0)
-			batch.draw((Texture) body.getUserData(), body.getPosition().x - 15, body.getPosition().y - 48);
+			batch.draw((Texture) body.getUserData(), body.getPosition().x - 16, body.getPosition().y - 48);
 		else
-			batch.draw((Texture) body.getUserData(), body.getPosition().x - 15, body.getPosition().y - 15);
+			batch.draw((Texture) body.getUserData(), body.getPosition().x - 16, body.getPosition().y - 16);
 		batch.end();
 	}
 

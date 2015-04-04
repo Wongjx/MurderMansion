@@ -47,7 +47,7 @@ public class MMServer {
 	private final ConcurrentHashMap<String, float[]> playerPosition;
 	private final ConcurrentHashMap<String, Float> playerAngle;
 
-	
+	private float[] obstacleDestroyed;	// To transmit position of obstacle destroyed to clients
 		
 	// private ArrayList<Location> playerLocations;
 	private final SpawnBuffer itemLocations;
@@ -59,10 +59,6 @@ public class MMServer {
 	private final WeaponSpawner weaponSpawner;
 	private final WeaponPartSpawner weaponPartSpawner;
 	private final ObstaclesHandler obstaclesHandler;
-
-	// To Pass: Sprites of objects (items, weapons, players, bat swing, knife stab, shotgun blast, disguise
-	// animation
-	// HOW?!!?!?!?!?!?!!
 
 	private MMServer(int numOfPlayers,MultiplayerSeissonInfo info) throws InterruptedException {
 		System.out.println("Server instantized.");
@@ -139,9 +135,9 @@ public class MMServer {
 
 		// Opens random door in mansion *TO BE IMPLEMENTED
 		if (runTime > nextObstacleRemoveTime) {
-			System.out.println("NEW DOOR OPENS!");
-			obstaclesHandler.destroyObstacle();
-			nextObstacleRemoveTime = runTime + 60000;
+			System.out.println("OBSTACLE DESTROYED!");
+			obstacleDestroyed = obstaclesHandler.destroyObstacle().get();
+			nextObstacleRemoveTime = runTime + 30000;
 		}
 	}
 
