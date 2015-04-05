@@ -15,7 +15,7 @@ public class Bat extends Weapon {
 	private Vector2 playerPosition;
 	private float playerAngle;
 
-	public Bat(GameWorld gWorld) {
+	Bat(GameWorld gWorld) {
 		super(gWorld);
 		bdef = new BodyDef();
 		fdef = new FixtureDef();

@@ -66,5 +66,9 @@ public class ItemSprite {
 			batch.end();
 		}
 	}
+	
+	public Body getBody(){
+		return body;
+	}
 
 }

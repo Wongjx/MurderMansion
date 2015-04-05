@@ -19,8 +19,9 @@ public class Murderer extends GameCharacter {
 	private Animation currentAnimation;
 	private GameWorld gWorld;
 	private float animationRunTime;
+	private boolean disguised; // true for civilian, false for murderer
 
-	public Murderer(int id, GameWorld gWorld, boolean isPlayer) {
+	Murderer(int id, GameWorld gWorld, boolean isPlayer) {
 		super("Murderer", id, gWorld, isPlayer);
 
 		this.gWorld = gWorld;
@@ -50,7 +51,6 @@ public class Murderer extends GameCharacter {
 
 	@Override
 	public void render(OrthographicCamera cam, SpriteBatch batch) {
-		super.render(cam, batch);
 		if (gWorld.getPlayer().lightContains(body.getPosition().x, body.getPosition().y)) {
 			runTime += Gdx.graphics.getRawDeltaTime();
 			currentAnimation = (Animation) body.getUserData();
@@ -96,6 +96,8 @@ public class Murderer extends GameCharacter {
 
 			batch.end();
 		}
+		
+		super.render(cam, batch);
 
 	}
 
@@ -106,6 +108,14 @@ public class Murderer extends GameCharacter {
 			ability.cooldown();
 			abilityChange = true;
 		}
+	}
+	
+	public boolean isDisguised() {
+		return disguised;
+	}
+
+	public void setDisguise(boolean disguised) {
+		this.disguised = disguised;
 	}
 
 	public boolean lightContains(float x, float y) {

@@ -14,7 +14,7 @@ public abstract class Weapon {
 	protected float runTime;
 	private boolean isCompleted;
 
-	public Weapon(GameWorld gWorld) {
+	Weapon(GameWorld gWorld) {
 		cooldown = new Duration(5000);
 		hitBoxExposure = new Duration(10);
 		this.gWorld = gWorld;

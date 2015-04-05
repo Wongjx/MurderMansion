@@ -26,10 +26,8 @@ public abstract class GameCharacter {
 
 	protected boolean alive;
 	protected boolean itemChange, weaponChange, abilityChange;
-	private boolean canMove;
 	protected boolean stun;
 	private Duration stunDuration;
-	protected boolean disguised; // true for civilian, false for murderer
 
 	private float maxVelocity;
 	private float touchpadX;
@@ -51,9 +49,9 @@ public abstract class GameCharacter {
 	private int weaponUses;
 	
 	protected float runTime;
-	protected float ambientLightValue;
+	private float ambientLightValue;
 
-	public GameCharacter(String type, int id, GameWorld gWorld, boolean isPlayer) {
+	GameCharacter(String type, int id, GameWorld gWorld, boolean isPlayer) {
 		this.isPlayer = isPlayer;
 		maxVelocity = 64;
 		weaponUses = 3;
@@ -104,7 +102,6 @@ public abstract class GameCharacter {
 	}
 
 	public void die() {
-
 		alive = false;
 	}
 
@@ -136,6 +133,10 @@ public abstract class GameCharacter {
 
 	public void setId(int id) {
 		this.id = id;
+	}
+	
+	public boolean isPlayer(){
+		return isPlayer;
 	}
 
 	public Body getBody() {
@@ -201,14 +202,6 @@ public abstract class GameCharacter {
 		this.itemChange = itemChange;
 	}
 
-	public boolean isDisguised() {
-		return disguised;
-	}
-
-	public void setDisguise(boolean disguised) {
-		this.disguised = disguised;
-	}
-
 	public boolean getAbilityChange() {
 		return abilityChange;
 	}
@@ -260,7 +253,7 @@ public abstract class GameCharacter {
 			}
 
 			cam.position.set(body.getPosition(), 0); // Set cam position to be on player
-
+			
 			rayHandler.setCombinedMatrix(cam.combined);
 			rayHandler.updateAndRender();
 		}

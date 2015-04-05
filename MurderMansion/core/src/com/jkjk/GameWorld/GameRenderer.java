@@ -8,10 +8,11 @@ import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TiledMapRenderer;
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
 import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
-import com.jkjk.GameObjects.WeaponPartSprite;
+import com.jkjk.GameObjects.Obstacles;
 import com.jkjk.GameObjects.Characters.GameCharacter;
 import com.jkjk.GameObjects.Items.ItemSprite;
 import com.jkjk.GameObjects.Items.Trap;
+import com.jkjk.GameObjects.Weapons.WeaponPartSprite;
 import com.jkjk.GameObjects.Weapons.WeaponSprite;
 import com.jkjk.MMHelpers.AssetLoader;
 
@@ -23,6 +24,8 @@ import com.jkjk.MMHelpers.AssetLoader;
  * 
  */
 public class GameRenderer {
+	private static GameRenderer instance;
+	
 	private GameWorld gWorld; // Box2D world. This will hold all objects (players, items, walls)
 	private OrthographicCamera cam; // Game camera. Views what is happening in the game.
 	private Box2DDebugRenderer b2dr; // Renders Box2D objects. (For debugging)
@@ -47,7 +50,7 @@ public class GameRenderer {
 	 * @param gameHeight
 	 *            Accesses the virtual game height.
 	 */
-	public GameRenderer(GameWorld gWorld, float gameWidth, float gameHeight) {
+	private GameRenderer(GameWorld gWorld, float gameWidth, float gameHeight) {
 		this.gWorld = gWorld;
 		b2dr = new Box2DDebugRenderer();
 
@@ -60,6 +63,13 @@ public class GameRenderer {
 
 		batch = new SpriteBatch();
 
+	}
+	
+	public static GameRenderer getInstance(GameWorld gWorld, float gameWidth, float gameHeight){
+		if (instance == null){
+			instance = new GameRenderer(gWorld, gameWidth, gameHeight);
+		}
+		return instance;
 	}
 
 	/**
@@ -76,9 +86,11 @@ public class GameRenderer {
 		tiledMapRenderer.setView(cam);
 		tiledMapRenderer.render();
 
-		batch.setProjectionMatrix(cam.combined);
-
 		client.render(cam, batch);
+		
+		for (Obstacles ob: gWorld.getObstacleList().values()) {
+			ob.render(batch);
+		}
 
 		for (ItemSprite iS : gWorld.getItemList().values()) {
 			iS.render(batch);
@@ -95,10 +107,11 @@ public class GameRenderer {
 		for (Trap trap : gWorld.getTrapList().values()) {
 			trap.render(batch);
 		}
-
-		if (gWorld.getPlayer().isAlive()) {
+		
+		if (gWorld.getPlayer().isAlive()){
 			gWorld.getPlayer().render(cam, batch);
 		}
+		
 		cam.update(); // Update cam
 
 		b2dr.render(gWorld.getWorld(), cam.combined); // Renders box2d world

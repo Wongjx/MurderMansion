@@ -6,7 +6,7 @@ import com.jkjk.MMHelpers.AssetLoader;
 
 public class Haunt extends Ability {
 
-	public Haunt(GameCharacter gameCharacter) {
+	Haunt(GameCharacter gameCharacter) {
 		super(gameCharacter);
 		cooldown = new Duration(30000);
 	}
