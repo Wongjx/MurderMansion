@@ -57,10 +57,7 @@ public class MMClient {
 	private int murdererId;
 	private ArrayList<GameCharacter> playerList;
 
-	private final ConcurrentHashMap<String, Integer> playerIsAlive; // If 1 ->
-																	// true; If
-																	// 0 ->
-																	// false;
+	private final ConcurrentHashMap<String, Integer> playerIsAlive; // If 1 ->true; If 0 -> false;
 	private final ConcurrentHashMap<String, Integer> playerIsStun; // If 1 ->
 																	// true; If
 																	// 0 ->
@@ -110,7 +107,7 @@ public class MMClient {
 		id = Integer.parseInt(clientInput.readLine());
 		murdererId = Integer.parseInt(clientInput.readLine());
 
-		System.out.println("Creating item spawn buffers");
+//		System.out.println("Creating item spawn buffers");
 		itemLocations = new SpawnBuffer(numOfPlayers * 3);
 		weaponLocations = new SpawnBuffer(numOfPlayers);
 		weaponPartLocations = new SpawnBuffer(numOfPlayers * 2);
@@ -161,7 +158,7 @@ public class MMClient {
 		}
 
 		playerList = new ArrayList<GameCharacter>(numOfPlayers);
-		System.out.println("Creating concurrent hashmaps for player condition.");
+//		System.out.println("Creating concurrent hashmaps for player condition.");
 		playerType = new ConcurrentHashMap<String, Integer>(numOfPlayers);
 		playerIsAlive = new ConcurrentHashMap<String, Integer>(numOfPlayers);
 		playerIsStun = new ConcurrentHashMap<String, Integer>(numOfPlayers);
@@ -274,22 +271,33 @@ public class MMClient {
 						 * method itemLocations(); weaponLocations(); weaponPartLocations(); trapLocations();
 						 * batUsed(); knifeUsed();
 						 */
-		updatePlayerLocation();
-
+		updatePlayerLocation();		
 	}
-
-	private void updatePlayerLocation() {
-		// Get player postion
-		float angle = gWorld.getPlayer().getBody().getAngle();
-		float[] position = { gWorld.getPlayer().getBody().getPosition().x,
-				gWorld.getPlayer().getBody().getPosition().y };
-		// Update client Hashmap
-		playerPosition.put("Player " + id, position);
-		playerAngle.put("Player " + id, angle);
-		// Update server
-		clientOutput.println("loc_" + id + "_" + Float.toString(position[0]) + "_"
-				+ Float.toString(position[1]) + "_" + Float.toString(angle));
+	
+	/**Remove item from MMClient item buffer and update server about consumption
+	 * @param position
+	 */
+	public void removeItemLocation(Vector2 position){
+		System.out.println("Consume item from buffer");
+		itemLocations.consume(new Location(new float[]{position.x,position.y}));
+		System.out.println("Send message to server");
+		clientOutput.println("item_"+id+"_con_"+Float.toString(position.x)+"_"+Float.toString(position.y));		
 	}
+	
+	private void updatePlayerLocation(){
+		//Get player postion
+		float angle =gWorld.getPlayer().getBody().getAngle();
+		float[] position ={gWorld.getPlayer().getBody().getPosition().x,gWorld.getPlayer().getBody().getPosition().y};
+		//if angle and position has changed 
+		if ((playerPosition.get("Player "+id)!= position) && (playerAngle.get("Player "+id)!=angle)){
+			//Update client Hashmap
+			playerPosition.put("Player "+id, position);
+			playerAngle.put("Player "+id, angle);
+			//Update server
+			clientOutput.println("loc_"+id+"_"+Float.toString(position[0])+"_"+Float.toString(position[1])+"_"+Float.toString(angle));
+		}
+	}
+		
 
 	/**
 	 * Renders the GameRenderer with other player's move.
@@ -514,7 +522,17 @@ public class MMClient {
 			// Get and change position of opponent
 			playerList.get(Integer.parseInt(msg[1])).spawn(position[0], position[1], angle);
 		}
-
+		
+		//If item consumption or production message
+		else if(msg[0].equals("item")){
+			if (msg[2].equals("con")){
+				Vector2 position = new Vector2(Float.parseFloat(msg[3]),Float.parseFloat(msg[4]));
+				itemLocations.consume(new Location(new float[]{Float.parseFloat(msg[3]),Float.parseFloat(msg[4])}));
+				gWorld.getWorld().destroyBody(gWorld.getItemList().get(position).getBody());
+				gWorld.getItemList().remove(position);
+			}
+		}
+		
 	}
 }
 
@@ -534,8 +552,8 @@ class clientListener extends Thread {
 		while (!isInterrupted()) {
 			try {
 				if ((msg = input.readLine()) != null) {
-					// System.out.println("MMClient Message received: "+msg);
-					// TODO something with message
+//					System.out.println("MMClient Message received: "+msg);
+//					String message = new String(msg);
 					client.handleMessage(msg);
 				}
 			} catch (Exception e) {

@@ -21,7 +21,6 @@ public class SpawnBuffer {
 	public void consume(Location location) {
 		if (buffer.size() > 0) {
 			buffer.remove(location.toString());
-			notify();
 		}
 	}
 	

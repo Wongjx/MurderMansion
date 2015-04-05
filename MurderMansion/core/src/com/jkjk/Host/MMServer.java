@@ -40,28 +40,30 @@ public class MMServer {
 	private long nextItemSpawnTime;
 	private long nextObstacleRemoveTime;
 
-	private final ConcurrentHashMap<String, Integer> playerIsAlive; // If 1 -> true; If 0 -> false;
-	private final ConcurrentHashMap<String, Integer> playerIsStun; // If 1 -> true; If 0 -> false;
-	private final ConcurrentHashMap<String, Integer> playerType; // If 0 -> murderer; If 1 -> civilian; If 2
-																	// -> Ghost
-	private final ConcurrentHashMap<String, float[]> playerPosition;
-	private final ConcurrentHashMap<String, Float> playerAngle;
+	private final PlayerStatuses playerStats;
+//	private final ConcurrentHashMap<String, Integer> playerIsAlive; // If 1 -> true; If 0 -> false;
+//	private final ConcurrentHashMap<String, Integer> playerIsStun; // If 1 -> true; If 0 -> false;
+//	private final ConcurrentHashMap<String, Integer> playerType; // If 0 -> murderer; If 1 -> civilian; If 2-> Ghost
+//	private final ConcurrentHashMap<String, float[]> playerPosition;
+//	private final ConcurrentHashMap<String, Float> playerAngle;
 
 	private float[] obstacleDestroyed;	// To transmit position of obstacle destroyed to clients
 		
+	private final ObjectLocations objectLocations;
 	// private ArrayList<Location> playerLocations;
-	private final SpawnBuffer itemLocations;
-	private final SpawnBuffer weaponLocations;
-	private final SpawnBuffer weaponPartLocations;
-	private final SpawnBuffer trapLocations;
+//	private final SpawnBuffer itemLocations;
+//	private final SpawnBuffer weaponLocations;
+//	private final SpawnBuffer weaponPartLocations;
+//	private final SpawnBuffer trapLocations;
 
-	private final ItemSpawner itemSpawner;
-	private final WeaponSpawner weaponSpawner;
-	private final WeaponPartSpawner weaponPartSpawner;
+
+//	private final ItemSpawner itemSpawner;
+//	private final WeaponSpawner weaponSpawner;
+//	private final WeaponPartSpawner weaponPartSpawner;
 	private final ObstaclesHandler obstaclesHandler;
 
+
 	private MMServer(int numOfPlayers,MultiplayerSeissonInfo info) throws InterruptedException {
-		System.out.println("Server instantized.");
 		this.numOfPlayers = numOfPlayers;
 		this.info=info;
 		
@@ -72,31 +74,36 @@ public class MMServer {
 		
 //		System.out.println("Initialize fields");
 		startTime = System.currentTimeMillis();
-		playerIsAlive = new ConcurrentHashMap<String, Integer>(numOfPlayers);
-		playerIsStun = new ConcurrentHashMap<String, Integer>(numOfPlayers);
-		playerType = new ConcurrentHashMap<String, Integer>(numOfPlayers);
-		playerPosition = new ConcurrentHashMap<String, float[]>(numOfPlayers);
-		playerAngle = new ConcurrentHashMap<String, Float>(numOfPlayers);
+		playerStats = new PlayerStatuses(numOfPlayers);
+//		playerIsAlive = new ConcurrentHashMap<String, Integer>(numOfPlayers);
+//		playerIsStun = new ConcurrentHashMap<String, Integer>(numOfPlayers);
+//		playerType = new ConcurrentHashMap<String, Integer>(numOfPlayers);
+//		playerPosition = new ConcurrentHashMap<String, float[]>(numOfPlayers);
+//		playerAngle = new ConcurrentHashMap<String, Float>(numOfPlayers);
 
 //		System.out.println("Creating item spawn buffers");
-		itemLocations = new SpawnBuffer(numOfPlayers*3);
-		weaponLocations = new SpawnBuffer(numOfPlayers);
-		weaponPartLocations = new SpawnBuffer(numOfPlayers*2);
-		trapLocations = new SpawnBuffer(numOfPlayers*2);
+
+		objectLocations = new ObjectLocations(numOfPlayers);
+//		itemLocations = new SpawnBuffer(numOfPlayers*3);
+//		weaponLocations = new SpawnBuffer(numOfPlayers);
+//		weaponPartLocations = new SpawnBuffer(numOfPlayers*2);
+//		trapLocations = new SpawnBuffer(numOfPlayers);
 
 //		System.out.println("Instantiate spawner");
-		itemSpawner = new ItemSpawner();
-		weaponSpawner = new WeaponSpawner();
-		weaponPartSpawner = new WeaponPartSpawner();
+//		itemSpawner = new ItemSpawner();
+//		weaponSpawner = new WeaponSpawner();
+//		weaponPartSpawner = new WeaponPartSpawner();
+
 		obstaclesHandler = new ObstaclesHandler();
+
 
 //		System.out.println("Assigning murderer");
 		murdererId = new Random().nextInt(numOfPlayers);
 		
 //		System.out.println("Spawning items");
-		spawnItems(numOfPlayers * 2);
-		spawnWeapons(numOfPlayers);
-		spawnWeaponParts(numOfPlayers);
+//		spawnItems(numOfPlayers * 2);
+//		spawnWeapons(numOfPlayers);
+//		spawnWeaponParts(numOfPlayers);
 		nextItemSpawnTime = 10000;
 		nextObstacleRemoveTime = 60000;
 
@@ -124,12 +131,12 @@ public class MMServer {
 		// Item/Weapon/WeaponPart Spawn *NEEDS TO BE BALANCED TO FIT GAMEPLAY
 		if (runTime > nextItemSpawnTime) {
 			System.out.println("SPAWN!");
-			if (!itemLocations.isFull())
-				spawnItems(1);
-			if (!weaponLocations.isFull())
-				spawnWeapons(1);
-			if (!weaponPartLocations.isFull())
-				spawnWeaponParts(1);
+			if (!objectLocations.getItemLocations().isFull())
+				objectLocations.spawnItems(1);
+			if (!objectLocations.getWeaponLocations().isFull())
+				objectLocations.spawnWeapons(1);
+			if (!objectLocations.getWeaponPartLocations().isFull())
+				objectLocations.spawnWeaponParts(1);
 			nextItemSpawnTime = new Random().nextInt(10000) + runTime + 5000;
 		}
 
@@ -143,33 +150,17 @@ public class MMServer {
 
 	private void initPlayers() {
 		for (int i = 0; i < numOfPlayers; i++) {
-			playerIsAlive.put("Player " + i, 1);
-			playerIsStun.put("Player " + i, 0);
+			playerStats.getPlayerIsAlive().put("Player " + i, 1);
+			playerStats.getPlayerIsStun().put("Player " + i, 0);
 			if (i == murdererId) {
-				playerType.put("Player " + i, 0);
+				playerStats.getPlayerType().put("Player " + i, 0);
 			} else {
-				playerType.put("Player " + i, 1);
+				playerStats.getPlayerType().put("Player " + i, 1);
 			}
-			playerPosition.put("Player " + i, new float[] { 900 - ((i + 1) * 40), 515 });
-			playerAngle.put("Player " + i, 0f);
-		}
-	}
 
-	private void spawnItems(int numOfItems) {
-		for (int i = 0; i < numOfItems; i++) {
-			produceItem(itemSpawner.spawn());
-		}
-	}
+			playerStats.getPlayerPosition().put("Player " + i, new float[] { 1010 - ((i + 1) * 40), 515 });
+			playerStats.getPlayerAngle().put("Player " + i, 0f);
 
-	private void spawnWeapons(int numOfItems) {
-		for (int i = 0; i < numOfItems; i++) {
-			produceWeapon(weaponSpawner.spawn());
-		}
-	}
-
-	private void spawnWeaponParts(int numOfItems) {
-		for (int i = 0; i < numOfItems; i++) {
-			produceWeaponPart(weaponPartSpawner.spawn());
 		}
 	}
 
@@ -180,96 +171,11 @@ public class MMServer {
 	public int getMurdererId() {
 		return murdererId;
 	}
-
-	public ConcurrentHashMap<String, Integer> getPlayerIsAlive() {
-		return playerIsAlive;
+	public PlayerStatuses getPlayerStats(){
+		return playerStats;
 	}
-
-	public void setPlayerIsAlive(String key, int value) {
-		playerIsAlive.put(key, value);
-	}
-
-	public ConcurrentHashMap<String, Integer> getPlayerIsStun() {
-		return playerIsStun;
-	}
-
-	public void setPlayerIsStun(String key, int value) {
-		playerIsAlive.put(key, value);
-	}
-
-	public ConcurrentHashMap<String, Integer> getPlayerType() {
-		return playerType;
-	}
-
-	public void setPlayerType(String key, int value) {
-		playerType.put(key, value);
-	}
-
-	public ConcurrentHashMap<String, float[]> getPlayerPosition() {
-		return playerPosition;
-	}
-
-	public void setPlayerPosition(String key, float[] value) {
-		playerPosition.put(key, value);
-	}
-
-	public ConcurrentHashMap<String, Float> getPlayerAngle() {
-		return playerAngle;
-	}
-
-	public void setPlayerAngle(String key, float value) {
-		playerAngle.put(key, value);
-	}
-
-	public SpawnBuffer getItemLocations() {
-			return itemLocations;
-	}
-	
-
-	public void produceItem(Location location) {
-			itemLocations.produce(location);
-	}
-
-	public void consumeItem(Location location) {
-			itemLocations.consume(location);
-			itemSpawner.restore(location);
-	}
-
-	public SpawnBuffer getWeaponLocations() {
-			return weaponLocations;
-	}
-
-	public void produceWeapon(Location location) {
-			weaponLocations.produce(location);
-	}
-
-	public void consumeWeapon(Location location) {
-			weaponLocations.consume(location);
-			weaponSpawner.restore(location);
-	}
-
-	public SpawnBuffer getWeaponPartLocations() {
-			return weaponPartLocations;
-	}
-
-	public void produceWeaponPart(Location location) {
-			weaponPartLocations.produce(location);
-	}
-
-	public void consumeWeaponPart(Location location) {
-			weaponPartLocations.consume(location);
-	}
-
-	public SpawnBuffer getTrapLocations() {
-			return trapLocations;
-	}
-
-	public void produceTrap(Location location) throws InterruptedException {
-			trapLocations.produce(location);
-	}
-
-	public void consumeTrap(Location location) throws InterruptedException {
-			trapLocations.consume(location);
+	public ObjectLocations getObjectLocations(){
+		return objectLocations;
 	}
 	
 	public String getServerAddress() {
@@ -356,7 +262,7 @@ public class MMServer {
 			Thread thread = new serverAcceptThread(this);
 			thread.start();
 		} else{
-			System.out.println( "Server not instantated yet.");
+			System.out.println( "Server not instantiated yet.");
 		}
 	}
 	
@@ -408,16 +314,28 @@ public class MMServer {
 	
 	/** Called to handle message sent by clients
 	 * @param message
+	 * @throws InterruptedException 
+	 * @throws NumberFormatException 
 	 */
-	public void handleMessage(String message){
+	public void handleMessage(String message) throws NumberFormatException, InterruptedException{
 		String[] msg=message.split("_");
 		//If player position update message
 		if(msg[0].equals("loc")){
 			float[] position = {Float.parseFloat(msg[2]),Float.parseFloat(msg[3])};
 			float angle = Float.parseFloat(msg[4]);
-			playerPosition.put("Player "+msg[1], position);
-			playerAngle.put("Player "+msg[1], angle);
-			updateClients(message, Integer.parseInt(msg[1]));
+			playerStats.updatePositionAndAngle(Integer.parseInt(msg[1]), position,angle);
+//			playerPosition.put("Player "+msg[1], position);
+//			playerAngle.put("Player "+msg[1], angle);
+//			updateClients(message, Integer.parseInt(msg[1]));
+		}
+		//If item consumption or production message
+		else if(msg[0].equals("item")){
+//			System.out.println("item related");
+			if (msg[2].equals("con")){
+//				System.out.println("client consumed item");
+				objectLocations.consumeItem(new Location(new float[]{Float.parseFloat(msg[3]),Float.parseFloat(msg[4])}),Integer.parseInt(msg[1]));
+			}
+//			updateClients(message, Integer.parseInt(msg[1]));
 		}
 	}
 }
@@ -456,6 +374,10 @@ class serverAcceptThread extends Thread{
 				tempOutput.add(writer);
 				server.setServerOutput(tempOutput);
 				
+				//Register client to playerStatus subject
+				server.getPlayerStats().register(new Observer(writer));
+				server.getObjectLocations().register(new Observer(writer));
+				
 				//Send out initializing information to client
 				writer.println(server.getNumOfPlayers());
 				writer.println(idCount);
@@ -468,7 +390,7 @@ class serverAcceptThread extends Thread{
 				
 				//Send item spawn locations 
 				writer.println("itemLocations");
-				locations =server.getItemLocations().getBuffer().values();
+				locations =server.getObjectLocations().getItemLocations().getBuffer().values();
 				message="";
 				for (Location location:locations){
 					position = location.get();
@@ -484,7 +406,7 @@ class serverAcceptThread extends Thread{
 				writer.println("end");
 				//Send weapon spawn locations
 				writer.println("weaponLocations");
-				locations =server.getWeaponLocations().getBuffer().values();
+				locations =server.getObjectLocations().getWeaponLocations().getBuffer().values();
 				message="";
 				for (Location location:locations){
 					position = location.get();
@@ -500,7 +422,7 @@ class serverAcceptThread extends Thread{
 				writer.println("end");
 				//Send weapon parts spawn locations
 				writer.println("weaponPartLocations");
-				locations =server.getWeaponPartLocations().getBuffer().values();
+				locations =server.getObjectLocations().getWeaponPartLocations().getBuffer().values();
 				message="";
 				for (Location location:locations){
 					position = location.get();
@@ -520,7 +442,7 @@ class serverAcceptThread extends Thread{
 				message="";
 				for (int i =0;i<server.getNumOfPlayers();i++){
 					//Get float[] of position x and y from concurrent hashmap
-					position= server.getPlayerPosition().get("Player "+i);
+					position= server.getPlayerStats().getPlayerPositionValue("Player "+i);
 					for(float coordinate:position){
 						message+=String.valueOf(coordinate)+",";
 					}
@@ -537,7 +459,7 @@ class serverAcceptThread extends Thread{
 				message="";
 				for (int i =0;i<server.getNumOfPlayers();i++){
 					//Get float[] of position x and y from concurrent hashmap
-					float angle= server.getPlayerAngle().get("Player "+i);
+					float angle= server.getPlayerStats().getPlayerAngleValue("Player "+i);
 					message+=String.valueOf(angle)+",";
 				}
 				message=message.substring(0, message.length()-1);
@@ -551,8 +473,7 @@ class serverAcceptThread extends Thread{
 			}catch(Exception e){
 				Gdx.app.log(TAG, "Error creating server socket: " +e.getMessage());
 			}
-		}
-		
+		}		
 		//Start a listener thread for each client socket connected
 		for (BufferedReader read:server.getServerInput()){
 			Thread thread = new serverListener(read,server);
@@ -575,7 +496,8 @@ class serverListener extends Thread{
 		while(!isInterrupted()){
 			try{
 				if((msg=input.readLine())!=null){
-					//System.out.println("MMServer Message received: "+msg);
+//					System.out.println("MMServer Message received: "+msg);
+//					String message = new String(msg);
 					//Do something with message
 					server.handleMessage(msg);
 				}
