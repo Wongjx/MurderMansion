@@ -157,8 +157,8 @@ public class MMServer {
 				playerStats.getPlayerType().put("Player " + i, 1);
 			}
 
-			playerStats.getPlayerPosition().put("Player " + i, new float[] { 1010 - ((i + 1) * 40), 515 });
-			playerStats.getPlayerAngle().put("Player " + i, 0f);
+			playerStats.getPlayerPosition().put("Player " + i, new float[] { 850 - ((i + 1) * 40), 515 });
+			playerStats.getPlayerAngle().put("Player " + i, 3.1427f);
 
 		}
 	}

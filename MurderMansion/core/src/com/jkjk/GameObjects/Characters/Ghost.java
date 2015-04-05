@@ -18,11 +18,6 @@ public class Ghost extends GameCharacter {
 	private PointLight pointLight;
 	private GameWorld gWorld;
 	private Animation currentAnimation;
-	
-//	public Ghost(int id, World world) {
-//		super("Ghost", id, world,true);
-//	}
-//	
 
 	Ghost(int id, GameWorld gWorld, boolean isPlayer) {
 		super("Ghost", id, gWorld, isPlayer);
@@ -38,8 +33,9 @@ public class Ghost extends GameCharacter {
 		CircleShape shape = new CircleShape();
 		shape.setRadius(10);
 		fdef.shape = shape;
-		fdef.isSensor = true;
-		fdef.filter.maskBits = 1;
+//		fdef.isSensor = true;
+		fdef.filter.categoryBits = 5;
+		fdef.filter.maskBits = 4;
 		body.createFixture(fdef).setUserData("ghost");
 
 		// create light
@@ -61,7 +57,24 @@ public class Ghost extends GameCharacter {
 				//(float) (body.getAngle()*180/Math.PI)-90);
 		batch.end();
 
-		super.render(cam, batch);
+		if (runTime % 5.0 < 0.02) {
+			ambientLightValue += 0.005;
+			rayHandler.setAmbientLight(ambientLightValue);
+		}
+		
+		rayHandler.setCombinedMatrix(cam.combined);
+		rayHandler.updateAndRender();
+		
+		if (isPlayer()){
+			if (checkMovable()) {
+				playerMovement();
+			} else {
+				body.setAngularVelocity(0);
+				body.setLinearVelocity(0, 0);
+			}
+
+			cam.position.set(body.getPosition(), 0); // Set cam position to be on player
+		}
 
 	}
 

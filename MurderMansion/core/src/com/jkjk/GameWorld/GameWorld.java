@@ -141,6 +141,8 @@ public class GameWorld {
 	public GameCharacter createPlayer(int type, float x, float y, float angle) {
 		if (type == 0)
 			player = gameCharFac.createCharacter("Murderer", 0, this, true);
+		else if (type == 2)
+			player = gameCharFac.createCharacter("Ghost", 0, this, true);
 		else
 			player = gameCharFac.createCharacter("Civilian", 0, this, true);
 		player.getBody().getFixtureList().get(0).setUserData("player");
@@ -262,6 +264,10 @@ public class GameWorld {
 				player.getBody().setTransform(445, 269, player.getBody().getAngle());
 			} else if (cl.getStairsName().equals("L2S4")) {
 				player.getBody().setTransform(910, 180, player.getBody().getAngle());
+			} else if (cl.getStairsName().equals("L1S5")) {
+				player.getBody().setTransform(3515, 640, player.getBody().getAngle());
+			} else if (cl.getStairsName().equals("LbS1")) {
+				player.getBody().setTransform(310, 250, player.getBody().getAngle());
 			}
 		}
 	}

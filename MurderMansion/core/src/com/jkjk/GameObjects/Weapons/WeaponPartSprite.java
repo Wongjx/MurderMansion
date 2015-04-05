@@ -40,6 +40,7 @@ public class WeaponPartSprite {
 		shape.setRadius(9);
 		fdef.shape = shape;
 		fdef.isSensor = true;
+		fdef.filter.categoryBits = 5;
 		fdef.filter.maskBits = 1;
 		body.createFixture(fdef).setUserData("weapon part");
 		
