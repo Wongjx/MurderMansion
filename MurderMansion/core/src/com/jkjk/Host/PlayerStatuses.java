@@ -29,33 +29,31 @@ public class PlayerStatuses implements Subject{
 	 * @param id Id of client to update
 	 * @param status 1 -> true; 0 -> false;
 	 */
-	public void updateIsAlive(int id,int status){
+	public void updateIsAlive(int origin,int id,int status){
 		playerIsAlive.put("Player "+id, status);
-		//TODO change message to update isAlive status message
-		message="something";
-		updateAll(id);
+		message="alive_"+origin+"_"+id+"_"+status;
+		updateAll(origin);
 	}
 	
 	/** Update player stun state
 	 * @param id Id of client to update
 	 * @param status 1 -> true; 0 -> false;
 	 */
-	public void updateIsStun(int id,int status){
+	public void updateIsStun(int origin,int id,int status){
 		playerIsStun.put("Player "+id, status);
-		//TODO change message to update isStuns status message
-		message="something";
-		updateAll(id);
+		message="stun_"+origin+"_"+id+"_"+status;
+		updateAll(origin);
 	}
 	
 	/**Update player type
+	 * @param origin original sender of update
 	 * @param id	id of client to update
 	 * @param status 0 -> murderer; 1 -> civilian; 2-> Ghost
 	 */
-	public void updateType(int id,int status){
+	public void updateType(int origin,int id,int status){
 		playerType.put("Player "+id, status);
-		//TODO change message to update playerType status message
-		message="something";
-		updateAll(id);
+		message="type_"+origin+"_"+id+"_"+status;
+		updateAll(origin);
 	}
 	
 	
@@ -65,8 +63,7 @@ public class PlayerStatuses implements Subject{
 	 */
 	public void updatePosition(int id,float[] position){
 		playerPosition.put("Player "+id, position);
-		//TODO change message to update playerPostion status message
-		message="something";
+		message="pos_"+id+"_"+Float.toString(position[0])+"_"+Float.toString(position[1]);
 		updateAll(id);
 	}
 	
@@ -76,8 +73,7 @@ public class PlayerStatuses implements Subject{
 	 */
 	public void updateAngle(int id,float angle){
 		playerAngle.put("Player "+id, angle);
-		//TODO change message to update playerAngle status message
-		message="something";
+		message="ang_"+id+"_"+Float.toString(angle);
 		updateAll(id);
 	}
 	/**Update player angle

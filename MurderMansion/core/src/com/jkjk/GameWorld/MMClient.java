@@ -116,7 +116,7 @@ public class MMClient {
 		String message;
 		// Receive item locations
 		if ((message = clientInput.readLine()).equals("itemLocations")) {
-			System.out.println("get item locations");
+//			System.out.println("get item locations");
 			while (!(message = clientInput.readLine()).equals("end")) {
 				String[] locations = message.split("_");
 				for (String coordinates : locations) {
@@ -130,7 +130,7 @@ public class MMClient {
 		}
 		// Receive weapon locations
 		if ((message = clientInput.readLine()).equals("weaponLocations")) {
-			System.out.println("get weapon locations");
+//			System.out.println("get weapon locations");
 			while (!(message = clientInput.readLine()).equals("end")) {
 				String[] locations = message.split("_");
 				for (String coordinates : locations) {
@@ -144,7 +144,7 @@ public class MMClient {
 		}
 		// Receive weaponPart locations
 		if ((message = clientInput.readLine()).equals("weaponPartLocations")) {
-			System.out.println("get weapon part locations");
+//			System.out.println("get weapon part locations");
 			while (!(message = clientInput.readLine()).equals("end")) {
 				String[] locations = message.split("_");
 				for (String coordinates : locations) {
@@ -167,7 +167,7 @@ public class MMClient {
 
 		// Receive spawn positions
 		if ((message = clientInput.readLine()).equals("spawnPositions")) {
-			System.out.println("get spawn positions");
+//			System.out.println("get spawn positions");
 			while (!(message = clientInput.readLine()).equals("end")) {
 				String[] locations = message.split("_");
 				for (int i = 0; i < numOfPlayers; i++) {
@@ -180,7 +180,7 @@ public class MMClient {
 
 		// Receive spawn angles
 		if ((message = clientInput.readLine()).equals("spawnAngles")) {
-			System.out.println("get spawn angles");
+//			System.out.println("get spawn angles");
 			while (!(message = clientInput.readLine()).equals("end")) {
 				String[] angles = message.split(",");
 				for (int i = 0; i < numOfPlayers; i++) {
@@ -222,6 +222,28 @@ public class MMClient {
 	// playerList.get(playerList.size-1).spawn(1010 - (((playerList.size - 1)+ 1) * 40), 515, 0);
 	// }
 	// }
+	
+	/**
+	 * Initialize client socket
+	 * 
+	 * @throws Exception
+	 */
+	public void initClientSocket(String address, int port) throws Exception {
+		if (address != null) {
+			clientSocket = new Socket();
+			// Create InetSocketAddress and connect to server socket
+			InetAddress addr = InetAddress.getByName(address);
+			InetSocketAddress iAddress = new InetSocketAddress(addr, port);
+			clientSocket.connect(iAddress);
+
+			setClientInput(new BufferedReader(new InputStreamReader(clientSocket.getInputStream())));
+			setClientOutput(new PrintWriter(clientSocket.getOutputStream(), true));
+
+		} else {
+			Gdx.app.log(TAG, "Server Address/Port is null");
+			// TODO Request information from server again
+		}
+	}
 
 	private void initPlayers() {
 		System.out.println("Number of players " + numOfPlayers);
@@ -295,6 +317,7 @@ public class MMClient {
 			playerAngle.put("Player "+id, angle);
 			//Update server
 			clientOutput.println("loc_"+id+"_"+Float.toString(position[0])+"_"+Float.toString(position[1])+"_"+Float.toString(angle));
+			clientOutput.flush();
 		}
 	}
 		
@@ -478,32 +501,12 @@ public class MMClient {
 		this.renderer = renderer;
 	}
 
+	
 	public void sendToServer(String message) {
 		clientOutput.println(message);
 		clientOutput.flush();
 	}
 
-	/**
-	 * Initialize client socket
-	 * 
-	 * @throws Exception
-	 */
-	public void initClientSocket(String address, int port) throws Exception {
-		if (address != null) {
-			clientSocket = new Socket();
-			// Create InetSocketAddress and connect to server socket
-			InetAddress addr = InetAddress.getByName(address);
-			InetSocketAddress iAddress = new InetSocketAddress(addr, port);
-			clientSocket.connect(iAddress);
-
-			setClientInput(new BufferedReader(new InputStreamReader(clientSocket.getInputStream())));
-			setClientOutput(new PrintWriter(clientSocket.getOutputStream(), true));
-
-		} else {
-			Gdx.app.log(TAG, "Server Address/Port is null");
-			// TODO Request information from server again
-		}
-	}
 
 	public void closeSocket() throws IOException {
 		clientInput.close();
@@ -522,6 +525,14 @@ public class MMClient {
 			// Get and change position of opponent
 			playerList.get(Integer.parseInt(msg[1])).spawn(position[0], position[1], angle);
 		}
+		else if(msg[0].equals("pos")){
+			float[] position = {Float.parseFloat(msg[2]),Float.parseFloat(msg[3])};
+			playerPosition.put("Player "+Integer.parseInt(msg[1]), position);
+		}
+		else if(msg[0].equals("ang")){
+			float angle = Float.parseFloat(msg[2]);
+			playerAngle.put("Player "+Integer.parseInt(msg[1]), angle);
+		}
 		
 		//If item consumption or production message
 		else if(msg[0].equals("item")){
@@ -530,6 +541,35 @@ public class MMClient {
 				itemLocations.consume(new Location(new float[]{Float.parseFloat(msg[3]),Float.parseFloat(msg[4])}));
 				gWorld.getWorld().destroyBody(gWorld.getItemList().get(position).getBody());
 				gWorld.getItemList().remove(position);
+			}
+		}
+		else if(msg[0].equals("weapon")){
+			if (msg[2].equals("con")){
+				Vector2 position = new Vector2(Float.parseFloat(msg[3]),Float.parseFloat(msg[4]));
+				weaponLocations.consume(new Location(new float[]{Float.parseFloat(msg[3]),Float.parseFloat(msg[4])}));
+				gWorld.getWorld().destroyBody(gWorld.getWeaponList().get(position).getBody());
+				gWorld.getWeaponList().remove(position);
+			}
+		}
+		else if(msg[0].equals("weaponpart")){
+			if (msg[2].equals("con")){
+				Vector2 position = new Vector2(Float.parseFloat(msg[3]),Float.parseFloat(msg[4]));
+				weaponPartLocations.consume(new Location(new float[]{Float.parseFloat(msg[3]),Float.parseFloat(msg[4])}));
+				gWorld.getWorld().destroyBody(gWorld.getWeaponPartList().get(position).getBody());
+				gWorld.getWeaponPartList().remove(position);
+			}
+		}
+		else if(msg[0].equals("trap")){
+			if (msg[2].equals("con")){
+				Vector2 position = new Vector2(Float.parseFloat(msg[3]),Float.parseFloat(msg[4]));
+				trapLocations.consume(new Location(new float[]{Float.parseFloat(msg[3]),Float.parseFloat(msg[4])}));
+				//TODO remove trap body from game world
+//				gWorld.getWorld().destroyBody(gWorld.getWeaponPartList().get(position).getBody());
+//				gWorld.getWeaponPartList().remove(position);
+			}else if (msg[2].equals("pro")){
+				Vector2 position = new Vector2(Float.parseFloat(msg[3]),Float.parseFloat(msg[4]));
+				trapLocations.produce(new Location(new float[]{Float.parseFloat(msg[3]),Float.parseFloat(msg[4])}));
+				//TODO add in trap body from game world
 			}
 		}
 		

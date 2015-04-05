@@ -20,8 +20,7 @@ import com.jkjk.MMHelpers.MultiplayerSeissonInfo;
 
 
 public class MMServer {
-	private static MMServer instance;
-	private final String TAG = "MMServer";
+	private static MMServer instance;	
 	
 	private MultiplayerSeissonInfo info;
 	public ServerSocket serverSocket;
@@ -328,6 +327,14 @@ public class MMServer {
 //			playerAngle.put("Player "+msg[1], angle);
 //			updateClients(message, Integer.parseInt(msg[1]));
 		}
+		else if(msg[0].equals("pos")){
+			float[] position = {Float.parseFloat(msg[2]),Float.parseFloat(msg[3])};
+			playerStats.updatePosition(Integer.parseInt(msg[1]), position);
+		}
+		else if(msg[0].equals("ang")){
+			float angle = Float.parseFloat(msg[2]);
+			playerStats.updateAngle(Integer.parseInt(msg[1]), angle);
+		}
 		//If item consumption or production message
 		else if(msg[0].equals("item")){
 //			System.out.println("item related");
@@ -336,6 +343,23 @@ public class MMServer {
 				objectLocations.consumeItem(new Location(new float[]{Float.parseFloat(msg[3]),Float.parseFloat(msg[4])}),Integer.parseInt(msg[1]));
 			}
 //			updateClients(message, Integer.parseInt(msg[1]));
+		}
+		else if(msg[0].equals("weapon")){
+			if (msg[2].equals("con")){
+				objectLocations.consumeWeapon(new Location(new float[]{Float.parseFloat(msg[3]),Float.parseFloat(msg[4])}),Integer.parseInt(msg[1]));
+			}
+		}
+		else if(msg[0].equals("weaponpart")){
+			if (msg[2].equals("con")){
+				objectLocations.consumeWeaponPart(new Location(new float[]{Float.parseFloat(msg[3]),Float.parseFloat(msg[4])}),Integer.parseInt(msg[1]));
+			}
+		}
+		else if(msg[0].equals("trap")){
+			if (msg[2].equals("con")){
+				objectLocations.consumeTrap(new Location(new float[]{Float.parseFloat(msg[3]),Float.parseFloat(msg[4])}),Integer.parseInt(msg[1]));
+			}else if (msg[2].equals("pro")){
+				objectLocations.produceTrap(new Location(new float[]{Float.parseFloat(msg[3]),Float.parseFloat(msg[4])}),Integer.parseInt(msg[1]));
+			}
 		}
 	}
 }
@@ -383,7 +407,6 @@ class serverAcceptThread extends Thread{
 				writer.println(idCount);
 				writer.println(server.getMurdererId());
 				
-				//TODO Send item spawn locations
 				String message ="";
 				float[] position = null;
 				Collection<Location> locations=null;
@@ -437,7 +460,7 @@ class serverAcceptThread extends Thread{
 				writer.println(message);
 				writer.println("end");
 				
-				//TODO Send spawn positions and angle
+				//Send spawn locations and angle 
 				writer.println("spawnPositions");
 				message="";
 				for (int i =0;i<server.getNumOfPlayers();i++){

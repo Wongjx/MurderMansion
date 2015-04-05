@@ -65,5 +65,8 @@ public class WeaponSprite {
 			batch.end();
 		}
 	}
+	public Body getBody(){
+		return body;
+	}
 
 }
