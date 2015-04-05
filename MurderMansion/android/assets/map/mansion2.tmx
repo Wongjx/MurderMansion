@@ -490,7 +490,7 @@
   </object>
   <object id="120" name="L1S1" type="object" x="674.125" y="74.375" width="7.25" height="30.875">
    <properties>
-    <property name="categoryBits" value="4"/>
+    <property name="categoryBits" value="5"/>
     <property name="isSensor" value="true"/>
     <property name="maskBits" value="1"/>
     <property name="userData" value="L1S1"/>
@@ -498,7 +498,7 @@
   </object>
   <object id="121" name="L1S2" type="object" x="384.125" y="74.125" width="7.875" height="33.375">
    <properties>
-    <property name="categoryBits" value="4"/>
+    <property name="categoryBits" value="5"/>
     <property name="isSensor" value="true"/>
     <property name="maskBits" value="1"/>
     <property name="userData" value="L1S2"/>
@@ -506,7 +506,7 @@
   </object>
   <object id="122" name="L1S3" type="object" x="378.091" y="673.489" width="7.63636" height="36.9091">
    <properties>
-    <property name="categoryBits" value="4"/>
+    <property name="categoryBits" value="5"/>
     <property name="isSensor" value="true"/>
     <property name="maskBits" value="1"/>
     <property name="userData" value="L1S3"/>
@@ -514,7 +514,7 @@
   </object>
   <object id="123" name="L1S4" type="object" x="895.25" y="806.375" width="31.5" height="3.375">
    <properties>
-    <property name="categoryBits" value="4"/>
+    <property name="categoryBits" value="5"/>
     <property name="isSensor" value="true"/>
     <property name="maskBits" value="1"/>
     <property name="userData" value="L1S4"/>
@@ -522,7 +522,7 @@
   </object>
   <object id="124" name="stair2down" type="object" x="2344.76" y="73" width="6" height="31.75">
    <properties>
-    <property name="categoryBits" value="4"/>
+    <property name="categoryBits" value="5"/>
     <property name="isSensor" value="true"/>
     <property name="maskBits" value="1"/>
     <property name="userData" value="L2S2"/>
@@ -530,7 +530,7 @@
   </object>
   <object id="125" name="stair1down" type="object" x="2554.57" y="73.2273" width="6.875" height="33.125">
    <properties>
-    <property name="categoryBits" value="4"/>
+    <property name="categoryBits" value="5"/>
     <property name="isSensor" value="true"/>
     <property name="maskBits" value="1"/>
     <property name="userData" value="L2S1"/>
@@ -538,7 +538,7 @@
   </object>
   <object id="126" name="stair3down" type="object" x="2345.76" y="672.159" width="6.45455" height="36.7273">
    <properties>
-    <property name="categoryBits" value="4"/>
+    <property name="categoryBits" value="5"/>
     <property name="isSensor" value="true"/>
     <property name="maskBits" value="1"/>
     <property name="userData" value="L2S3"/>
@@ -550,7 +550,7 @@
   <object id="131" name="wall" type="object" x="670" y="296.667" width="17.3333" height="17.3333"/>
   <object id="132" name="L2S4" type="object" x="2815.56" y="772.489" width="31.125" height="4.125">
    <properties>
-    <property name="categoryBits" value="4"/>
+    <property name="categoryBits" value="5"/>
     <property name="isSensor" value="true"/>
     <property name="maskBits" value="1"/>
     <property name="userData" value="L2S4"/>
@@ -622,7 +622,7 @@
   </object>
   <object id="147" name="L1S5" type="object" x="290.364" y="773.606" width="36.7273" height="7.27273">
    <properties>
-    <property name="categoryBits" value="4"/>
+    <property name="categoryBits" value="5"/>
     <property name="isSensor" value="true"/>
     <property name="maskBits" value="1"/>
     <property name="userData" value="L1S5"/>
@@ -630,7 +630,7 @@
   </object>
   <object id="148" name="LbS1" type="object" x="3497.5" y="267.5" width="37.25" height="8">
    <properties>
-    <property name="categoryBits" value="4"/>
+    <property name="categoryBits" value="5"/>
     <property name="isSensor" value="true"/>
     <property name="maskBits" value="1"/>
     <property name="userData" value="LbS1"/>
@@ -638,7 +638,7 @@
   </object>
   <object id="149" name="wall" type="object" x="3496.75" y="242.75">
    <properties>
-    <property name="categoryBits" value="4"/>
+    <property name="categoryBits" value="5"/>
    </properties>
    <polyline points="0,0 38.5,0 38.5,64 38.375,76.4375 42.1875,76.3125 42.125,127.75 66.3409,135.341 86.8864,146.341 105.25,162.25 118.977,178.159 126.886,192.977 133.705,207.886 138.432,225.614 197.795,225.068 197.432,233.705 210.523,233.705 210.438,157.188 309.75,157.5 309.75,336.5 210.5,336 210.25,257 197.75,257.5 197.5,268.25 138.5,268.25 131.5,291.75 120.75,310 107,328 92,341.25 70.5,355.25 41.25,366 17,366.5 2.5,366.25 -27.25,357.75 -49.5,345.5 -73.75,322.75 -86,302.5 -93.5,285 -98.25,268.75 -159.25,268.75 -159.25,261.5 -172.25,262.25 -172,335.75 -270.75,335.75 -271.25,157.75 -172.25,157.75 -172.25,231.75 -158.75,231.75 -159.25,226 -98,225.5 -91.75,201.75 -82,182.75 -68.75,165.5 -54.5,152 -41.25,143.25 -21.25,133.75 -3,128.25 -2.75,76.25 0.5,76.25 -0.25,0.25"/>
   </object>
