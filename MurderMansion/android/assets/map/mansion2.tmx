@@ -1,14 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.0" orientation="orthogonal" renderorder="right-up" width="100" height="30" tilewidth="32" tileheight="32" nextobjectid="133">
+<map version="1.0" orientation="orthogonal" renderorder="right-up" width="120" height="30" tilewidth="32" tileheight="32" nextobjectid="167">
  <tileset firstgid="1" name="MMmansion2-2" tilewidth="32" tileheight="32">
   <image source="MMmansion2-2.png" width="1280" height="960"/>
  </tileset>
  <tileset firstgid="1201" name="MMmansion2-1" tilewidth="32" tileheight="32">
   <image source="MMmansion2-1.png" width="1280" height="960"/>
  </tileset>
- <layer name="map" width="100" height="30">
+ <tileset firstgid="2401" name="MMmansion2-b" tilewidth="32" tileheight="32">
+  <image source="MMmansion2-b.png" width="640" height="500"/>
+ </tileset>
+ <layer name="map" width="120" height="30">
   <data encoding="base64" compression="zlib">
-   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
+   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
   </data>
  </layer>
  <objectgroup name="wall">
@@ -431,7 +434,7 @@
    </properties>
    <polyline points="0,0 6.45455,3 7.81818,8.81818 6.63636,14.2727 0.454545,19.0909 0.454545,25.9091 6.36364,28.5455 8.90909,33.1818 8.54545,37.9091 2.09091,45.0909 2.36364,51.9091 7.45455,55.1818 8.63636,58.2727 8.36364,64.2727 2.81818,70.7273 2.45455,78.3636 7.90909,81.4545 8.81818,88.7273 5.09091,94.9091 -0.181818,97.5455 -5.63636,97.7273 -11.7273,92.3636 -11.8182,81.6364 -6,78 -2.09091,77.7273 -2.36364,71 -8.72727,68.6364 -11.9091,63.1818 -12.0909,55.6364 -4.81818,52.4545 -2.18182,51.8182 -2.18182,44.7273 -7.45455,44.0909 -11,39.5455 -12.1818,32.8182 -8.81818,27.2727 -3,25.5455 -3.45455,18.9091 -9.63636,16.6364 -13.6364,11 -12.3636,4.36364 -7.45455,0.363636 0.749495,0.341414"/>
   </object>
-  <object id="107" name="maskBits" type="object" x="2677.5" y="493.812">
+  <object id="107" name="furniture" type="object" x="2677.5" y="493.812">
    <properties>
     <property name="maskBits" value="1"/>
    </properties>
@@ -487,6 +490,7 @@
   </object>
   <object id="120" name="L1S1" type="object" x="674.125" y="74.375" width="7.25" height="30.875">
    <properties>
+    <property name="categoryBits" value="4"/>
     <property name="isSensor" value="true"/>
     <property name="maskBits" value="1"/>
     <property name="userData" value="L1S1"/>
@@ -494,6 +498,7 @@
   </object>
   <object id="121" name="L1S2" type="object" x="384.125" y="74.125" width="7.875" height="33.375">
    <properties>
+    <property name="categoryBits" value="4"/>
     <property name="isSensor" value="true"/>
     <property name="maskBits" value="1"/>
     <property name="userData" value="L1S2"/>
@@ -501,6 +506,7 @@
   </object>
   <object id="122" name="L1S3" type="object" x="378.091" y="673.489" width="7.63636" height="36.9091">
    <properties>
+    <property name="categoryBits" value="4"/>
     <property name="isSensor" value="true"/>
     <property name="maskBits" value="1"/>
     <property name="userData" value="L1S3"/>
@@ -508,6 +514,7 @@
   </object>
   <object id="123" name="L1S4" type="object" x="895.25" y="806.375" width="31.5" height="3.375">
    <properties>
+    <property name="categoryBits" value="4"/>
     <property name="isSensor" value="true"/>
     <property name="maskBits" value="1"/>
     <property name="userData" value="L1S4"/>
@@ -515,6 +522,7 @@
   </object>
   <object id="124" name="stair2down" type="object" x="2344.76" y="73" width="6" height="31.75">
    <properties>
+    <property name="categoryBits" value="4"/>
     <property name="isSensor" value="true"/>
     <property name="maskBits" value="1"/>
     <property name="userData" value="L2S2"/>
@@ -522,6 +530,7 @@
   </object>
   <object id="125" name="stair1down" type="object" x="2554.57" y="73.2273" width="6.875" height="33.125">
    <properties>
+    <property name="categoryBits" value="4"/>
     <property name="isSensor" value="true"/>
     <property name="maskBits" value="1"/>
     <property name="userData" value="L2S1"/>
@@ -529,6 +538,7 @@
   </object>
   <object id="126" name="stair3down" type="object" x="2345.76" y="672.159" width="6.45455" height="36.7273">
    <properties>
+    <property name="categoryBits" value="4"/>
     <property name="isSensor" value="true"/>
     <property name="maskBits" value="1"/>
     <property name="userData" value="L2S3"/>
@@ -540,10 +550,199 @@
   <object id="131" name="wall" type="object" x="670" y="296.667" width="17.3333" height="17.3333"/>
   <object id="132" name="L2S4" type="object" x="2815.56" y="772.489" width="31.125" height="4.125">
    <properties>
+    <property name="categoryBits" value="4"/>
     <property name="isSensor" value="true"/>
     <property name="maskBits" value="1"/>
     <property name="userData" value="L2S4"/>
    </properties>
+  </object>
+  <object id="133" name="escape" type="object" x="926.667" y="396.333">
+   <properties>
+    <property name="isSensor" value="true"/>
+    <property name="maskBits" value="1"/>
+    <property name="userData" value="escape"/>
+   </properties>
+   <polygon points="0,0 24.3333,10.3333 43.3333,32 47.3333,53.3333 42.3333,74 33,87.6667 14.3333,102.333 0.666667,106 0.666667,124 80,123 80.6667,-21.3333 0,-21.3333"/>
+  </object>
+  <object id="134" name="playing boundary" type="object" x="945" y="897.957">
+   <properties>
+    <property name="categoryBits" value="4"/>
+    <property name="maskBits" value="4"/>
+   </properties>
+   <polyline points="0,0 -752.818,-0.501976 -752.455,-37.0474 -824.5,-36.4565 -824.25,-261.957 -804.5,-262.207 -804.5,-635.457 -824,-635.207 -822.75,-860.207 -599.75,-859.957 -599.75,-842.457 -226,-841.707 -225.5,-860.957 -0.5,-860.207 -1.75,-636.207 127.75,-635.207 140.25,-629.707 148.75,-621.707 153,-608.707 153.75,-294.207 150.5,-280.207 141.5,-266.957 128.75,-261.457 107.75,-259.707 1,-259.457 0,0.00832201"/>
+  </object>
+  <object id="135" name="playing boundary" type="object" x="2864.5" y="858.5">
+   <properties>
+    <property name="categoryBits" value="4"/>
+    <property name="maskBits" value="4"/>
+   </properties>
+   <polyline points="0,0 -222.5,1 -223.5,-17.5 -599,-16.5 -598,-0.5 -823,0.5 -823,-224.5 -803.5,-225 -803.5,-597 -824.5,-597 -823.5,-823.5 -598,-823.5 -597.5,-805.5 -224.5,-805 -225.5,-823 1,-822.5 0.5,-596.5 -18.5,-595.5 -17.5,-224 0,-224 0.25,0"/>
+  </object>
+  <object id="137" name="playing boundary" type="object" x="2379" y="672.75">
+   <properties>
+    <property name="categoryBits" value="4"/>
+    <property name="maskBits" value="4"/>
+   </properties>
+   <polyline points="0,0 0.25,47.75 -113.75,48.5 -113,36.25 -9,36.5 -8.25,-1.25 -130.25,-2 -130,-19.5 -131.625,-19.875 -131.909,-411.841 -111.909,-411.295 -111.727,-562.568 261.333,-562.417 261,-411.75 280.333,-411.75 280.667,-39.75 260,-39.4167 259,-19.75 -0.333333,-19.0833 -0.03125,0.75"/>
+  </object>
+  <object id="140" name="playing boundary" type="object" x="2770.82" y="805.545">
+   <properties>
+    <property name="categoryBits" value="4"/>
+    <property name="maskBits" value="4"/>
+   </properties>
+   <polyline points="0,0 41.1818,0.0909091 41.5455,-66.3636 93.8182,-66"/>
+  </object>
+  <object id="141" name="playing boundary" type="object" x="719.091" y="56.5455">
+   <properties>
+    <property name="categoryBits" value="4"/>
+    <property name="maskBits" value="4"/>
+   </properties>
+   <polyline points="0,0 0.363636,51.2727 -98.7273,52.7273"/>
+  </object>
+  <object id="142" name="playing boundary" type="object" x="443.75" y="108">
+   <properties>
+    <property name="categoryBits" value="4"/>
+    <property name="maskBits" value="4"/>
+   </properties>
+   <polyline points="0,0 -100,0 -98.5,-52.75"/>
+  </object>
+  <object id="144" name="playing boundary" type="object" x="454" y="671">
+   <properties>
+    <property name="categoryBits" value="4"/>
+    <property name="maskBits" value="4"/>
+   </properties>
+   <polyline points="0,0 -108.5,1 -108.5,39.5 2.5,41.5 3,47 -126,50 -126.5,137 -169.5,138 -168,27.5"/>
+  </object>
+  <object id="145" name="playing boundary" type="object" x="849.091" y="860.545">
+   <properties>
+    <property name="categoryBits" value="4"/>
+    <property name="maskBits" value="4"/>
+   </properties>
+   <polyline points="0,0 1.63636,-51.2727 42.5455,-51.6364 42.5455,-106.364"/>
+  </object>
+  <object id="147" name="L1S5" type="object" x="290.364" y="773.606" width="36.7273" height="7.27273">
+   <properties>
+    <property name="categoryBits" value="4"/>
+    <property name="isSensor" value="true"/>
+    <property name="maskBits" value="1"/>
+    <property name="userData" value="L1S5"/>
+   </properties>
+  </object>
+  <object id="148" name="LbS1" type="object" x="3497.5" y="267.5" width="37.25" height="8">
+   <properties>
+    <property name="categoryBits" value="4"/>
+    <property name="isSensor" value="true"/>
+    <property name="maskBits" value="1"/>
+    <property name="userData" value="LbS1"/>
+   </properties>
+  </object>
+  <object id="149" name="wall" type="object" x="3496.75" y="242.75">
+   <properties>
+    <property name="categoryBits" value="4"/>
+   </properties>
+   <polyline points="0,0 38.5,0 38.5,64 38.375,76.4375 42.1875,76.3125 42.125,127.75 66.3409,135.341 86.8864,146.341 105.25,162.25 118.977,178.159 126.886,192.977 133.705,207.886 138.432,225.614 197.795,225.068 197.432,233.705 210.523,233.705 210.438,157.188 309.75,157.5 309.75,336.5 210.5,336 210.25,257 197.75,257.5 197.5,268.25 138.5,268.25 131.5,291.75 120.75,310 107,328 92,341.25 70.5,355.25 41.25,366 17,366.5 2.5,366.25 -27.25,357.75 -49.5,345.5 -73.75,322.75 -86,302.5 -93.5,285 -98.25,268.75 -159.25,268.75 -159.25,261.5 -172.25,262.25 -172,335.75 -270.75,335.75 -271.25,157.75 -172.25,157.75 -172.25,231.75 -158.75,231.75 -159.25,226 -98,225.5 -91.75,201.75 -82,182.75 -68.75,165.5 -54.5,152 -41.25,143.25 -21.25,133.75 -3,128.25 -2.75,76.25 0.5,76.25 -0.25,0.25"/>
+  </object>
+  <object id="150" name="furniture" type="object" x="3563.5" y="529.5">
+   <properties>
+    <property name="maskBits" value="1"/>
+   </properties>
+   <polygon points="0,0 18.5,13 26,28 29,44.5 3,62.5 -10,54.5 -19,39 -22.5,28.5 -23.5,15"/>
+  </object>
+  <object id="151" name="furniture" type="object" x="3530.5" y="546.5">
+   <properties>
+    <property name="maskBits" value="1"/>
+   </properties>
+   <polygon points="0,0 6.75,16 8.75,34 4.75,48.5 1,55 -28,55.25 -34,45 -37.25,30.75 -35.25,18.25 -31.25,6 -28.75,1"/>
+  </object>
+  <object id="152" name="furniture" type="object" x="3492.25" y="545">
+   <properties>
+    <property name="maskBits" value="1"/>
+   </properties>
+   <polygon points="0,0 1,13.5 -5.25,26.75 -15.25,38.75 -25.25,47 -52.25,32 -51.5,16 -44.5,2.75 -33.25,-9.25 -24.25,-14.25"/>
+  </object>
+  <object id="153" name="furniture" type="object" x="3539.75" y="379.25">
+   <properties>
+    <property name="maskBits" value="1"/>
+   </properties>
+   <polygon points="0,0 23.75,0 24,21.75 0.75,22.5"/>
+  </object>
+  <object id="154" name="furniture" type="object" x="3579" y="401">
+   <properties>
+    <property name="maskBits" value="1"/>
+   </properties>
+   <polygon points="0,0 21,12 15.25,21.75 -7,10.25"/>
+  </object>
+  <object id="155" name="furniture" type="object" x="3592.75" y="425.5">
+   <properties>
+    <property name="maskBits" value="1"/>
+   </properties>
+   <polygon points="0,0 21.5,0.5 22.75,24 0,25"/>
+  </object>
+  <object id="156" name="furniture" type="object" x="3473.25" y="382.25">
+   <properties>
+    <property name="maskBits" value="1"/>
+   </properties>
+   <polygon points="0,0 10.75,-0.25 11.25,11.75 0,12"/>
+  </object>
+  <object id="157" name="furniture" type="object" x="3448" y="394.25">
+   <properties>
+    <property name="maskBits" value="1"/>
+   </properties>
+   <polygon points="0,0 23,0 23.25,23 0,22.5"/>
+  </object>
+  <object id="158" name="furniture" type="object" x="3297.33" y="446.333">
+   <properties>
+    <property name="maskBits" value="1"/>
+   </properties>
+   <polygon points="0,0 0.333333,-45.3333 -45.6667,-44.6667 -46,0.333333"/>
+  </object>
+  <object id="159" name="furniture" type="object" x="3320" y="429">
+   <properties>
+    <property name="maskBits" value="1"/>
+   </properties>
+   <polygon points="0,0 -8,5.33333 -17.3333,0.666667 -20.3333,-6.66667 -17.3333,-17.3333 -9.33333,-20 -1,-17.3333 2,-8.66667"/>
+  </object>
+  <object id="160" name="furniture" type="object" x="3250.33" y="421.667">
+   <properties>
+    <property name="maskBits" value="1"/>
+   </properties>
+   <polygon points="0,0 -2.33333,8 -8.66667,10.6667 -17,9.33333 -22.3333,0 -19.6667,-6.66667 -10.6667,-12.3333 -3,-8.33333"/>
+  </object>
+  <object id="161" name="furniture" type="object" x="3226.67" y="478">
+   <properties>
+    <property name="maskBits" value="1"/>
+   </properties>
+   <polygon points="0,0 37.6667,0.333333 51.3333,0.666667 52,21 38.3333,24.3333 0,24.3333"/>
+  </object>
+  <object id="162" name="furniture" type="object" x="3231.33" y="565.667">
+   <properties>
+    <property name="maskBits" value="1"/>
+   </properties>
+   <polygon points="0,0 18,0.333333 18.3333,11 1,11.6667"/>
+  </object>
+  <object id="163" name="furniture" type="object" x="3253.33" y="576">
+   <properties>
+    <property name="maskBits" value="1"/>
+   </properties>
+   <polygon points="0,0 -1,-10.3333 12.6667,-19.3333 34,-18.3333 41.6667,-12 42,0.333333"/>
+  </object>
+  <object id="164" name="furniture" type="object" x="3307.33" y="544">
+   <properties>
+    <property name="maskBits" value="1"/>
+   </properties>
+   <polygon points="0,0 11.3333,0 10.6667,-14 -1.66667,-13.3333"/>
+  </object>
+  <object id="165" name="furniture" type="object" x="3708.33" y="469.333">
+   <properties>
+    <property name="maskBits" value="1"/>
+   </properties>
+   <polygon points="0,0 97,-0.333333 97,-6.33333 0.333333,-5.33333"/>
+  </object>
+  <object id="166" name="furniture" type="object" x="3708" y="509">
+   <properties>
+    <property name="maskBits" value="1"/>
+   </properties>
+   <polygon points="0,0 98.3333,-0.333333 98,5.66667 0.333333,6.33333"/>
   </object>
  </objectgroup>
 </map>

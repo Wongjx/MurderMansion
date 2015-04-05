@@ -49,7 +49,7 @@ public abstract class GameCharacter {
 	private int weaponUses;
 	
 	protected float runTime;
-	private float ambientLightValue;
+	protected float ambientLightValue;
 
 	GameCharacter(String type, int id, GameWorld gWorld, boolean isPlayer) {
 		this.isPlayer = isPlayer;
@@ -268,7 +268,7 @@ public abstract class GameCharacter {
 		return true;
 	}
 
-	private void playerMovement() {
+	protected void playerMovement() {
 		touchpadX = touchpad.getKnobPercentX();
 		touchpadY = touchpad.getKnobPercentY();
 		if (!touchpad.isTouched()) {
