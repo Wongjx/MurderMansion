@@ -180,6 +180,7 @@ public class GameWorld {
 			bodyToRemove = itemsToRemove.get(i);
 			//Call MMclient to remove item
 			client.removeItemLocation(bodyToRemove.getPosition());
+			System.out.println("Item removed from client.");
 			itemList.remove(bodyToRemove.getPosition());
 			world.destroyBody(bodyToRemove);
 			if (player.getType().equals("Civilian"))

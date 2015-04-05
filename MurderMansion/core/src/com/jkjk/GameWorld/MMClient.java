@@ -58,10 +58,7 @@ public class MMClient {
 	private int murdererId;
 	private ArrayList<GameCharacter> playerList;
 
-	private final ConcurrentHashMap<String, Integer> playerIsAlive; // If 1 ->
-																	// true; If
-																	// 0 ->
-																	// false;
+	private final ConcurrentHashMap<String, Integer> playerIsAlive; // If 1 ->true; If 0 -> false;
 	private final ConcurrentHashMap<String, Integer> playerIsStun; // If 1 ->
 																	// true; If
 																	// 0 ->
@@ -273,7 +270,9 @@ public class MMClient {
 	 * @param position
 	 */
 	public void removeItemLocation(Vector2 position){
+		System.out.println("Consume item from buffer");
 		itemLocations.consume(new Location(new float[]{position.x,position.y}));
+		System.out.println("Send message to server");
 		clientOutput.println("item_"+id+"_con_"+Float.toString(position.x)+"_"+Float.toString(position.y));		
 	}
 	
@@ -281,11 +280,15 @@ public class MMClient {
 		//Get player postion
 		float angle =gWorld.getPlayer().getBody().getAngle();
 		float[] position ={gWorld.getPlayer().getBody().getPosition().x,gWorld.getPlayer().getBody().getPosition().y};
-		//Update client Hashmap
-		playerPosition.put("Player "+id, position);
-		playerAngle.put("Player "+id, angle);
-		//Update server
-		clientOutput.println("loc_"+id+"_"+Float.toString(position[0])+"_"+Float.toString(position[1])+"_"+Float.toString(angle));
+		//if angle and position has changed 
+		if ((playerPosition.get("Player "+id)!= position) && (playerAngle.get("Player "+id)!=angle)){
+			//Update client Hashmap
+			playerPosition.put("Player "+id, position);
+			playerAngle.put("Player "+id, angle);
+			//Update server
+			clientOutput.println("loc_"+id+"_"+Float.toString(position[0])+"_"+Float.toString(position[1])+"_"+Float.toString(angle));
+		}
+		
 	}
 
 	/**
@@ -510,8 +513,7 @@ public class MMClient {
 		}
 		//If item consumption or production message
 		else if(msg[0].equals("item")){
-			System.out.println(msg);
-			if (msg[3].equals("con")){
+			if (msg[2].equals("con")){
 				Vector2 position = new Vector2(Float.parseFloat(msg[3]),Float.parseFloat(msg[4]));
 				itemLocations.consume(new Location(new float[]{Float.parseFloat(msg[3]),Float.parseFloat(msg[4])}));
 				gWorld.getWorld().destroyBody(gWorld.getItemList().get(position).getBody());
@@ -538,8 +540,8 @@ class clientListener extends Thread {
 		while (!isInterrupted()) {
 			try {
 				if ((msg = input.readLine()) != null) {
-					//System.out.println("MMClient Message received: "+msg);
-					// TODO something with message
+//					System.out.println("MMClient Message received: "+msg);
+//					String message = new String(msg);
 					client.handleMessage(msg);
 				}
 			} catch (Exception e) {
