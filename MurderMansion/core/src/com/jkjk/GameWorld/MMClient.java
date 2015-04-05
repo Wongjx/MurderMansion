@@ -18,24 +18,23 @@ import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
 import com.badlogic.gdx.physics.box2d.FixtureDef;
-import com.jkjk.GameObjects.WeaponPartSprite;
+import com.jkjk.GameObjects.Obstacles;
 import com.jkjk.GameObjects.Characters.GameCharacter;
 import com.jkjk.GameObjects.Items.ItemSprite;
+import com.jkjk.GameObjects.Weapons.WeaponPartSprite;
 import com.jkjk.GameObjects.Weapons.WeaponSprite;
 import com.jkjk.Host.Location;
 import com.jkjk.Host.SpawnBuffer;
 
 /**
- * @author LeeJunXiang MMClient listens to input from the Server by the host.
- *         Inputs include sharable data such as player position, item spawns and
- *         player status. MMClient will also output to the server the changes
- *         made by the player.
+ * @author LeeJunXiang MMClient listens to input from the Server by the host. Inputs include sharable data
+ *         such as player position, item spawns and player status. MMClient will also output to the server the
+ *         changes made by the player.
  * 
- *         More importantly, client-side processing will handle all actions by
- *         the player (movement, contact). The CONSEQUENCE of the action will be
- *         passed to the server, which will retransmit the results to all other
- *         clients. Consequences include the removal of an item when picking it
- *         up, or change in body position due to movement.
+ *         More importantly, client-side processing will handle all actions by the player (movement, contact).
+ *         The CONSEQUENCE of the action will be passed to the server, which will retransmit the results to
+ *         all other clients. Consequences include the removal of an item when picking it up, or change in
+ *         body position due to movement.
  * 
  */
 public class MMClient {
@@ -91,12 +90,12 @@ public class MMClient {
 	 *            GameRenderer instance
 	 * @throws Exception
 	 */
-	private MMClient(GameWorld gWorld, GameRenderer renderer,
-			String serverAddress, int serverPort) throws Exception {
+	private MMClient(GameWorld gWorld, GameRenderer renderer, String serverAddress, int serverPort)
+			throws Exception {
 
 		this.gWorld = gWorld;
 		this.renderer = renderer;
-		
+
 		this.serverAddress = serverAddress;
 		this.serverPort = serverPort;
 
@@ -114,7 +113,6 @@ public class MMClient {
 		weaponPartLocations = new SpawnBuffer(numOfPlayers * 2);
 		trapLocations = new SpawnBuffer(numOfPlayers);
 
-
 		String message;
 		// Receive item locations
 		if ((message = clientInput.readLine()).equals("itemLocations")) {
@@ -123,9 +121,10 @@ public class MMClient {
 				String[] locations = message.split("_");
 				for (String coordinates : locations) {
 					String[] XY = coordinates.split(",");
-					itemLocations.produce(new Location(new float[] {Float.parseFloat(XY[0]),Float.parseFloat(XY[1])}));
-					//Spawn item inside game world
-					createItems(Float.parseFloat(XY[0]),Float.parseFloat(XY[1]));
+					itemLocations.produce(new Location(new float[] { Float.parseFloat(XY[0]),
+							Float.parseFloat(XY[1]) }));
+					// Spawn item inside game world
+					createItems(Float.parseFloat(XY[0]), Float.parseFloat(XY[1]));
 				}
 			}
 		}
@@ -136,9 +135,10 @@ public class MMClient {
 				String[] locations = message.split("_");
 				for (String coordinates : locations) {
 					String[] XY = coordinates.split(",");
-					weaponLocations.produce(new Location(new float[] {Float.parseFloat(XY[0]),Float.parseFloat(XY[1]) }));
-					//Spawn weapon in game world
-					createWeapons(Float.parseFloat(XY[0]),Float.parseFloat(XY[1]));
+					weaponLocations.produce(new Location(new float[] { Float.parseFloat(XY[0]),
+							Float.parseFloat(XY[1]) }));
+					// Spawn weapon in game world
+					createWeapons(Float.parseFloat(XY[0]), Float.parseFloat(XY[1]));
 				}
 			}
 		}
@@ -149,13 +149,14 @@ public class MMClient {
 				String[] locations = message.split("_");
 				for (String coordinates : locations) {
 					String[] XY = coordinates.split(",");
-					weaponPartLocations.produce(new Location(new float[] {Float.parseFloat(XY[0]),Float.parseFloat(XY[1]) }));
-					//spawn weapon parts in game world
-					createWeaponParts(Float.parseFloat(XY[0]),Float.parseFloat(XY[1]));
+					weaponPartLocations.produce(new Location(new float[] { Float.parseFloat(XY[0]),
+							Float.parseFloat(XY[1]) }));
+					// spawn weapon parts in game world
+					createWeaponParts(Float.parseFloat(XY[0]), Float.parseFloat(XY[1]));
 				}
 			}
 		}
-		
+
 		playerList = new ArrayList<GameCharacter>(numOfPlayers);
 //		System.out.println("Creating concurrent hashmaps for player condition.");
 		playerType = new ConcurrentHashMap<String, Integer>(numOfPlayers);
@@ -169,53 +170,58 @@ public class MMClient {
 			System.out.println("get spawn positions");
 			while (!(message = clientInput.readLine()).equals("end")) {
 				String[] locations = message.split("_");
-				for (int i=0;i<numOfPlayers;i++){
+				for (int i = 0; i < numOfPlayers; i++) {
 					String[] XY = locations[i].split(",");
-					playerPosition.put("Player "+i, new float[] {Float.parseFloat(XY[0]),Float.parseFloat(XY[1])});
+					playerPosition.put("Player " + i,
+							new float[] { Float.parseFloat(XY[0]), Float.parseFloat(XY[1]) });
 				}
 			}
 		}
-		
+
 		// Receive spawn angles
 		if ((message = clientInput.readLine()).equals("spawnAngles")) {
 			System.out.println("get spawn angles");
 			while (!(message = clientInput.readLine()).equals("end")) {
 				String[] angles = message.split(",");
-				for (int i=0;i<numOfPlayers;i++){
-					playerAngle.put("Player "+i, Float.parseFloat(angles[i]));
+				for (int i = 0; i < numOfPlayers; i++) {
+					playerAngle.put("Player " + i, Float.parseFloat(angles[i]));
 				}
 			}
 		}
-		
+
 		initPlayers();
 
 		// Create and start extra thread that reads any incoming messages
-		Thread thread = new clientListener(clientInput,this);
-		thread.start();		
-		
+		Thread thread = new clientListener(clientInput, this);
+		thread.start();
+
+		// CREATING OBSTACLES FOR DEBUG PURPOSE
+		gWorld.getObstacleList().put(new Vector2(915.2f, 511.8f),
+				new Obstacles(gWorld, new Vector2(915.2f, 511.8f), 0));
+		gWorld.getObstacleList().put(new Vector2(875.2f, 511.8f),
+				new Obstacles(gWorld, new Vector2(875.2f, 511.8f), 1));
 	}
-	
-	public static MMClient getInstance(GameWorld gWorld, GameRenderer renderer,
-			String serverAddress, int serverPort) throws Exception{
-		if (instance == null){
+
+	public static MMClient getInstance(GameWorld gWorld, GameRenderer renderer, String serverAddress,
+			int serverPort) throws Exception {
+		if (instance == null) {
 			instance = new MMClient(gWorld, renderer, serverAddress, serverPort);
 		}
 		return instance;
 	}
-	
-	
-//	private void createBodies(int i) {
-//		if (i == 0) {
-//			playerList.add((Murderer)gWorld.getGameCharFac().createCharacter("Murderer", i, gWorld,false));
-//			playerList.get(playerList.size-1).getBody().setType(BodyType.KinematicBody);
-//			playerList.get(playerList.size-1).spawn(1010 - (((playerList.size - 1)+ 1) * 40), 515, 0);
-//
-//		} else {
-//			playerList.add((Civilian)gWorld.getGameCharFac().createCharacter("Civilian", i, gWorld,false));
-//			playerList.get(playerList.size-1).getBody().setType(BodyType.KinematicBody);
-//			playerList.get(playerList.size-1).spawn(1010 - (((playerList.size - 1)+ 1) * 40), 515, 0);
-//		}
-//	}
+
+	// private void createBodies(int i) {
+	// if (i == 0) {
+	// playerList.add((Murderer)gWorld.getGameCharFac().createCharacter("Murderer", i, gWorld,false));
+	// playerList.get(playerList.size-1).getBody().setType(BodyType.KinematicBody);
+	// playerList.get(playerList.size-1).spawn(1010 - (((playerList.size - 1)+ 1) * 40), 515, 0);
+	//
+	// } else {
+	// playerList.add((Civilian)gWorld.getGameCharFac().createCharacter("Civilian", i, gWorld,false));
+	// playerList.get(playerList.size-1).getBody().setType(BodyType.KinematicBody);
+	// playerList.get(playerList.size-1).spawn(1010 - (((playerList.size - 1)+ 1) * 40), 515, 0);
+	// }
+	// }
 
 	private void initPlayers() {
 		System.out.println("Number of players " + numOfPlayers);
@@ -224,44 +230,46 @@ public class MMClient {
 			playerIsAlive.put("Player " + i, 1);
 			playerIsStun.put("Player " + i, 0);
 			if (i == id) {
-				//If self 
-				if (i==murdererId){
-					playerType.put("Player "+i, 0);
-				}
-				else{
-					playerType.put("Player "+i, 1);
-				}
-				playerList.add(gWorld.createPlayer(playerType.get("Player "+ id),playerPosition.get("Player "+i)[0], playerPosition.get("Player "+i)[1], playerAngle.get("Player "+i)));
-			} else {
-				//Create opponent bodies 
+				// If self
 				if (i == murdererId) {
-					playerList.add(gWorld.getGameCharFac().createCharacter("Murderer", i,gWorld, false));
-					playerList.get(playerList.size()-1).getBody().setType(BodyType.KinematicBody);
-					playerList.get(playerList.size()-1).spawn(playerPosition.get("Player "+i)[0], playerPosition.get("Player "+i)[1], playerAngle.get("Player "+i));
 					playerType.put("Player " + i, 0);
 				} else {
-					playerList.add(gWorld.getGameCharFac().createCharacter("Civilian", i,gWorld, false));
-					playerList.get(playerList.size()-1).getBody().setType(BodyType.KinematicBody);
-					playerList.get(playerList.size()-1).spawn(playerPosition.get("Player "+i)[0], playerPosition.get("Player "+i)[1], playerAngle.get("Player "+i));
 					playerType.put("Player " + i, 1);
 				}
-				
+				playerList.add(gWorld.createPlayer(playerType.get("Player " + id),
+						playerPosition.get("Player " + i)[0], playerPosition.get("Player " + i)[1],
+						playerAngle.get("Player " + i)));
+			} else {
+				// Create opponent bodies
+				if (i == murdererId) {
+					playerList.add(gWorld.getGameCharFac().createCharacter("Murderer", i, gWorld, false));
+					playerList.get(playerList.size() - 1).getBody().setType(BodyType.KinematicBody);
+					playerList.get(playerList.size() - 1).spawn(playerPosition.get("Player " + i)[0],
+							playerPosition.get("Player " + i)[1], playerAngle.get("Player " + i));
+					playerType.put("Player " + i, 0);
+				} else {
+					playerList.add(gWorld.getGameCharFac().createCharacter("Civilian", i, gWorld, false));
+					playerList.get(playerList.size() - 1).getBody().setType(BodyType.KinematicBody);
+					playerList.get(playerList.size() - 1).spawn(playerPosition.get("Player " + i)[0],
+							playerPosition.get("Player " + i)[1], playerAngle.get("Player " + i));
+					playerType.put("Player " + i, 1);
+				}
+
 			}
 		}
 
 	}
 
 	/**
-	 * Updates the GameWorld with other player's actions, such as player
-	 * position, item positions and item/weapon use.
+	 * Updates the GameWorld with other player's actions, such as player position, item positions and
+	 * item/weapon use.
 	 */
 	public void update() {/*
 						 * playerTransform();
 						 * 
-						 * // Upon receiving socket information, (if item added,
-						 * etc.), run corresponding method itemLocations();
-						 * weaponLocations(); weaponPartLocations();
-						 * trapLocations(); batUsed(); knifeUsed();
+						 * // Upon receiving socket information, (if item added, etc.), run corresponding
+						 * method itemLocations(); weaponLocations(); weaponPartLocations(); trapLocations();
+						 * batUsed(); knifeUsed();
 						 */
 		updatePlayerLocation();		
 	}
@@ -288,8 +296,8 @@ public class MMClient {
 			//Update server
 			clientOutput.println("loc_"+id+"_"+Float.toString(position[0])+"_"+Float.toString(position[1])+"_"+Float.toString(angle));
 		}
-		
 	}
+		
 
 	/**
 	 * Renders the GameRenderer with other player's move.
@@ -318,7 +326,6 @@ public class MMClient {
 	// body.createFixture(fdef).setUserData("trap");
 	// }
 	//
-
 
 	/**
 	 * Create item sprites on the map.
@@ -381,7 +388,11 @@ public class MMClient {
 	 */
 	private void playerTransform() {
 		for (int i = 0; i < numOfPlayers; i++) {
-			playerList.get(i).getBody().setTransform(playerPosition.get("Player " + i)[0],playerPosition.get("Player " + i)[0],playerAngle.get("Player " + i));
+			playerList
+					.get(i)
+					.getBody()
+					.setTransform(playerPosition.get("Player " + i)[0], playerPosition.get("Player " + i)[0],
+							playerAngle.get("Player " + i));
 		}
 	}
 
@@ -450,7 +461,7 @@ public class MMClient {
 			this.clientOutput = clientOutput;
 		}
 	}
-	
+
 	public GameWorld getgWorld() {
 		return gWorld;
 	}
@@ -472,7 +483,9 @@ public class MMClient {
 		clientOutput.flush();
 	}
 
-	/** Initialize client socket 
+	/**
+	 * Initialize client socket
+	 * 
 	 * @throws Exception
 	 */
 	public void initClientSocket(String address, int port) throws Exception {
@@ -483,10 +496,8 @@ public class MMClient {
 			InetSocketAddress iAddress = new InetSocketAddress(addr, port);
 			clientSocket.connect(iAddress);
 
-			setClientInput(new BufferedReader(new InputStreamReader(
-					clientSocket.getInputStream())));
-			setClientOutput(new PrintWriter(clientSocket.getOutputStream(),
-					true));
+			setClientInput(new BufferedReader(new InputStreamReader(clientSocket.getInputStream())));
+			setClientOutput(new PrintWriter(clientSocket.getOutputStream(), true));
 
 		} else {
 			Gdx.app.log(TAG, "Server Address/Port is null");
@@ -499,18 +510,19 @@ public class MMClient {
 		clientOutput.close();
 		clientSocket.close();
 	}
-	
-	public void handleMessage(String message){
+
+	public void handleMessage(String message) {
 		String[] msg = message.split("_");
-		//if player position update message
-		if (msg[0].equals("loc")){
-			float[] position = {Float.parseFloat(msg[2]),Float.parseFloat(msg[3])};
+		// if player position update message
+		if (msg[0].equals("loc")) {
+			float[] position = { Float.parseFloat(msg[2]), Float.parseFloat(msg[3]) };
 			float angle = Float.parseFloat(msg[4]);
-			playerPosition.put("Player "+msg[1], position);
-			playerAngle.put("Player "+msg[1], angle);
-			//Get and change position of opponent
+			playerPosition.put("Player " + msg[1], position);
+			playerAngle.put("Player " + msg[1], angle);
+			// Get and change position of opponent
 			playerList.get(Integer.parseInt(msg[1])).spawn(position[0], position[1], angle);
 		}
+		
 		//If item consumption or production message
 		else if(msg[0].equals("item")){
 			if (msg[2].equals("con")){
@@ -531,7 +543,7 @@ class clientListener extends Thread {
 
 	public clientListener(BufferedReader inputStream, MMClient client) {
 		this.input = inputStream;
-		this.client=client;
+		this.client = client;
 	}
 
 	@Override

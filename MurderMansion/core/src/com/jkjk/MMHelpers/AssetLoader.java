@@ -118,6 +118,10 @@ public class AssetLoader {
 	public static Animation ghostHauntAnimation;
 	public static Texture ghost_float;
 	public static Animation ghostFloatAnimation;
+	
+	// OBSTACLES
+	public static Texture obstacle;
+	public static Texture main_door;
 
 	public static void load() {
 
@@ -281,6 +285,10 @@ public class AssetLoader {
 
 		// ghost 
 		ghost_float = new Texture(Gdx.files.internal("animation/ghostSingleFrame.png"));
+		
+		// OBSTACLES
+		obstacle = new Texture(Gdx.files.internal("map/barrels.png"));
+		main_door = new Texture(Gdx.files.internal("map/main-door.png"));
 	}
 
 	public static void dispose() {

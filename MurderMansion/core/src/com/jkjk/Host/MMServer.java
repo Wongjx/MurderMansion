@@ -46,6 +46,8 @@ public class MMServer {
 //	private final ConcurrentHashMap<String, Integer> playerType; // If 0 -> murderer; If 1 -> civilian; If 2-> Ghost
 //	private final ConcurrentHashMap<String, float[]> playerPosition;
 //	private final ConcurrentHashMap<String, Float> playerAngle;
+
+	private float[] obstacleDestroyed;	// To transmit position of obstacle destroyed to clients
 		
 	private final ObjectLocations objectLocations;
 	// private ArrayList<Location> playerLocations;
@@ -54,13 +56,12 @@ public class MMServer {
 //	private final SpawnBuffer weaponPartLocations;
 //	private final SpawnBuffer trapLocations;
 
+
 //	private final ItemSpawner itemSpawner;
 //	private final WeaponSpawner weaponSpawner;
 //	private final WeaponPartSpawner weaponPartSpawner;
+	private final ObstaclesHandler obstaclesHandler;
 
-	// To Pass: Sprites of objects (items, weapons, players, bat swing, knife stab, shotgun blast, disguise
-	// animation
-	// HOW?!!?!?!?!?!?!!
 
 	private MMServer(int numOfPlayers,MultiplayerSeissonInfo info) throws InterruptedException {
 		this.numOfPlayers = numOfPlayers;
@@ -81,6 +82,7 @@ public class MMServer {
 //		playerAngle = new ConcurrentHashMap<String, Float>(numOfPlayers);
 
 //		System.out.println("Creating item spawn buffers");
+
 		objectLocations = new ObjectLocations(numOfPlayers);
 //		itemLocations = new SpawnBuffer(numOfPlayers*3);
 //		weaponLocations = new SpawnBuffer(numOfPlayers);
@@ -91,6 +93,9 @@ public class MMServer {
 //		itemSpawner = new ItemSpawner();
 //		weaponSpawner = new WeaponSpawner();
 //		weaponPartSpawner = new WeaponPartSpawner();
+
+		obstaclesHandler = new ObstaclesHandler();
+
 
 //		System.out.println("Assigning murderer");
 		murdererId = new Random().nextInt(numOfPlayers);
@@ -117,6 +122,9 @@ public class MMServer {
 		return instance;
 	}
 
+	/**
+	 * Start updating only when all clients have successfully synchronized.
+	 */
 	public void update() {
 		runTime = System.currentTimeMillis() - startTime;
 
@@ -134,8 +142,9 @@ public class MMServer {
 
 		// Opens random door in mansion *TO BE IMPLEMENTED
 		if (runTime > nextObstacleRemoveTime) {
-			System.out.println("NEW DOOR OPENS!");
-			nextObstacleRemoveTime = new Random().nextInt(10000) + runTime + 60000;
+			System.out.println("OBSTACLE DESTROYED!");
+			obstacleDestroyed = obstaclesHandler.destroyObstacle().get();
+			nextObstacleRemoveTime = runTime + 30000;
 		}
 	}
 
@@ -148,8 +157,10 @@ public class MMServer {
 			} else {
 				playerStats.getPlayerType().put("Player " + i, 1);
 			}
+
 			playerStats.getPlayerPosition().put("Player " + i, new float[] { 1010 - ((i + 1) * 40), 515 });
 			playerStats.getPlayerAngle().put("Player " + i, 0f);
+
 		}
 	}
 
