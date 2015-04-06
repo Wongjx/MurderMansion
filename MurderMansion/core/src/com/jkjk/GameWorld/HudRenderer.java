@@ -111,8 +111,8 @@ public class HudRenderer {
 		civ_dash = AssetLoader.civ_dash_draw;
 		mur_knife = AssetLoader.mur_weapon_draw;
 		mur_item = AssetLoader.mur_item_draw;
-		mur_CtM = AssetLoader.mur_weapon_draw;
-		mur_MtC = AssetLoader.mur_item_draw;
+		mur_CtM = AssetLoader.mur_swap_M_draw;
+		mur_MtC = AssetLoader.mur_swap_C_draw;
 
 		// Touchpad stuff
 		touchpad = AssetLoader.touchpad;
@@ -363,7 +363,7 @@ public class HudRenderer {
 	 */
 	public ImageButton getDisarmTrap() {
 
-		x = 557;
+		x = 540;
 		y = 48;
 
 		itemButton = new ImageButton(civ_item);
@@ -394,10 +394,8 @@ public class HudRenderer {
 	 */
 	public ImageButton getPanic() {
 
-		x = 518;
+		x = 500;
 		y = 97;
-		// x = 530;
-		// y = 100;
 
 		dashButton = new ImageButton(civ_dash);
 		dashButton.setX(x);
@@ -422,8 +420,8 @@ public class HudRenderer {
 	 * @return Actor for Knife slot
 	 */
 	public ImageButton getKnife() {
-		x = 490;
-		y = 44;
+		x = 460;
+		y = 40;
 
 		itemButton = new ImageButton(mur_knife);
 		itemButton.setX(x);
@@ -453,7 +451,7 @@ public class HudRenderer {
 	 */
 	public ImageButton getTrap() {
 
-		x = 567;
+		x = 550;
 		y = 43;
 
 		itemButton = new ImageButton(mur_item);
@@ -483,12 +481,14 @@ public class HudRenderer {
 	 * @return Actor for Disguise to Civilian slot
 	 */
 	public ImageButton getDisguiseToCiv() {
-		x = 528;
-		y = 100;
+		x = 522;
+		y = 92;
 
 		disguiseToCiv = new ImageButton(mur_MtC);
 		disguiseToCiv.setX(x);
 		disguiseToCiv.setY(y);
+		disguiseToCiv.setWidth(33);
+		disguiseToCiv.setHeight(33);
 		disguiseToCiv.setName("Disguise to civilian");
 
 		disguiseToCiv.addListener(new ClickListener() {
@@ -509,12 +509,21 @@ public class HudRenderer {
 	 * @return Actor for Disguise to Murderer slot
 	 */
 	public ImageButton getDisguiseToMur() {
-		x = 528;
-		y = 100;
+		x = 522;
+		y = 92;
 
-		disguiseToMur = new ImageButton(mur_CtM);
+//		disguiseToMur = new ImageButton(mur_CtM);
+//		disguiseToMur.setX(x);
+//		disguiseToMur.setY(y);
+//		disguiseToMur.setWidth(33);
+//		disguiseToMur.setHeight(33);
+//		disguiseToMur.setName("Disguise to murderer");
+		
+		disguiseToMur = new ImageButton(mur_MtC);
 		disguiseToMur.setX(x);
 		disguiseToMur.setY(y);
+		disguiseToMur.setWidth(33);
+		disguiseToMur.setHeight(33);
 		disguiseToMur.setName("Disguise to murderer");
 
 		disguiseToMur.addListener(new ClickListener() {

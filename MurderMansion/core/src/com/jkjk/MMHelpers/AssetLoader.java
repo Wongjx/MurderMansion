@@ -45,8 +45,10 @@ public class AssetLoader {
 	public static TextureRegionDrawable mur_weapon_draw;
 	public static Texture mur_item_tex;
 	public static TextureRegionDrawable mur_item_draw;
-	public static Texture mur_swap_tex;
-	public static TextureRegionDrawable mur_swap_draw;
+	public static Texture mur_swap_C_tex;
+	public static TextureRegionDrawable mur_swap_C_draw;
+	public static Texture mur_swap_M_tex;
+	public static TextureRegionDrawable mur_swap_M_draw;
 
 	public static Texture logoTexture;
 	public static TextureRegion logo;
@@ -187,8 +189,10 @@ public class AssetLoader {
 		mur_weapon_draw = new TextureRegionDrawable(new TextureRegion(mur_weapon_tex));
 		mur_item_tex = new Texture(Gdx.files.internal("HUD/mur_item.png"));
 		mur_item_draw = new TextureRegionDrawable(new TextureRegion(mur_item_tex));
-		mur_swap_tex = new Texture(Gdx.files.internal("HUD/mur_swap.png"));
-		mur_swap_draw = new TextureRegionDrawable(new TextureRegion(mur_swap_tex));
+		mur_swap_C_tex = new Texture(Gdx.files.internal("HUD/mur_swap_C.png"));
+		mur_swap_C_draw = new TextureRegionDrawable(new TextureRegion(mur_swap_C_tex));
+		mur_swap_M_tex = new Texture(Gdx.files.internal("HUD/mur_swap_M.png"));
+		mur_swap_M_draw = new TextureRegionDrawable(new TextureRegion(mur_swap_M_tex));
 
 		// TIMER
 		time = new Texture(Gdx.files.internal("HUD/countdown.png"));
@@ -307,7 +311,8 @@ public class AssetLoader {
 		civ_dash_tex.dispose();
 		mur_weapon_tex.dispose();
 		mur_item_tex.dispose();
-		mur_swap_tex.dispose();
+		mur_swap_C_tex.dispose();
+		mur_swap_M_tex.dispose();
 		civ_walk.dispose();
 		civ_dead_lines.dispose();
 		civ_bat.dispose();
