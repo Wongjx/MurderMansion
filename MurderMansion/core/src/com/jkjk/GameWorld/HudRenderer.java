@@ -319,6 +319,7 @@ public class HudRenderer {
 
 				System.out.println("Clicked on bat button");
 				gWorld.getPlayer().useWeapon();
+				// start drawing cool down animation.
 			}
 		});
 
@@ -350,6 +351,7 @@ public class HudRenderer {
 			public void clicked(InputEvent event, float x, float y) {
 				System.out.println("Clicked on shotgun button");
 				gWorld.getPlayer().useWeapon();
+				// start drawing cool down animation
 			}
 		});
 
@@ -381,6 +383,7 @@ public class HudRenderer {
 			public void clicked(InputEvent event, float x, float y) {
 				System.out.println("Clicked on disarm trap button");
 				gWorld.getPlayer().useItem();
+				// start drawing cool down animation
 			}
 		});
 
@@ -410,6 +413,7 @@ public class HudRenderer {
 				// Used to check character position FOR TESTING
 				System.out.println(gWorld.getPlayer().getBody().getPosition());
 				gWorld.getPlayer().useAbility();
+				// start drawing cool down animation with ability frame time.
 			}
 		});
 
@@ -440,6 +444,7 @@ public class HudRenderer {
 			public void clicked(InputEvent event, float x, float y) {
 				System.out.println("Clicked on knife button");
 				gWorld.getPlayer().useWeapon();
+				// start to draw cool down animation
 			}
 		});
 
@@ -471,6 +476,7 @@ public class HudRenderer {
 			public void clicked(InputEvent event, float x, float y) {
 				System.out.println("Clicked on trap button");
 				gWorld.getPlayer().useItem();
+				//start to draw cool down animation
 			}
 		});
 
@@ -497,6 +503,7 @@ public class HudRenderer {
 				// Used to check character position FOR TESTING
 				System.out.println(gWorld.getPlayer().getBody().getPosition());
 				gWorld.getPlayer().useAbility();
+				// start to draw cool down animation with ability frame time
 			}
 		});
 
@@ -523,7 +530,7 @@ public class HudRenderer {
 				// Used to check character position FOR TESTING
 				System.out.println(gWorld.getPlayer().getBody().getPosition());
 				gWorld.getPlayer().useAbility();
-
+				// start to draw cool down animation with ability frame time
 			}
 		});
 
@@ -550,6 +557,7 @@ public class HudRenderer {
 				// Used to check character position FOR TESTING
 				System.out.println(gWorld.getPlayer().getBody().getPosition());
 				gWorld.getPlayer().useAbility();
+				// start to draw cool down animation with ability frame time
 			}
 		});
 
