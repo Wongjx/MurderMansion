@@ -87,6 +87,12 @@ public class MMContactListener implements ContactListener {
 				} else if (faUD.equals("L2S4") || fbUD.equals("L2S4")) {
 					atStairs = true;
 					stairsName = "L2S4";
+				} else if (faUD.equals("L1S5") || fbUD.equals("L1S5")) {
+					atStairs = true;
+					stairsName = "L1S5";
+				} else if (faUD.equals("LbS1") || fbUD.equals("LbS1")) {
+					atStairs = true;
+					stairsName = "LbS1";
 				} else if (faUD.equals("bat") || fbUD.equals("bat")) {
 					if (!gWorld.getPlayer().getType().equals("Ghost"))
 						gWorld.getPlayer().stun(true);

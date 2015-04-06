@@ -34,6 +34,10 @@ public class ItemSpawner {
 		itemLocations.add(new Location(new float[] { 2496, 153.3f }));
 		itemLocations.add(new Location(new float[] { 2627.6f, 151.9f }));
 		itemLocations.add(new Location(new float[] { 2794, 199 }));
+		itemLocations.add(new Location(new float[] { 3752.4f, 473 }));
+		itemLocations.add(new Location(new float[] { 3600,413.8f }));
+		itemLocations.add(new Location(new float[] { 3310.1f, 395.8f }));
+		itemLocations.add(new Location(new float[] { 3310.1f, 513.5f }));
 
 		randInt = new Random();
 	}
