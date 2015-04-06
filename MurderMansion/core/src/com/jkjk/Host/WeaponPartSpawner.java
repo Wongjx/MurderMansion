@@ -22,6 +22,9 @@ public class WeaponPartSpawner {
 		weaponPartLocations.add(new Location(new float[] { 2238, 129 }));
 		weaponPartLocations.add(new Location(new float[] { 2135.5f, 451.6f }));
 		weaponPartLocations.add(new Location(new float[] { 2207.6f, 684.7f }));
+		weaponPartLocations.add(new Location(new float[] { 3792, 473 }));
+		weaponPartLocations.add(new Location(new float[] { 3240.4f, 512.4f }));
+		weaponPartLocations.add(new Location(new float[] { 3240.9f, 408.7f }));
 
 		randInt = new Random();
 	}

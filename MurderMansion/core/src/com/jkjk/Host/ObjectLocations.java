@@ -42,8 +42,7 @@ public class ObjectLocations implements Subject{
 		synchronized (itemLocations) {
 			itemLocations.consume(location);
 			itemSpawner.restore(location);
-			//TODO change message to update playerAngle status message
-			message="something";
+			message="item_"+origin+"_con_"+Float.toString(location.get()[0])+"_"+Float.toString(location.get()[1]);
 			updateAll(origin);
 		}
 	}	
@@ -51,24 +50,21 @@ public class ObjectLocations implements Subject{
 		synchronized (weaponLocations) {
 			weaponLocations.consume(location);
 			weaponSpawner.restore(location);
-			//TODO change message to update playerAngle status message
-			message="something";
+			message="weapon_"+origin+"_con_"+Float.toString(location.get()[0])+"_"+Float.toString(location.get()[1]);
 			updateAll(origin);
 		}
 	}
 	public void consumeWeaponPart(Location location,int origin) {
 		synchronized (weaponPartLocations) {
 			weaponPartLocations.consume(location);
-			//TODO change message to update playerAngle status message
-			message="something";
+			message="weaponpart_"+origin+"_con_"+Float.toString(location.get()[0])+"_"+Float.toString(location.get()[1]);
 			updateAll(origin);
 		}
 	}
 	public void consumeTrap(Location location,int origin) throws InterruptedException {
 		synchronized (trapLocations) {
 			trapLocations.consume(location);
-			//TODO change message to update playerAngle status message
-			message="something";
+			message="trap"+origin+"_con_"+Float.toString(location.get()[0])+"_"+Float.toString(location.get()[1]);
 			updateAll(origin);
 		}
 	}
@@ -90,12 +86,6 @@ public class ObjectLocations implements Subject{
 			produceWeaponPart(weaponPartSpawner.spawn());
 		}
 	}
-	public void produceTrap(Location location) throws InterruptedException {
-		synchronized (trapLocations) {
-			trapLocations.produce(location);
-		}
-	}
-	
 
 	//Getters for direct access to item buffers
 	public SpawnBuffer getItemLocations() {
@@ -123,22 +113,29 @@ public class ObjectLocations implements Subject{
 		synchronized (itemLocations) {
 			itemLocations.produce(location);
 			//TODO change message to update playerAngle status message
-			message="something";
+			message="item"+SERVER_ID+"_pro_"+Float.toString(location.get()[0])+"_"+Float.toString(location.get()[1]);
 			updateAll(SERVER_ID);
 		}
 	}
 	private void produceWeapon(Location location) {
 		synchronized (weaponLocations) {
 			weaponLocations.produce(location);
-			message="something";
+			message="weapon"+SERVER_ID+"_pro_"+Float.toString(location.get()[0])+"_"+Float.toString(location.get()[1]);
 			updateAll(SERVER_ID);
 		}
 	}
 	private void produceWeaponPart(Location location) {
 		synchronized (weaponPartLocations) {
 			weaponPartLocations.produce(location);
-			message="something";
+			message="weaponpart"+SERVER_ID+"_pro_"+Float.toString(location.get()[0])+"_"+Float.toString(location.get()[1]);
 			updateAll(SERVER_ID);
+		}
+	}
+	public void produceTrap(Location location,int origin) throws InterruptedException {
+		synchronized (trapLocations) {
+			trapLocations.produce(location);
+			message="trap"+origin+"_pro_"+Float.toString(location.get()[0])+"_"+Float.toString(location.get()[1]);
+			updateAll(origin);
 		}
 	}
 	

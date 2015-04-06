@@ -9,5 +9,6 @@ public class Observer {
 	}
 	public void update(String message){
 		writer.println(message);
+		writer.flush();
 	}
 }
