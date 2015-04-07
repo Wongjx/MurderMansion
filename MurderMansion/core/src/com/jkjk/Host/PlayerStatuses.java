@@ -12,6 +12,7 @@ public class PlayerStatuses implements Subject{
 	private final ConcurrentHashMap<String, Integer> playerType; // If 0 -> murderer; If 1 -> civilian; If 2-> Ghost
 	private final ConcurrentHashMap<String, float[]> playerPosition;
 	private final ConcurrentHashMap<String, Float> playerAngle;
+	private final ConcurrentHashMap<String, Integer> playerIsInSafeRegion;
 	
 	private String message;
 	
@@ -23,6 +24,7 @@ public class PlayerStatuses implements Subject{
 		this.playerType = new ConcurrentHashMap<String, Integer>(numOfPlayers);
 		this.playerPosition = new ConcurrentHashMap<String, float[]>(numOfPlayers);
 		this.playerAngle = new ConcurrentHashMap<String, Float>(numOfPlayers);
+		this.playerIsInSafeRegion = new ConcurrentHashMap<String, Integer>(numOfPlayers);
 	}
 	
 	/** Update client alive status
@@ -86,6 +88,14 @@ public class PlayerStatuses implements Subject{
 		message="loc_"+id+"_"+Float.toString(position[0])+"_"+Float.toString(position[1])+"_"+Float.toString(angle);
 		updateAll(id);
 	}
+	
+	/**Checks if player is in safe region or not
+	 * @param id id of player
+	 * @param status If player is in safe region or not (1 is true, 0 is false)
+	 */
+	public void updateIsInSafeRegion(int id, int status){
+		playerIsInSafeRegion.put("Player " + id, status);		
+	}
 
 	
 	@Override
@@ -122,9 +132,13 @@ public class PlayerStatuses implements Subject{
 	public float getPlayerAngleValue(String key){
 		return playerAngle.get(key);
 	}
+	public int getPlayerIsInSafeRegion(String key){
+		return playerIsInSafeRegion.get(key);
+	}
 	public ArrayList<Observer> getClients(){
 		return clients;
 	}
+	
 
 
 	public ConcurrentHashMap<String, Integer> getPlayerIsAlive() {
@@ -141,6 +155,9 @@ public class PlayerStatuses implements Subject{
 	}
 	public ConcurrentHashMap<String, Float> getPlayerAngle() {
 		return playerAngle;
+	}	
+	public ConcurrentHashMap<String, Integer> getPlayerIsInSafeRegion() {
+		return playerIsInSafeRegion;
 	}
 
 
