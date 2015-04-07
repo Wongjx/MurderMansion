@@ -119,7 +119,13 @@ public abstract class GameCharacter {
 
 	public void stun(boolean stun) {
 		this.stun = stun;
-		body.setUserData(AssetLoader.civStunAnimation);
+		if(type.equals("Murderer")){
+			body.setUserData(AssetLoader.civStunAnimation);
+			//body.setUserData(AssetLoader.murStunAnimation);
+		}
+		else{
+			body.setUserData(AssetLoader.civStunAnimation);
+		}
 		stunDuration.startCountdown();
 	}
 

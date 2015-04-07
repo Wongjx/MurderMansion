@@ -200,6 +200,16 @@ public class MMClient {
 				new Obstacles(gWorld, new Vector2(915.2f, 511.8f), 0));
 		gWorld.getObstacleList().put(new Vector2(875.2f, 511.8f),
 				new Obstacles(gWorld, new Vector2(875.2f, 511.8f), 1));
+		ItemSprite temporaryItem = new ItemSprite(gWorld);
+		gWorld.getItemList().put(new Vector2(750f,511.8f), temporaryItem);
+		temporaryItem.spawn(750f, 511.8f, 0);
+		WeaponSprite tempWeap = new WeaponSprite(gWorld);
+		gWorld.getWeaponList().put(new Vector2(720f,511.8f), tempWeap);
+		tempWeap.spawn(720f,511.8f, 0);
+		
+		for(int i=0; i<8; i++){
+			createWeaponParts(600+(20*i), 490);
+		}
 	}
 
 	public static MMClient getInstance(GameWorld gWorld, GameRenderer renderer, String serverAddress,
