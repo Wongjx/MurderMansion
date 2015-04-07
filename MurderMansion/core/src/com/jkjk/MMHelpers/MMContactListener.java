@@ -109,6 +109,8 @@ public class MMContactListener implements ContactListener {
 				} else if (faUD.equals("knife") || fbUD.equals("knife")) {
 					if (!gWorld.getPlayer().getType().equals("Ghost"))
 						gWorld.getPlayer().die();
+				} else if (faUD.equals("saferegion") || fbUD.equals("saferegion")) {
+					gWorld.setInSafeArea(true);
 				}
 			} else { // non player fixture interaction
 						// in contact with all other object fixtures but other light fixtures
@@ -153,6 +155,15 @@ public class MMContactListener implements ContactListener {
 		fb = c.getFixtureB();
 		faUD = fa.getUserData();
 		fbUD = fb.getUserData();
+
+		if (faUD != null && fbUD != null) {
+			if (faUD.equals("player") || fbUD.equals("player")) {
+				if (faUD.equals("saferegion") || fbUD.equals("saferegion")) {
+					gWorld.setInSafeArea(false);
+				}
+			}
+		}
+
 		/*
 		 * if (faUD != null && fbUD != null) { if (faUD.equals("lightBody") && !fbUD.equals("lightBody")) {
 		 * System.out.println("END contact: fa: " + faUD + ", fb: " + fbUD);

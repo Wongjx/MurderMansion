@@ -43,6 +43,7 @@ public class GameWorld {
 	private HashMap<Vector2, WeaponPartSprite> weaponPartList;
 	private int numOfWeaponPartsCollected;
 	private boolean shotgunCreated;
+	private boolean inSafeArea;
 
 	private HashMap<Vector2, Obstacles> obstacleList;
 
@@ -139,15 +140,22 @@ public class GameWorld {
 	 *            0 for murderer, 1 for civilian
 	 */
 	public GameCharacter createPlayer(int type, float x, float y, float angle) {
-		if (type == 0)
+		if (type == 0) {
 			player = gameCharFac.createCharacter("Murderer", 0, this, true);
-		else if (type == 2)
+			createDoor();
+		} else if (type == 2)
 			player = gameCharFac.createCharacter("Ghost", 0, this, true);
 		else
 			player = gameCharFac.createCharacter("Civilian", 0, this, true);
 		player.getBody().getFixtureList().get(0).setUserData("player");
 		player.spawn(x, y, angle);
 		return player;
+	}
+
+	public void createDoor() {
+		if (player.getType() == "Murderer"){
+			new Obstacles(this, new Vector2(915.2f, 511.8f), 0);
+		}
 	}
 
 	/**
@@ -186,7 +194,7 @@ public class GameWorld {
 	private void checkItemSprite(MMClient client) {
 		for (int i = 0; i < itemsToRemove.size; i++) {
 			bodyToRemove = itemsToRemove.get(i);
-			//Call MMclient to remove item
+			// Call MMclient to remove item
 			client.removeItemLocation(bodyToRemove.getPosition());
 			System.out.println("Item removed from client.");
 			itemList.remove(bodyToRemove.getPosition());
@@ -349,6 +357,14 @@ public class GameWorld {
 
 	public HashMap<Vector2, Obstacles> getObstacleList() {
 		return obstacleList;
+	}
+
+	public boolean isInSafeArea() {
+		return inSafeArea;
+	}
+
+	public void setInSafeArea(boolean inSafeArea) {
+		this.inSafeArea = inSafeArea;
 	}
 
 }
