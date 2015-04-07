@@ -54,7 +54,6 @@ public class Murderer extends GameCharacter {
 		if (gWorld.getPlayer().lightContains(body.getPosition().x, body.getPosition().y)) {
 			runTime += Gdx.graphics.getRawDeltaTime();
 			currentAnimation = (Animation) body.getUserData();
-			batch.setProjectionMatrix(cam.combined);
 			batch.begin();
 			if (currentAnimation == AssetLoader.murKnifeAnimation
 					|| currentAnimation == AssetLoader.murPlantTrapAnimation

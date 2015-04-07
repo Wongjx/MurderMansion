@@ -69,7 +69,7 @@ public class MMServer {
 
 		// System.out.println("Instantiate spawner");
 
-		obstaclesHandler = new ObstaclesHandler();
+		obstaclesHandler = ObstaclesHandler.getInstance();
 
 		// System.out.println("Assigning murderer");
 		murdererId = new Random().nextInt(numOfPlayers);

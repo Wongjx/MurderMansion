@@ -20,26 +20,28 @@ public class SpawnBuffer {
 
 	public void consume(Location location) {
 		if (buffer.size() > 0) {
-			buffer.remove(location.toString());
+			if (buffer.containsKey(location.toString()))
+				buffer.remove(location.toString());
 		}
 	}
-	
-	public synchronized void setCapacity(int capacity){
-		this.capacity=capacity;
+
+	public synchronized void setCapacity(int capacity) {
+		this.capacity = capacity;
 	}
-	public synchronized int getCapacity(){
+
+	public synchronized int getCapacity() {
 		return capacity;
 	}
-	
-	public boolean isEmpty(){
+
+	public boolean isEmpty() {
 		return buffer.size() == 0;
 	}
-	
-	public boolean isFull(){
+
+	public boolean isFull() {
 		return buffer.size() == capacity;
 	}
 
 	public ConcurrentHashMap<String, Location> getBuffer() {
-			return buffer;
+		return buffer;
 	}
 }

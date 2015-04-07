@@ -114,10 +114,17 @@ public class ObjectLocations implements Subject{
 			return trapLocations;
 		}
 	}
-	//Private produce methods 
+	// Private produce methods 
 	private void produceItem(Location location) {
 		synchronized (itemLocations) {
 			itemLocations.produce(location);
+			message="item_"+SERVER_ID+"_pro_"+Float.toString(location.get()[0])+"_"+Float.toString(location.get()[1]);
+			updateAll(SERVER_ID);
+		}
+	}	
+	// Public produce method to be used for GHOST
+	public void produceItem(Location location,int origin) {
+		synchronized (itemLocations) {
 			message="item_"+SERVER_ID+"_pro_"+Float.toString(location.get()[0])+"_"+Float.toString(location.get()[1]);
 			updateAll(SERVER_ID);
 		}
@@ -125,6 +132,13 @@ public class ObjectLocations implements Subject{
 	private void produceWeapon(Location location) {
 		synchronized (weaponLocations) {
 			weaponLocations.produce(location);
+			message="weapon_"+SERVER_ID+"_pro_"+Float.toString(location.get()[0])+"_"+Float.toString(location.get()[1]);
+			updateAll(SERVER_ID);
+		}
+	}
+	// Public produce method to be used for GHOST
+	public void produceWeapon(Location location,int origin) {
+		synchronized (weaponLocations) {
 			message="weapon_"+SERVER_ID+"_pro_"+Float.toString(location.get()[0])+"_"+Float.toString(location.get()[1]);
 			updateAll(SERVER_ID);
 		}

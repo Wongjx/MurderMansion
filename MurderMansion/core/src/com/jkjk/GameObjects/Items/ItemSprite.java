@@ -56,7 +56,6 @@ public class ItemSprite {
 
 	public void render(SpriteBatch batch) {
 		if (gWorld.getPlayer().lightContains(posX, posY)) {
-			batch.begin();
 			if (gWorld.getPlayer().getType().equals("Murderer")){
 				animationRunTime += Gdx.graphics.getRawDeltaTime();
 				batch.draw(restingTrapAnimation.getKeyFrame(animationRunTime), posX-12, posY-12, 25, 25);
@@ -64,7 +63,6 @@ public class ItemSprite {
 				animationRunTime += Gdx.graphics.getRawDeltaTime();
 				batch.draw(disarmTrapSpriteAnimation.getKeyFrame(animationRunTime), posX-12, posY-12, 25, 25);
 			}
-			batch.end();
 		}
 	}
 	

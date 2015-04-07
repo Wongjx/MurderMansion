@@ -68,10 +68,8 @@ public class Trap extends Item {
 
 	public void render(SpriteBatch batch) {
 		if (gWorld.getPlayer().lightContains(body.getPosition().x, body.getPosition().y)) {
-			batch.begin();
 			animationRunTime += Gdx.graphics.getRawDeltaTime();
 			batch.draw(plantedTrapAnimation.getKeyFrame(animationRunTime), body.getPosition().x, body.getPosition().y, 32, 32);
-			batch.end();
 		}
 	}
 

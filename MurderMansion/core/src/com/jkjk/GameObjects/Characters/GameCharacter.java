@@ -257,6 +257,7 @@ public abstract class GameCharacter {
 			rayHandler.setCombinedMatrix(cam.combined);
 			rayHandler.updateAndRender();
 		}
+
 	}
 
 	protected boolean checkMovable() {
