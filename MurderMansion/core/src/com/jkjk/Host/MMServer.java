@@ -63,18 +63,14 @@ public class MMServer {
 		// System.out.println("Initialize fields");
 		startTime = System.currentTimeMillis();
 		playerStats = new PlayerStatuses(numOfPlayers);
-
-		// System.out.println("Creating item spawn buffers");
 		objectLocations = new ObjectLocations(numOfPlayers,this);
 
-		// System.out.println("Instantiate spawner");
 
 		obstaclesHandler = new ObstaclesHandler();
 
 		// System.out.println("Assigning murderer");
 		murdererId = new Random().nextInt(numOfPlayers);
 
-		// System.out.println("Spawning items");
 		nextItemSpawnTime = 10000;
 		nextObstacleRemoveTime = 60000;
 
@@ -116,6 +112,8 @@ public class MMServer {
 		if (runTime > nextObstacleRemoveTime) {
 			System.out.println("OBSTACLE DESTROYED!");
 			obstacleDestroyed = obstaclesHandler.destroyObstacle().get();
+			System.out.println("At x:"+obstacleDestroyed[0]+" y: "+obstacleDestroyed[1]);
+			sendToClients("obstacle_"+Float.toString(obstacleDestroyed[0])+"_"+Float.toString(obstacleDestroyed[1]));
 			nextObstacleRemoveTime = runTime + 30000;
 		}
 

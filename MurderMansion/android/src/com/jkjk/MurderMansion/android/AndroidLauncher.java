@@ -242,7 +242,7 @@ public class AndroidLauncher extends AndroidApplication implements GameHelperLis
 		if (gameHelper.isSignedIn()) {
 			//Assign device as server and setup a socket to accept connections
 			mMultiplayerSeisson.isServer=true;
-			// show list of invitable players
+			// show list of inevitable players
 			//Choose from between 1 to 3 other opponents (APIclient,minOpponents, maxOpponents, boolean Automatch)
 			Intent intent = Games.RealTimeMultiplayer.getSelectOpponentsIntent(mGoogleApiClient, 1, 1);
 			startActivityForResult(intent, RC_SELECT_PLAYERS);

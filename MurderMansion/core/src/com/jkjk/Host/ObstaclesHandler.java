@@ -19,8 +19,7 @@ public class ObstaclesHandler {
 
 	ObstaclesHandler() {
 		obstacleLocations = new ArrayList<Location>();
-		obstacleLocations.add(new Location(new float[] { 915.2f, 511.8f })); // MAIN DOOR. ONLY DESTROY WHEN
-																				// AT 0MIN
+		obstacleLocations.add(new Location(new float[] { 915.2f, 511.8f })); // MAIN DOOR. ONLY DESTROY WHEN AT 0MIN
 		obstacleLocations.add(new Location(new float[] { 736.5f, 809.4f }));
 		obstacleLocations.add(new Location(new float[] { 185.2f, 476.5f }));
 		obstacleLocations.add(new Location(new float[] { 308.7f, 244.8f }));

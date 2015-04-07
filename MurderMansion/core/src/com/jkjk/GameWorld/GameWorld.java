@@ -284,8 +284,8 @@ public class GameWorld {
 		}
 	}
 
-	/**
-	 * Removes an obstacle from the obstacleList and destroys body from world.
+	/** Removes an obstacle from the obstacleList and destroys body from world.
+	 * 
 	 * 
 	 * @param location
 	 *            Vector2 coordinates of the obstacle

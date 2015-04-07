@@ -30,6 +30,16 @@ public class Trap extends Item {
 		plantedTrapAnimation = AssetLoader.plantedTrapAnimation;
 		animationRunTime = 0;
 	}
+	
+	public Trap(GameWorld gWorld, BodyDef bdef,FixtureDef fdef){
+		super(gWorld);
+		this.bdef=bdef;
+		this.fdef=fdef;
+		
+		plantedTrapAnimation = AssetLoader.plantedTrapAnimation;
+		animationRunTime = 0;
+		
+	}
 
 	@Override
 	public void startUse() {
