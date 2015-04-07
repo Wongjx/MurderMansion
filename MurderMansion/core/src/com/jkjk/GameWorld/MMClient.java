@@ -57,19 +57,16 @@ public class MMClient {
 	private int murdererId;
 	private ArrayList<GameCharacter> playerList;
 
+	
 	private final ConcurrentHashMap<String, Integer> playerIsAlive; // If 1 ->true; If 0 -> false;
-	private final ConcurrentHashMap<String, Integer> playerIsStun; // If 1 ->
-																	// true; If
-																	// 0 ->
-																	// false;
-	private final ConcurrentHashMap<String, Integer> playerType; // If 0 ->
-																	// murderer;
-																	// If 1 ->
-																	// civilian;
-																	// If 2
-																	// -> Ghost
+	private final ConcurrentHashMap<String, Integer> playerIsStun; // If 1 -> true; If 0 -> false;
+	//Untested 
+	private final ConcurrentHashMap<String, Integer> playerUseWeapon; // If 1 -> true; If 0 -> false;
+	private final ConcurrentHashMap<String, Integer> playerUseItem; // If 1 -> true; If 0 -> false;
+	private final ConcurrentHashMap<String, Integer> playerType; // If 0 -> murderer;If 1 -> civilian; If 2 -> Ghost
 	private final ConcurrentHashMap<String, float[]> playerPosition;
 	private final ConcurrentHashMap<String, Float> playerAngle;
+	private boolean playerIsInSafeArea;
 
 	// private ArrayList<Location> playerLocations;
 	private final SpawnBuffer itemLocations;
@@ -90,8 +87,7 @@ public class MMClient {
 	 *            GameRenderer instance
 	 * @throws Exception
 	 */
-	private MMClient(GameWorld gWorld, GameRenderer renderer, String serverAddress, int serverPort)
-			throws Exception {
+	private MMClient(GameWorld gWorld, GameRenderer renderer, String serverAddress, int serverPort)throws Exception {
 
 		this.gWorld = gWorld;
 		this.renderer = renderer;
@@ -162,8 +158,11 @@ public class MMClient {
 		playerType = new ConcurrentHashMap<String, Integer>(numOfPlayers);
 		playerIsAlive = new ConcurrentHashMap<String, Integer>(numOfPlayers);
 		playerIsStun = new ConcurrentHashMap<String, Integer>(numOfPlayers);
+		playerUseWeapon = new ConcurrentHashMap<String, Integer>(numOfPlayers);
+		playerUseItem = new ConcurrentHashMap<String, Integer>(numOfPlayers);
 		playerPosition = new ConcurrentHashMap<String, float[]>(numOfPlayers);
 		playerAngle = new ConcurrentHashMap<String, Float>(numOfPlayers);
+		playerIsInSafeArea = false;
 
 		// Receive spawn positions
 		if ((message = clientInput.readLine()).equals("spawnPositions")) {
@@ -261,6 +260,8 @@ public class MMClient {
 		for (int i = 0; i < numOfPlayers; i++) {
 			playerIsAlive.put("Player " + i, 1);
 			playerIsStun.put("Player " + i, 0);
+			playerUseItem.put("Player " + i, 0);
+			playerUseWeapon.put("Player " + i, 0);
 			if (i == id) {
 				// If self
 				if (i == murdererId) {
@@ -286,7 +287,6 @@ public class MMClient {
 							playerPosition.get("Player " + i)[1], playerAngle.get("Player " + i));
 					playerType.put("Player " + i, 1);
 				}
-
 			}
 		}
 
@@ -303,7 +303,8 @@ public class MMClient {
 						 * method itemLocations(); weaponLocations(); weaponPartLocations(); trapLocations();
 						 * batUsed(); knifeUsed();
 						 */
-		updatePlayerLocation();
+		updatePlayerLocation();		
+		updatePlayerIsinSafeArea();
 	}
 
 	/**
@@ -338,20 +339,29 @@ public class MMClient {
 		clientOutput.println("weaponpart_" + id + "_con_" + Float.toString(position.x) + "_"
 				+ Float.toString(position.y));
 	}
-
-	private void updatePlayerLocation() {
-		// Get player postion
-		float angle = gWorld.getPlayer().getBody().getAngle();
-		float[] position = { gWorld.getPlayer().getBody().getPosition().x,
-				gWorld.getPlayer().getBody().getPosition().y };
-		// if angle and position has changed
-		if ((playerPosition.get("Player " + id) != position) && (playerAngle.get("Player " + id) != angle)) {
-			// Update client Hashmap
-			playerPosition.put("Player " + id, position);
-			playerAngle.put("Player " + id, angle);
-			// Update server
-			clientOutput.println("loc_" + id + "_" + Float.toString(position[0]) + "_"
-					+ Float.toString(position[1]) + "_" + Float.toString(angle));
+	
+	/** Called to update MMClients position and angle in from gWorld. Updates server if there is a change.
+	 * 
+	 */
+	private void updatePlayerLocation(){
+		//Get player postion
+		float angle =gWorld.getPlayer().getBody().getAngle();
+		float[] position ={gWorld.getPlayer().getBody().getPosition().x,gWorld.getPlayer().getBody().getPosition().y};
+		//if angle and position has changed 
+		if ((playerPosition.get("Player "+id)!= position) && (playerAngle.get("Player "+id)!=angle)){
+			//Update client Hashmap
+			playerPosition.put("Player "+id, position);
+			playerAngle.put("Player "+id, angle);
+			//Update server
+			clientOutput.println("loc_"+id+"_"+Float.toString(position[0])+"_"+Float.toString(position[1])+"_"+Float.toString(angle));
+			clientOutput.flush();
+		}
+	}
+	
+	private void updatePlayerIsinSafeArea(){
+		if (gWorld.isInSafeArea()!=playerIsInSafeArea){
+			playerIsInSafeArea=gWorld.isInSafeArea();
+			clientOutput.println("safe_"+id+"_"+gWorld.isInSafeArea());
 			clientOutput.flush();
 		}
 	}
@@ -556,19 +566,39 @@ public class MMClient {
 			playerAngle.put("Player " + msg[1], angle);
 			// Get and change position of opponent
 			playerList.get(Integer.parseInt(msg[1])).spawn(position[0], position[1], angle);
-		} else if (msg[0].equals("pos")) {
-			System.out.println("Change " + msg[1] + " positon");
-			float[] position = { Float.parseFloat(msg[2]), Float.parseFloat(msg[3]) };
-			playerPosition.put("Player " + Integer.parseInt(msg[1]), position);
-		} else if (msg[0].equals("ang")) {
-			System.out.println("Change " + msg[1] + " angle");
+
+		}
+		else if(msg[0].equals("pos")){
+			System.out.println("Change player "+msg[1]+" positon");
+			float[] position = {Float.parseFloat(msg[2]),Float.parseFloat(msg[3])};
+			playerPosition.put("Player "+Integer.parseInt(msg[1]), position);
+		}
+		else if(msg[0].equals("ang")){
+			System.out.println("Change player "+msg[1]+" angle");
 			float angle = Float.parseFloat(msg[2]);
 			playerAngle.put("Player " + Integer.parseInt(msg[1]), angle);
 		}
-
-		// If item consumption or production message
-		else if (msg[0].equals("item")) {
-			if (msg[2].equals("con")) {
+		
+		//Player Status updates
+		else if(msg[0].equals("type")){
+			playerType.put("Player "+Integer.parseInt(msg[2]), Integer.parseInt(msg[3]));
+		}
+		else if(msg[0].equals("alive")){
+			playerIsAlive.put("Player "+Integer.parseInt(msg[2]), Integer.parseInt(msg[3]));
+		}
+		else if(msg[0].equals("stun")){
+			playerIsStun.put("Player "+Integer.parseInt(msg[2]), Integer.parseInt(msg[3]));
+		}
+		else if(msg[0].equals("useItem")){
+			playerUseItem.put("Player "+Integer.parseInt(msg[1]), Integer.parseInt(msg[2]));
+		}
+		else if(msg[0].equals("useWeapon")){
+			playerUseWeapon.put("Player "+Integer.parseInt(msg[1]), Integer.parseInt(msg[2]));
+		}
+		
+		//If item consumption or production message
+		else if(msg[0].equals("item")){
+			if (msg[2].equals("con")){
 				System.out.println("Consume item");
 				Vector2 position = new Vector2(Float.parseFloat(msg[3]), Float.parseFloat(msg[4]));
 				itemLocations.consume(new Location(new float[] { Float.parseFloat(msg[3]),

@@ -12,19 +12,29 @@ public class PlayerStatuses implements Subject{
 	private final ConcurrentHashMap<String, Integer> playerType; // If 0 -> murderer; If 1 -> civilian; If 2-> Ghost
 	private final ConcurrentHashMap<String, float[]> playerPosition;
 	private final ConcurrentHashMap<String, Float> playerAngle;
-	private final ConcurrentHashMap<String, Integer> playerIsInSafeRegion;
+	private final ConcurrentHashMap<String, Integer> playerIsInSafeRegion; 
+	//TODO useItem
+	private final ConcurrentHashMap<String, Integer> playerUseItem;
+	//TODO useWeapon
+	private final ConcurrentHashMap<String, Integer> playerUseWeapon;
 	
 	private String message;
 	
 	public PlayerStatuses(int numOfPlayers){
 		this.numOfPlayers=numOfPlayers;
 		this.clients=new ArrayList<Observer>();
+		
+		this.playerType = new ConcurrentHashMap<String, Integer>(numOfPlayers);
 		this.playerIsAlive = new ConcurrentHashMap<String, Integer>(numOfPlayers);
 		this.playerIsStun = new ConcurrentHashMap<String, Integer>(numOfPlayers);
-		this.playerType = new ConcurrentHashMap<String, Integer>(numOfPlayers);
+		this.playerUseItem = new ConcurrentHashMap<String, Integer>(numOfPlayers);
+		this.playerUseWeapon = new ConcurrentHashMap<String, Integer>(numOfPlayers);
+		this.playerIsInSafeRegion = new ConcurrentHashMap<String, Integer>(numOfPlayers);
+		
+		
 		this.playerPosition = new ConcurrentHashMap<String, float[]>(numOfPlayers);
 		this.playerAngle = new ConcurrentHashMap<String, Float>(numOfPlayers);
-		this.playerIsInSafeRegion = new ConcurrentHashMap<String, Integer>(numOfPlayers);
+		
 	}
 	
 	/** Update client alive status
@@ -45,6 +55,26 @@ public class PlayerStatuses implements Subject{
 		playerIsStun.put("Player "+id, status);
 		message="stun_"+origin+"_"+id+"_"+status;
 		updateAll(origin);
+	}
+	
+	/** Update player use item state
+	 * @param id Id of client to update
+	 * @param status 1 -> using; 0 -> normal;
+	 */
+	public void updateUseItem(int id,int status){
+		playerUseItem.put("Player "+id, status);
+		message="useItem_"+id+"_"+status;
+		updateAll(id);
+	}
+	
+	/** Update player use weapon state
+	 * @param id Id of client to update
+	 * @param status 1 -> using; 0 -> normal;
+	 */
+	public void updateUseWeapon(int id,int status){
+		playerUseWeapon.put("Player "+id, status);
+		message="useWeapon_"+id+"_"+status;
+		updateAll(id);
 	}
 	
 	/**Update player type
@@ -147,6 +177,13 @@ public class PlayerStatuses implements Subject{
 	public ConcurrentHashMap<String, Integer> getPlayerIsStun() {
 		return playerIsStun;
 	}
+	public ConcurrentHashMap<String, Integer> getPlayerUseWeapon() {
+		return playerUseWeapon;
+	}
+	public ConcurrentHashMap<String, Integer> getPlayerUseItem() {
+		return playerUseItem;
+	}
+
 	public ConcurrentHashMap<String, Integer> getPlayerType() {
 		return playerType;
 	}

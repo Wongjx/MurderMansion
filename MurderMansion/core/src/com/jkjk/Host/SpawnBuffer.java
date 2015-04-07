@@ -24,6 +24,13 @@ public class SpawnBuffer {
 		}
 	}
 	
+	public synchronized void setCapacity(int capacity){
+		this.capacity=capacity;
+	}
+	public synchronized int getCapacity(){
+		return capacity;
+	}
+	
 	public boolean isEmpty(){
 		return buffer.size() == 0;
 	}
