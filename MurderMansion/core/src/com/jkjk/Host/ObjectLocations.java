@@ -113,21 +113,21 @@ public class ObjectLocations implements Subject{
 		synchronized (itemLocations) {
 			itemLocations.produce(location);
 			//TODO change message to update playerAngle status message
-			message="item"+SERVER_ID+"_pro_"+Float.toString(location.get()[0])+"_"+Float.toString(location.get()[1]);
+			message="item_"+SERVER_ID+"_pro_"+Float.toString(location.get()[0])+"_"+Float.toString(location.get()[1]);
 			updateAll(SERVER_ID);
 		}
 	}
 	private void produceWeapon(Location location) {
 		synchronized (weaponLocations) {
 			weaponLocations.produce(location);
-			message="weapon"+SERVER_ID+"_pro_"+Float.toString(location.get()[0])+"_"+Float.toString(location.get()[1]);
+			message="weapon_"+SERVER_ID+"_pro_"+Float.toString(location.get()[0])+"_"+Float.toString(location.get()[1]);
 			updateAll(SERVER_ID);
 		}
 	}
 	private void produceWeaponPart(Location location) {
 		synchronized (weaponPartLocations) {
 			weaponPartLocations.produce(location);
-			message="weaponpart"+SERVER_ID+"_pro_"+Float.toString(location.get()[0])+"_"+Float.toString(location.get()[1]);
+			message="weaponpart_"+SERVER_ID+"_pro_"+Float.toString(location.get()[0])+"_"+Float.toString(location.get()[1]);
 			updateAll(SERVER_ID);
 		}
 	}
