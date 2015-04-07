@@ -24,6 +24,7 @@ public class Shotgun extends Weapon {
 
 	@Override
 	public void use() {
+		super.use();
 		System.out.println("Used shotgun");
 		gWorld.getPlayer().getBody().setUserData(AssetLoader.civShotgunAnimation);
 		playerPosition = gWorld.getPlayer().getBody().getPosition();
@@ -33,7 +34,7 @@ public class Shotgun extends Weapon {
 		bdef.angle = playerAngle;
 		body = gWorld.getWorld().createBody(bdef);
 		
-		Vector2[] vertices = { new Vector2(11, 0), new Vector2(110.85f, 64), new Vector2(120.28f, 43.78f),
+		Vector2[] vertices = { new Vector2(15, 0), new Vector2(110.85f, 64), new Vector2(120.28f, 43.78f),
 				new Vector2(126.06f, 22.23f), new Vector2(128, 0), new Vector2(126.06f, -22.23f),
 				new Vector2(120.28f, -43.78f), new Vector2(110.85f, -64) };
 		PolygonShape shape = new PolygonShape();

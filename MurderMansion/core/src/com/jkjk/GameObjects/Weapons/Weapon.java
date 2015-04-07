@@ -16,9 +16,10 @@ public abstract class Weapon {
 
 	Weapon(GameWorld gWorld) {
 		cooldown = new Duration(5000);
-		hitBoxExposure = new Duration(5);
+		hitBoxExposure = new Duration(10);
 		this.gWorld = gWorld;
 		runTime = 0;
+		isCompleted = false;
 	}
 	
 	public String getName(){
