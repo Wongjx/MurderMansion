@@ -78,6 +78,7 @@ public class MenuScreen implements Screen{
         		
         		
                 try {
+                	game.mMultiplayerSeisson.isServer=true;
                 	game.mMultiplayerSeisson.setServer(MMServer.getInstance(1,game.mMultiplayerSeisson));
     				game.mMultiplayerSeisson.setClient(MMClient.getInstance(world, renderer, game.mMultiplayerSeisson.serverAddress,game.mMultiplayerSeisson.serverPort));
     			} catch (Exception e) {

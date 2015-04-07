@@ -99,9 +99,9 @@ public class HudRenderer {
 
 		Gdx.input.setInputProcessor(stage);
 	}
-	
-	public static HudRenderer getInstance(GameWorld gWorld, float gameWidth, float gameHeight){
-		if (instance==null){
+
+	public static HudRenderer getInstance(GameWorld gWorld, float gameWidth, float gameHeight) {
+		if (instance == null) {
 			instance = new HudRenderer(gWorld, gameWidth, gameHeight);
 		}
 		return instance;
@@ -256,10 +256,10 @@ public class HudRenderer {
 		player = gWorld.getPlayer();
 		player.setItemChange(false);
 		if (player.getItem() != null) {
-			if (player.getType().equals("Civilian"))
-				stage.addActor(getDisarmTrap());
-			else if (player.getType().equals("Murderer"))
+			if (player.getType().equals("Murderer"))
 				stage.addActor(getTrap());
+			else
+				stage.addActor(getDisarmTrap());
 		} else {
 			for (Actor actors : stage.getActors()) {
 				if (actors.getName().equals("Item Button"))
@@ -578,13 +578,13 @@ public class HudRenderer {
 		x = 522;
 		y = 92;
 
-//		disguiseToMur = new ImageButton(mur_CtM);
-//		disguiseToMur.setX(x);
-//		disguiseToMur.setY(y);
-//		disguiseToMur.setWidth(33);
-//		disguiseToMur.setHeight(33);
-//		disguiseToMur.setName("Disguise to murderer");
-		
+		// disguiseToMur = new ImageButton(mur_CtM);
+		// disguiseToMur.setX(x);
+		// disguiseToMur.setY(y);
+		// disguiseToMur.setWidth(33);
+		// disguiseToMur.setHeight(33);
+		// disguiseToMur.setName("Disguise to murderer");
+
 		disguiseToMur = new ImageButton(mur_MtC);
 		disguiseToMur.setX(x);
 		disguiseToMur.setY(y);

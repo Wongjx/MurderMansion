@@ -60,9 +60,11 @@ public class MMContactListener implements ContactListener {
 				} else if (faUD.equals("weapon") && gWorld.getPlayer().getWeapon() == null) {
 					weaponsToRemove.add(fa.getBody());
 				} else if (faUD.equals("weapon part")) {
-					weaponPartsToRemove.add(fa.getBody());
+					if (!gWorld.getPlayer().getType().equals("Ghost"))
+						weaponPartsToRemove.add(fa.getBody());
 				} else if (fbUD.equals("weapon part")) {
-					weaponPartsToRemove.add(fb.getBody());
+					if (!gWorld.getPlayer().getType().equals("Ghost"))
+						weaponPartsToRemove.add(fb.getBody());
 				} else if (faUD.equals("L1S1") || fbUD.equals("L1S1")) {
 					atStairs = true;
 					stairsName = "L1S1";
@@ -109,6 +111,8 @@ public class MMContactListener implements ContactListener {
 				} else if (faUD.equals("knife") || fbUD.equals("knife")) {
 					if (!gWorld.getPlayer().getType().equals("Ghost"))
 						gWorld.getPlayer().die();
+				} else if (faUD.equals("saferegion") || fbUD.equals("saferegion")) {
+					gWorld.setInSafeArea(true);
 				}
 			} else { // non player fixture interaction
 						// in contact with all other object fixtures but other light fixtures
@@ -153,6 +157,15 @@ public class MMContactListener implements ContactListener {
 		fb = c.getFixtureB();
 		faUD = fa.getUserData();
 		fbUD = fb.getUserData();
+
+		if (faUD != null && fbUD != null) {
+			if (faUD.equals("player") || fbUD.equals("player")) {
+				if (faUD.equals("saferegion") || fbUD.equals("saferegion")) {
+					gWorld.setInSafeArea(false);
+				}
+			}
+		}
+
 		/*
 		 * if (faUD != null && fbUD != null) { if (faUD.equals("lightBody") && !fbUD.equals("lightBody")) {
 		 * System.out.println("END contact: fa: " + faUD + ", fb: " + fbUD);

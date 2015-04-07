@@ -68,6 +68,7 @@ public class Civilian extends GameCharacter {
 					|| currentAnimation == AssetLoader.civKnifeDeathAnimation
 					|| currentAnimation == AssetLoader.civTrapDeathAnimation) {
 				animationRunTime += Gdx.graphics.getRawDeltaTime();
+				
 				if (currentAnimation.isAnimationFinished(animationRunTime)) {
 					animationRunTime = 0;
 					body.setUserData(AssetLoader.civAnimation);
@@ -85,6 +86,7 @@ public class Civilian extends GameCharacter {
 					batch.draw(currentAnimation.getKeyFrame(runTime, true), body.getPosition().x -9,
 							body.getPosition().y - 9, 9, 9, 18, 18, 6f, 6f,
 							(float) (body.getAngle() * 180 / Math.PI) - 90);
+					
 				} 
 				else if(body.getUserData()==AssetLoader.civPanicAnimation){
 					batch.draw(AssetLoader.civ_panic_rest,  body.getPosition().x-9,

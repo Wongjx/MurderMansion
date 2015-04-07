@@ -123,4 +123,12 @@ public class Murderer extends GameCharacter {
 	public boolean lightContains(float x, float y) {
 		return pointLight.contains(x, y);
 	}
+	
+	public void useWeapon(){
+		if (!disguised){
+			super.useWeapon();
+		} else {
+			System.out.println("You cannot use your weapon while disguised.");
+		}
+	}
 }

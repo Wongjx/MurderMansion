@@ -6,6 +6,7 @@ import javax.print.attribute.standard.Severity;
 
 public class ObjectLocations implements Subject{
 	private final int SERVER_ID =-1;
+	private final MMServer server;
 	private final int numOfPlayers;
 	private ArrayList<Observer> clients = new ArrayList<Observer>();
 	
@@ -20,8 +21,9 @@ public class ObjectLocations implements Subject{
 	
 	private String message;
 	
-	public ObjectLocations(int numOfPlayers){
+	public ObjectLocations(int numOfPlayers, MMServer server){
 		this.numOfPlayers=numOfPlayers;
+		this.server=server;
 		
 		this.itemLocations = new SpawnBuffer(numOfPlayers*3);
 		this.weaponLocations = new SpawnBuffer(numOfPlayers);
@@ -57,6 +59,10 @@ public class ObjectLocations implements Subject{
 	public void consumeWeaponPart(Location location,int origin) {
 		synchronized (weaponPartLocations) {
 			weaponPartLocations.consume(location);
+			if (origin != server.getMurdererId()){
+				weaponPartLocations.setCapacity(weaponPartLocations.getCapacity()-1);
+			}			
+			weaponPartSpawner.restore(location);
 			message="weaponpart_"+origin+"_con_"+Float.toString(location.get()[0])+"_"+Float.toString(location.get()[1]);
 			updateAll(origin);
 		}
@@ -112,22 +118,21 @@ public class ObjectLocations implements Subject{
 	private void produceItem(Location location) {
 		synchronized (itemLocations) {
 			itemLocations.produce(location);
-			//TODO change message to update playerAngle status message
-			message="item"+SERVER_ID+"_pro_"+Float.toString(location.get()[0])+"_"+Float.toString(location.get()[1]);
+			message="item_"+SERVER_ID+"_pro_"+Float.toString(location.get()[0])+"_"+Float.toString(location.get()[1]);
 			updateAll(SERVER_ID);
 		}
 	}
 	private void produceWeapon(Location location) {
 		synchronized (weaponLocations) {
 			weaponLocations.produce(location);
-			message="weapon"+SERVER_ID+"_pro_"+Float.toString(location.get()[0])+"_"+Float.toString(location.get()[1]);
+			message="weapon_"+SERVER_ID+"_pro_"+Float.toString(location.get()[0])+"_"+Float.toString(location.get()[1]);
 			updateAll(SERVER_ID);
 		}
 	}
 	private void produceWeaponPart(Location location) {
 		synchronized (weaponPartLocations) {
 			weaponPartLocations.produce(location);
-			message="weaponpart"+SERVER_ID+"_pro_"+Float.toString(location.get()[0])+"_"+Float.toString(location.get()[1]);
+			message="weaponpart_"+SERVER_ID+"_pro_"+Float.toString(location.get()[0])+"_"+Float.toString(location.get()[1]);
 			updateAll(SERVER_ID);
 		}
 	}
@@ -141,13 +146,11 @@ public class ObjectLocations implements Subject{
 	
 	@Override
 	public void register(Observer obs) {
-		// TODO Auto-generated method stub
 		this.clients.add(obs);
 	}
 
 	@Override
 	public void unregister(Observer obs) {
-		// TODO Auto-generated method stub
 		this.clients.remove(obs);
 	}
 

@@ -34,8 +34,8 @@ public abstract class GameCharacter {
 	private float touchpadY;
 	private double angleDiff;
 
-	private Weapon weapon;
-	private Item item;
+	protected Weapon weapon;
+	protected Item item;
 	protected Ability ability;
 	protected Body body;
 	protected RayHandler rayHandler;

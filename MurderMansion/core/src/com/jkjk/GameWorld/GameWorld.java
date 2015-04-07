@@ -43,6 +43,7 @@ public class GameWorld {
 	private HashMap<Vector2, WeaponPartSprite> weaponPartList;
 	private int numOfWeaponPartsCollected;
 	private boolean shotgunCreated;
+	private boolean inSafeArea;
 
 	private HashMap<Vector2, Obstacles> obstacleList;
 
@@ -121,8 +122,8 @@ public class GameWorld {
 		}
 		checkStairs();
 		checkItemSprite(client);
-		checkWeaponSprite();
-		checkWeaponPartSprite();
+		checkWeaponSprite(client);
+		checkWeaponPartSprite(client);
 		checkTrap();
 
 		if (numOfWeaponPartsCollected == 8 && !shotgunCreated) {
@@ -139,15 +140,22 @@ public class GameWorld {
 	 *            0 for murderer, 1 for civilian
 	 */
 	public GameCharacter createPlayer(int type, float x, float y, float angle) {
-		if (type == 0)
+		if (type == 0) {
 			player = gameCharFac.createCharacter("Murderer", 0, this, true);
-		else if (type == 2)
+			createDoor();
+		} else if (type == 2)
 			player = gameCharFac.createCharacter("Ghost", 0, this, true);
 		else
 			player = gameCharFac.createCharacter("Civilian", 0, this, true);
 		player.getBody().getFixtureList().get(0).setUserData("player");
 		player.spawn(x, y, angle);
 		return player;
+	}
+
+	public void createDoor() {
+		if (player.getType() == "Murderer") {
+			new Obstacles(this, new Vector2(915.2f, 511.8f), 0);
+		}
 	}
 
 	/**
@@ -186,15 +194,15 @@ public class GameWorld {
 	private void checkItemSprite(MMClient client) {
 		for (int i = 0; i < itemsToRemove.size; i++) {
 			bodyToRemove = itemsToRemove.get(i);
-			//Call MMclient to remove item
+			// Call MMclient to remove item
 			client.removeItemLocation(bodyToRemove.getPosition());
 			System.out.println("Item removed from client.");
 			itemList.remove(bodyToRemove.getPosition());
 			world.destroyBody(bodyToRemove);
-			if (player.getType().equals("Civilian"))
-				player.addItem(itemFac.createItem("Disarm Trap", this));
-			else if (player.getType().equals("Murderer"))
+			if (player.getType().equals("Murderer"))
 				player.addItem(itemFac.createItem("Trap", this));
+			else
+				player.addItem(itemFac.createItem("Disarm Trap", this));
 		}
 		itemsToRemove.clear();
 	}
@@ -202,15 +210,17 @@ public class GameWorld {
 	/**
 	 * Checks to remove weapon sprites that have been contacted by the player.
 	 */
-	private void checkWeaponSprite() {
+	private void checkWeaponSprite(MMClient client) {
 		for (int i = 0; i < weaponsToRemove.size; i++) {
 			bodyToRemove = weaponsToRemove.get(i);
+			// Call MMclient to remove weapon
+			client.removeWeaponLocation(bodyToRemove.getPosition());
 			weaponList.remove(bodyToRemove.getPosition());
 			world.destroyBody(bodyToRemove);
-			if (player.getType().equals("Civilian"))
-				player.addWeapon(weaponFac.createWeapon("Bat", this));
-			else if (player.getType().equals("Murderer"))
+			if (player.getType().equals("Murderer"))
 				player.addWeapon(weaponFac.createWeapon("Knife", this));
+			else
+				player.addWeapon(weaponFac.createWeapon("Bat", this));
 		}
 		weaponsToRemove.clear();
 	}
@@ -218,9 +228,11 @@ public class GameWorld {
 	/**
 	 * Checks to remove weapon part sprites that have been contacted by the player.
 	 */
-	private void checkWeaponPartSprite() {
+	private void checkWeaponPartSprite(MMClient client) {
 		for (int i = 0; i < weaponPartsToRemove.size; i++) {
 			bodyToRemove = weaponPartsToRemove.get(i);
+			// Call MMclient to remove weapon part
+			client.removeWeaponPartLocation(bodyToRemove.getPosition());
 			weaponPartList.remove(bodyToRemove.getPosition());
 			world.destroyBody(bodyToRemove);
 			if (player.getType().equals("Civilian")) {
@@ -345,6 +357,14 @@ public class GameWorld {
 
 	public HashMap<Vector2, Obstacles> getObstacleList() {
 		return obstacleList;
+	}
+
+	public boolean isInSafeArea() {
+		return inSafeArea;
+	}
+
+	public void setInSafeArea(boolean inSafeArea) {
+		this.inSafeArea = inSafeArea;
 	}
 
 }
