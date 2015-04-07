@@ -46,7 +46,6 @@ public class MMServer {
 	// private final ConcurrentHashMap<String, float[]> playerPosition;
 	// private final ConcurrentHashMap<String, Float> playerAngle;
 
-	private float[] obstacleDestroyed; // To transmit position of obstacle destroyed to clients
 
 	private final ObjectLocations objectLocations;
 	// private ArrayList<Location> playerLocations;
@@ -59,6 +58,7 @@ public class MMServer {
 	// private final WeaponSpawner weaponSpawner;
 	// private final WeaponPartSpawner weaponPartSpawner;
 	private final ObstaclesHandler obstaclesHandler;
+	private float[] obstacleDestroyed; // To transmit position of obstacle destroyed to clients
 
 	private int numInSafeRegion;
 	private int numStillAlive;
@@ -202,6 +202,10 @@ public class MMServer {
 
 	public ObjectLocations getObjectLocations() {
 		return objectLocations;
+	}
+	
+	public ObstaclesHandler getObstaclesHandler(){
+		return obstaclesHandler;
 	}
 
 	public String getServerAddress() {
