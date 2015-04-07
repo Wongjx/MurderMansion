@@ -135,8 +135,7 @@ public class MMClient {
 				String[] locations = message.split("_");
 				for (String coordinates : locations) {
 					String[] XY = coordinates.split(",");
-					weaponLocations.produce(new Location(new float[] { Float.parseFloat(XY[0]),
-							Float.parseFloat(XY[1]) }));
+					weaponLocations.produce(new Location(new float[] { Float.parseFloat(XY[0]),Float.parseFloat(XY[1]) }));
 					// Spawn weapon in game world
 					createWeapons(Float.parseFloat(XY[0]), Float.parseFloat(XY[1]));
 				}
@@ -300,10 +299,24 @@ public class MMClient {
 	 * @param position
 	 */
 	public void removeItemLocation(Vector2 position){
-		System.out.println("Consume item from buffer");
 		itemLocations.consume(new Location(new float[]{position.x,position.y}));
-		System.out.println("Send message to server");
 		clientOutput.println("item_"+id+"_con_"+Float.toString(position.x)+"_"+Float.toString(position.y));		
+	}
+	
+	/**Remove item from MMClient weapon buffer and update server about consumption
+	 * @param position
+	 */
+	public void removeWeaponLocation(Vector2 position){
+		weaponLocations.consume(new Location(new float[]{position.x,position.y}));
+		clientOutput.println("weapon_"+id+"_con_"+Float.toString(position.x)+"_"+Float.toString(position.y));		
+	}
+	
+	/**Remove item from MMClient weapon part buffer and update server about consumption
+	 * @param position
+	 */
+	public void removeWeaponPartLocation(Vector2 position){
+		weaponPartLocations.consume(new Location(new float[]{position.x,position.y}));
+		clientOutput.println("weaponpart_"+id+"_con_"+Float.toString(position.x)+"_"+Float.toString(position.y));		
 	}
 	
 	private void updatePlayerLocation(){
@@ -526,10 +539,12 @@ public class MMClient {
 			playerList.get(Integer.parseInt(msg[1])).spawn(position[0], position[1], angle);
 		}
 		else if(msg[0].equals("pos")){
+			System.out.println("Change "+msg[1]+" positon");
 			float[] position = {Float.parseFloat(msg[2]),Float.parseFloat(msg[3])};
 			playerPosition.put("Player "+Integer.parseInt(msg[1]), position);
 		}
 		else if(msg[0].equals("ang")){
+			System.out.println("Change "+msg[1]+" angle");
 			float angle = Float.parseFloat(msg[2]);
 			playerAngle.put("Player "+Integer.parseInt(msg[1]), angle);
 		}
@@ -537,36 +552,59 @@ public class MMClient {
 		//If item consumption or production message
 		else if(msg[0].equals("item")){
 			if (msg[2].equals("con")){
+				System.out.println("Consume item");
 				Vector2 position = new Vector2(Float.parseFloat(msg[3]),Float.parseFloat(msg[4]));
 				itemLocations.consume(new Location(new float[]{Float.parseFloat(msg[3]),Float.parseFloat(msg[4])}));
 				gWorld.getWorld().destroyBody(gWorld.getItemList().get(position).getBody());
 				gWorld.getItemList().remove(position);
 			}
+			else if (msg[2].equals("pro")){
+				System.out.println("Produce item");
+				itemLocations.produce(new Location(new float[]{Float.parseFloat(msg[3]),Float.parseFloat(msg[4])}));
+				// Spawn weapon in game world
+				createItems(Float.parseFloat(msg[3]), Float.parseFloat(msg[4]));
+			}
 		}
 		else if(msg[0].equals("weapon")){
 			if (msg[2].equals("con")){
+				System.out.println("Consume weapon");
 				Vector2 position = new Vector2(Float.parseFloat(msg[3]),Float.parseFloat(msg[4]));
 				weaponLocations.consume(new Location(new float[]{Float.parseFloat(msg[3]),Float.parseFloat(msg[4])}));
 				gWorld.getWorld().destroyBody(gWorld.getWeaponList().get(position).getBody());
 				gWorld.getWeaponList().remove(position);
 			}
+			else if (msg[2].equals("pro")){
+				System.out.println("Produce weapon");
+				weaponLocations.produce(new Location(new float[]{Float.parseFloat(msg[3]),Float.parseFloat(msg[4])}));
+				// Spawn weapon in game world
+				createWeapons(Float.parseFloat(msg[3]), Float.parseFloat(msg[4]));
+			}
 		}
 		else if(msg[0].equals("weaponpart")){
 			if (msg[2].equals("con")){
+				System.out.println("Consume weaponpart");
 				Vector2 position = new Vector2(Float.parseFloat(msg[3]),Float.parseFloat(msg[4]));
 				weaponPartLocations.consume(new Location(new float[]{Float.parseFloat(msg[3]),Float.parseFloat(msg[4])}));
 				gWorld.getWorld().destroyBody(gWorld.getWeaponPartList().get(position).getBody());
 				gWorld.getWeaponPartList().remove(position);
 			}
+			else if (msg[2].equals("pro")){
+				System.out.println("Produce weaponpart");
+				weaponPartLocations.produce(new Location(new float[]{Float.parseFloat(msg[3]),Float.parseFloat(msg[4])}));
+				// Spawn weapon in game world
+				createWeaponParts(Float.parseFloat(msg[3]), Float.parseFloat(msg[4]));
+			}
 		}
 		else if(msg[0].equals("trap")){
 			if (msg[2].equals("con")){
+				System.out.println("Consume trap");
 				Vector2 position = new Vector2(Float.parseFloat(msg[3]),Float.parseFloat(msg[4]));
 				trapLocations.consume(new Location(new float[]{Float.parseFloat(msg[3]),Float.parseFloat(msg[4])}));
 				//TODO remove trap body from game world
 //				gWorld.getWorld().destroyBody(gWorld.getWeaponPartList().get(position).getBody());
 //				gWorld.getWeaponPartList().remove(position);
 			}else if (msg[2].equals("pro")){
+				System.out.println("Produce trap");
 				Vector2 position = new Vector2(Float.parseFloat(msg[3]),Float.parseFloat(msg[4]));
 				trapLocations.produce(new Location(new float[]{Float.parseFloat(msg[3]),Float.parseFloat(msg[4])}));
 				//TODO add in trap body from game world
@@ -592,12 +630,12 @@ class clientListener extends Thread {
 		while (!isInterrupted()) {
 			try {
 				if ((msg = input.readLine()) != null) {
-//					System.out.println("MMClient Message received: "+msg);
+					System.out.println("MMClient Message received: "+msg);
 //					String message = new String(msg);
 					client.handleMessage(msg);
 				}
 			} catch (Exception e) {
-				System.out.println("Error while reading: " + e.getMessage());
+				System.out.println("Client error while reading: " + e.getMessage());
 			}
 		}
 	}

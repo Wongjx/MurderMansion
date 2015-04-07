@@ -520,12 +520,11 @@ class serverListener extends Thread{
 			try{
 				if((msg=input.readLine())!=null){
 //					System.out.println("MMServer Message received: "+msg);
-//					String message = new String(msg);
 					//Do something with message
 					server.handleMessage(msg);
 				}
 			}catch(Exception e){
-				System.out.println( "Error while reading: "+e.getMessage());
+				System.out.println( "Server error while reading: "+e.getMessage());
 			}
 			
 		}

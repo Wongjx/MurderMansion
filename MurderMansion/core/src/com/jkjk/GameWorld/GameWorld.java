@@ -121,8 +121,8 @@ public class GameWorld {
 		}
 		checkStairs();
 		checkItemSprite(client);
-		checkWeaponSprite();
-		checkWeaponPartSprite();
+		checkWeaponSprite(client);
+		checkWeaponPartSprite(client);
 		checkTrap();
 
 		if (numOfWeaponPartsCollected == 8 && !shotgunCreated) {
@@ -202,9 +202,11 @@ public class GameWorld {
 	/**
 	 * Checks to remove weapon sprites that have been contacted by the player.
 	 */
-	private void checkWeaponSprite() {
+	private void checkWeaponSprite(MMClient client) {
 		for (int i = 0; i < weaponsToRemove.size; i++) {
 			bodyToRemove = weaponsToRemove.get(i);
+			//Call MMclient to remove weapon
+			client.removeWeaponLocation(bodyToRemove.getPosition());
 			weaponList.remove(bodyToRemove.getPosition());
 			world.destroyBody(bodyToRemove);
 			if (player.getType().equals("Civilian"))
@@ -218,9 +220,11 @@ public class GameWorld {
 	/**
 	 * Checks to remove weapon part sprites that have been contacted by the player.
 	 */
-	private void checkWeaponPartSprite() {
+	private void checkWeaponPartSprite(MMClient client) {
 		for (int i = 0; i < weaponPartsToRemove.size; i++) {
 			bodyToRemove = weaponPartsToRemove.get(i);
+			//Call MMclient to remove weapon part
+			client.removeWeaponPartLocation(bodyToRemove.getPosition());
 			weaponPartList.remove(bodyToRemove.getPosition());
 			world.destroyBody(bodyToRemove);
 			if (player.getType().equals("Civilian")) {
