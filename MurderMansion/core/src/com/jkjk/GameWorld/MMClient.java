@@ -17,10 +17,12 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
+import com.badlogic.gdx.physics.box2d.CircleShape;
 import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.jkjk.GameObjects.Obstacles;
 import com.jkjk.GameObjects.Characters.GameCharacter;
 import com.jkjk.GameObjects.Items.ItemSprite;
+import com.jkjk.GameObjects.Items.Trap;
 import com.jkjk.GameObjects.Weapons.WeaponPartSprite;
 import com.jkjk.GameObjects.Weapons.WeaponSprite;
 import com.jkjk.Host.Location;
@@ -73,7 +75,6 @@ public class MMClient {
 	private final SpawnBuffer itemLocations;
 	private final SpawnBuffer weaponLocations;
 	private final SpawnBuffer weaponPartLocations;
-	private final SpawnBuffer trapLocations;
 
 	private ObstaclesHandler obstaclesHandler;
 
@@ -111,7 +112,6 @@ public class MMClient {
 		itemLocations = new SpawnBuffer(numOfPlayers * 3);
 		weaponLocations = new SpawnBuffer(numOfPlayers);
 		weaponPartLocations = new SpawnBuffer(numOfPlayers * 2);
-		trapLocations = new SpawnBuffer(numOfPlayers);
 		obstaclesHandler = ObstaclesHandler.getInstance();
 
 		String message;
@@ -200,6 +200,11 @@ public class MMClient {
 		Thread thread = new clientListener(clientInput, this);
 		thread.start();
 
+		
+		for(int i=0; i<8; i++){
+			createWeaponParts(600+(20*i), 490);
+		}
+		
 		// CREATING ITEMSPRITE FOR DEBUG PURPOSE
 		ItemSprite is = new ItemSprite(gWorld);
 		Vector2 location = new Vector2(750, 511.8f);
@@ -210,6 +215,7 @@ public class MMClient {
 		Vector2 location2 = new Vector2(750, 450.8f);
 		gWorld.getWeaponList().put(location2, ws);
 		ws.spawn(location2.x, location2.y, 0);
+		
 	}
 
 	public static MMClient getInstance(GameWorld gWorld, GameRenderer renderer, String serverAddress,
@@ -453,6 +459,35 @@ public class MMClient {
 		gWorld.getWeaponPartList().put(new Vector2(x, y), wps);
 		wps.spawn(x, y, 0);
 	}
+	
+	/**
+	 * Create trap sprites on the map.
+	 * 
+	 * @param x
+	 *            X coordinate on the map.
+	 * @param y
+	 *            Y coordinate on the map.
+	 */
+	private void createTraps(float x, float y) {
+		ItemSprite is = new ItemSprite(gWorld);
+		gWorld.getItemList().put(new Vector2(x, y), is);
+		is.spawn(x, y, 0);
+		
+		bdef.type = BodyType.StaticBody;
+		bdef.position.set(x, y);
+		body = gWorld.getWorld().createBody(bdef);
+
+		CircleShape shape = new CircleShape();
+		shape.setRadius(10);
+		fdef.shape = shape;
+		fdef.isSensor = true;
+		fdef.filter.maskBits = 1;
+
+		body.createFixture(fdef).setUserData("trap");
+		
+		Trap trap = new Trap(gWorld,bdef,fdef);
+		gWorld.getTrapList().put(body.getPosition(), trap);
+	}
 
 	/**
 	 * @return Number of players playing the game.
@@ -481,33 +516,6 @@ public class MMClient {
 		}
 	}
 
-	// /**
-	// * Updates the locations of all items on the map.
-	// */
-	// private void itemLocations() {
-	// return itemLocations;
-	// }
-	//
-	// /**
-	// * Updates the locations of all weapon on the map.
-	// */
-	// private void weaponLocations() {
-	// server.getWeaponLocations();
-	// }
-	//
-	// /**
-	// * Updates the locations of all weapon parts on the map.
-	// */
-	// private void weaponPartLocations() {
-	// server.getWeaponPartLocations();
-	// }
-	//
-	// /**
-	// * Updates the locations of all traps on the map.
-	// */
-	// private void trapLocations() {
-	// server.getTrapLocations();
-	// }
 
 	/**
 	 * Produces knife body from the player that used the knife.
@@ -657,21 +665,25 @@ public class MMClient {
 		} else if (msg[0].equals("trap")) {
 			if (msg[2].equals("con")) {
 				System.out.println("Consume trap");
-				Vector2 position = new Vector2(Float.parseFloat(msg[3]), Float.parseFloat(msg[4]));
-				trapLocations.consume(new Location(new float[] { Float.parseFloat(msg[3]),
-						Float.parseFloat(msg[4]) }));
-				// TODO remove trap body from game world
-				// gWorld.getWorld().destroyBody(gWorld.getWeaponPartList().get(position).getBody());
-				// gWorld.getWeaponPartList().remove(position);
-			} else if (msg[2].equals("pro")) {
-				System.out.println("Produce trap");
-				Vector2 position = new Vector2(Float.parseFloat(msg[3]), Float.parseFloat(msg[4]));
-				trapLocations.produce(new Location(new float[] { Float.parseFloat(msg[3]),
-						Float.parseFloat(msg[4]) }));
-				// TODO add in trap body from game world
+				Vector2 position = new Vector2(Float.parseFloat(msg[3]),Float.parseFloat(msg[4]));
+//				trapLocations.consume(new Location(new float[]{Float.parseFloat(msg[3]),Float.parseFloat(msg[4])}));
+				//TODO remove trap body from game world
+//				gWorld.getWorld().destroyBody(gWorld.getWeaponPartList().get(position).getBody());
+//				gWorld.getWeaponPartList().remove(position);
+			}else if (msg[2].equals("pro")){
+				System.out.println("Produce trap");;
+				//TODO add in trap body from game world
+				if(Integer.parseInt(msg[1])!= id){
+					createTraps(Float.parseFloat(msg[3]), Float.parseFloat(msg[4]));
+				}
 			}
 		}
-
+		
+		else if(msg[0].equals("obstacle")){
+				System.out.println("Remove obstacle @ x:"+msg[1]+ " y: "+msg[2]);
+				Vector2 location = new Vector2(Float.parseFloat(msg[1]),Float.parseFloat(msg[2]));
+				gWorld.removeObstacle(location);
+		}
 	}
 }
 
@@ -691,8 +703,8 @@ class clientListener extends Thread {
 		while (!isInterrupted()) {
 			try {
 				if ((msg = input.readLine()) != null) {
-					System.out.println("MMClient Message received: " + msg);
-					// String message = new String(msg);
+//					System.out.println("MMClient Message received: "+msg);
+//					String message = new String(msg);
 					client.handleMessage(msg);
 				}
 			} catch (Exception e) {

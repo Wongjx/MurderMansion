@@ -65,7 +65,9 @@ public class Murderer extends GameCharacter {
 					if (isDisguised()) {
 						body.setUserData(AssetLoader.civAnimation);
 					} else {
-						body.setUserData(AssetLoader.murAnimation);
+						System.out.println("waiting for murderer png yeah?");
+						body.setUserData(AssetLoader.civAnimation);
+						//body.setUserData(AssetLoader.murAnimation);
 					}
 				} else {// disable touchpad while special animation occurs.
 					body.setLinearVelocity(0, 0);
@@ -86,7 +88,7 @@ public class Murderer extends GameCharacter {
 								body.getPosition().y - 9, 9, 9, 18, 18, 6f, 6f,
 								(float) (body.getAngle() * 180 / Math.PI) - 90);
 					} else {
-						batch.draw(AssetLoader.mur_rest, body.getPosition().x -9,
+						batch.draw(AssetLoader.civ_rest, body.getPosition().x -9,//to be changed to mur_rest when ready.
 								body.getPosition().y - 9, 9, 9, 18, 18, 6f, 6f,
 								(float) (body.getAngle() * 180 / Math.PI) - 90);
 					}
