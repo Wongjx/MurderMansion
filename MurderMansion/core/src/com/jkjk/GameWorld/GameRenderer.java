@@ -87,9 +87,9 @@ public class GameRenderer {
 		tiledMapRenderer.render();
 
 		batch.setProjectionMatrix(cam.combined);
-		batch.begin();
 		
 		client.render(cam, batch);
+		batch.begin();
 
 		for (Obstacles ob : gWorld.getObstacleList().values()) {
 			ob.render(batch);

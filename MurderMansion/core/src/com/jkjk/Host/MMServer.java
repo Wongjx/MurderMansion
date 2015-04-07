@@ -72,7 +72,7 @@ public class MMServer {
 		murdererId = new Random().nextInt(numOfPlayers);
 
 		nextItemSpawnTime = 10000;
-		nextObstacleRemoveTime = 60000;
+		nextObstacleRemoveTime = 30000;
 
 		initPlayers();
 
@@ -105,7 +105,7 @@ public class MMServer {
 				objectLocations.spawnWeapons(1);
 			if (!objectLocations.getWeaponPartLocations().isFull())
 				objectLocations.spawnWeaponParts(1);
-			nextItemSpawnTime = new Random().nextInt(10000) + runTime + 5000;
+			nextItemSpawnTime += (new Random().nextInt(15000) + 10000);
 		}
 
 		// Opens random door in mansion *TO BE IMPLEMENTED
@@ -114,7 +114,7 @@ public class MMServer {
 			obstacleDestroyed = obstaclesHandler.destroyObstacle().get();
 			System.out.println("At x:"+obstacleDestroyed[0]+" y: "+obstacleDestroyed[1]);
 			sendToClients("obstacle_"+Float.toString(obstacleDestroyed[0])+"_"+Float.toString(obstacleDestroyed[1]));
-			nextObstacleRemoveTime = runTime + 30000;
+			nextObstacleRemoveTime += 30000;
 		}
 
 		// Win condition when murderer is dead
