@@ -30,6 +30,16 @@ public class Trap extends Item {
 		plantedTrapAnimation = AssetLoader.plantedTrapAnimation;
 		animationRunTime = 0;
 	}
+	
+	public Trap(GameWorld gWorld, BodyDef bdef,FixtureDef fdef){
+		super(gWorld);
+		this.bdef=bdef;
+		this.fdef=fdef;
+		
+		plantedTrapAnimation = AssetLoader.plantedTrapAnimation;
+		animationRunTime = 0;
+		
+	}
 
 	@Override
 	public void startUse() {
@@ -68,10 +78,8 @@ public class Trap extends Item {
 
 	public void render(SpriteBatch batch) {
 		if (gWorld.getPlayer().lightContains(body.getPosition().x, body.getPosition().y)) {
-			batch.begin();
 			animationRunTime += Gdx.graphics.getRawDeltaTime();
 			batch.draw(plantedTrapAnimation.getKeyFrame(animationRunTime), body.getPosition().x, body.getPosition().y, 32, 32);
-			batch.end();
 		}
 	}
 

@@ -19,7 +19,6 @@ public class Civilian extends GameCharacter {
 	private PointLight pointLight;
 	private ConeLight coneLight;
 	private Animation currentAnimation;
-	private double hypothenuse;
 	private GameWorld gWorld;
 	private float animationRunTime;
 	
@@ -57,9 +56,10 @@ public class Civilian extends GameCharacter {
 	@Override
 	public void render(OrthographicCamera cam, SpriteBatch batch) {
 		
+		super.render(cam, batch);
+		
 		if (gWorld.getPlayer().lightContains(body.getPosition().x, body.getPosition().y)) {
 			runTime += Gdx.graphics.getRawDeltaTime();
-			batch.setProjectionMatrix(cam.combined);
 			batch.begin();
 			currentAnimation = (Animation) body.getUserData();
 			if (currentAnimation == AssetLoader.civBatAnimation
@@ -67,14 +67,15 @@ public class Civilian extends GameCharacter {
 					|| currentAnimation == AssetLoader.civKnifeDeathAnimation
 					|| currentAnimation == AssetLoader.civTrapDeathAnimation) {
 				animationRunTime += Gdx.graphics.getRawDeltaTime();
+				
 				if (currentAnimation.isAnimationFinished(animationRunTime)) {
 					animationRunTime = 0;
 					body.setUserData(AssetLoader.civAnimation);
 				} else {
 					body.setLinearVelocity(0, 0);
 					body.setAngularVelocity(0);
-					batch.draw(currentAnimation.getKeyFrame(animationRunTime, true), body.getPosition().x - 10,
-							body.getPosition().y - 10, 10, 10, 20, 20, 1, 1,
+					batch.draw(currentAnimation.getKeyFrame(animationRunTime, true), body.getPosition().x - 9,
+							body.getPosition().y - 9, 9, 9, 18, 18, 6f, 6f,
 							(float) (body.getAngle() * 180 / Math.PI) - 90);
 				}
 				
@@ -84,9 +85,10 @@ public class Civilian extends GameCharacter {
 					batch.draw(currentAnimation.getKeyFrame(runTime, true), body.getPosition().x -9,
 							body.getPosition().y - 9, 9, 9, 18, 18, 6f, 6f,
 							(float) (body.getAngle() * 180 / Math.PI) - 90);
+					
 				} 
-				else if(isStun()){
-					batch.draw(AssetLoader.civ_rest,  body.getPosition().x-9,
+				else if(body.getUserData()==AssetLoader.civPanicAnimation){
+					batch.draw(AssetLoader.civ_panic_rest,  body.getPosition().x-9,
 							body.getPosition().y-9, 9, 9, 18, 18, 6f, 6f,
 							(float) (body.getAngle() * 180 / Math.PI) - 90);
 				}
@@ -103,7 +105,7 @@ public class Civilian extends GameCharacter {
 			
 		}
 		
-		super.render(cam, batch);
+		
 
 	}
 

@@ -6,21 +6,25 @@ package com.jkjk.Host;
 import java.util.ArrayList;
 import java.util.Random;
 
+import com.jkjk.GameWorld.GameRenderer;
+import com.jkjk.GameWorld.GameWorld;
+import com.jkjk.GameWorld.MMClient;
+
 /**
  * @author LeeJunXiang
  * 
  */
 public class ObstaclesHandler {
 
+	private static ObstaclesHandler instance;
 	private ArrayList<Location> obstacleLocations;
 	private Random randInt;
 	private Location location;
 	private int index;
 
-	ObstaclesHandler() {
+	private ObstaclesHandler() {
 		obstacleLocations = new ArrayList<Location>();
-		obstacleLocations.add(new Location(new float[] { 915.2f, 511.8f })); // MAIN DOOR. ONLY DESTROY WHEN
-																				// AT 0MIN
+		obstacleLocations.add(new Location(new float[] { 915.2f, 511.8f })); // MAIN DOOR. ONLY DESTROY WHEN AT 0MIN
 		obstacleLocations.add(new Location(new float[] { 736.5f, 809.4f }));
 		obstacleLocations.add(new Location(new float[] { 185.2f, 476.5f }));
 		obstacleLocations.add(new Location(new float[] { 308.7f, 244.8f }));
@@ -30,6 +34,13 @@ public class ObstaclesHandler {
 		obstacleLocations.add(new Location(new float[] { 2802.6f, 490.1f }));
 
 		randInt = new Random();
+	}
+	
+	public static ObstaclesHandler getInstance() {
+		if (instance == null) {
+			instance = new ObstaclesHandler();
+		}
+		return instance;
 	}
 
 	/**

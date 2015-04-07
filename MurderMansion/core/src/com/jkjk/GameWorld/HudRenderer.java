@@ -6,6 +6,7 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
@@ -32,7 +33,6 @@ public class HudRenderer {
 
 	private TextureRegionDrawable civ_bat, civ_item, civ_dash, mur_knife, mur_item, mur_CtM, mur_MtC;
 	private Texture emptySlot;
-	private Animation coolDownAnimation;
 	private Actor emptySlot_actor;
 	private Texture timebox;
 	private Actor timebox_actor;
@@ -52,7 +52,19 @@ public class HudRenderer {
 	private Touchpad touchpad;
 	private Drawable touchKnob;
 
-	private float animationRunTime;
+	private boolean PanicCD;
+	private boolean DisguiseCD;
+	//private boolean ItemsCD;
+	private boolean WeaponsCD;
+	private Animation PanicCoolDownAnimation;
+	private Animation DisguiseCoolDownAnimation;
+	//private Animation ItemsCoolDownAnimation;
+	private Animation WeaponsCoolDownAnimation;
+	private float PanicAnimationRunTime;
+	private float DisguiseAnimationRunTime;
+	private float WeaponsAnimationRunTime;
+	
+	private TextureRegion prohibitedButton = AssetLoader.prohibitedButton;
 
 	/**
 	 * Constructs the link from the Box2D world created in GameWorld to HudRenderer. Allows rendering of the
@@ -87,9 +99,9 @@ public class HudRenderer {
 
 		Gdx.input.setInputProcessor(stage);
 	}
-	
-	public static HudRenderer getInstance(GameWorld gWorld, float gameWidth, float gameHeight){
-		if (instance==null){
+
+	public static HudRenderer getInstance(GameWorld gWorld, float gameWidth, float gameHeight) {
+		if (instance == null) {
 			instance = new HudRenderer(gWorld, gameWidth, gameHeight);
 		}
 		return instance;
@@ -105,7 +117,11 @@ public class HudRenderer {
 	 */
 	private void initAssets(float w, float h) {
 		emptySlot = AssetLoader.emptySlot;
-		coolDownAnimation = AssetLoader.coolDownAnimation;
+		PanicCoolDownAnimation = AssetLoader.PanicCoolDownAnimation;
+		DisguiseCoolDownAnimation = AssetLoader.DisguiseCoolDownAnimation;
+		WeaponsCoolDownAnimation = AssetLoader.WeaponsCoolDownAnimation;
+		PanicCD = DisguiseCD = WeaponsCD = false;
+		WeaponsAnimationRunTime = DisguiseAnimationRunTime = PanicAnimationRunTime = 0f;
 		civ_bat = AssetLoader.civ_weapon_bat_draw;
 		civ_item = AssetLoader.civ_item_draw;
 		civ_dash = AssetLoader.civ_dash_draw;
@@ -142,7 +158,8 @@ public class HudRenderer {
 		batch.draw(weapon_parts_counter, 480, 235);
 		batch.draw(emptySlot, 480, 22, 120, 120);
 		font.draw(batch, getTime(), 75, 330);
-
+		coolDownAnimationCheck();
+		
 		batch.end();
 
 		if (gWorld.getPlayer().getItemChange())
@@ -193,6 +210,43 @@ public class HudRenderer {
 
 		return counter_actor;
 	}
+	
+	/**
+	 * Handles the cool down animations of the item slots
+	 */
+	private void coolDownAnimationCheck(){
+		if(WeaponsCD == true){
+			WeaponsAnimationRunTime += Gdx.graphics.getRawDeltaTime();
+			if(WeaponsCoolDownAnimation.isAnimationFinished(WeaponsAnimationRunTime)){
+				WeaponsAnimationRunTime = 0f;
+				WeaponsCD = false;
+			}
+			else{
+				batch.draw(WeaponsCoolDownAnimation.getKeyFrame(WeaponsAnimationRunTime),477,25,72,72);
+			}
+		}
+		if(PanicCD == true){
+			PanicAnimationRunTime += Gdx.graphics.getRawDeltaTime();
+			if(PanicCoolDownAnimation.isAnimationFinished(PanicAnimationRunTime)){
+				PanicAnimationRunTime = 0f;
+				PanicCD = false;
+			}
+			else{
+				batch.draw(PanicCoolDownAnimation.getKeyFrame(PanicAnimationRunTime),503,70,72,72);
+			}
+		}
+		if(DisguiseCD == true){
+			DisguiseAnimationRunTime += Gdx.graphics.getRawDeltaTime();
+			if(DisguiseCoolDownAnimation.isAnimationFinished(DisguiseAnimationRunTime)){
+				DisguiseAnimationRunTime = 0f;
+				DisguiseCD = false;
+			}
+			else{
+				batch.draw(DisguiseCoolDownAnimation.getKeyFrame(DisguiseAnimationRunTime),503,70,72,72);
+			}
+		}
+	
+	}
 
 	/**
 	 * When a change in the player's item is detected, itemCheck() will be called, setting itemChange to false
@@ -202,10 +256,10 @@ public class HudRenderer {
 		player = gWorld.getPlayer();
 		player.setItemChange(false);
 		if (player.getItem() != null) {
-			if (player.getType().equals("Civilian"))
-				stage.addActor(getDisarmTrap());
-			else if (player.getType().equals("Murderer"))
+			if (player.getType().equals("Murderer"))
 				stage.addActor(getTrap());
+			else
+				stage.addActor(getDisarmTrap());
 		} else {
 			for (Actor actors : stage.getActors()) {
 				if (actors.getName().equals("Item Button"))
@@ -293,14 +347,14 @@ public class HudRenderer {
 	}
 
 	/**
-	 * Creates the actor for the bat slot at 505,41.
+	 * Creates the actor for the bat slot at 502,43.
 	 * 
 	 * @return Actor for Bat slot
 	 */
 	public ImageButton getBat() {
 
-		x = 499;
-		y = 44;
+		x = 502;
+		y = 43;
 
 		weaponButton = new ImageButton(civ_bat);
 		weaponButton.setX(x);
@@ -319,6 +373,8 @@ public class HudRenderer {
 
 				System.out.println("Clicked on bat button");
 				gWorld.getPlayer().useWeapon();
+				// start drawing cool down animation.
+				WeaponsCD = true;
 			}
 		});
 
@@ -332,8 +388,8 @@ public class HudRenderer {
 	 */
 	public ImageButton getShotgun() {
 
-		x = 501;
-		y = 44;
+		x = 505;
+		y = 41;
 
 		weaponButton = new ImageButton(AssetLoader.civ_weapon_gun_draw);
 		weaponButton.setX(x);
@@ -350,6 +406,8 @@ public class HudRenderer {
 			public void clicked(InputEvent event, float x, float y) {
 				System.out.println("Clicked on shotgun button");
 				gWorld.getPlayer().useWeapon();
+				// start drawing cool down animation
+				WeaponsCD = true;
 			}
 		});
 
@@ -357,14 +415,14 @@ public class HudRenderer {
 	}
 
 	/**
-	 * Creates the actor for the disarm trap slot at 567,43.
+	 * Creates the actor for the disarm trap slot at 557,45.
 	 * 
 	 * @return Actor for Disarm Trap slot
 	 */
 	public ImageButton getDisarmTrap() {
 
-		x = 540;
-		y = 48;
+		x = 557;
+		y = 45;
 
 		itemButton = new ImageButton(civ_item);
 		itemButton.setX(x);
@@ -381,6 +439,7 @@ public class HudRenderer {
 			public void clicked(InputEvent event, float x, float y) {
 				System.out.println("Clicked on disarm trap button");
 				gWorld.getPlayer().useItem();
+				// start drawing cool down animation
 			}
 		});
 
@@ -394,8 +453,8 @@ public class HudRenderer {
 	 */
 	public ImageButton getPanic() {
 
-		x = 500;
-		y = 97;
+		x = 520;
+		y = 94;
 
 		dashButton = new ImageButton(civ_dash);
 		dashButton.setX(x);
@@ -408,6 +467,8 @@ public class HudRenderer {
 				// Used to check character position FOR TESTING
 				System.out.println(gWorld.getPlayer().getBody().getPosition());
 				gWorld.getPlayer().useAbility();
+				// start drawing cool down animation with ability frame time.
+				PanicCD = true;
 			}
 		});
 
@@ -415,12 +476,12 @@ public class HudRenderer {
 	}
 
 	/**
-	 * Creates the actor for the knife slot at 505,41.
+	 * Creates the actor for the knife slot at 505,40.
 	 * 
 	 * @return Actor for Knife slot
 	 */
 	public ImageButton getKnife() {
-		x = 460;
+		x = 505;
 		y = 40;
 
 		itemButton = new ImageButton(mur_knife);
@@ -438,6 +499,8 @@ public class HudRenderer {
 			public void clicked(InputEvent event, float x, float y) {
 				System.out.println("Clicked on knife button");
 				gWorld.getPlayer().useWeapon();
+				// start to draw cool down animation
+				WeaponsCD = true;
 			}
 		});
 
@@ -451,8 +514,8 @@ public class HudRenderer {
 	 */
 	public ImageButton getTrap() {
 
-		x = 550;
-		y = 43;
+		x = 540;
+		y = 40;
 
 		itemButton = new ImageButton(mur_item);
 		itemButton.setX(x);
@@ -469,6 +532,7 @@ public class HudRenderer {
 			public void clicked(InputEvent event, float x, float y) {
 				System.out.println("Clicked on trap button");
 				gWorld.getPlayer().useItem();
+				//start to draw cool down animation
 			}
 		});
 
@@ -497,6 +561,8 @@ public class HudRenderer {
 				// Used to check character position FOR TESTING
 				System.out.println(gWorld.getPlayer().getBody().getPosition());
 				gWorld.getPlayer().useAbility();
+				// start to draw cool down animation with ability frame time
+				DisguiseCD = true;
 			}
 		});
 
@@ -512,13 +578,13 @@ public class HudRenderer {
 		x = 522;
 		y = 92;
 
-//		disguiseToMur = new ImageButton(mur_CtM);
-//		disguiseToMur.setX(x);
-//		disguiseToMur.setY(y);
-//		disguiseToMur.setWidth(33);
-//		disguiseToMur.setHeight(33);
-//		disguiseToMur.setName("Disguise to murderer");
-		
+		// disguiseToMur = new ImageButton(mur_CtM);
+		// disguiseToMur.setX(x);
+		// disguiseToMur.setY(y);
+		// disguiseToMur.setWidth(33);
+		// disguiseToMur.setHeight(33);
+		// disguiseToMur.setName("Disguise to murderer");
+
 		disguiseToMur = new ImageButton(mur_MtC);
 		disguiseToMur.setX(x);
 		disguiseToMur.setY(y);
@@ -532,7 +598,8 @@ public class HudRenderer {
 				// Used to check character position FOR TESTING
 				System.out.println(gWorld.getPlayer().getBody().getPosition());
 				gWorld.getPlayer().useAbility();
-
+				// start to draw cool down animation with ability frame time
+				DisguiseCD = true;
 			}
 		});
 
@@ -559,6 +626,8 @@ public class HudRenderer {
 				// Used to check character position FOR TESTING
 				System.out.println(gWorld.getPlayer().getBody().getPosition());
 				gWorld.getPlayer().useAbility();
+				// start to draw cool down animation with ability frame time
+				DisguiseCD = true;
 			}
 		});
 

@@ -16,7 +16,7 @@ public abstract class Weapon {
 
 	Weapon(GameWorld gWorld) {
 		cooldown = new Duration(5000);
-		hitBoxExposure = new Duration(10);
+		hitBoxExposure = new Duration(5);
 		this.gWorld = gWorld;
 		runTime = 0;
 	}

@@ -55,7 +55,6 @@ public class WeaponSprite {
 
 	public void render(SpriteBatch batch) {
 		if (gWorld.getPlayer().lightContains(posX, posY)) {
-			batch.begin();
 			if (gWorld.getPlayer().getType().equals("Murderer")){
 				animationRunTime += Gdx.graphics.getRawDeltaTime();
 				batch.draw(knifeSpriteAnimation.getKeyFrame(animationRunTime), posX-12, posY-12, 24, 24);
@@ -63,7 +62,6 @@ public class WeaponSprite {
 				animationRunTime += Gdx.graphics.getRawDeltaTime();
 				batch.draw(batSpriteAnimation.getKeyFrame(animationRunTime), posX-12, posY-12, 24, 24);
 			}
-			batch.end();
 		}
 	}
 	public Body getBody(){

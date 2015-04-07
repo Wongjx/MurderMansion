@@ -34,8 +34,8 @@ public abstract class GameCharacter {
 	private float touchpadY;
 	private double angleDiff;
 
-	private Weapon weapon;
-	private Item item;
+	protected Weapon weapon;
+	protected Item item;
 	protected Ability ability;
 	protected Body body;
 	protected RayHandler rayHandler;
@@ -119,7 +119,13 @@ public abstract class GameCharacter {
 
 	public void stun(boolean stun) {
 		this.stun = stun;
-		body.setUserData(AssetLoader.civStunAnimation);
+		if(type.equals("Murderer")){
+			body.setUserData(AssetLoader.civStunAnimation);
+			//body.setUserData(AssetLoader.murStunAnimation);
+		}
+		else{
+			body.setUserData(AssetLoader.civStunAnimation);
+		}
 		stunDuration.startCountdown();
 	}
 
@@ -257,6 +263,7 @@ public abstract class GameCharacter {
 			rayHandler.setCombinedMatrix(cam.combined);
 			rayHandler.updateAndRender();
 		}
+
 	}
 
 	protected boolean checkMovable() {

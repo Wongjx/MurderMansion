@@ -10,6 +10,7 @@ import com.jkjk.MMHelpers.MultiplayerSeissonInfo;
 import com.jkjk.MurderMansion.MurderMansion;
 
 public class GameScreen implements Screen {
+	private MultiplayerSeissonInfo info;
 	private GameWorld gWorld;
 	private GameRenderer renderer;
 	private HudRenderer hudRenderer;
@@ -21,6 +22,7 @@ public class GameScreen implements Screen {
 	public GameScreen(MurderMansion game, float gameWidth, float gameHeight, GameWorld world, GameRenderer renderer) {
 		
 		this.client=game.mMultiplayerSeisson.getClient();
+		this.info=game.mMultiplayerSeisson;
 		this.gWorld=client.getgWorld();
 		this.renderer=client.getRenderer();
 //		this.gWorld=world;		
@@ -42,7 +44,10 @@ public class GameScreen implements Screen {
 		gWorld.update(delta, client);
 		renderer.render(delta, runTime, client);
 		hudRenderer.render(delta);
-
+		//if phone is designated server
+		if(info.isServer){
+			info.getServer().update();
+		}
 	}
 
 	@Override
