@@ -153,7 +153,7 @@ public class GameWorld {
 	}
 
 	public void createDoor() {
-		if (player.getType() == "Murderer"){
+		if (player.getType() == "Murderer") {
 			new Obstacles(this, new Vector2(915.2f, 511.8f), 0);
 		}
 	}
@@ -199,10 +199,10 @@ public class GameWorld {
 			System.out.println("Item removed from client.");
 			itemList.remove(bodyToRemove.getPosition());
 			world.destroyBody(bodyToRemove);
-			if (player.getType().equals("Civilian"))
-				player.addItem(itemFac.createItem("Disarm Trap", this));
-			else if (player.getType().equals("Murderer"))
+			if (player.getType().equals("Murderer"))
 				player.addItem(itemFac.createItem("Trap", this));
+			else
+				player.addItem(itemFac.createItem("Disarm Trap", this));
 		}
 		itemsToRemove.clear();
 	}
@@ -213,14 +213,14 @@ public class GameWorld {
 	private void checkWeaponSprite(MMClient client) {
 		for (int i = 0; i < weaponsToRemove.size; i++) {
 			bodyToRemove = weaponsToRemove.get(i);
-			//Call MMclient to remove weapon
+			// Call MMclient to remove weapon
 			client.removeWeaponLocation(bodyToRemove.getPosition());
 			weaponList.remove(bodyToRemove.getPosition());
 			world.destroyBody(bodyToRemove);
-			if (player.getType().equals("Civilian"))
-				player.addWeapon(weaponFac.createWeapon("Bat", this));
-			else if (player.getType().equals("Murderer"))
+			if (player.getType().equals("Murderer"))
 				player.addWeapon(weaponFac.createWeapon("Knife", this));
+			else
+				player.addWeapon(weaponFac.createWeapon("Bat", this));
 		}
 		weaponsToRemove.clear();
 	}
@@ -231,7 +231,7 @@ public class GameWorld {
 	private void checkWeaponPartSprite(MMClient client) {
 		for (int i = 0; i < weaponPartsToRemove.size; i++) {
 			bodyToRemove = weaponPartsToRemove.get(i);
-			//Call MMclient to remove weapon part
+			// Call MMclient to remove weapon part
 			client.removeWeaponPartLocation(bodyToRemove.getPosition());
 			weaponPartList.remove(bodyToRemove.getPosition());
 			world.destroyBody(bodyToRemove);

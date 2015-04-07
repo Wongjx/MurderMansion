@@ -32,7 +32,7 @@ public class Shotgun extends Weapon {
 		bdef.position.set(playerPosition.x, playerPosition.y);
 		bdef.angle = playerAngle;
 		body = gWorld.getWorld().createBody(bdef);
-
+		
 		Vector2[] vertices = { new Vector2(11, 0), new Vector2(110.85f, 64), new Vector2(120.28f, 43.78f),
 				new Vector2(126.06f, 22.23f), new Vector2(128, 0), new Vector2(126.06f, -22.23f),
 				new Vector2(120.28f, -43.78f), new Vector2(110.85f, -64) };

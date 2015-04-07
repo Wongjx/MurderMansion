@@ -60,9 +60,11 @@ public class MMContactListener implements ContactListener {
 				} else if (faUD.equals("weapon") && gWorld.getPlayer().getWeapon() == null) {
 					weaponsToRemove.add(fa.getBody());
 				} else if (faUD.equals("weapon part")) {
-					weaponPartsToRemove.add(fa.getBody());
+					if (!gWorld.getPlayer().getType().equals("Ghost"))
+						weaponPartsToRemove.add(fa.getBody());
 				} else if (fbUD.equals("weapon part")) {
-					weaponPartsToRemove.add(fb.getBody());
+					if (!gWorld.getPlayer().getType().equals("Ghost"))
+						weaponPartsToRemove.add(fb.getBody());
 				} else if (faUD.equals("L1S1") || fbUD.equals("L1S1")) {
 					atStairs = true;
 					stairsName = "L1S1";

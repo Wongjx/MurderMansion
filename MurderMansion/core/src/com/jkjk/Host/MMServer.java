@@ -40,11 +40,11 @@ public class MMServer {
 
 	private final PlayerStatuses playerStats;
 
-	private float[] obstacleDestroyed; // To transmit position of obstacle destroyed to clients
 
 	private final ObjectLocations objectLocations;
 
 	private final ObstaclesHandler obstaclesHandler;
+	private float[] obstacleDestroyed; // To transmit position of obstacle destroyed to clients
 
 	private int numInSafeRegion;
 	private int numStillAlive;
@@ -173,6 +173,10 @@ public class MMServer {
 
 	public ObjectLocations getObjectLocations() {
 		return objectLocations;
+	}
+	
+	public ObstaclesHandler getObstaclesHandler(){
+		return obstaclesHandler;
 	}
 
 	public String getServerAddress() {
