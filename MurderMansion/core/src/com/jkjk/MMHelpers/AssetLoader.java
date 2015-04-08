@@ -1,5 +1,7 @@
 package com.jkjk.MMHelpers;
 
+import java.util.Arrays;
+
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.Texture.TextureFilter;
@@ -69,7 +71,7 @@ public class AssetLoader {
 	public static Texture weapon_parts_counter;
 
 	public static TextureRegion mur_rest;
-	public static TextureRegion civ_rest;
+	
 	public static Texture civ_dead_lines;
 
 	// GENERAL ITEMS
@@ -87,27 +89,51 @@ public class AssetLoader {
 	public static Animation shotgunPartSpriteAnimation;
 
 	// Character Animations and Textures
+	public static final int NUM_CIVILIAN_TEXTURES = 2; //starting from zero.
+	
 	public static Texture cooldownTexture;
 	public static Animation PanicCoolDownAnimation;
 	public static Animation DisguiseCoolDownAnimation;
 	public static Animation WeaponsCoolDownAnimation;
-	public static Texture civ_walk;
-	public static Animation civAnimation;
-	public static Texture civ_disarm;
-	public static Animation civDisarmAnimation;
-	public static Texture civ_bat;
-	public static Animation civBatAnimation;
-	public static Texture civ_trapDeath;
-	public static Animation civTrapDeathAnimation;
-	public static Texture civ_knifeDeath;
-	public static Animation civKnifeDeathAnimation;
-	public static Texture civ_stun;
-	public static Animation civStunAnimation;
-	public static Texture civ_panic;
-	public static Animation civPanicAnimation;
-	public static TextureRegion civ_panic_rest;
-	public static Texture civ_shotgun;
-	public static Animation civShotgunAnimation;
+	public static Texture civilianTexture0;
+	public static Texture civilianTexture1;
+	public static Texture civilianTexture2;
+	public static TextureRegion civ_rest0;
+	public static Animation civAnimation0;
+	public static Animation civDisarmAnimation0;
+	public static Animation civDropDisarmAnimation0;
+	public static Animation civBatAnimation0;
+//	public static Animation civTrapDeathAnimation;
+//	public static Animation civKnifeDeathAnimation;
+	public static Animation civStunAnimation0;
+	public static Animation civPanicAnimation0;
+	public static TextureRegion civ_panic_rest0;
+	public static Animation civShotgunAnimation0;
+	
+	public static TextureRegion civ_rest1;
+	public static Animation civAnimation1;
+	public static Animation civDisarmAnimation1;
+	public static Animation civDropDisarmAnimation1;
+	public static Animation civBatAnimation1;
+//	public static Animation civTrapDeathAnimation;
+//	public static Animation civKnifeDeathAnimation;
+	public static Animation civStunAnimation1;
+	public static Animation civPanicAnimation1;
+	public static TextureRegion civ_panic_rest1;
+	public static Animation civShotgunAnimation1;
+	
+	public static TextureRegion civ_rest2;
+	public static Animation civAnimation2;
+	public static Animation civDisarmAnimation2;
+	public static Animation civDropDisarmAnimation2;
+	public static Animation civBatAnimation2;
+//	public static Animation civTrapDeathAnimation;
+//	public static Animation civKnifeDeathAnimation;
+	public static Animation civStunAnimation2;
+	public static Animation civPanicAnimation2;
+	public static TextureRegion civ_panic_rest2;
+	public static Animation civShotgunAnimation2;
+	
 	public static Texture mur_walk;
 	public static Animation murAnimation;
 	public static Texture mur_knife;
@@ -250,53 +276,93 @@ public class AssetLoader {
 		shotgunPartSpriteAnimation.setPlayMode(Animation.PlayMode.LOOP_PINGPONG);
 
 		// CIVILIAN ANIMATIONS AND TEXTURE
-		civ_walk = new Texture(Gdx.files.internal("animation/walk_animation_civ.png"));
-		civ_walk.setFilter(TextureFilter.Nearest, TextureFilter.Nearest);
-		TextureRegion[] civilians = TextureRegion.split(civ_walk, 90, 90)[0];
-		civAnimation = new Animation(0.9f, civilians);
-		civAnimation.setPlayMode(Animation.PlayMode.LOOP_PINGPONG);
-		civ_rest = civilians[1];
+		civilianTexture0 = new Texture(Gdx.files.internal("animation/CIV0.png"));
+		civilianTexture0.setFilter(TextureFilter.Nearest, TextureFilter.Nearest);
+		TextureRegion[][] civilianTR0 = TextureRegion.split(civilianTexture0, 250, 250);
+		
+		civAnimation0 = new Animation(0.9f, Arrays.copyOfRange(civilianTR0[0],0,3));
+		civAnimation0.setPlayMode(Animation.PlayMode.LOOP_PINGPONG);
+		
+		civ_rest0 = civilianTR0[0][1];
 		civ_dead_lines = new Texture(Gdx.files.internal("gamehelper/dead_lines.png"));
 
-		civ_bat = new Texture(Gdx.files.internal("animation/bat_animation.png"));
-		civ_bat.setFilter(TextureFilter.Nearest, TextureFilter.Nearest);
-		TextureRegion[] bat_swing = TextureRegion.split(civ_bat, 90, 90)[0];
-		civBatAnimation = new Animation(0.1f, bat_swing);
-		civBatAnimation.setPlayMode(PlayMode.NORMAL);
+		civPanicAnimation0 = new Animation(0.5f, Arrays.copyOfRange(civilianTR0[1],0,3));
+		civPanicAnimation0.setPlayMode(PlayMode.LOOP);
+		civ_panic_rest0 = civilianTR0[1][0];
 		
-		civ_disarm = new Texture(Gdx.files.internal("animation/disarm_animation.png"));
-		civ_disarm.setFilter(TextureFilter.Nearest, TextureFilter.Nearest);
-		TextureRegion[][] disarm_swing_2 = TextureRegion.split(civ_disarm, 90, 90);
-		TextureRegion[] disarm_swing = new TextureRegion[6];
-		int index=0;
-		for(int i=0;i<disarm_swing_2.length;i++){
-			for(int j=0;j<disarm_swing_2[0].length;j++){
-				disarm_swing[index++] = disarm_swing_2[i][j];
-			}
-		}
-		civDisarmAnimation = new Animation(0.2f, disarm_swing);
-		civDisarmAnimation.setPlayMode(PlayMode.NORMAL);
+		civStunAnimation0 = new Animation(0.5f, Arrays.copyOfRange(civilianTR0[2],0,3));
+		civStunAnimation0.setPlayMode(PlayMode.NORMAL);
+		
+		civBatAnimation0 = new Animation(0.1f, Arrays.copyOfRange(civilianTR0[3],0,3));
+		civBatAnimation0.setPlayMode(PlayMode.NORMAL);
+		
+		civShotgunAnimation0 = new Animation(0.2f, Arrays.copyOfRange(civilianTR0[4],0,3));
+		civShotgunAnimation0.setPlayMode(PlayMode.NORMAL);
+		
+		civDisarmAnimation0 = new Animation(0.3f, civilianTR0[5]);
+		civDisarmAnimation0.setPlayMode(PlayMode.NORMAL);
+		
+		civDropDisarmAnimation0 = new Animation(0.1f,civilianTR0[5]);
+		civDropDisarmAnimation0.setPlayMode(PlayMode.NORMAL);
+		
+		civilianTexture1 = new Texture(Gdx.files.internal("animation/CIV1.png"));
+		civilianTexture1.setFilter(TextureFilter.Nearest, TextureFilter.Nearest);
+		TextureRegion[][] civilianTR1 = TextureRegion.split(civilianTexture1, 250, 250);
+		
+		civAnimation1 = new Animation(0.9f, Arrays.copyOfRange(civilianTR1[0],0,3));
+		civAnimation1.setPlayMode(Animation.PlayMode.LOOP_PINGPONG);
+		
+		civ_rest1 = civilianTR1[0][1];
+		//civ_dead_lines = new Texture(Gdx.files.internal("gamehelper/dead_lines.png"));
+
+		civPanicAnimation1 = new Animation(0.5f, Arrays.copyOfRange(civilianTR1[1],0,3));
+		civPanicAnimation1.setPlayMode(PlayMode.LOOP);
+		civ_panic_rest1 = civilianTR0[1][0];
+		
+		civStunAnimation1 = new Animation(0.5f, Arrays.copyOfRange(civilianTR1[2],0,3));
+		civStunAnimation1.setPlayMode(PlayMode.NORMAL);
+		
+		civBatAnimation1 = new Animation(0.1f, Arrays.copyOfRange(civilianTR1[3],0,3));
+		civBatAnimation1.setPlayMode(PlayMode.NORMAL);
+		
+		civShotgunAnimation1 = new Animation(0.2f, Arrays.copyOfRange(civilianTR1[4],0,3));
+		civShotgunAnimation1.setPlayMode(PlayMode.NORMAL);
+		
+		civDisarmAnimation1 = new Animation(0.3f, civilianTR1[5]);
+		civDisarmAnimation1.setPlayMode(PlayMode.NORMAL);
+		
+		civDropDisarmAnimation1 = new Animation(0.1f,civilianTR1[5]);
+		civDropDisarmAnimation1.setPlayMode(PlayMode.NORMAL);
 		
 		
-		civ_panic= new Texture(Gdx.files.internal("animation/panic_animation.png"));
-		civ_panic.setFilter(TextureFilter.Nearest, TextureFilter.Nearest);
-		TextureRegion[] panic_region = TextureRegion.split(civ_panic, 90, 90)[0];
-		civPanicAnimation = new Animation(0.5f, panic_region);
-		civPanicAnimation.setPlayMode(PlayMode.LOOP);
-		civ_panic_rest = panic_region[0];
+		civilianTexture2 = new Texture(Gdx.files.internal("animation/CIV2.png"));
+		civilianTexture2.setFilter(TextureFilter.Nearest, TextureFilter.Nearest);
+		TextureRegion[][] civilianTR2 = TextureRegion.split(civilianTexture2, 250, 250);
 		
-		civ_shotgun= new Texture(Gdx.files.internal("animation/shotgun_animation.png"));
-		civ_shotgun.setFilter(TextureFilter.Nearest, TextureFilter.Nearest);
-		TextureRegion[] shotgun_blast = TextureRegion.split(civ_shotgun, 90, 90)[0];
-		civShotgunAnimation = new Animation(0.2f, shotgun_blast);
-		civShotgunAnimation.setPlayMode(PlayMode.NORMAL);
+		civAnimation2 = new Animation(0.9f, Arrays.copyOfRange(civilianTR2[0],0,3));
+		civAnimation2.setPlayMode(Animation.PlayMode.LOOP_PINGPONG);
 		
-		civ_stun= new Texture(Gdx.files.internal("animation/stun_animation_civ.png"));
-		civ_stun.setFilter(TextureFilter.Nearest, TextureFilter.Nearest);
-		TextureRegion[] stun_region = TextureRegion.split(civ_panic, 90, 90)[0];
-		civStunAnimation = new Animation(0.5f, stun_region);
-		civStunAnimation.setPlayMode(PlayMode.NORMAL);
+		civ_rest2 = civilianTR1[0][1];
+		//civ_dead_lines = new Texture(Gdx.files.internal("gamehelper/dead_lines.png"));
+
+		civPanicAnimation2 = new Animation(0.5f, Arrays.copyOfRange(civilianTR2[1],0,3));
+		civPanicAnimation2.setPlayMode(PlayMode.LOOP);
+		civ_panic_rest1 = civilianTR0[1][0];
 		
+		civStunAnimation2 = new Animation(0.5f, Arrays.copyOfRange(civilianTR2[2],0,3));
+		civStunAnimation2.setPlayMode(PlayMode.NORMAL);
+		
+		civBatAnimation2 = new Animation(0.1f, Arrays.copyOfRange(civilianTR2[3],0,3));
+		civBatAnimation2.setPlayMode(PlayMode.NORMAL);
+		
+		civShotgunAnimation2 = new Animation(0.2f, Arrays.copyOfRange(civilianTR2[4],0,3));
+		civShotgunAnimation2.setPlayMode(PlayMode.NORMAL);
+		
+		civDisarmAnimation2 = new Animation(0.3f, civilianTR2[5]);
+		civDisarmAnimation2.setPlayMode(PlayMode.NORMAL);
+		
+		civDropDisarmAnimation2 = new Animation(0.1f,civilianTR2[5]);
+		civDropDisarmAnimation2.setPlayMode(PlayMode.NORMAL);
 
 		
 		// HUD COOLDOWN
@@ -336,14 +402,17 @@ public class AssetLoader {
 		mur_item_tex.dispose();
 		mur_swap_C_tex.dispose();
 		mur_swap_M_tex.dispose();
-		civ_walk.dispose();
+		civilianTexture0.dispose();
+		civilianTexture1.dispose();
+		civilianTexture2.dispose();
+		//civ_walk.dispose();
 		civ_dead_lines.dispose();
-		civ_bat.dispose();
-		civ_disarm.dispose();
+		//civ_bat.dispose();
+		//civ_disarm.dispose();
 		// civ_knifeDeath.dispose();
 		// civ_trapDeath.dispose();
 		// civ_stun.dispose();
-		 civ_panic.dispose();
+		// civ_panic.dispose();
 		// civ_shotgun.dispose();
 		// mur_walk.dispose();
 		// mur_knife.dispose();

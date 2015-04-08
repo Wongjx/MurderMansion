@@ -139,14 +139,14 @@ public class GameWorld {
 	 * @param type
 	 *            0 for murderer, 1 for civilian
 	 */
-	public GameCharacter createPlayer(int type, float x, float y, float angle) {
+	public GameCharacter createPlayer(int type, float x, float y, float angle, int id) {
 		if (type == 0) {
-			player = gameCharFac.createCharacter("Murderer", 0, this, true);
+			player = gameCharFac.createCharacter("Murderer", id, this, true);
 			createDoor();
 		} else if (type == 2)
-			player = gameCharFac.createCharacter("Ghost", 0, this, true);
+			player = gameCharFac.createCharacter("Ghost", id, this, true);
 		else
-			player = gameCharFac.createCharacter("Civilian", 0, this, true);
+			player = gameCharFac.createCharacter("Civilian", id, this, true);
 		player.getBody().getFixtureList().get(0).setUserData("player");
 		player.spawn(x, y, angle);
 		return player;

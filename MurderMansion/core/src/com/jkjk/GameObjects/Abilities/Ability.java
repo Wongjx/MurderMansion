@@ -23,5 +23,7 @@ public abstract class Ability {
 	public void update(){
 		cooldown.update();
 	}
+
+
 	
 }

@@ -285,13 +285,13 @@ public class MMClient {
 			if (i == id) {
 				// If self
 				if (i == murdererId) {
-					playerType.put("Player " + i, 1);
+					playerType.put("Player " + i, 0);
 				} else {
 					playerType.put("Player " + i, 1);
 				}
 				playerList.add(gWorld.createPlayer(playerType.get("Player " + id),
 						playerPosition.get("Player " + i)[0], playerPosition.get("Player " + i)[1],
-						playerAngle.get("Player " + i)));
+						playerAngle.get("Player " + i),i));
 			} else {
 				// Create opponent bodies
 				if (i == murdererId) {

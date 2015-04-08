@@ -7,10 +7,12 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
 import com.badlogic.gdx.physics.box2d.CircleShape;
 import com.badlogic.gdx.physics.box2d.FixtureDef;
+import com.jkjk.GameObjects.Abilities.Panic;
 import com.jkjk.GameWorld.GameWorld;
 import com.jkjk.MMHelpers.AssetLoader;
 
@@ -22,6 +24,16 @@ public class Civilian extends GameCharacter {
 	private GameWorld gWorld;
 	private float animationRunTime;
 	
+	// ANIMATIONS
+	private TextureRegion civRest;
+	private TextureRegion civPanicRest;
+	private Animation civWalkAnimation;
+	private Animation civPanicAnimation;
+	private Animation civStunAnimation;
+	private Animation civBatAnimation;
+	private Animation civShotgunAnimation; 
+	private Animation civDisarmAnimation;
+	//private Animation civDropDisarmAnimation; //not yet implemented
 
 	Civilian(int id, GameWorld gWorld, boolean isPlayer) {
 
@@ -48,8 +60,43 @@ public class Civilian extends GameCharacter {
 		pointLight = new PointLight(rayHandler, 100, null, 30, 0, 0);
 		pointLight.attachToBody(body);
 		
-		animationRunTime = 0;
-		body.setUserData(AssetLoader.civAnimation);
+		// INITIATE ANIMATIONS
+		animationRunTime = 0;		
+		switch(id%AssetLoader.NUM_CIVILIAN_TEXTURES){
+		case 0: 
+			civWalkAnimation = AssetLoader.civAnimation0;
+			civPanicAnimation = AssetLoader.civPanicAnimation0;
+			civStunAnimation = AssetLoader.civStunAnimation0;
+			civBatAnimation = AssetLoader.civBatAnimation0;
+			civShotgunAnimation = AssetLoader.civShotgunAnimation0;
+			civDisarmAnimation = AssetLoader.civDisarmAnimation0;
+			civRest = AssetLoader.civ_rest0;
+			civPanicRest = AssetLoader.civ_panic_rest0;
+			break;				
+		case 1: 
+			civWalkAnimation = AssetLoader.civAnimation1;
+			civPanicAnimation = AssetLoader.civPanicAnimation1;
+			civStunAnimation = AssetLoader.civStunAnimation1;
+			civBatAnimation = AssetLoader.civBatAnimation1;
+			civShotgunAnimation = AssetLoader.civShotgunAnimation1;
+			civDisarmAnimation = AssetLoader.civDisarmAnimation1;
+			civRest = AssetLoader.civ_rest1;
+			civPanicRest = AssetLoader.civ_panic_rest1;
+			break;
+		case 2: 
+			civWalkAnimation = AssetLoader.civAnimation2;
+			civPanicAnimation = AssetLoader.civPanicAnimation2;
+			civStunAnimation = AssetLoader.civStunAnimation2;
+			civBatAnimation = AssetLoader.civBatAnimation2;
+			civShotgunAnimation = AssetLoader.civShotgunAnimation2;
+			civDisarmAnimation = AssetLoader.civDisarmAnimation2;
+			civRest = AssetLoader.civ_rest2;
+			civPanicRest = AssetLoader.civ_panic_rest2;
+			break;
+		default:
+			System.out.println("CIVILIAN CLASS ANIMATION ERROR");
+		}
+		body.setUserData(civWalkAnimation);
 		
 	}
 
@@ -62,16 +109,40 @@ public class Civilian extends GameCharacter {
 			runTime += Gdx.graphics.getRawDeltaTime();
 			batch.begin();
 			currentAnimation = (Animation) body.getUserData();
-			if (currentAnimation == AssetLoader.civBatAnimation
-					|| currentAnimation == AssetLoader.civDisarmAnimation
-					|| currentAnimation == AssetLoader.civKnifeDeathAnimation
-					|| currentAnimation == AssetLoader.civTrapDeathAnimation
-					|| currentAnimation == AssetLoader.civShotgunAnimation) {
+			if (currentAnimation == civPanicAnimation){
+				if(((Panic)ability).getStatus()==false){
+					body.setUserData(civWalkAnimation);
+				}
+				if (!body.getLinearVelocity().isZero() && checkMovable()) {
+					batch.draw(currentAnimation.getKeyFrame(runTime, true), body.getPosition().x -9,
+							body.getPosition().y - 9, 9, 9, 18, 18, 6f, 6f,
+							(float) (body.getAngle() * 180 / Math.PI) - 90);
+					
+				} 
+				else {
+					batch.draw(civPanicRest,  body.getPosition().x-9,
+							body.getPosition().y-9, 9, 9, 18, 18, 6f, 6f,
+							(float) (body.getAngle() * 180 / Math.PI) - 90);
+				}
+			}
+			else if(currentAnimation == civWalkAnimation){
+				if (!body.getLinearVelocity().isZero() && checkMovable()) {
+					batch.draw(currentAnimation.getKeyFrame(runTime, true), body.getPosition().x -9,
+							body.getPosition().y - 9, 9, 9, 18, 18, 6f, 6f,
+							(float) (body.getAngle() * 180 / Math.PI) - 90);
+					
+				} 
+				else {
+					batch.draw(civRest,  body.getPosition().x-9,
+							body.getPosition().y-9, 9, 9, 18, 18, 6f, 6f,
+							(float) (body.getAngle() * 180 / Math.PI) - 90);
+				}
+			}
+			else {
 				animationRunTime += Gdx.graphics.getRawDeltaTime();
-				
 				if (currentAnimation.isAnimationFinished(animationRunTime)) {
 					animationRunTime = 0;
-					body.setUserData(AssetLoader.civAnimation);
+					body.setUserData(civWalkAnimation);
 				} else {
 					body.setLinearVelocity(0, 0);
 					body.setAngularVelocity(0);
@@ -79,37 +150,35 @@ public class Civilian extends GameCharacter {
 							body.getPosition().y - 9, 9, 9, 18, 18, 6f, 6f,
 							(float) (body.getAngle() * 180 / Math.PI) - 90);
 				}
-				
-			} else {
-				
-				if (!body.getLinearVelocity().isZero() && checkMovable()) {
-					batch.draw(currentAnimation.getKeyFrame(runTime, true), body.getPosition().x -9,
-							body.getPosition().y - 9, 9, 9, 18, 18, 6f, 6f,
-							(float) (body.getAngle() * 180 / Math.PI) - 90);
-					
-				} 
-				else if(body.getUserData()==AssetLoader.civPanicAnimation){
-					batch.draw(AssetLoader.civ_panic_rest,  body.getPosition().x-9,
-							body.getPosition().y-9, 9, 9, 18, 18, 6f, 6f,
-							(float) (body.getAngle() * 180 / Math.PI) - 90);
-				}
-				
-				else {
-					batch.draw(AssetLoader.civ_rest,  body.getPosition().x-9,
-							body.getPosition().y-9, 9, 9, 18, 18, 6f, 6f,
-							(float) (body.getAngle() * 180 / Math.PI) - 90);
-				}
-				
 			}
 
 			batch.end();
 			
 		}
-		
-		
 
 	}
 
+	public void useAbility(){//panic
+		super.useAbility();
+		body.setUserData(civPanicAnimation);
+	}
+	public void stun(boolean stun){//stun
+		super.stun(stun);
+		body.setUserData(civStunAnimation);
+	}
+	public void useWeapon(){//bat
+		super.useWeapon();
+		if(weapon.getName().equals("Shotgun")){
+			body.setUserData(civShotgunAnimation);
+		}
+		else{
+			body.setUserData(civBatAnimation);
+		}
+	}
+	public void useItem(){
+		super.useItem();
+		body.setUserData(civDisarmAnimation);
+	}
 	public boolean lightContains(float x, float y) {
 		return coneLight.contains(x, y) || pointLight.contains(x, y);
 	}

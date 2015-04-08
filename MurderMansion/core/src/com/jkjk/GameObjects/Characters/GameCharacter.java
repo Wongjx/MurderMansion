@@ -45,7 +45,7 @@ public abstract class GameCharacter {
 	private float deathPositionX;
 	private float deathPositionY;
 
-	private int id;
+	protected int id;
 	private int weaponUses;
 	
 	protected float runTime;
@@ -121,14 +121,16 @@ public abstract class GameCharacter {
 
 	public void stun(boolean stun) {
 		this.stun = stun;
-		if(type.equals("Murderer")){
-			body.setUserData(AssetLoader.civStunAnimation);
-			//body.setUserData(AssetLoader.murStunAnimation);
-		}
-		else{
-			body.setUserData(AssetLoader.civStunAnimation);
-		}
-		stunDuration.startCountdown();
+//		if(type.equals("Murderer")&&){
+//			if(id%AssetLoader.NUM_CIVILIAN_TEXTURES==2){
+//				body.setUserData(AssetLoader.civStunAnimation2);
+//			}
+//			//body.setUserData(AssetLoader.murStunAnimation);
+//		}
+//		else{
+//			body.setUserData(AssetLoader.civStunAnimation);
+//		}
+//		stunDuration.startCountdown();
 	}
 
 	public boolean isStun() {
