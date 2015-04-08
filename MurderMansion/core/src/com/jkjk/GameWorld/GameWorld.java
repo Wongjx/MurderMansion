@@ -70,7 +70,7 @@ public class GameWorld {
 	 */
 	private GameWorld() {
 		world = new World(new Vector2(0, 0), true);
-		cl = new MMContactListener(this);
+		cl = MMContactListener.getInstance(this);
 		world.setContactListener(cl);
 
 		itemsToRemove = cl.getItemsToRemove();

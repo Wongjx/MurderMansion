@@ -109,7 +109,7 @@ public class MMServer {
 		}
 
 		// Opens random door in mansion *TO BE IMPLEMENTED
-		if (runTime > nextObstacleRemoveTime && obstaclesHandler.getObstacles().size() >= 0) {
+		if (runTime > nextObstacleRemoveTime && obstaclesHandler.getObstacles().size() > 0) {
 			System.out.println("OBSTACLE DESTROYED!");
 			obstacleDestroyed = obstaclesHandler.destroyObstacle().get();
 			System.out.println("At x:"+obstacleDestroyed[0]+" y: "+obstacleDestroyed[1]);

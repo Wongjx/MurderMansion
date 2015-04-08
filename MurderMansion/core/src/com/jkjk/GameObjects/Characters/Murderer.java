@@ -85,7 +85,7 @@ public class Murderer extends GameCharacter {
 			
 			 if(currentAnimation == AssetLoader.murAnimation || currentAnimation == civWalkAnimation){
 				 if (!body.getLinearVelocity().isZero() && checkMovable()) {
-					 batch.draw(currentAnimation.getKeyFrame(runTime, true), body.getPosition().x -9,
+					 batch.draw(currentAnimation.getKeyFrame(runTime*3, true), body.getPosition().x -9,
 							 body.getPosition().y - 9, 9, 9, 18, 18, 6f, 6f,
 							 (float) (body.getAngle() * 180 / Math.PI) - 90);
 				 } else {

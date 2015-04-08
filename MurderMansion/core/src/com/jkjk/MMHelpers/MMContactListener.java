@@ -7,14 +7,13 @@ import com.badlogic.gdx.physics.box2d.ContactListener;
 import com.badlogic.gdx.physics.box2d.Fixture;
 import com.badlogic.gdx.physics.box2d.Manifold;
 import com.badlogic.gdx.utils.Array;
-import com.jkjk.GameObjects.Items.ItemFactory;
-import com.jkjk.GameObjects.Items.Trap;
 import com.jkjk.GameWorld.GameWorld;
 
 /**
  * @author JunXiang Will handle contact between weapons and characters
  */
 public class MMContactListener implements ContactListener {
+	private static MMContactListener instance;
 
 	private Fixture fa;
 	private Fixture fb;
@@ -30,7 +29,7 @@ public class MMContactListener implements ContactListener {
 	private boolean atStairs;
 	private String stairsName;
 
-	public MMContactListener(GameWorld gWorld) {
+	private MMContactListener(GameWorld gWorld) {
 		itemsToRemove = new Array<Body>();
 		weaponsToRemove = new Array<Body>();
 		weaponPartsToRemove = new Array<Body>();
@@ -39,6 +38,13 @@ public class MMContactListener implements ContactListener {
 		this.gWorld = gWorld;
 		atStairs = false;
 		stairsName = null;
+	}
+
+	public static MMContactListener getInstance(GameWorld gWorld) {
+		if (instance == null) {
+			instance = new MMContactListener(gWorld);
+		}
+		return instance;
 	}
 
 	// called when two fixtures start to collide
