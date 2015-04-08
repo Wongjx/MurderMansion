@@ -283,11 +283,11 @@ public class AssetLoader {
 		TextureRegion[] panic_region = TextureRegion.split(civ_panic, 90, 90)[0];
 		civPanicAnimation = new Animation(0.5f, panic_region);
 		civPanicAnimation.setPlayMode(PlayMode.LOOP);
-		civ_panic_rest = panic_region[1];
+		civ_panic_rest = panic_region[0];
 		
 		civ_shotgun= new Texture(Gdx.files.internal("animation/shotgun_animation.png"));
 		civ_shotgun.setFilter(TextureFilter.Nearest, TextureFilter.Nearest);
-		TextureRegion[] shotgun_blast = TextureRegion.split(civ_panic, 90, 90)[0];
+		TextureRegion[] shotgun_blast = TextureRegion.split(civ_shotgun, 90, 90)[0];
 		civShotgunAnimation = new Animation(0.2f, shotgun_blast);
 		civShotgunAnimation.setPlayMode(PlayMode.NORMAL);
 		
@@ -343,7 +343,7 @@ public class AssetLoader {
 		// civ_knifeDeath.dispose();
 		// civ_trapDeath.dispose();
 		// civ_stun.dispose();
-		// civ_panic.dispose();
+		 civ_panic.dispose();
 		// civ_shotgun.dispose();
 		// mur_walk.dispose();
 		// mur_knife.dispose();

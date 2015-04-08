@@ -200,7 +200,7 @@ public class MMClient {
 		Thread thread = new clientListener(clientInput, this);
 		thread.start();
 
-<<<<<<< HEAD
+
 		// CREATING OBSTACLES FOR DEBUG PURPOSE
 		gWorld.getObstacleList().put(new Vector2(915.2f, 511.8f),
 				new Obstacles(gWorld, new Vector2(915.2f, 511.8f), 0));
@@ -212,16 +212,12 @@ public class MMClient {
 		WeaponSprite tempWeap = new WeaponSprite(gWorld);
 		gWorld.getWeaponList().put(new Vector2(720f,511.8f), tempWeap);
 		tempWeap.spawn(720f,511.8f, 0);
-=======
->>>>>>> 833cf359d2ce9d3b57d307ae47f3475887123c28
+
 		
 		for(int i=0; i<8; i++){
 			createWeaponParts(600+(20*i), 490);
 		}
-<<<<<<< HEAD
-=======
-		
->>>>>>> 833cf359d2ce9d3b57d307ae47f3475887123c28
+
 		// CREATING ITEMSPRITE FOR DEBUG PURPOSE
 		ItemSprite is = new ItemSprite(gWorld);
 		Vector2 location = new Vector2(750, 511.8f);
@@ -232,10 +228,7 @@ public class MMClient {
 		Vector2 location2 = new Vector2(750, 450.8f);
 		gWorld.getWeaponList().put(location2, ws);
 		ws.spawn(location2.x, location2.y, 0);
-<<<<<<< HEAD
-=======
-		
->>>>>>> 833cf359d2ce9d3b57d307ae47f3475887123c28
+
 	}
 
 	public static MMClient getInstance(GameWorld gWorld, GameRenderer renderer, String serverAddress,

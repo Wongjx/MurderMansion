@@ -58,7 +58,6 @@ public class HudRenderer {
 	private boolean WeaponsCD;
 	private Animation PanicCoolDownAnimation;
 	private Animation DisguiseCoolDownAnimation;
-	//private Animation ItemsCoolDownAnimation;
 	private Animation WeaponsCoolDownAnimation;
 	private float PanicAnimationRunTime;
 	private float DisguiseAnimationRunTime;

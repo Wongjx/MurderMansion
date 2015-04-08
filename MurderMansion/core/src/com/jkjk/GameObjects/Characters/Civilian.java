@@ -65,7 +65,8 @@ public class Civilian extends GameCharacter {
 			if (currentAnimation == AssetLoader.civBatAnimation
 					|| currentAnimation == AssetLoader.civDisarmAnimation
 					|| currentAnimation == AssetLoader.civKnifeDeathAnimation
-					|| currentAnimation == AssetLoader.civTrapDeathAnimation) {
+					|| currentAnimation == AssetLoader.civTrapDeathAnimation
+					|| currentAnimation == AssetLoader.civShotgunAnimation) {
 				animationRunTime += Gdx.graphics.getRawDeltaTime();
 				
 				if (currentAnimation.isAnimationFinished(animationRunTime)) {
