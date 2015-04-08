@@ -240,8 +240,11 @@ public abstract class GameCharacter {
 			if (ability != null) {
 				ability.update();
 			}
-			if (stun)
+			if (stun){
 				stunDuration.update();
+				if (!stunDuration.isCountingDown())
+					stun = false;
+			}
 		}
 	}
 
