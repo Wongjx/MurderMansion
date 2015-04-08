@@ -87,6 +87,7 @@ public class GameRenderer {
 		tiledMapRenderer.render();
 
 		batch.setProjectionMatrix(cam.combined);
+
 		client.render(cam, batch);
 		batch.begin();
 

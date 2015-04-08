@@ -50,6 +50,7 @@ public abstract class GameCharacter {
 	
 	protected float runTime;
 	protected float ambientLightValue;
+	private int nextBrightTime;
 
 	GameCharacter(String type, int id, GameWorld gWorld, boolean isPlayer) {
 		this.isPlayer = isPlayer;
@@ -70,6 +71,7 @@ public abstract class GameCharacter {
 		ambientLightValue = 0.05f;
 		rayHandler.setAmbientLight(ambientLightValue);
 		runTime = 0;
+		nextBrightTime = 10000;
 
 	}
 
@@ -163,6 +165,7 @@ public abstract class GameCharacter {
 	public void addWeapon(Weapon weapon) {
 		this.weapon = weapon;
 		weaponChange = true;
+		weaponUses = 3;
 	}
 
 	public Weapon getWeapon() {
@@ -237,8 +240,11 @@ public abstract class GameCharacter {
 			if (ability != null) {
 				ability.update();
 			}
-			if (stun)
+			if (stun){
 				stunDuration.update();
+				if (!stunDuration.isCountingDown())
+					stun = false;
+			}
 		}
 	}
 
@@ -246,9 +252,10 @@ public abstract class GameCharacter {
 		if (isPlayer) {
 			runTime += Gdx.graphics.getRawDeltaTime();
 
-			if (runTime % 5.0 < 0.02) {
-				ambientLightValue += 0.005;
+			if (runTime > nextBrightTime) {
+				ambientLightValue += 0.008;
 				rayHandler.setAmbientLight(ambientLightValue);
+				nextBrightTime += 10000;
 			}
 
 			if (checkMovable()) {

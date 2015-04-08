@@ -49,9 +49,10 @@ public class ObstaclesHandler {
 	 * @return location of obstacle.
 	 */
 	public synchronized Location destroyObstacle() {
+		System.out.println("OBSTACLES LIST SIZE: " + obstacleLocations.size());
 		if (obstacleLocations.size() == 1) {
 			location = obstacleLocations.get(0);
-			obstacleLocations.remove(index);
+			obstacleLocations.remove(0);
 		} else if (obstacleLocations.size() > 1) {
 			index = randInt.nextInt(obstacleLocations.size() - 1) + 1;
 			location = obstacleLocations.get(index);
