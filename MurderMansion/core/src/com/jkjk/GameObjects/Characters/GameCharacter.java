@@ -51,6 +51,8 @@ public abstract class GameCharacter {
 	protected float runTime;
 	protected float ambientLightValue;
 	private int nextBrightTime;
+	private long startTime;
+	private long brightTime;
 
 	GameCharacter(String type, int id, GameWorld gWorld, boolean isPlayer) {
 		this.isPlayer = isPlayer;
@@ -71,6 +73,8 @@ public abstract class GameCharacter {
 		ambientLightValue = 0.05f;
 		rayHandler.setAmbientLight(ambientLightValue);
 		runTime = 0;
+		startTime = System.currentTimeMillis();
+		brightTime = 0;
 		nextBrightTime = 10000;
 
 	}
@@ -242,16 +246,20 @@ public abstract class GameCharacter {
 			if (ability != null) {
 				ability.update();
 			}
-			if (stun)
+			if (stun){
 				stunDuration.update();
+				if (!stunDuration.isCountingDown())
+					stun = false;
+			}
 		}
 	}
 
 	public void render(OrthographicCamera cam, SpriteBatch batch) {
 		if (isPlayer) {
-			runTime += Gdx.graphics.getRawDeltaTime();
-
-			if (runTime > nextBrightTime) {
+			brightTime = System.currentTimeMillis() - startTime;
+			
+			if (brightTime > nextBrightTime) {
+				System.out.println("BRIGHTER!");
 				ambientLightValue += 0.008;
 				rayHandler.setAmbientLight(ambientLightValue);
 				nextBrightTime += 10000;
