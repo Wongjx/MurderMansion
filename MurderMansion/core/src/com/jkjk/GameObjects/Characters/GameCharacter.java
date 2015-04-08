@@ -56,7 +56,7 @@ public abstract class GameCharacter {
 
 	GameCharacter(String type, int id, GameWorld gWorld, boolean isPlayer) {
 		this.isPlayer = isPlayer;
-		maxVelocity = 64;
+		maxVelocity = 56;
 		weaponUses = 3;
 		touchpad = AssetLoader.touchpad;
 		stunDuration = new Duration(5000);
@@ -250,7 +250,7 @@ public abstract class GameCharacter {
 			
 			if (brightTime > nextBrightTime) {
 				System.out.println("BRIGHTER!");
-				ambientLightValue += 0.008;
+				ambientLightValue += 0.009;
 				rayHandler.setAmbientLight(ambientLightValue);
 				nextBrightTime += 10000;
 			}

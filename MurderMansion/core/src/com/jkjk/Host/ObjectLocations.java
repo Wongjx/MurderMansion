@@ -123,10 +123,10 @@ public class ObjectLocations implements Subject{
 		}
 	}	
 	// Public produce method to be used for GHOST
-	public void produceItem(Location location,int origin) {
+	public void produceItemGhost(Location location, int origin) {
 		synchronized (itemLocations) {
 			message="item_"+SERVER_ID+"_pro_"+Float.toString(location.get()[0])+"_"+Float.toString(location.get()[1]);
-			updateAll(SERVER_ID);
+			updateAll(origin);
 		}
 	}
 	private void produceWeapon(Location location) {
@@ -137,10 +137,10 @@ public class ObjectLocations implements Subject{
 		}
 	}
 	// Public produce method to be used for GHOST
-	public void produceWeapon(Location location,int origin) {
+	public void produceWeaponGhost(Location location, int origin) {
 		synchronized (weaponLocations) {
 			message="weapon_"+SERVER_ID+"_pro_"+Float.toString(location.get()[0])+"_"+Float.toString(location.get()[1]);
-			updateAll(SERVER_ID);
+			updateAll(origin);
 		}
 	}
 	private void produceWeaponPart(Location location) {

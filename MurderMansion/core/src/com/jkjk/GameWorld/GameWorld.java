@@ -52,6 +52,7 @@ public class GameWorld {
 	private MMContactListener cl;
 
 	private Array<Body> itemsToRemove, weaponsToRemove, weaponPartsToRemove, trapToRemove;
+	private Array<Vector2> itemsToAdd, weaponsToAdd;
 	private Body bodyToRemove;
 
 	private float currentPositionX;
@@ -70,13 +71,15 @@ public class GameWorld {
 	 */
 	private GameWorld() {
 		world = new World(new Vector2(0, 0), true);
-		cl = new MMContactListener(this);
+		cl = MMContactListener.getInstance(this);
 		world.setContactListener(cl);
 
 		itemsToRemove = cl.getItemsToRemove();
 		weaponsToRemove = cl.getWeaponsToRemove();
 		weaponPartsToRemove = cl.getWeaponPartsToRemove();
 		trapToRemove = cl.getTrapToRemove();
+		itemsToAdd = new Array<Vector2>();
+		weaponsToAdd = new Array<Vector2>();
 
 		gameCharFac = new GameCharacterFactory();
 
@@ -201,10 +204,14 @@ public class GameWorld {
 			itemList.remove(bodyToRemove.getPosition());
 			world.destroyBody(bodyToRemove);
 			if (player.getType().equals("Murderer"))
-				player.addItem(itemFac.createItem("Trap", this));
+				player.addItem(itemFac.createItem("Trap", this,client));
 			else
-				player.addItem(itemFac.createItem("Disarm Trap", this));
+				player.addItem(itemFac.createItem("Disarm Trap", this,client));
 		}
+		for (int i = 0; i<itemsToAdd.size;i++){
+			client.produceItemLocation(itemsToAdd.get(i));
+		}
+		itemsToAdd.clear();
 		itemsToRemove.clear();
 	}
 
@@ -222,7 +229,11 @@ public class GameWorld {
 				player.addWeapon(weaponFac.createWeapon("Knife", this));
 			else
 				player.addWeapon(weaponFac.createWeapon("Bat", this));
+		}		
+		for (int i = 0; i<weaponsToAdd.size;i++){
+			client.produceWeaponLocation(weaponsToAdd.get(i));
 		}
+		weaponsToAdd.clear();
 		weaponsToRemove.clear();
 	}
 
@@ -366,6 +377,14 @@ public class GameWorld {
 
 	public void setInSafeArea(boolean inSafeArea) {
 		this.inSafeArea = inSafeArea;
+	}
+	
+	public Array<Vector2> getItemsToAdd(){
+		return itemsToAdd;
+	}
+	
+	public Array<Vector2> getWeaponsToAdd(){
+		return weaponsToAdd;
 	}
 
 }

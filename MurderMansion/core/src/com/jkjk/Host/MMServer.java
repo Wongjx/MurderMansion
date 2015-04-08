@@ -109,7 +109,7 @@ public class MMServer {
 		}
 
 		// Opens random door in mansion *TO BE IMPLEMENTED
-		if (runTime > nextObstacleRemoveTime && obstaclesHandler.getObstacles().size() >= 0) {
+		if (runTime > nextObstacleRemoveTime && obstaclesHandler.getObstacles().size() > 0) {
 			System.out.println("OBSTACLE DESTROYED!");
 			obstacleDestroyed = obstaclesHandler.destroyObstacle().get();
 			System.out.println("At x:"+obstacleDestroyed[0]+" y: "+obstacleDestroyed[1]);
@@ -344,7 +344,13 @@ public class MMServer {
 		} else if (msg[0].equals("ang")) {
 			float angle = Float.parseFloat(msg[2]);
 			playerStats.updateAngle(Integer.parseInt(msg[1]), angle);
-		}  else if (msg[0].equals("safe")) {
+		}  else if (msg[0].equals("type")) {
+			playerStats.updateType(Integer.parseInt(msg[1]), Integer.parseInt(msg[2]), Integer.parseInt(msg[3]));
+		} else if (msg[0].equals("alive")) {
+			playerStats.updateIsAlive(Integer.parseInt(msg[1]), Integer.parseInt(msg[2]), Integer.parseInt(msg[3]));
+		} else if (msg[0].equals("stun")) {
+			playerStats.updateIsStun(Integer.parseInt(msg[1]), Integer.parseInt(msg[2]), Integer.parseInt(msg[3]));
+		}else if (msg[0].equals("safe")) {
 			System.out.println("Player "+msg[1]+"is safe.");
 			playerStats.updateIsInSafeRegion(Integer.parseInt(msg[1]), Integer.parseInt(msg[2]));
 		}	else if (msg[0].equals("useItem")) {
@@ -359,10 +365,14 @@ public class MMServer {
 		else if (msg[0].equals("item")) {
 			if (msg[2].equals("con")) {
 				objectLocations.consumeItem(new Location(new float[] { Float.parseFloat(msg[3]), Float.parseFloat(msg[4]) }),Integer.parseInt(msg[1]));
+			} else if (msg[2].equals("pro")) {
+				objectLocations.produceItemGhost(new Location(new float[] { Float.parseFloat(msg[3]), Float.parseFloat(msg[4]) }),Integer.parseInt(msg[1]));
 			}
 		} else if (msg[0].equals("weapon")) {
 			if (msg[2].equals("con")) {
 				objectLocations.consumeWeapon(new Location(new float[] { Float.parseFloat(msg[3]), Float.parseFloat(msg[4]) }),Integer.parseInt(msg[1]));
+			} else if (msg[2].equals("pro")) {
+				objectLocations.produceWeaponGhost(new Location(new float[] { Float.parseFloat(msg[3]), Float.parseFloat(msg[4]) }),Integer.parseInt(msg[1]));
 			}
 		} else if (msg[0].equals("weaponpart")) {
 			if (msg[2].equals("con")) {
