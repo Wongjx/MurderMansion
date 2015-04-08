@@ -44,6 +44,7 @@ public class HudRenderer {
 
 	private float x, y;
 	private ImageButton weaponButton, itemButton, dashButton, disguiseToCiv, disguiseToMur, hauntButton;
+	private boolean clickable;
 
 	private SpriteBatch batch;
 	private OrthographicCamera hudCam;
@@ -157,8 +158,10 @@ public class HudRenderer {
 		batch.draw(weapon_parts_counter, 480, 235);
 		batch.draw(emptySlot, 480, 22, 120, 120);
 		font.draw(batch, getTime(), 75, 330);
-		coolDownAnimationCheck();
-		
+		if(player.getType().equals("Civillian")||player.getType().equals("Murderer")){
+			coolDownAnimationCheck();
+			prohibitButtonsCheck();
+		}
 		batch.end();
 
 		if (gWorld.getPlayer().getItemChange())
@@ -214,14 +217,24 @@ public class HudRenderer {
 	 * Handles the cool down animations of the item slots
 	 */
 	private void coolDownAnimationCheck(){
-		if(WeaponsCD == true && player.getWeapon()!=null){
-			WeaponsAnimationRunTime += Gdx.graphics.getRawDeltaTime();
-			if(WeaponsCoolDownAnimation.isAnimationFinished(WeaponsAnimationRunTime)){
-				WeaponsAnimationRunTime = 0f;
+		if(player.getType().equals("Murderer")){
+			if (((Murderer)player).isDisguised()==true){
 				WeaponsCD = false;
 			}
+		}
+		if(WeaponsCD == true){
+			if(player.getWeapon()!=null){
+				WeaponsAnimationRunTime += Gdx.graphics.getRawDeltaTime();
+				if(WeaponsCoolDownAnimation.isAnimationFinished(WeaponsAnimationRunTime)){
+					WeaponsAnimationRunTime = 0f;
+					WeaponsCD = false;
+				}
+				else{
+					batch.draw(WeaponsCoolDownAnimation.getKeyFrame(WeaponsAnimationRunTime),477,25,72,72);
+				}
+			}
 			else{
-				batch.draw(WeaponsCoolDownAnimation.getKeyFrame(WeaponsAnimationRunTime),477,25,72,72);
+				WeaponsCD = false;
 			}
 		}
 		if(PanicCD == true){
@@ -245,6 +258,14 @@ public class HudRenderer {
 			}
 		}
 	
+	}
+	
+	private void prohibitButtonsCheck(){
+		if(player.getType().equals("Murderer")){
+			if (((Murderer)player).isDisguised()==true){
+				batch.draw(AssetLoader.prohibitedButton,477,25,72,72);
+			}
+		}
 	}
 
 	/**

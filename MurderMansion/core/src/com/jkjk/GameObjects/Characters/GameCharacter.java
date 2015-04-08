@@ -125,16 +125,6 @@ public abstract class GameCharacter {
 
 	public void stun(boolean stun) {
 		this.stun = stun;
-//		if(type.equals("Murderer")&&){
-//			if(id%AssetLoader.NUM_CIVILIAN_TEXTURES==2){
-//				body.setUserData(AssetLoader.civStunAnimation2);
-//			}
-//			//body.setUserData(AssetLoader.murStunAnimation);
-//		}
-//		else{
-//			body.setUserData(AssetLoader.civStunAnimation);
-//		}
-//		stunDuration.startCountdown();
 	}
 
 	public boolean isStun() {

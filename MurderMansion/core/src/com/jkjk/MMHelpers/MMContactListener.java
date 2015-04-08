@@ -24,8 +24,7 @@ public class MMContactListener implements ContactListener {
 	private Array<Body> weaponsToRemove;
 	private Array<Body> trapToRemove;
 	private Array<Body> weaponPartsToRemove;
-	private Array<Body> bodiesToDraw; // later between batch.start() and batch.end(), draw only items in this
-										// array.
+
 	private GameWorld gWorld;
 	private boolean atStairs;
 	private String stairsName;
@@ -35,7 +34,6 @@ public class MMContactListener implements ContactListener {
 		weaponsToRemove = new Array<Body>();
 		weaponPartsToRemove = new Array<Body>();
 		trapToRemove = new Array<Body>();
-		bodiesToDraw = new Array<Body>();
 		this.gWorld = gWorld;
 		atStairs = false;
 		stairsName = null;
