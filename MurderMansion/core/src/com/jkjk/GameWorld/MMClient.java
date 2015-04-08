@@ -199,7 +199,6 @@ public class MMClient {
 				new Obstacles(gWorld, new Vector2(915.2f, 511.8f), 0));
 		gWorld.getObstacleList().put(new Vector2(875.2f, 511.8f),
 				new Obstacles(gWorld, new Vector2(875.2f, 511.8f), 1));
-<<<<<<< HEAD
 		ItemSprite temporaryItem = new ItemSprite(gWorld);
 		gWorld.getItemList().put(new Vector2(750f,511.8f), temporaryItem);
 		temporaryItem.spawn(750f, 511.8f, 0);
@@ -210,7 +209,6 @@ public class MMClient {
 		for(int i=0; i<8; i++){
 			createWeaponParts(600+(20*i), 490);
 		}
-=======
 		// CREATING ITEMSPRITE FOR DEBUG PURPOSE
 		ItemSprite is = new ItemSprite(gWorld);
 		Vector2 location = new Vector2(750, 511.8f);
@@ -221,7 +219,6 @@ public class MMClient {
 		Vector2 location2 = new Vector2(750, 450.8f);
 		gWorld.getWeaponList().put(location2, ws);
 		ws.spawn(location2.x, location2.y, 0);
->>>>>>> 78bbfc02ae25437dca8e84c60ac36c25732d752f
 	}
 
 	public static MMClient getInstance(GameWorld gWorld, GameRenderer renderer, String serverAddress,
@@ -278,7 +275,7 @@ public class MMClient {
 			if (i == id) {
 				// If self
 				if (i == murdererId) {
-					playerType.put("Player " + i, 0);
+					playerType.put("Player " + i, 1);
 				} else {
 					playerType.put("Player " + i, 1);
 				}

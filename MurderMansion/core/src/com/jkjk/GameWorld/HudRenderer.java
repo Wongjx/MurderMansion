@@ -215,7 +215,7 @@ public class HudRenderer {
 	 * Handles the cool down animations of the item slots
 	 */
 	private void coolDownAnimationCheck(){
-		if(WeaponsCD == true){
+		if(WeaponsCD == true && player.getWeapon()!=null){
 			WeaponsAnimationRunTime += Gdx.graphics.getRawDeltaTime();
 			if(WeaponsCoolDownAnimation.isAnimationFinished(WeaponsAnimationRunTime)){
 				WeaponsAnimationRunTime = 0f;
@@ -484,12 +484,12 @@ public class HudRenderer {
 		x = 505;
 		y = 40;
 
-		itemButton = new ImageButton(mur_knife);
-		itemButton.setX(x);
-		itemButton.setY(y);
-		itemButton.setName("Weapon Button");
+		weaponButton = new ImageButton(mur_knife);
+		weaponButton.setX(x);
+		weaponButton.setY(y);
+		weaponButton.setName("Weapon Button");
 
-		itemButton.addListener(new ClickListener() {
+		weaponButton.addListener(new ClickListener() {
 			@Override
 			public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
 				System.out.println("Knife button touch down, draw hitbox");
@@ -504,23 +504,24 @@ public class HudRenderer {
 			}
 		});
 
-		return itemButton;
+		return weaponButton;
 	}
 
 	/**
-	 * Creates the actor for the trap slot at 567,43.
+	 * Creates the actor for the trap slot at 546,43.
 	 * 
 	 * @return Actor for Trap slot
 	 */
 	public ImageButton getTrap() {
 
-		x = 540;
-		y = 40;
+		x = 546;
+		y = 43;
 
 		itemButton = new ImageButton(mur_item);
 		itemButton.setX(x);
 		itemButton.setY(y);
 		itemButton.setName("Item Button");
+		itemButton.setSize(40, 40);
 
 		itemButton.addListener(new ClickListener() {
 			@Override
