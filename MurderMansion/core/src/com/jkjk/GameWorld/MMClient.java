@@ -285,7 +285,7 @@ public class MMClient {
 			if (i == id) {
 				// If self
 				if (i == murdererId) {
-					playerType.put("Player " + i, 0);
+					playerType.put("Player " + i, 2);
 				} else {
 					playerType.put("Player " + i, 1);
 				}
@@ -339,6 +339,16 @@ public class MMClient {
 						 */
 		updatePlayerLocation();
 		updatePlayerIsinSafeArea();
+	}
+	
+	public void produceItemLocation(Vector2 position) {
+		clientOutput.println("item_" + id + "_pro_" + Float.toString(position.x) + "_"
+				+ Float.toString(position.y));
+	}
+	
+	public void produceWeaponLocation(Vector2 position) {
+		clientOutput.println("weapon_" + id + "_pro_" + Float.toString(position.x) + "_"
+				+ Float.toString(position.y));
 	}
 
 	/**

@@ -359,10 +359,14 @@ public class MMServer {
 		else if (msg[0].equals("item")) {
 			if (msg[2].equals("con")) {
 				objectLocations.consumeItem(new Location(new float[] { Float.parseFloat(msg[3]), Float.parseFloat(msg[4]) }),Integer.parseInt(msg[1]));
+			} else if (msg[2].equals("pro")) {
+				objectLocations.produceItemGhost(new Location(new float[] { Float.parseFloat(msg[3]), Float.parseFloat(msg[4]) }),Integer.parseInt(msg[1]));
 			}
 		} else if (msg[0].equals("weapon")) {
 			if (msg[2].equals("con")) {
 				objectLocations.consumeWeapon(new Location(new float[] { Float.parseFloat(msg[3]), Float.parseFloat(msg[4]) }),Integer.parseInt(msg[1]));
+			} else if (msg[2].equals("pro")) {
+				objectLocations.produceWeaponGhost(new Location(new float[] { Float.parseFloat(msg[3]), Float.parseFloat(msg[4]) }),Integer.parseInt(msg[1]));
 			}
 		} else if (msg[0].equals("weaponpart")) {
 			if (msg[2].equals("con")) {

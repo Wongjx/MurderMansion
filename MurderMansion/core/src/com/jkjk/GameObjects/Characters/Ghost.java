@@ -14,6 +14,7 @@ import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.jkjk.GameObjects.Items.ItemSprite;
 import com.jkjk.GameObjects.Weapons.WeaponSprite;
 import com.jkjk.GameWorld.GameWorld;
+import com.jkjk.GameWorld.MMClient;
 import com.jkjk.MMHelpers.AssetLoader;
 
 public class Ghost extends GameCharacter {
@@ -62,19 +63,7 @@ public class Ghost extends GameCharacter {
 		// (float) (body.getAngle()*180/Math.PI)-90);
 		batch.end();
 
-		rayHandler.setCombinedMatrix(cam.combined);
-		rayHandler.updateAndRender();
-
-		if (isPlayer()) {
-			if (checkMovable()) {
-				playerMovement();
-			} else {
-				body.setAngularVelocity(0);
-				body.setLinearVelocity(0, 0);
-			}
-
-			cam.position.set(body.getPosition(), 0); // Set cam position to be on player
-		}
+		super.render(cam, batch);
 
 	}
 
@@ -89,18 +78,19 @@ public class Ghost extends GameCharacter {
 		WeaponSprite ws = new WeaponSprite(gWorld);
 		gWorld.getWeaponList().put(spawnLocation, ws);
 		ws.spawn(spawnLocation.x, spawnLocation.y, 0);
+		gWorld.getWeaponsToAdd().add(spawnLocation);
 		weapon = null;
 		weaponChange = true;
 	}
 
 	@Override
 	public void useItem() {
-		System.out.println("AM I HERE?");
 		spawnLocation = new Vector2(body.getPosition().x + (float) (25f * Math.cos(body.getAngle())),
 				body.getPosition().y + (float) (25f * Math.sin(body.getAngle())));
 		ItemSprite is = new ItemSprite(gWorld);
 		gWorld.getItemList().put(spawnLocation, is);
 		is.spawn(spawnLocation.x, spawnLocation.y, 0);
+		gWorld.getItemsToAdd().add(spawnLocation);
 		item = null;
 		itemChange = true;
 	}
