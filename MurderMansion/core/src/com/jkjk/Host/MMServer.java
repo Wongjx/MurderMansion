@@ -344,7 +344,13 @@ public class MMServer {
 		} else if (msg[0].equals("ang")) {
 			float angle = Float.parseFloat(msg[2]);
 			playerStats.updateAngle(Integer.parseInt(msg[1]), angle);
-		}  else if (msg[0].equals("safe")) {
+		}  else if (msg[0].equals("type")) {
+			playerStats.updateType(Integer.parseInt(msg[1]), Integer.parseInt(msg[2]), Integer.parseInt(msg[3]));
+		} else if (msg[0].equals("alive")) {
+			playerStats.updateIsAlive(Integer.parseInt(msg[1]), Integer.parseInt(msg[2]), Integer.parseInt(msg[3]));
+		} else if (msg[0].equals("stun")) {
+			playerStats.updateIsStun(Integer.parseInt(msg[1]), Integer.parseInt(msg[2]), Integer.parseInt(msg[3]));
+		}else if (msg[0].equals("safe")) {
 			System.out.println("Player "+msg[1]+"is safe.");
 			playerStats.updateIsInSafeRegion(Integer.parseInt(msg[1]), Integer.parseInt(msg[2]));
 		}	else if (msg[0].equals("useItem")) {
