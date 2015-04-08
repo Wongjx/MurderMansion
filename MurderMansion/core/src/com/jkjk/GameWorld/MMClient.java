@@ -59,6 +59,7 @@ public class MMClient {
 	private int id;
 	private int murdererId;
 	private ArrayList<GameCharacter> playerList;
+	private long lastUpdated;
 
 	private final ConcurrentHashMap<String, Integer> playerIsAlive; // If 1 ->true; If 0 -> false;
 	private final ConcurrentHashMap<String, Integer> playerIsStun; // If 1 -> true; If 0 -> false;
@@ -102,6 +103,9 @@ public class MMClient {
 
 		// Connect to server
 		initClientSocket(this.serverAddress, this.serverPort);
+		
+		//Set cuurent time to last updated time
+		this.lastUpdated = System.currentTimeMillis();
 
 		// Receive initialzation parameters
 		numOfPlayers = Integer.parseInt(clientInput.readLine());
@@ -375,6 +379,9 @@ public class MMClient {
 	 * 
 	 */
 	private void updatePlayerLocation() {
+		if (System.currentTimeMillis()-lastUpdated <= 20){
+			return;
+			}
 		// Get player postion
 		float angle = gWorld.getPlayer().getBody().getAngle();
 		float[] position = { gWorld.getPlayer().getBody().getPosition().x,
@@ -388,6 +395,7 @@ public class MMClient {
 			clientOutput.println("loc_" + id + "_" + Float.toString(position[0]) + "_"
 					+ Float.toString(position[1]) + "_" + Float.toString(angle));
 			clientOutput.flush();
+			lastUpdated=System.currentTimeMillis();
 		}
 	}
 
