@@ -19,6 +19,7 @@ public abstract class Weapon {
 		hitBoxExposure = new Duration(10);
 		this.gWorld = gWorld;
 		runTime = 0;
+		isCompleted = false;
 	}
 	
 	public String getName(){

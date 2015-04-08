@@ -60,10 +60,8 @@ public class WeaponPartSprite {
 
 	public void render(SpriteBatch batch) {
 		if (gWorld.getPlayer().lightContains(posX, posY)) {
-			batch.begin();
 			animationRunTime += Gdx.graphics.getRawDeltaTime();
 			batch.draw(shotgunPartSpriteAnimation.getKeyFrame(animationRunTime), posX-12, posY-12, 25, 25);
-			batch.end();
 		}
 	}
 	public Body getBody(){

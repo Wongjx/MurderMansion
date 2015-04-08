@@ -60,7 +60,6 @@ public class Civilian extends GameCharacter {
 		
 		if (gWorld.getPlayer().lightContains(body.getPosition().x, body.getPosition().y)) {
 			runTime += Gdx.graphics.getRawDeltaTime();
-			batch.setProjectionMatrix(cam.combined);
 			batch.begin();
 			currentAnimation = (Animation) body.getUserData();
 			if (currentAnimation == AssetLoader.civBatAnimation

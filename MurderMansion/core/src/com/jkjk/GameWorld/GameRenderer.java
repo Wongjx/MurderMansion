@@ -25,7 +25,7 @@ import com.jkjk.MMHelpers.AssetLoader;
  */
 public class GameRenderer {
 	private static GameRenderer instance;
-	
+
 	private GameWorld gWorld; // Box2D world. This will hold all objects (players, items, walls)
 	private OrthographicCamera cam; // Game camera. Views what is happening in the game.
 	private Box2DDebugRenderer b2dr; // Renders Box2D objects. (For debugging)
@@ -64,9 +64,9 @@ public class GameRenderer {
 		batch = new SpriteBatch();
 
 	}
-	
-	public static GameRenderer getInstance(GameWorld gWorld, float gameWidth, float gameHeight){
-		if (instance == null){
+
+	public static GameRenderer getInstance(GameWorld gWorld, float gameWidth, float gameHeight) {
+		if (instance == null) {
 			instance = new GameRenderer(gWorld, gameWidth, gameHeight);
 		}
 		return instance;
@@ -86,9 +86,12 @@ public class GameRenderer {
 		tiledMapRenderer.setView(cam);
 		tiledMapRenderer.render();
 
-		client.render(cam, batch);
+		batch.setProjectionMatrix(cam.combined);
 		
-		for (Obstacles ob: gWorld.getObstacleList().values()) {
+		client.render(cam, batch);
+		batch.begin();
+
+		for (Obstacles ob : gWorld.getObstacleList().values()) {
 			ob.render(batch);
 		}
 
@@ -103,15 +106,17 @@ public class GameRenderer {
 		for (WeaponPartSprite wPS : gWorld.getWeaponPartList().values()) {
 			wPS.render(batch);
 		}
-		
+
 		for (Trap trap : gWorld.getTrapList().values()) {
 			trap.render(batch);
 		}
 		
-		if (gWorld.getPlayer().isAlive()){
+		batch.end();
+		
+		if (gWorld.getPlayer().isAlive()) {
 			gWorld.getPlayer().render(cam, batch);
 		}
-		
+
 		cam.update(); // Update cam
 
 		b2dr.render(gWorld.getWorld(), cam.combined); // Renders box2d world
