@@ -285,7 +285,7 @@ public class MMClient {
 			if (i == id) {
 				// If self
 				if (i == murdererId) {
-					playerType.put("Player " + i, 2);
+					playerType.put("Player " + i, 0);
 				} else {
 					playerType.put("Player " + i, 1);
 				}
