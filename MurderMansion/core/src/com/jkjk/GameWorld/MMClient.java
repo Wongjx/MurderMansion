@@ -201,11 +201,7 @@ public class MMClient {
 		thread.start();
 
 
-		// CREATING OBSTACLES FOR DEBUG PURPOSE
-		gWorld.getObstacleList().put(new Vector2(915.2f, 511.8f),
-				new Obstacles(gWorld, new Vector2(915.2f, 511.8f), 0));
-		gWorld.getObstacleList().put(new Vector2(875.2f, 511.8f),
-				new Obstacles(gWorld, new Vector2(875.2f, 511.8f), 1));
+		// CREATE SPRITES FOR TESTING
 		ItemSprite temporaryItem = new ItemSprite(gWorld);
 		gWorld.getItemList().put(new Vector2(750f,511.8f), temporaryItem);
 		temporaryItem.spawn(750f, 511.8f, 0);
