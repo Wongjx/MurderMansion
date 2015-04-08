@@ -59,6 +59,8 @@ public class MMClient {
 	private int id;
 	private int murdererId;
 	private ArrayList<GameCharacter> playerList;
+	
+	private final long UPDATES_PER_SEC=50;
 	private long lastUpdated;
 
 	private final ConcurrentHashMap<String, Integer> playerIsAlive; // If 1 ->true; If 0 -> false;
@@ -389,7 +391,7 @@ public class MMClient {
 	 * 
 	 */
 	private void updatePlayerLocation() {
-		if (System.currentTimeMillis()-lastUpdated <= 20){
+		if (System.currentTimeMillis()-lastUpdated <= (1/UPDATES_PER_SEC*1000)){
 			return;
 			}
 		// Get player postion
@@ -416,6 +418,57 @@ public class MMClient {
 			clientOutput.flush();
 		}
 	}
+	
+	public void updateProduceTrap(float x,float y ){
+		//TODO update server about trap production
+		clientOutput.println("trap_"+id+"_pro_"+x+"_"+y);
+	}
+	
+	/** Update server about change in player's stun status
+	 * @param playerID ID of player status to change
+	 * @param value If 1 -> true; If 0 -> false;
+	 */
+	public void updatePlayerIsStun(int playerID, int value){
+		playerIsStun.put("Player "+id,value);
+		clientOutput.println("stun_"+id+"_"+playerID+"_"+value);
+	}
+	
+	/** Update server about change in player's alive status
+	 * @param playerID ID of player status to change
+	 * @param value If 1 -> true; If 0 -> false;
+	 */
+	public void updatePlayerIsAlive(int playerID, int value){
+		playerIsAlive.put("Player "+id,value);
+		clientOutput.println("alive_"+id+"_"+playerID+"_"+value);
+	}
+	
+	/** Update server about change in player's use item
+	 * @param playerID ID of player status to change
+	 * @param value If 1 -> true; If 0 -> false;
+	 */
+	public void updatePlayerUseItem(int playerID, int value){
+		playerUseItem.put("Player "+id,value);
+		clientOutput.println("alive_"+id+"_"+playerID+"_"+value);
+	}
+	
+	/** Update server about change in player's use weapon
+	 * @param playerID ID of player status to change
+	 * @param value If 1 -> true; If 0 -> false;
+	 */
+	public void updatePlayerUseWeapon(int playerID, int value){
+		playerUseWeapon.put("Player "+id,value);
+		clientOutput.println("alive_"+id+"_"+playerID+"_"+value);
+	}
+	
+	/** Update server about change in player's type
+	 * @param playerID ID of player status to change
+	 * @param value If 0 -> murderer; If 1 -> civilian; If 2-> Ghost;
+	 */
+	public void updatePlayerType (int playerID, int value){
+		playerType.put("Player "+id,value);
+		clientOutput.println("type_"+id+"_"+playerID+"_"+value);
+	}
+
 
 	/**
 	 * Renders the GameRenderer with other player's move.

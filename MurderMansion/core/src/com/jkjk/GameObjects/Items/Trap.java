@@ -10,10 +10,12 @@ import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
 import com.badlogic.gdx.physics.box2d.CircleShape;
 import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.jkjk.GameWorld.GameWorld;
+import com.jkjk.GameWorld.MMClient;
 import com.jkjk.MMHelpers.AssetLoader;
 
 public class Trap extends Item {
-
+	private MMClient client;
+	
 	private BodyDef bdef;
 	private Body body;
 	private FixtureDef fdef;
@@ -22,8 +24,9 @@ public class Trap extends Item {
 	private Animation plantedTrapAnimation;
 	private float animationRunTime;
 
-	Trap(GameWorld gWorld) {
+	Trap(GameWorld gWorld,MMClient client) {
 		super(gWorld);
+		this.client=client;
 		bdef = new BodyDef();
 		fdef = new FixtureDef();
 		
@@ -72,6 +75,7 @@ public class Trap extends Item {
 		fdef.filter.maskBits = 1;
 
 		body.createFixture(fdef).setUserData("trap");
+		client.updateProduceTrap(playerPosition.x,playerPosition.y);
 		gWorld.getTrapList().put(body.getPosition(), this);
 		isCompleted = true;
 	}

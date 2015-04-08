@@ -204,9 +204,9 @@ public class GameWorld {
 			itemList.remove(bodyToRemove.getPosition());
 			world.destroyBody(bodyToRemove);
 			if (player.getType().equals("Murderer"))
-				player.addItem(itemFac.createItem("Trap", this));
+				player.addItem(itemFac.createItem("Trap", this,client));
 			else
-				player.addItem(itemFac.createItem("Disarm Trap", this));
+				player.addItem(itemFac.createItem("Disarm Trap", this,client));
 		}
 		for (int i = 0; i<itemsToAdd.size;i++){
 			client.produceItemLocation(itemsToAdd.get(i));
