@@ -14,7 +14,7 @@ import com.jkjk.GameWorld.MMClient;
 import com.jkjk.MMHelpers.AssetLoader;
 
 public class Trap extends Item {
-	private MMClient client;
+	public MMClient client;
 
 	private BodyDef bdef;
 	private Body body;
@@ -59,22 +59,23 @@ public class Trap extends Item {
 	}
 
 	public void spawn(float x, float y, float angle) {
-
-		bdef.type = BodyType.StaticBody;
-		bdef.position.set(x, y);
-		body = gWorld.getWorld().createBody(bdef);
-
-		CircleShape shape = new CircleShape();
-		shape.setRadius(10);
-		if (angle != 0)
-			shape.setPosition(new Vector2((float) (25f * Math.cos(angle)), (float) (25f * Math.sin(angle))));
-		fdef.shape = shape;
-		fdef.isSensor = true;
-		fdef.filter.maskBits = 1;
-
-		body.createFixture(fdef).setUserData("trap");
-		client.produceTrapLocation(body.getPosition().x,body.getPosition().y);
-		gWorld.getTrapList().put(body.getPosition(), this);
+		Gdx.app.postRunnable(new spawnRun(this,x,y,angle));
+		
+//		bdef.type = BodyType.StaticBody;
+//		bdef.position.set(x, y);
+//		body = gWorld.getWorld().createBody(bdef);
+//
+//		CircleShape shape = new CircleShape();
+//		shape.setRadius(10);
+//		if (angle != 0)
+//			shape.setPosition(new Vector2((float) (25f * Math.cos(angle)), (float) (25f * Math.sin(angle))));
+//		fdef.shape = shape;
+//		fdef.isSensor = true;
+//		fdef.filter.maskBits = 1;
+//
+//		body.createFixture(fdef).setUserData("trap");
+//		client.produceTrapLocation(body.getPosition().x,body.getPosition().y);
+//		gWorld.getTrapList().put(body.getPosition(), this);
 	}
 
 	public void render(SpriteBatch batch) {
@@ -85,4 +86,69 @@ public class Trap extends Item {
 		}
 	}
 
+	public BodyDef getBdef() {
+		return bdef;
+	}
+
+	public void setBdef(BodyDef bdef) {
+		this.bdef = bdef;
+	}
+
+	public Body getBody() {
+		return body;
+	}
+
+	public void setBody(Body body) {
+		this.body = body;
+	}
+
+	public FixtureDef getFdef() {
+		return fdef;
+	}
+
+	public void setFdef(FixtureDef fdef) {
+		this.fdef = fdef;
+	}
+}
+
+
+class spawnRun implements Runnable{
+	private Trap trap;
+	private BodyDef bdef;
+	private Body body;
+	private FixtureDef fdef;
+	private float x;
+	private float y;
+	private float angle;
+	
+	spawnRun(Trap trap, float x, float y, float angle){
+		this.trap=trap;
+		this.bdef=trap.getBdef();
+		this.fdef=trap.getFdef();
+		this.body=trap.getBody();
+		this.x=x;
+		this.y=y;
+		this.angle=angle;
+	}
+	
+	@Override
+	public void run() {
+		// TODO Auto-generated method stub
+		bdef.type = BodyType.StaticBody;
+		bdef.position.set(x, y);
+		body = trap.gWorld.getWorld().createBody(bdef);
+
+		CircleShape shape = new CircleShape();
+		shape.setRadius(10);
+		if (angle != 0)
+			shape.setPosition(new Vector2((float) (25f * Math.cos(angle)), (float) (25f * Math.sin(angle))));
+		fdef.shape = shape;
+		fdef.isSensor = true;
+		fdef.filter.maskBits = 1;
+
+		body.createFixture(fdef).setUserData("trap");
+		trap.client.produceTrapLocation(body.getPosition().x,body.getPosition().y);
+		trap.gWorld.getTrapList().put(body.getPosition(), trap);
+	}
+	
 }
