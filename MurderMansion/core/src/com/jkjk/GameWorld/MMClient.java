@@ -782,10 +782,8 @@ public class MMClient {
 		
 		else if (msg[0].equals("win")){
 			if (msg[1].equals("civilian")){
-				System.out.println("CIVILIAN WINS!");
 				gWorld.setGameOver(true);
 			} else if (msg[1].equals("murderer")){
-				System.out.println("MURDERER WINS!");
 				gWorld.setGameOver(true);
 			}
 		}

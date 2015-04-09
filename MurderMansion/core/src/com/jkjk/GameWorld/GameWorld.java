@@ -143,8 +143,9 @@ public class GameWorld {
 		}
 		
 		if (gameOver){
+			gameOverTimer.update();
 			if (!gameOverTimer.isCountingDown()){
-				System.out.println("GAMEWORLD UPDATE: GAMEOVER COMPLETE");
+//				System.out.println("GAMEWORLD UPDATE: GAMEOVER COMPLETE");
 			}
 		}
 
