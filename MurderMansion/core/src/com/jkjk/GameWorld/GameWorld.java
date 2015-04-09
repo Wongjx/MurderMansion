@@ -4,6 +4,8 @@ import java.util.HashMap;
 
 import net.dermetfan.gdx.physics.box2d.Box2DMapObjectParser;
 
+import box2dLight.RayHandler;
+
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
@@ -33,6 +35,7 @@ public class GameWorld {
 
 	private GameCharacterFactory gameCharFac;
 	private GameCharacter player;
+	private RayHandler rayHandler;
 
 	private ItemFactory itemFac;
 	private HashMap<Vector2, ItemSprite> itemList;
@@ -82,6 +85,7 @@ public class GameWorld {
 		weaponsToAdd = new Array<Vector2>();
 
 		gameCharFac = new GameCharacterFactory();
+		rayHandler = new RayHandler(world);
 
 		itemFac = new ItemFactory();
 		itemList = new HashMap<Vector2, ItemSprite>();
@@ -385,6 +389,10 @@ public class GameWorld {
 	
 	public Array<Vector2> getWeaponsToAdd(){
 		return weaponsToAdd;
+	}
+
+	public RayHandler getRayHandler() {
+		return rayHandler;
 	}
 
 }
