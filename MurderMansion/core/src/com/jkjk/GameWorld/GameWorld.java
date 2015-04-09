@@ -224,6 +224,7 @@ public class GameWorld {
 			else
 				player.addItem(itemFac.createItem("Disarm Trap", this,client));
 		}
+		
 		for (int i = 0; i<itemsToAdd.size;i++){
 			client.produceItemLocation(itemsToAdd.get(i));
 		}

@@ -1,0 +1,9 @@
+diff a/MurderMansion/core/src/com/jkjk/GameObjects/Items/Trap.java b/MurderMansion/core/src/com/jkjk/GameObjects/Items/Trap.java	(rejected hunks)
+@@ -40,6 +40,7 @@
+ +		this.bdef = bdef;
+ +		this.fdef = fdef;
+ +
+++=======
+  	
+  	public Trap(GameWorld gWorld, BodyDef bdef,FixtureDef fdef, Body body){
+  		super(gWorld);

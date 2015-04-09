@@ -159,7 +159,7 @@ public class ObjectLocations implements Subject{
 	public void produceTrap(Location location,int origin) throws InterruptedException {
 		synchronized (trapLocations) {
 			trapLocations.produce(location);
-			message="trap"+origin+"_pro_"+Float.toString(location.get()[0])+"_"+Float.toString(location.get()[1]);
+			message="trap_"+origin+"_pro_"+Float.toString(location.get()[0])+"_"+Float.toString(location.get()[1]);
 			updateAll(origin);
 		}
 	}

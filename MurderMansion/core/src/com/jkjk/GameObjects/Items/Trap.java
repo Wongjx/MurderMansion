@@ -24,7 +24,7 @@ public class Trap extends Item {
 	private Animation plantedTrapAnimation;
 	private float animationRunTime;
 
-	Trap(GameWorld gWorld, MMClient client) {
+	public Trap(GameWorld gWorld, MMClient client) {
 		super(gWorld);
 		this.client = client;
 		bdef = new BodyDef();
@@ -33,17 +33,7 @@ public class Trap extends Item {
 		plantedTrapAnimation = AssetLoader.plantedTrapAnimation;
 		animationRunTime = 0;
 	}
-
-	public Trap(GameWorld gWorld, BodyDef bdef, FixtureDef fdef) {
-		super(gWorld);
-		this.bdef = bdef;
-		this.fdef = fdef;
-
-		plantedTrapAnimation = AssetLoader.plantedTrapAnimation;
-		animationRunTime = 0;
-
-	}
-
+	
 	@Override
 	public void startUse() {
 		System.out.println("Used trap");
@@ -83,7 +73,7 @@ public class Trap extends Item {
 		fdef.filter.maskBits = 1;
 
 		body.createFixture(fdef).setUserData("trap");
-		client.updateProduceTrap(playerPosition.x, playerPosition.y);
+		client.produceTrapLocation(body.getPosition().x,body.getPosition().y);
 		gWorld.getTrapList().put(body.getPosition(), this);
 	}
 
