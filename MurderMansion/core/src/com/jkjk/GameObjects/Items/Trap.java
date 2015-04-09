@@ -34,7 +34,7 @@ public class Trap extends Item implements Poolable {
 		plantedTrapAnimation = AssetLoader.plantedTrapAnimation;
 		animationRunTime = 0;
 	}
-	
+
 	@Override
 	public void startUse() {
 		System.out.println("Used trap");
@@ -55,6 +55,7 @@ public class Trap extends Item implements Poolable {
 		playerAngle = gWorld.getPlayer().getBody().getAngle();
 
 		spawn(playerPosition.x, playerPosition.y, playerAngle);
+		client.produceTrapLocation(body.getPosition().x, body.getPosition().y);
 
 		isCompleted = true;
 	}
@@ -62,19 +63,20 @@ public class Trap extends Item implements Poolable {
 	public void spawn(float x, float y, float angle) {
 
 		bdef.type = BodyType.StaticBody;
-		bdef.position.set(x, y);
+		if (angle != 0) {
+			bdef.position.set(x, y);
+		} else {
+			bdef.position.set(x + (float) (25f * Math.cos(angle)), y + (float) (25f * Math.sin(angle)));
+		}
 		body = gWorld.getWorld().createBody(bdef);
 
 		CircleShape shape = new CircleShape();
 		shape.setRadius(10);
-		if (angle != 0)
-			shape.setPosition(new Vector2((float) (25f * Math.cos(angle)), (float) (25f * Math.sin(angle))));
 		fdef.shape = shape;
 		fdef.isSensor = true;
 		fdef.filter.maskBits = 1;
 
 		body.createFixture(fdef).setUserData("trap");
-		client.produceTrapLocation(body.getPosition().x,body.getPosition().y);
 		gWorld.getTrapList().put(body.getPosition(), this);
 	}
 
@@ -86,7 +88,9 @@ public class Trap extends Item implements Poolable {
 		}
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see com.badlogic.gdx.utils.Pool.Poolable#reset()
 	 */
 	@Override
