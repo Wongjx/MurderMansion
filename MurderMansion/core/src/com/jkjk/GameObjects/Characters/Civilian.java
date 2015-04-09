@@ -1,6 +1,7 @@
 package com.jkjk.GameObjects.Characters;
 
 import box2dLight.ConeLight;
+import box2dLight.Light;
 import box2dLight.PointLight;
 
 import com.badlogic.gdx.Gdx;
@@ -56,7 +57,7 @@ public class Civilian extends GameCharacter {
 		// Create Light for player
 		coneLight = new ConeLight(rayHandler, 100, null, 140, 0, 0, 0, 40);
 		coneLight.attachToBody(body, 0, 0);
-		ConeLight.setContactFilter((short) 2, (short) 2, (short) 1);
+		Light.setContactFilter((short) 2, (short) 2, (short) 1);
 		pointLight = new PointLight(rayHandler, 100, null, 30, 0, 0);
 		pointLight.attachToBody(body);
 		
