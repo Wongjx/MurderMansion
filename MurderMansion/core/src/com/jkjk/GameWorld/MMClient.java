@@ -102,6 +102,9 @@ public class MMClient {
 
 		this.serverAddress = serverAddress;
 		this.serverPort = serverPort;
+		
+		this.bdef = new BodyDef();
+		this.fdef = new FixtureDef();
 
 		// Connect to server
 		initClientSocket(this.serverAddress, this.serverPort);
@@ -352,6 +355,9 @@ public class MMClient {
 		clientOutput.println("weapon_" + id + "_pro_" + Float.toString(position.x) + "_"
 				+ Float.toString(position.y));
 	}
+	public void produceTrapLocation(float x,float y ){
+		clientOutput.println("trap_"+id+"_pro_"+Float.toString(x)+"_"+Float.toString(y));
+	}
 
 	/**
 	 * Remove item from MMClient item buffer and update server about consumption
@@ -419,10 +425,6 @@ public class MMClient {
 		}
 	}
 	
-	public void updateProduceTrap(float x,float y ){
-		//TODO update server about trap production
-		clientOutput.println("trap_"+id+"_pro_"+x+"_"+y);
-	}
 	
 	/** Update server about change in player's stun status
 	 * @param playerID ID of player status to change
@@ -549,24 +551,31 @@ public class MMClient {
 	 *            Y coordinate on the map.
 	 */
 	private void createTraps(float x, float y) {
-		ItemSprite is = new ItemSprite(gWorld);
-		gWorld.getItemList().put(new Vector2(x, y), is);
-		is.spawn(x, y, 0);
+//		ItemSprite is = new ItemSprite(gWorld);
+//		gWorld.getItemList().put(new Vector2(x, y), is);
+//		is.spawn(x, y, 0);
 		
+		System.out.println("Define body definition");
 		bdef.type = BodyType.StaticBody;
 		bdef.position.set(x, y);
+		System.out.println("Create body in world");
 		body = gWorld.getWorld().createBody(bdef);
-
+		
+		System.out.println("Create and define shape fixture");
 		CircleShape shape = new CircleShape();
 		shape.setRadius(10);
+		shape.setPosition(new Vector2(x, y));
 		fdef.shape = shape;
 		fdef.isSensor = true;
 		fdef.filter.maskBits = 1;
-
-		body.createFixture(fdef).setUserData("trap");
 		
-		Trap trap = new Trap(gWorld,bdef,fdef);
+		System.out.println("Set fixture to body");
+		body.createFixture(fdef).setUserData("trap");
+		System.out.println("Create new trap using body and fixture");
+		Trap trap = new Trap(gWorld,bdef,fdef,body);
+		System.out.println("Put body into gameworld trap list");
 		gWorld.getTrapList().put(body.getPosition(), trap);
+		System.out.println("Trap created @ x:"+bdef.position.x+" y: "+bdef.position.y);
 	}
 
 	/**
@@ -705,6 +714,7 @@ public class MMClient {
 						Float.parseFloat(msg[4]) }));
 				gWorld.getWorld().destroyBody(gWorld.getItemList().get(position).getBody());
 				gWorld.getItemList().remove(position);
+				
 			} else if (msg[2].equals("pro")) {
 				System.out.println("Produce item");
 				itemLocations.produce(new Location(new float[] { Float.parseFloat(msg[3]),
@@ -783,7 +793,7 @@ class clientListener extends Thread {
 		while (!isInterrupted()) {
 			try {
 				if ((msg = input.readLine()) != null) {
-//					System.out.println("MMClient Message received: "+msg);
+					System.out.println("MMClient Message received: "+msg);
 //					String message = new String(msg);
 					client.handleMessage(msg);
 				}

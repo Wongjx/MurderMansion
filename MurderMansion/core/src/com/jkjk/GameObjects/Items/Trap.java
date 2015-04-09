@@ -34,10 +34,11 @@ public class Trap extends Item {
 		animationRunTime = 0;
 	}
 	
-	public Trap(GameWorld gWorld, BodyDef bdef,FixtureDef fdef){
+	public Trap(GameWorld gWorld, BodyDef bdef,FixtureDef fdef, Body body){
 		super(gWorld);
 		this.bdef=bdef;
 		this.fdef=fdef;
+		this.body=body;
 		
 		plantedTrapAnimation = AssetLoader.plantedTrapAnimation;
 		animationRunTime = 0;
@@ -75,7 +76,7 @@ public class Trap extends Item {
 		fdef.filter.maskBits = 1;
 
 		body.createFixture(fdef).setUserData("trap");
-		client.updateProduceTrap(playerPosition.x,playerPosition.y);
+		client.produceTrapLocation(body.getPosition().x,body.getPosition().y);
 		gWorld.getTrapList().put(body.getPosition(), this);
 		isCompleted = true;
 	}
