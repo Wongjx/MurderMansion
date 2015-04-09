@@ -16,6 +16,8 @@ import java.util.Random;
 import java.util.concurrent.ConcurrentHashMap;
 
 import com.badlogic.gdx.Gdx;
+import com.jkjk.Host.Helpers.Location;
+import com.jkjk.Host.Helpers.ObstaclesHandler;
 import com.jkjk.MMHelpers.MultiplayerSeissonInfo;
 
 public class MMServer {
@@ -46,6 +48,7 @@ public class MMServer {
 	private final ObstaclesHandler obstaclesHandler;
 	private float[] obstacleDestroyed; // To transmit position of obstacle destroyed to clients
 
+	private GameStatus gameStatus;
 	private int numInSafeRegion;
 	private int numStillAlive;
 	private boolean civWin;
@@ -65,14 +68,14 @@ public class MMServer {
 		playerStats = new PlayerStatuses(numOfPlayers);
 		objectLocations = new ObjectLocations(numOfPlayers,this);
 
-
-		obstaclesHandler = ObstaclesHandler.getInstance();
-
 		// System.out.println("Assigning murderer");
 		murdererId = new Random().nextInt(numOfPlayers);
 
+		obstaclesHandler = ObstaclesHandler.getInstance();
 		nextItemSpawnTime = 10000;
 		nextObstacleRemoveTime = 30000;
+		
+		gameStatus = new GameStatus();
 
 		initPlayers();
 
@@ -108,7 +111,7 @@ public class MMServer {
 			nextItemSpawnTime += (new Random().nextInt(15000) + 10000);
 		}
 
-		// Opens random door in mansion *TO BE IMPLEMENTED
+		// Opens random door in mansion
 		if (runTime > nextObstacleRemoveTime && obstaclesHandler.getObstacles().size() > 0) {
 			System.out.println("OBSTACLE DESTROYED!");
 			obstacleDestroyed = obstaclesHandler.destroyObstacle().get();
@@ -117,11 +120,13 @@ public class MMServer {
 			nextObstacleRemoveTime += 30000;
 		}
 
-		// Win condition when murderer is dead
+		// Civilian Win condition when murderer is dead
 		if (playerStats.getPlayerIsAliveValue("Player " + murdererId) == 0)
-			civWin = true;
+			gameStatus.win(1);
 
-		// Win condition when 1) alive civilians are all in safe region or 2) all civilians are dead
+		// Win condition when 
+		// (Civilian) 1) alive civilians are all in safe region or  
+		// (Murderer) 2) all civilians are dead
 		numStillAlive = 0;
 		numInSafeRegion = 0;
 		for (int i = 0; i < numOfPlayers; i++) {
@@ -134,9 +139,9 @@ public class MMServer {
 			}
 		}
 		if (numStillAlive > 0 && numStillAlive == numInSafeRegion)
-			civWin = true;
+			gameStatus.win(1);
 		else if (numStillAlive == 0)
-			murWin = true;
+			gameStatus.win(0);
 
 	}
 
@@ -165,6 +170,10 @@ public class MMServer {
 
 	public int getMurdererId() {
 		return murdererId;
+	}
+
+	public GameStatus getGameStatus() {
+		return gameStatus;
 	}
 
 	public PlayerStatuses getPlayerStats() {
@@ -386,6 +395,7 @@ public class MMServer {
 			}
 		}
 	}
+
 }
 
 /**
@@ -427,6 +437,7 @@ class serverAcceptThread extends Thread {
 				// Register client to playerStatus subject
 				server.getPlayerStats().register(new Observer(writer));
 				server.getObjectLocations().register(new Observer(writer));
+				server.getGameStatus().register(new Observer(writer));
 
 				// Send out initializing information to client
 				writer.println(server.getNumOfPlayers());

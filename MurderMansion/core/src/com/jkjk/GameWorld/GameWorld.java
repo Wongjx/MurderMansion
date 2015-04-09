@@ -3,14 +3,13 @@ package com.jkjk.GameWorld;
 import java.util.HashMap;
 
 import net.dermetfan.gdx.physics.box2d.Box2DMapObjectParser;
-
 import box2dLight.RayHandler;
 
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.Array;
+import com.jkjk.GameObjects.Duration;
 import com.jkjk.GameObjects.Obstacles;
 import com.jkjk.GameObjects.Characters.GameCharacter;
 import com.jkjk.GameObjects.Characters.GameCharacterFactory;
@@ -48,6 +47,8 @@ public class GameWorld {
 	private int numOfWeaponPartsCollected;
 	private boolean shotgunCreated;
 	private boolean inSafeArea;
+	private boolean gameOver;
+	private Duration gameOverTimer;
 
 	private HashMap<Vector2, Obstacles> obstacleList;
 
@@ -98,6 +99,8 @@ public class GameWorld {
 		weaponPartList = new HashMap<Vector2, WeaponPartSprite>();
 
 		obstacleList = new HashMap<Vector2, Obstacles>();
+		
+		gameOverTimer = new Duration(5000);
 
 		Box2DMapObjectParser parser = new Box2DMapObjectParser();
 		parser.load(world, AssetLoader.tiledMap);
@@ -138,6 +141,12 @@ public class GameWorld {
 			createShotgun();
 			shotgunCreated = true;
 		}
+		
+		if (gameOver){
+			if (!gameOverTimer.isCountingDown()){
+				System.out.println("GAMEWORLD UPDATE: GAMEOVER COMPLETE");
+			}
+		}
 
 	}
 
@@ -160,6 +169,9 @@ public class GameWorld {
 		return player;
 	}
 
+	/**
+	 * To block murderer from exiting into safe area when mansion door opens
+	 */
 	public void createDoor() {
 		if (player.getType() == "Murderer") {
 			new Obstacles(this, new Vector2(915.2f, 511.8f), 0);
@@ -393,6 +405,17 @@ public class GameWorld {
 
 	public RayHandler getRayHandler() {
 		return rayHandler;
+	}
+
+	public boolean isGameOver() {
+		return gameOver;
+	}
+
+	public void setGameOver(boolean gameOver) {
+		this.gameOver = gameOver;
+		if (gameOver){
+			gameOverTimer.startCountdown();
+		}
 	}
 
 }

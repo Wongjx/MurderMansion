@@ -25,9 +25,9 @@ import com.jkjk.GameObjects.Items.ItemSprite;
 import com.jkjk.GameObjects.Items.Trap;
 import com.jkjk.GameObjects.Weapons.WeaponPartSprite;
 import com.jkjk.GameObjects.Weapons.WeaponSprite;
-import com.jkjk.Host.Location;
-import com.jkjk.Host.ObstaclesHandler;
-import com.jkjk.Host.SpawnBuffer;
+import com.jkjk.Host.Helpers.Location;
+import com.jkjk.Host.Helpers.ObstaclesHandler;
+import com.jkjk.Host.Helpers.SpawnBuffer;
 
 /**
  * @author LeeJunXiang MMClient listens to input from the Server by the host. Inputs include sharable data
@@ -763,6 +763,16 @@ public class MMClient {
 				System.out.println("Remove obstacle @ x:"+msg[1]+ " y: "+msg[2]);
 				Vector2 location = new Vector2(Float.parseFloat(msg[1]),Float.parseFloat(msg[2]));
 				gWorld.removeObstacle(location);
+		}
+		
+		else if (msg[0].equals("win")){
+			if (msg[1].equals("civilian")){
+				System.out.println("CIVILIAN WINS!");
+				gWorld.setGameOver(true);
+			} else if (msg[1].equals("murderer")){
+				System.out.println("MURDERER WINS!");
+				gWorld.setGameOver(true);
+			}
 		}
 	}
 }
