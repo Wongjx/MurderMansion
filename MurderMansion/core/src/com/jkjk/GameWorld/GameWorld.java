@@ -9,6 +9,7 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.Array;
+import com.badlogic.gdx.utils.Pool;
 import com.jkjk.GameObjects.Duration;
 import com.jkjk.GameObjects.Obstacles;
 import com.jkjk.GameObjects.Characters.GameCharacter;
@@ -54,7 +55,7 @@ public class GameWorld {
 
 	private World world;
 	private MMContactListener cl;
-
+	
 	private Array<Body> itemsToRemove, weaponsToRemove, weaponPartsToRemove, trapToRemove;
 	private Array<Vector2> itemsToAdd, weaponsToAdd;
 	private Body bodyToRemove;
@@ -136,6 +137,11 @@ public class GameWorld {
 		checkWeaponSprite(client);
 		checkWeaponPartSprite(client);
 		checkTrap();
+		
+		while (client.getTrapList().keySet().iterator().hasNext()){
+			Vector2 location = client.getTrapList().keySet().iterator().next();
+			client.getTrapList().remove(location).spawn(location.x, location.y, 0);
+		}
 
 		if (numOfWeaponPartsCollected == 8 && !shotgunCreated) {
 			createShotgun();

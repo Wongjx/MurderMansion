@@ -8,6 +8,7 @@ import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.concurrent.ConcurrentHashMap;
 
 import com.badlogic.gdx.Gdx;
@@ -84,6 +85,17 @@ public class MMClient {
 	private BodyDef bdef;
 	private Body body;
 	private FixtureDef fdef;
+	
+	
+	private HashMap<Vector2, Trap> trapList;
+
+	public HashMap<Vector2, Trap> getTrapList() {
+		return trapList;
+	}
+
+	public void setTrapList(HashMap<Vector2, Trap> trapList) {
+		this.trapList = trapList;
+	}
 
 	/**
 	 * Constructs the multiplayer world, including creation of opponents.
@@ -209,6 +221,7 @@ public class MMClient {
 		Thread thread = new clientListener(clientInput, this);
 		thread.start();
 
+		trapList = new HashMap<Vector2, Trap>();
 
 		// CREATE SPRITES FOR TESTING
 		ItemSprite temporaryItem = new ItemSprite(gWorld);
@@ -555,9 +568,11 @@ public class MMClient {
 //		gWorld.getItemList().put(new Vector2(x, y), is);
 //		is.spawn(x, y, 0);
 		
-		Trap trap = new Trap(gWorld, this);
+		trapList.put(new Vector2(x,y), new Trap(gWorld, this));
 		
-		trap.spawn(x, y, 0);
+//		Trap trap = new Trap(gWorld, this);
+//		
+//		trap.spawn(x, y, 0);
 		
 		
 //		System.out.println("Define body definition");

@@ -9,11 +9,12 @@ import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
 import com.badlogic.gdx.physics.box2d.CircleShape;
 import com.badlogic.gdx.physics.box2d.FixtureDef;
+import com.badlogic.gdx.utils.Pool.Poolable;
 import com.jkjk.GameWorld.GameWorld;
 import com.jkjk.GameWorld.MMClient;
 import com.jkjk.MMHelpers.AssetLoader;
 
-public class Trap extends Item {
+public class Trap extends Item implements Poolable {
 	private MMClient client;
 
 	private BodyDef bdef;
@@ -83,6 +84,14 @@ public class Trap extends Item {
 			batch.draw(plantedTrapAnimation.getKeyFrame(animationRunTime), body.getPosition().x,
 					body.getPosition().y, 32, 32);
 		}
+	}
+
+	/* (non-Javadoc)
+	 * @see com.badlogic.gdx.utils.Pool.Poolable#reset()
+	 */
+	@Override
+	public void reset() {
+		body.setTransform(0, 0, 0);
 	}
 
 }
