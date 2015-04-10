@@ -4,6 +4,12 @@ import java.util.ArrayList;
 
 import javax.print.attribute.standard.Severity;
 
+import com.jkjk.Host.Helpers.ItemSpawner;
+import com.jkjk.Host.Helpers.Location;
+import com.jkjk.Host.Helpers.SpawnBuffer;
+import com.jkjk.Host.Helpers.WeaponPartSpawner;
+import com.jkjk.Host.Helpers.WeaponSpawner;
+
 public class ObjectLocations implements Subject{
 	private final int SERVER_ID =-1;
 	private final MMServer server;
@@ -153,7 +159,7 @@ public class ObjectLocations implements Subject{
 	public void produceTrap(Location location,int origin) throws InterruptedException {
 		synchronized (trapLocations) {
 			trapLocations.produce(location);
-			message="trap"+origin+"_pro_"+Float.toString(location.get()[0])+"_"+Float.toString(location.get()[1]);
+			message="trap_"+origin+"_pro_"+Float.toString(location.get()[0])+"_"+Float.toString(location.get()[1]);
 			updateAll(origin);
 		}
 	}

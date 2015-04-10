@@ -44,12 +44,12 @@ public class Ghost extends GameCharacter {
 		body.createFixture(fdef).setUserData("ghost");
 
 		// create light
-		pointLight = new PointLight(rayHandler, 100, null, 100, 0, 0);
+		pointLight = new PointLight(rayHandler, 100, null, 150, 0, 0);
 		pointLight.attachToBody(body);
-		PointLight.setContactFilter((short) 2, (short) 2, (short) 0);
+		pointLight.setXray(true);
 
 		body.setUserData(AssetLoader.ghostFloatAnimation);
-		setVelocity(getVelocity()/4*3);
+		setVelocity(getVelocity() / 4 * 3);
 	}
 
 	@Override

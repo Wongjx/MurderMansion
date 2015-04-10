@@ -16,6 +16,8 @@ import java.util.Random;
 import java.util.concurrent.ConcurrentHashMap;
 
 import com.badlogic.gdx.Gdx;
+import com.jkjk.Host.Helpers.Location;
+import com.jkjk.Host.Helpers.ObstaclesHandler;
 import com.jkjk.MMHelpers.MultiplayerSeissonInfo;
 
 public class MMServer {
@@ -40,16 +42,15 @@ public class MMServer {
 
 	private final PlayerStatuses playerStats;
 
-
 	private final ObjectLocations objectLocations;
 
 	private final ObstaclesHandler obstaclesHandler;
 	private float[] obstacleDestroyed; // To transmit position of obstacle destroyed to clients
 
+	private GameStatus gameStatus;
 	private int numInSafeRegion;
 	private int numStillAlive;
-	private boolean civWin;
-	private boolean murWin;
+	private boolean win;
 
 	private MMServer(int numOfPlayers, MultiplayerSeissonInfo info) throws InterruptedException {
 		this.numOfPlayers = numOfPlayers;
@@ -63,16 +64,16 @@ public class MMServer {
 		// System.out.println("Initialize fields");
 		startTime = System.currentTimeMillis();
 		playerStats = new PlayerStatuses(numOfPlayers);
-		objectLocations = new ObjectLocations(numOfPlayers,this);
-
-
-		obstaclesHandler = ObstaclesHandler.getInstance();
+		objectLocations = new ObjectLocations(numOfPlayers, this);
 
 		// System.out.println("Assigning murderer");
 		murdererId = new Random().nextInt(numOfPlayers);
 
+		obstaclesHandler = ObstaclesHandler.getInstance();
 		nextItemSpawnTime = 10000;
 		nextObstacleRemoveTime = 30000;
+
+		gameStatus = new GameStatus();
 
 		initPlayers();
 
@@ -108,35 +109,45 @@ public class MMServer {
 			nextItemSpawnTime += (new Random().nextInt(15000) + 10000);
 		}
 
-		// Opens random door in mansion *TO BE IMPLEMENTED
+		// Opens random door in mansion
 		if (runTime > nextObstacleRemoveTime && obstaclesHandler.getObstacles().size() > 0) {
 			System.out.println("OBSTACLE DESTROYED!");
 			obstacleDestroyed = obstaclesHandler.destroyObstacle().get();
-			System.out.println("At x:"+obstacleDestroyed[0]+" y: "+obstacleDestroyed[1]);
-			sendToClients("obstacle_"+Float.toString(obstacleDestroyed[0])+"_"+Float.toString(obstacleDestroyed[1]));
+			System.out.println("At x:" + obstacleDestroyed[0] + " y: " + obstacleDestroyed[1]);
+			sendToClients("obstacle_" + Float.toString(obstacleDestroyed[0]) + "_"
+					+ Float.toString(obstacleDestroyed[1]));
 			nextObstacleRemoveTime += 30000;
 		}
 
-		// Win condition when murderer is dead
-		if (playerStats.getPlayerIsAliveValue("Player " + murdererId) == 0)
-			civWin = true;
+		// Civilian Win condition when murderer is dead
+		if (!win) {
+			if (playerStats.getPlayerIsAliveValue("Player " + murdererId) == 0) {
+				gameStatus.win(1);
+				win = true;
+			}
 
-		// Win condition when 1) alive civilians are all in safe region or 2) all civilians are dead
-		numStillAlive = 0;
-		numInSafeRegion = 0;
-		for (int i = 0; i < numOfPlayers; i++) {
-			if (i == murdererId)
-				continue;
-			if (playerStats.getPlayerIsAliveValue("Player " + i) == 1) {
-				numStillAlive++;
-				if (playerStats.getPlayerIsInSafeRegion("Player " + 1) == 1)
-					numInSafeRegion++;
+			// Win condition when
+			// (Civilian) 1) alive civilians are all in safe region or
+			// (Murderer) 2) all civilians are dead
+			numStillAlive = 0;
+			numInSafeRegion = 0;
+			for (int i = 0; i < numOfPlayers; i++) {
+				if (i == murdererId)
+					continue;
+				if (playerStats.getPlayerIsAliveValue("Player " + i) == 1) {
+					numStillAlive++;
+					if (playerStats.getPlayerIsInSafeRegion("Player " + 1) == 1)
+						numInSafeRegion++;
+				}
+			}
+			if (numStillAlive > 0 && numStillAlive == numInSafeRegion) {
+				gameStatus.win(1);
+				win = true;
+			} else if (numStillAlive == 0) {
+				gameStatus.win(0);
+				win = true;
 			}
 		}
-		if (numStillAlive > 0 && numStillAlive == numInSafeRegion)
-			civWin = true;
-		else if (numStillAlive == 0)
-			murWin = true;
 
 	}
 
@@ -167,6 +178,10 @@ public class MMServer {
 		return murdererId;
 	}
 
+	public GameStatus getGameStatus() {
+		return gameStatus;
+	}
+
 	public PlayerStatuses getPlayerStats() {
 		return playerStats;
 	}
@@ -174,8 +189,8 @@ public class MMServer {
 	public ObjectLocations getObjectLocations() {
 		return objectLocations;
 	}
-	
-	public ObstaclesHandler getObstaclesHandler(){
+
+	public ObstaclesHandler getObstaclesHandler() {
 		return obstaclesHandler;
 	}
 
@@ -332,7 +347,7 @@ public class MMServer {
 	 */
 	public void handleMessage(String message) throws NumberFormatException, InterruptedException {
 		String[] msg = message.split("_");
-		
+
 		// If player position update message
 		if (msg[0].equals("loc")) {
 			float[] position = { Float.parseFloat(msg[2]), Float.parseFloat(msg[3]) };
@@ -344,48 +359,66 @@ public class MMServer {
 		} else if (msg[0].equals("ang")) {
 			float angle = Float.parseFloat(msg[2]);
 			playerStats.updateAngle(Integer.parseInt(msg[1]), angle);
-		}  else if (msg[0].equals("type")) {
-			playerStats.updateType(Integer.parseInt(msg[1]), Integer.parseInt(msg[2]), Integer.parseInt(msg[3]));
+		} else if (msg[0].equals("type")) {
+			playerStats.updateType(Integer.parseInt(msg[1]), Integer.parseInt(msg[2]),
+					Integer.parseInt(msg[3]));
 		} else if (msg[0].equals("alive")) {
-			playerStats.updateIsAlive(Integer.parseInt(msg[1]), Integer.parseInt(msg[2]), Integer.parseInt(msg[3]));
+			playerStats.updateIsAlive(Integer.parseInt(msg[1]), Integer.parseInt(msg[2]),
+					Integer.parseInt(msg[3]));
 		} else if (msg[0].equals("stun")) {
-			playerStats.updateIsStun(Integer.parseInt(msg[1]), Integer.parseInt(msg[2]), Integer.parseInt(msg[3]));
-		}else if (msg[0].equals("safe")) {
-			System.out.println("Player "+msg[1]+"is safe.");
+			playerStats.updateIsStun(Integer.parseInt(msg[1]), Integer.parseInt(msg[2]),
+					Integer.parseInt(msg[3]));
+		} else if (msg[0].equals("safe")) {
+			System.out.println("Player " + msg[1] + "is safe.");
 			playerStats.updateIsInSafeRegion(Integer.parseInt(msg[1]), Integer.parseInt(msg[2]));
-		}	else if (msg[0].equals("useItem")) {
-			System.out.println("Player "+msg[1]+"using item.");
+		} else if (msg[0].equals("useItem")) {
+			System.out.println("Player " + msg[1] + "using item.");
 			playerStats.updateUseItem(Integer.parseInt(msg[1]), Integer.parseInt(msg[2]));
-		}	else if (msg[0].equals("useWeapon")) {
-			System.out.println("Player "+msg[1]+"using weapon.");
+		} else if (msg[0].equals("useWeapon")) {
+			System.out.println("Player " + msg[1] + "using weapon.");
 			playerStats.updateUseWeapon(Integer.parseInt(msg[1]), Integer.parseInt(msg[2]));
 		}
-		
+
 		// If item consumption or production message
 		else if (msg[0].equals("item")) {
 			if (msg[2].equals("con")) {
-				objectLocations.consumeItem(new Location(new float[] { Float.parseFloat(msg[3]), Float.parseFloat(msg[4]) }),Integer.parseInt(msg[1]));
+				objectLocations.consumeItem(
+						new Location(new float[] { Float.parseFloat(msg[3]), Float.parseFloat(msg[4]) }),
+						Integer.parseInt(msg[1]));
 			} else if (msg[2].equals("pro")) {
-				objectLocations.produceItemGhost(new Location(new float[] { Float.parseFloat(msg[3]), Float.parseFloat(msg[4]) }),Integer.parseInt(msg[1]));
+				objectLocations.produceItemGhost(
+						new Location(new float[] { Float.parseFloat(msg[3]), Float.parseFloat(msg[4]) }),
+						Integer.parseInt(msg[1]));
 			}
 		} else if (msg[0].equals("weapon")) {
 			if (msg[2].equals("con")) {
-				objectLocations.consumeWeapon(new Location(new float[] { Float.parseFloat(msg[3]), Float.parseFloat(msg[4]) }),Integer.parseInt(msg[1]));
+				objectLocations.consumeWeapon(
+						new Location(new float[] { Float.parseFloat(msg[3]), Float.parseFloat(msg[4]) }),
+						Integer.parseInt(msg[1]));
 			} else if (msg[2].equals("pro")) {
-				objectLocations.produceWeaponGhost(new Location(new float[] { Float.parseFloat(msg[3]), Float.parseFloat(msg[4]) }),Integer.parseInt(msg[1]));
+				objectLocations.produceWeaponGhost(
+						new Location(new float[] { Float.parseFloat(msg[3]), Float.parseFloat(msg[4]) }),
+						Integer.parseInt(msg[1]));
 			}
 		} else if (msg[0].equals("weaponpart")) {
 			if (msg[2].equals("con")) {
-				objectLocations.consumeWeaponPart(new Location(new float[] { Float.parseFloat(msg[3]), Float.parseFloat(msg[4]) }),Integer.parseInt(msg[1]));
+				objectLocations.consumeWeaponPart(
+						new Location(new float[] { Float.parseFloat(msg[3]), Float.parseFloat(msg[4]) }),
+						Integer.parseInt(msg[1]));
 			}
 		} else if (msg[0].equals("trap")) {
 			if (msg[2].equals("con")) {
-				objectLocations.consumeTrap(new Location(new float[] { Float.parseFloat(msg[3]), Float.parseFloat(msg[4]) }),Integer.parseInt(msg[1]));
+				objectLocations.consumeTrap(
+						new Location(new float[] { Float.parseFloat(msg[3]), Float.parseFloat(msg[4]) }),
+						Integer.parseInt(msg[1]));
 			} else if (msg[2].equals("pro")) {
-				objectLocations.produceTrap(new Location(new float[] { Float.parseFloat(msg[3]), Float.parseFloat(msg[4]) }),Integer.parseInt(msg[1]));
+				objectLocations.produceTrap(
+						new Location(new float[] { Float.parseFloat(msg[3]), Float.parseFloat(msg[4]) }),
+						Integer.parseInt(msg[1]));
 			}
 		}
 	}
+
 }
 
 /**
@@ -427,6 +460,7 @@ class serverAcceptThread extends Thread {
 				// Register client to playerStatus subject
 				server.getPlayerStats().register(new Observer(writer));
 				server.getObjectLocations().register(new Observer(writer));
+				server.getGameStatus().register(new Observer(writer));
 
 				// Send out initializing information to client
 				writer.println(server.getNumOfPlayers());

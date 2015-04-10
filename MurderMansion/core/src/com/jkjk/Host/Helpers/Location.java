@@ -1,4 +1,4 @@
-package com.jkjk.Host;
+package com.jkjk.Host.Helpers;
 
 
 public class Location {

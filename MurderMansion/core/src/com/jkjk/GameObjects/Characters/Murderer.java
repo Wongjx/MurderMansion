@@ -1,5 +1,6 @@
 package com.jkjk.GameObjects.Characters;
 
+import box2dLight.Light;
 import box2dLight.PointLight;
 
 import com.badlogic.gdx.Gdx;
@@ -48,7 +49,7 @@ public class Murderer extends GameCharacter {
 		// create light
 		pointLight = new PointLight(rayHandler, 100, null, 100, 0, 0);
 		pointLight.attachToBody(body);
-		PointLight.setContactFilter((short) 2, (short) 2, (short) 1);
+		Light.setContactFilter((short) 2, (short) 2, (short) 1);
 		disguised = true;
 		
 		// INITIATE ANIMATIONS

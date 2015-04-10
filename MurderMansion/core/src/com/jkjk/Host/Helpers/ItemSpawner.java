@@ -1,4 +1,4 @@
-package com.jkjk.Host;
+package com.jkjk.Host.Helpers;
 
 import java.util.ArrayList;
 import java.util.Random;
@@ -10,7 +10,7 @@ public class ItemSpawner {
 	private Location location;
 	private int index;
 
-	ItemSpawner() {
+	public ItemSpawner() {
 		itemLocations = new ArrayList<Location>();
 		itemLocations.add(new Location(new float[] { 310.76f, 885.68f }));
 		itemLocations.add(new Location(new float[] { 355.6f, 749.3f }));

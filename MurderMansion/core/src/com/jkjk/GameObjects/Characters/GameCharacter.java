@@ -47,7 +47,7 @@ public abstract class GameCharacter {
 
 	protected int id;
 	private int weaponUses;
-	
+
 	protected float runTime;
 	protected float ambientLightValue;
 	private int nextBrightTime;
@@ -59,7 +59,7 @@ public abstract class GameCharacter {
 		maxVelocity = 56;
 		weaponUses = 3;
 		touchpad = AssetLoader.touchpad;
-		stunDuration = new Duration(5000);
+		stunDuration = new Duration(4000);
 
 		this.type = type;
 		this.id = id;
@@ -69,7 +69,11 @@ public abstract class GameCharacter {
 		this.deathPositionX = 0;
 		this.deathPositionY = 0;
 
-		rayHandler = new RayHandler(gWorld.getWorld());
+		if (isPlayer || type == "Ghost"){
+			rayHandler = gWorld.getRayHandler();
+		} else {
+			rayHandler = new RayHandler(gWorld.getWorld());
+		}
 		ambientLightValue = 0.05f;
 		rayHandler.setAmbientLight(ambientLightValue);
 		runTime = 0;
@@ -138,8 +142,8 @@ public abstract class GameCharacter {
 	public void setId(int id) {
 		this.id = id;
 	}
-	
-	public boolean isPlayer(){
+
+	public boolean isPlayer() {
 		return isPlayer;
 	}
 
@@ -236,7 +240,7 @@ public abstract class GameCharacter {
 			if (ability != null) {
 				ability.update();
 			}
-			if (stun){
+			if (stun) {
 				stunDuration.update();
 				if (!stunDuration.isCountingDown())
 					stun = false;
@@ -246,23 +250,23 @@ public abstract class GameCharacter {
 
 	public void render(OrthographicCamera cam, SpriteBatch batch) {
 		if (isPlayer) {
-			brightTime = System.currentTimeMillis() - startTime;
-			
-			if (brightTime > nextBrightTime) {
-				System.out.println("BRIGHTER!");
-				ambientLightValue += 0.009;
-				rayHandler.setAmbientLight(ambientLightValue);
-				nextBrightTime += 10000;
-			}
+				brightTime = System.currentTimeMillis() - startTime;
 
-			if (checkMovable()) {
-				playerMovement();
-			} else {
-				body.setAngularVelocity(0);
-				body.setLinearVelocity(0, 0);
-			}
+				if (brightTime > nextBrightTime) {
+					System.out.println("BRIGHTER!");
+					ambientLightValue += 0.009;
+					rayHandler.setAmbientLight(ambientLightValue);
+					nextBrightTime += 10000;
+				}
 
-			cam.position.set(body.getPosition(), 0); // Set cam position to be on player
+				if (checkMovable()) {
+					playerMovement();
+				} else {
+					body.setAngularVelocity(0);
+					body.setLinearVelocity(0, 0);
+				}
+
+				cam.position.set(body.getPosition(), 0); // Set cam position to be on player
 			
 			rayHandler.setCombinedMatrix(cam.combined);
 			rayHandler.updateAndRender();

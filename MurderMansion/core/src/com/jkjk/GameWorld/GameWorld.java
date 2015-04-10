@@ -3,12 +3,14 @@ package com.jkjk.GameWorld;
 import java.util.HashMap;
 
 import net.dermetfan.gdx.physics.box2d.Box2DMapObjectParser;
+import box2dLight.RayHandler;
 
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.Array;
+import com.badlogic.gdx.utils.Pool;
+import com.jkjk.GameObjects.Duration;
 import com.jkjk.GameObjects.Obstacles;
 import com.jkjk.GameObjects.Characters.GameCharacter;
 import com.jkjk.GameObjects.Characters.GameCharacterFactory;
@@ -33,6 +35,7 @@ public class GameWorld {
 
 	private GameCharacterFactory gameCharFac;
 	private GameCharacter player;
+	private RayHandler rayHandler;
 
 	private ItemFactory itemFac;
 	private HashMap<Vector2, ItemSprite> itemList;
@@ -45,12 +48,14 @@ public class GameWorld {
 	private int numOfWeaponPartsCollected;
 	private boolean shotgunCreated;
 	private boolean inSafeArea;
+	private boolean gameOver;
+	private Duration gameOverTimer;
 
 	private HashMap<Vector2, Obstacles> obstacleList;
 
 	private World world;
 	private MMContactListener cl;
-
+	
 	private Array<Body> itemsToRemove, weaponsToRemove, weaponPartsToRemove, trapToRemove;
 	private Array<Vector2> itemsToAdd, weaponsToAdd;
 	private Body bodyToRemove;
@@ -82,6 +87,7 @@ public class GameWorld {
 		weaponsToAdd = new Array<Vector2>();
 
 		gameCharFac = new GameCharacterFactory();
+		rayHandler = new RayHandler(world);
 
 		itemFac = new ItemFactory();
 		itemList = new HashMap<Vector2, ItemSprite>();
@@ -94,6 +100,8 @@ public class GameWorld {
 		weaponPartList = new HashMap<Vector2, WeaponPartSprite>();
 
 		obstacleList = new HashMap<Vector2, Obstacles>();
+		
+		gameOverTimer = new Duration(5000);
 
 		Box2DMapObjectParser parser = new Box2DMapObjectParser();
 		parser.load(world, AssetLoader.tiledMap);
@@ -129,10 +137,22 @@ public class GameWorld {
 		checkWeaponSprite(client);
 		checkWeaponPartSprite(client);
 		checkTrap();
+		
+		while (client.getTrapList().keySet().iterator().hasNext()){
+			Vector2 location = client.getTrapList().keySet().iterator().next();
+			client.getTrapList().remove(location).spawn(location.x, location.y, 0);
+		}
 
 		if (numOfWeaponPartsCollected == 8 && !shotgunCreated) {
 			createShotgun();
 			shotgunCreated = true;
+		}
+		
+		if (gameOver){
+			gameOverTimer.update();
+			if (!gameOverTimer.isCountingDown()){
+//				System.out.println("GAMEWORLD UPDATE: GAMEOVER COMPLETE");
+			}
 		}
 
 	}
@@ -156,6 +176,9 @@ public class GameWorld {
 		return player;
 	}
 
+	/**
+	 * To block murderer from exiting into safe area when mansion door opens
+	 */
 	public void createDoor() {
 		if (player.getType() == "Murderer") {
 			new Obstacles(this, new Vector2(915.2f, 511.8f), 0);
@@ -208,6 +231,7 @@ public class GameWorld {
 			else
 				player.addItem(itemFac.createItem("Disarm Trap", this,client));
 		}
+		
 		for (int i = 0; i<itemsToAdd.size;i++){
 			client.produceItemLocation(itemsToAdd.get(i));
 		}
@@ -385,6 +409,21 @@ public class GameWorld {
 	
 	public Array<Vector2> getWeaponsToAdd(){
 		return weaponsToAdd;
+	}
+
+	public RayHandler getRayHandler() {
+		return rayHandler;
+	}
+
+	public boolean isGameOver() {
+		return gameOver;
+	}
+
+	public void setGameOver(boolean gameOver) {
+		this.gameOver = gameOver;
+		if (gameOver){
+			gameOverTimer.startCountdown();
+		}
 	}
 
 }
