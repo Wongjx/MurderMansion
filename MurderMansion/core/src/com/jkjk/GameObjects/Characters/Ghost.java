@@ -72,7 +72,7 @@ public class Ghost extends GameCharacter {
 	}
 
 	@Override
-	public void useWeapon() {
+	public boolean useWeapon() {
 		spawnLocation = new Vector2(body.getPosition().x + (float) (25f * Math.cos(body.getAngle())),
 				body.getPosition().y + (float) (25f * Math.sin(body.getAngle())));
 		WeaponSprite ws = new WeaponSprite(gWorld);
@@ -81,6 +81,7 @@ public class Ghost extends GameCharacter {
 		gWorld.getWeaponsToAdd().add(spawnLocation);
 		weapon = null;
 		weaponChange = true;
+		return true;
 	}
 
 	@Override

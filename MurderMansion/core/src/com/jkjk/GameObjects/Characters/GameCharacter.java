@@ -172,14 +172,17 @@ public abstract class GameCharacter {
 		return weapon;
 	}
 
-	public void useWeapon() {
+	public boolean useWeapon() {
 		if (!weapon.isOnCooldown()) {
 			weapon.use();
+			System.out.println("GameChar class: weapon was really used");
 			weaponUses--;
 			if (weaponUses > 0) {
 				weapon.cooldown();
 			}
+			return true;
 		}
+		return false;
 	}
 
 	public boolean getWeaponChange() {
