@@ -149,12 +149,14 @@ public class Murderer extends GameCharacter {
 		return pointLight.contains(x, y);
 	}
 	
-	public void useWeapon(){
+	public boolean useWeapon(){
 		if (!disguised){
 			super.useWeapon();
+			return true;
 			//body.setUserData(AssetLoader.murKnifeAnimation);
 		} else {
 			System.out.println("You cannot use your weapon while disguised.");
+			return false;
 		}
 	}
 	public void stun(boolean stun){

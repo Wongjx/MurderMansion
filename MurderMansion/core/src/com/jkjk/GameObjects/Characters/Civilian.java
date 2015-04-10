@@ -155,27 +155,37 @@ public class Civilian extends GameCharacter {
 	}
 
 	public void useAbility() {// panic
-		super.useAbility();
-		body.setUserData(civPanicAnimation);
+		//if(currentAnimation == civWalkAnimation){
+			super.useAbility();
+			body.setUserData(civPanicAnimation);
+		//}
 	}
 
 	public void stun(boolean stun) {// stun
 		super.stun(stun);
 		body.setUserData(civStunAnimation);
+
 	}
 
-	public void useWeapon() {// bat
-		super.useWeapon();
-		if (weapon.getName().equals("Shotgun")) {
-			body.setUserData(civShotgunAnimation);
-		} else {
-			body.setUserData(civBatAnimation);
+	public boolean useWeapon() {// bat
+		if(currentAnimation == civWalkAnimation || currentAnimation == civPanicAnimation){
+			if(super.useWeapon()){//boolean
+				if (weapon.getName().equals("Shotgun")) {
+					body.setUserData(civShotgunAnimation);
+				} else {
+					body.setUserData(civBatAnimation);
+				}
+				return true;
+			}
 		}
+		return false;
 	}
 
 	public void useItem() {
-		super.useItem();
-		body.setUserData(civDisarmAnimation);
+		if(currentAnimation == civWalkAnimation || currentAnimation == civPanicAnimation){
+			super.useItem();
+			body.setUserData(civDisarmAnimation);
+		}
 	}
 
 	public boolean lightContains(float x, float y) {

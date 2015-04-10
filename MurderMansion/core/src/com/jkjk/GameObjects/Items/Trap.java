@@ -83,8 +83,8 @@ public class Trap extends Item implements Poolable {
 	public void render(SpriteBatch batch) {
 		if (gWorld.getPlayer().lightContains(body.getPosition().x, body.getPosition().y)) {
 			animationRunTime += Gdx.graphics.getRawDeltaTime();
-			batch.draw(plantedTrapAnimation.getKeyFrame(animationRunTime), body.getPosition().x,
-					body.getPosition().y, 32, 32);
+			batch.draw(plantedTrapAnimation.getKeyFrame(animationRunTime), body.getPosition().x-16,
+					body.getPosition().y-16, 32, 32);
 		}
 	}
 
