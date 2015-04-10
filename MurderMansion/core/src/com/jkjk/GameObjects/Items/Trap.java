@@ -9,13 +9,12 @@ import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
 import com.badlogic.gdx.physics.box2d.CircleShape;
 import com.badlogic.gdx.physics.box2d.FixtureDef;
-import com.badlogic.gdx.utils.Pool.Poolable;
 import com.jkjk.GameWorld.GameWorld;
 import com.jkjk.GameWorld.MMClient;
 import com.jkjk.MMHelpers.AssetLoader;
 
 
-public class Trap extends Item implements Poolable {
+public class Trap extends Item  {
 	public MMClient client;
 
 	private BodyDef bdef;
@@ -35,7 +34,7 @@ public class Trap extends Item implements Poolable {
 		plantedTrapAnimation = AssetLoader.plantedTrapAnimation;
 		animationRunTime = 0;
 	}
-	
+
 	@Override
 	public void startUse() {
 		System.out.println("Used trap");
@@ -56,6 +55,7 @@ public class Trap extends Item implements Poolable {
 		playerAngle = gWorld.getPlayer().getBody().getAngle();
 
 		spawn(playerPosition.x, playerPosition.y, playerAngle);
+
 		client.produceTrapLocation(body.getPosition().x,body.getPosition().y);
 
 		isCompleted = true;
@@ -65,13 +65,18 @@ public class Trap extends Item implements Poolable {
 //		Gdx.app.postRunnable(new spawnRun(this,x,y,angle));
 		
 		bdef.type = BodyType.StaticBody;
-		bdef.position.set(x+((float) (25f * Math.cos(angle))), y+((float) (25f * Math.sin(angle))));
+System.out.println("Angle: " + angle);
+		if (angle == 0) {
+			bdef.position.set(x, y);
+		} else {
+			bdef.position.set(x + (float) (25f * Math.cos(angle)), y + (float) (25f * Math.sin(angle)));
+		}
+
 		body = gWorld.getWorld().createBody(bdef);
 
 		CircleShape shape = new CircleShape();
 		shape.setRadius(10);
-		
-//		if (angle != 0) shape.setPosition(new Vector2((float) (25f * Math.cos(angle)), (float) (25f * Math.sin(angle))));
+
 		fdef.shape = shape;
 		fdef.isSensor = true;
 		fdef.filter.maskBits = 1;
@@ -87,6 +92,7 @@ public class Trap extends Item implements Poolable {
 					body.getPosition().y, 32, 32);
 		}
 	}
+
 
 	public BodyDef getBdef() {
 		return bdef;
@@ -110,13 +116,5 @@ public class Trap extends Item implements Poolable {
 
 	public void setFdef(FixtureDef fdef) {
 		this.fdef = fdef;
-	}
-	
-	/* (non-Javadoc)
-	 * @see com.badlogic.gdx.utils.Pool.Poolable#reset()
-	 */
-	@Override
-	public void reset() {
-		body.setTransform(0, 0, 0);
 	}
 }
