@@ -5,6 +5,8 @@ import java.util.HashMap;
 import net.dermetfan.gdx.physics.box2d.Box2DMapObjectParser;
 import box2dLight.RayHandler;
 
+import com.badlogic.gdx.Game;
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.World;
@@ -22,6 +24,8 @@ import com.jkjk.GameObjects.Weapons.WeaponPartSprite;
 import com.jkjk.GameObjects.Weapons.WeaponSprite;
 import com.jkjk.MMHelpers.AssetLoader;
 import com.jkjk.MMHelpers.MMContactListener;
+import com.jkjk.Screens.GameScreen;
+import com.jkjk.Screens.ScoreScreen;
 
 /**
  * GameWorld's primary purpose is to update the results of interactions in the world. It deals with creation
@@ -48,7 +52,8 @@ public class GameWorld {
 	private int numOfWeaponPartsCollected;
 	private boolean shotgunCreated;
 	private boolean inSafeArea;
-	private boolean gameOver;
+	private boolean civWin;
+	private boolean murWin;
 	private Duration gameOverTimer;
 
 	private HashMap<Vector2, Obstacles> obstacleList;
@@ -146,13 +151,6 @@ public class GameWorld {
 		if (numOfWeaponPartsCollected == 8 && !shotgunCreated) {
 			createShotgun();
 			shotgunCreated = true;
-		}
-		
-		if (gameOver){
-			gameOverTimer.update();
-			if (!gameOverTimer.isCountingDown()){
-//				System.out.println("GAMEWORLD UPDATE: GAMEOVER COMPLETE");
-			}
 		}
 
 	}
@@ -415,15 +413,30 @@ public class GameWorld {
 		return rayHandler;
 	}
 
-	public boolean isGameOver() {
-		return gameOver;
+	public boolean isCivWin() {
+		return civWin;
 	}
 
-	public void setGameOver(boolean gameOver) {
-		this.gameOver = gameOver;
-		if (gameOver){
+	public void setCivWin(boolean civWin) {
+		this.civWin = civWin;
+		if (civWin){
 			gameOverTimer.startCountdown();
 		}
+	}
+	
+	public boolean isMurWin() {
+		return murWin;
+	}
+
+	public void setMurWin(boolean murWin) {
+		this.murWin = murWin;
+		if (murWin){
+			gameOverTimer.startCountdown();
+		}
+	}
+	
+	public Duration getGameOverTimer(){
+		return gameOverTimer;
 	}
 
 }

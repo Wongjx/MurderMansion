@@ -31,14 +31,16 @@ import com.jkjk.Host.Helpers.ObstaclesHandler;
 import com.jkjk.Host.Helpers.SpawnBuffer;
 
 /**
- * @author LeeJunXiang MMClient listens to input from the Server by the host. Inputs include sharable data
- *         such as player position, item spawns and player status. MMClient will also output to the server the
- *         changes made by the player.
+ * MMClient listens to input from the Server by the host. Inputs include sharable data such as player
+ * position, item spawns and player status. MMClient will also output to the server the changes made by the
+ * player.
  * 
- *         More importantly, client-side processing will handle all actions by the player (movement, contact).
- *         The CONSEQUENCE of the action will be passed to the server, which will retransmit the results to
- *         all other clients. Consequences include the removal of an item when picking it up, or change in
- *         body position due to movement.
+ * More importantly, client-side processing will handle all actions by the player (movement, contact). The
+ * CONSEQUENCE of the action will be passed to the server, which will retransmit the results to all other
+ * clients. Consequences include the removal of an item when picking it up, or change in body position due to
+ * movement.
+ * 
+ * @author LeeJunXiang
  * 
  */
 public class MMClient {
@@ -60,8 +62,8 @@ public class MMClient {
 	private int id;
 	private int murdererId;
 	private ArrayList<GameCharacter> playerList;
-	
-	private final long UPDATES_PER_SEC=50;
+
+	private final long UPDATES_PER_SEC = 50;
 	private long lastUpdated;
 
 	private final ConcurrentHashMap<String, Integer> playerIsAlive; // If 1 ->true; If 0 -> false;
@@ -85,8 +87,7 @@ public class MMClient {
 	private BodyDef bdef;
 	private Body body;
 	private FixtureDef fdef;
-	
-	
+
 	private HashMap<Vector2, Trap> trapList;
 
 	public HashMap<Vector2, Trap> getTrapList() {
@@ -114,14 +115,14 @@ public class MMClient {
 
 		this.serverAddress = serverAddress;
 		this.serverPort = serverPort;
-		
+
 		this.bdef = new BodyDef();
 		this.fdef = new FixtureDef();
 
 		// Connect to server
 		initClientSocket(this.serverAddress, this.serverPort);
-		
-		//Set cuurent time to last updated time
+
+		// Set cuurent time to last updated time
 		this.lastUpdated = System.currentTimeMillis();
 
 		// Receive initialzation parameters
@@ -225,15 +226,14 @@ public class MMClient {
 
 		// CREATE SPRITES FOR TESTING
 		ItemSprite temporaryItem = new ItemSprite(gWorld);
-		gWorld.getItemList().put(new Vector2(750f,511.8f), temporaryItem);
+		gWorld.getItemList().put(new Vector2(750f, 511.8f), temporaryItem);
 		temporaryItem.spawn(750f, 511.8f, 0);
 		WeaponSprite tempWeap = new WeaponSprite(gWorld);
-		gWorld.getWeaponList().put(new Vector2(720f,511.8f), tempWeap);
-		tempWeap.spawn(720f,511.8f, 0);
+		gWorld.getWeaponList().put(new Vector2(720f, 511.8f), tempWeap);
+		tempWeap.spawn(720f, 511.8f, 0);
 
-		
-		for(int i=0; i<8; i++){
-			createWeaponParts(600+(20*i), 490);
+		for (int i = 0; i < 8; i++) {
+			createWeaponParts(600 + (20 * i), 490);
 		}
 
 		// CREATING ITEMSPRITE FOR DEBUG PURPOSE
@@ -255,20 +255,7 @@ public class MMClient {
 			instance = new MMClient(gWorld, renderer, serverAddress, serverPort);
 		}
 		return instance;
-	}
-
-	// private void createBodies(int i) {
-	// if (i == 0) {
-	// playerList.add((Murderer)gWorld.getGameCharFac().createCharacter("Murderer", i, gWorld,false));
-	// playerList.get(playerList.size-1).getBody().setType(BodyType.KinematicBody);
-	// playerList.get(playerList.size-1).spawn(1010 - (((playerList.size - 1)+ 1) * 40), 515, 0);
-	//
-	// } else {
-	// playerList.add((Civilian)gWorld.getGameCharFac().createCharacter("Civilian", i, gWorld,false));
-	// playerList.get(playerList.size-1).getBody().setType(BodyType.KinematicBody);
-	// playerList.get(playerList.size-1).spawn(1010 - (((playerList.size - 1)+ 1) * 40), 515, 0);
-	// }
-	// }
+	}	
 
 	/**
 	 * Initialize client socket
@@ -309,7 +296,7 @@ public class MMClient {
 				}
 				playerList.add(gWorld.createPlayer(playerType.get("Player " + id),
 						playerPosition.get("Player " + i)[0], playerPosition.get("Player " + i)[1],
-						playerAngle.get("Player " + i),i));
+						playerAngle.get("Player " + i), i));
 			} else {
 				// Create opponent bodies
 				if (i == murdererId) {
@@ -358,18 +345,19 @@ public class MMClient {
 		updatePlayerLocation();
 		updatePlayerIsinSafeArea();
 	}
-	
+
 	public void produceItemLocation(Vector2 position) {
 		clientOutput.println("item_" + id + "_pro_" + Float.toString(position.x) + "_"
 				+ Float.toString(position.y));
 	}
-	
+
 	public void produceWeaponLocation(Vector2 position) {
 		clientOutput.println("weapon_" + id + "_pro_" + Float.toString(position.x) + "_"
 				+ Float.toString(position.y));
 	}
-	public void produceTrapLocation(float x,float y ){
-		clientOutput.println("trap_"+id+"_pro_"+Float.toString(x)+"_"+Float.toString(y));
+
+	public void produceTrapLocation(float x, float y) {
+		clientOutput.println("trap_" + id + "_pro_" + Float.toString(x) + "_" + Float.toString(y));
 	}
 
 	/**
@@ -410,9 +398,9 @@ public class MMClient {
 	 * 
 	 */
 	private void updatePlayerLocation() {
-		if (System.currentTimeMillis()-lastUpdated <= (1/UPDATES_PER_SEC*1000)){
+		if (System.currentTimeMillis() - lastUpdated <= (1 / UPDATES_PER_SEC * 1000)) {
 			return;
-			}
+		}
 		// Get player postion
 		float angle = gWorld.getPlayer().getBody().getAngle();
 		float[] position = { gWorld.getPlayer().getBody().getPosition().x,
@@ -426,7 +414,7 @@ public class MMClient {
 			clientOutput.println("loc_" + id + "_" + Float.toString(position[0]) + "_"
 					+ Float.toString(position[1]) + "_" + Float.toString(angle));
 			clientOutput.flush();
-			lastUpdated=System.currentTimeMillis();
+			lastUpdated = System.currentTimeMillis();
 		}
 	}
 
@@ -437,53 +425,71 @@ public class MMClient {
 			clientOutput.flush();
 		}
 	}
-	
-	
-	/** Update server about change in player's stun status
-	 * @param playerID ID of player status to change
-	 * @param value If 1 -> true; If 0 -> false;
+
+	/**
+	 * Update server about change in player's stun status
+	 * 
+	 * @param playerID
+	 *            ID of player status to change
+	 * @param value
+	 *            If 1 -> true; If 0 -> false;
 	 */
-	public void updatePlayerIsStun(int playerID, int value){
-		playerIsStun.put("Player "+id,value);
-		clientOutput.println("stun_"+id+"_"+playerID+"_"+value);
-	}
-	
-	/** Update server about change in player's alive status
-	 * @param playerID ID of player status to change
-	 * @param value If 1 -> true; If 0 -> false;
-	 */
-	public void updatePlayerIsAlive(int playerID, int value){
-		playerIsAlive.put("Player "+id,value);
-		clientOutput.println("alive_"+id+"_"+playerID+"_"+value);
-	}
-	
-	/** Update server about change in player's use item
-	 * @param playerID ID of player status to change
-	 * @param value If 1 -> true; If 0 -> false;
-	 */
-	public void updatePlayerUseItem(int playerID, int value){
-		playerUseItem.put("Player "+id,value);
-		clientOutput.println("alive_"+id+"_"+playerID+"_"+value);
-	}
-	
-	/** Update server about change in player's use weapon
-	 * @param playerID ID of player status to change
-	 * @param value If 1 -> true; If 0 -> false;
-	 */
-	public void updatePlayerUseWeapon(int playerID, int value){
-		playerUseWeapon.put("Player "+id,value);
-		clientOutput.println("alive_"+id+"_"+playerID+"_"+value);
-	}
-	
-	/** Update server about change in player's type
-	 * @param playerID ID of player status to change
-	 * @param value If 0 -> murderer; If 1 -> civilian; If 2-> Ghost;
-	 */
-	public void updatePlayerType (int playerID, int value){
-		playerType.put("Player "+id,value);
-		clientOutput.println("type_"+id+"_"+playerID+"_"+value);
+	public void updatePlayerIsStun(int playerID, int value) {
+		playerIsStun.put("Player " + id, value);
+		clientOutput.println("stun_" + id + "_" + playerID + "_" + value);
 	}
 
+	/**
+	 * Update server about change in player's alive status
+	 * 
+	 * @param playerID
+	 *            ID of player status to change
+	 * @param value
+	 *            If 1 -> true; If 0 -> false;
+	 */
+	public void updatePlayerIsAlive(int playerID, int value) {
+		playerIsAlive.put("Player " + id, value);
+		clientOutput.println("alive_" + id + "_" + playerID + "_" + value);
+	}
+
+	/**
+	 * Update server about change in player's use item
+	 * 
+	 * @param playerID
+	 *            ID of player status to change
+	 * @param value
+	 *            If 1 -> true; If 0 -> false;
+	 */
+	public void updatePlayerUseItem(int playerID, int value) {
+		playerUseItem.put("Player " + id, value);
+		clientOutput.println("alive_" + id + "_" + playerID + "_" + value);
+	}
+
+	/**
+	 * Update server about change in player's use weapon
+	 * 
+	 * @param playerID
+	 *            ID of player status to change
+	 * @param value
+	 *            If 1 -> true; If 0 -> false;
+	 */
+	public void updatePlayerUseWeapon(int playerID, int value) {
+		playerUseWeapon.put("Player " + id, value);
+		clientOutput.println("alive_" + id + "_" + playerID + "_" + value);
+	}
+
+	/**
+	 * Update server about change in player's type
+	 * 
+	 * @param playerID
+	 *            ID of player status to change
+	 * @param value
+	 *            If 0 -> murderer; If 1 -> civilian; If 2-> Ghost;
+	 */
+	public void updatePlayerType(int playerID, int value) {
+		playerType.put("Player " + id, value);
+		clientOutput.println("type_" + id + "_" + playerID + "_" + value);
+	}
 
 	/**
 	 * Renders the GameRenderer with other player's move.
@@ -554,7 +560,7 @@ public class MMClient {
 		gWorld.getWeaponPartList().put(new Vector2(x, y), wps);
 		wps.spawn(x, y, 0);
 	}
-	
+
 	/**
 	 * Create trap sprites on the map.
 	 * 
@@ -564,38 +570,37 @@ public class MMClient {
 	 *            Y coordinate on the map.
 	 */
 	private void createTraps(float x, float y) {
-//		ItemSprite is = new ItemSprite(gWorld);
-//		gWorld.getItemList().put(new Vector2(x, y), is);
-//		is.spawn(x, y, 0);
-		
-		trapList.put(new Vector2(x,y), new Trap(gWorld, this));
-		
-//		Trap trap = new Trap(gWorld, this);
-//		
-//		trap.spawn(x, y, 0);
-		
-		
-//		System.out.println("Define body definition");
-//		bdef.type = BodyType.StaticBody;
-//		bdef.position.set(x, y);
-//		System.out.println("Create body in world");
-//		body = gWorld.getWorld().createBody(bdef);
-//		
-//		System.out.println("Create and define shape fixture");
-//		CircleShape shape = new CircleShape();
-//		shape.setRadius(10);
-//		shape.setPosition(new Vector2(x, y));
-//		fdef.shape = shape;
-//		fdef.isSensor = true;
-//		fdef.filter.maskBits = 1;
-//		
-//		System.out.println("Set fixture to body");
-//		body.createFixture(fdef).setUserData("trap");
-//		System.out.println("Create new trap using body and fixture");
-////		Trap trap = new Trap(gWorld,bdef,fdef,body);s
-//		System.out.println("Put body into gameworld trap list");
-////		gWorld.getTrapList().put(body.getPosition(), trap);
-//		System.out.println("Trap created @ x:"+bdef.position.x+" y: "+bdef.position.y);
+		// ItemSprite is = new ItemSprite(gWorld);
+		// gWorld.getItemList().put(new Vector2(x, y), is);
+		// is.spawn(x, y, 0);
+
+		trapList.put(new Vector2(x, y), new Trap(gWorld, this));
+
+		// Trap trap = new Trap(gWorld, this);
+		//
+		// trap.spawn(x, y, 0);
+
+		// System.out.println("Define body definition");
+		// bdef.type = BodyType.StaticBody;
+		// bdef.position.set(x, y);
+		// System.out.println("Create body in world");
+		// body = gWorld.getWorld().createBody(bdef);
+		//
+		// System.out.println("Create and define shape fixture");
+		// CircleShape shape = new CircleShape();
+		// shape.setRadius(10);
+		// shape.setPosition(new Vector2(x, y));
+		// fdef.shape = shape;
+		// fdef.isSensor = true;
+		// fdef.filter.maskBits = 1;
+		//
+		// System.out.println("Set fixture to body");
+		// body.createFixture(fdef).setUserData("trap");
+		// System.out.println("Create new trap using body and fixture");
+		// // Trap trap = new Trap(gWorld,bdef,fdef,body);s
+		// System.out.println("Put body into gameworld trap list");
+		// // gWorld.getTrapList().put(body.getPosition(), trap);
+		// System.out.println("Trap created @ x:"+bdef.position.x+" y: "+bdef.position.y);
 	}
 
 	/**
@@ -624,7 +629,6 @@ public class MMClient {
 							playerAngle.get("Player " + i));
 		}
 	}
-
 
 	/**
 	 * Produces knife body from the player that used the knife.
@@ -734,7 +738,7 @@ public class MMClient {
 						Float.parseFloat(msg[4]) }));
 				gWorld.getWorld().destroyBody(gWorld.getItemList().get(position).getBody());
 				gWorld.getItemList().remove(position);
-				
+
 			} else if (msg[2].equals("pro")) {
 				System.out.println("Produce item");
 				itemLocations.produce(new Location(new float[] { Float.parseFloat(msg[3]),
@@ -775,31 +779,33 @@ public class MMClient {
 		} else if (msg[0].equals("trap")) {
 			if (msg[2].equals("con")) {
 				System.out.println("Consume trap");
-				Vector2 position = new Vector2(Float.parseFloat(msg[3]),Float.parseFloat(msg[4]));
-//				trapLocations.consume(new Location(new float[]{Float.parseFloat(msg[3]),Float.parseFloat(msg[4])}));
-				//TODO remove trap body from game world
-//				gWorld.getWorld().destroyBody(gWorld.getWeaponPartList().get(position).getBody());
-//				gWorld.getWeaponPartList().remove(position);
-			}else if (msg[2].equals("pro")){
-				System.out.println("Produce trap");;
-				//TODO add in trap body from game world
-				if(Integer.parseInt(msg[1])!= id){
+				Vector2 position = new Vector2(Float.parseFloat(msg[3]), Float.parseFloat(msg[4]));
+				// trapLocations.consume(new Location(new
+				// float[]{Float.parseFloat(msg[3]),Float.parseFloat(msg[4])}));
+				// TODO remove trap body from game world
+				// gWorld.getWorld().destroyBody(gWorld.getWeaponPartList().get(position).getBody());
+				// gWorld.getWeaponPartList().remove(position);
+			} else if (msg[2].equals("pro")) {
+				System.out.println("Produce trap");
+				;
+				// TODO add in trap body from game world
+				if (Integer.parseInt(msg[1]) != id) {
 					createTraps(Float.parseFloat(msg[3]), Float.parseFloat(msg[4]));
 				}
 			}
 		}
-		
-		else if(msg[0].equals("obstacle")){
-				System.out.println("Remove obstacle @ x:"+msg[1]+ " y: "+msg[2]);
-				Vector2 location = new Vector2(Float.parseFloat(msg[1]),Float.parseFloat(msg[2]));
-				gWorld.removeObstacle(location);
+
+		else if (msg[0].equals("obstacle")) {
+			System.out.println("Remove obstacle @ x:" + msg[1] + " y: " + msg[2]);
+			Vector2 location = new Vector2(Float.parseFloat(msg[1]), Float.parseFloat(msg[2]));
+			gWorld.removeObstacle(location);
 		}
-		
-		else if (msg[0].equals("win")){
-			if (msg[1].equals("civilian")){
-				gWorld.setGameOver(true);
-			} else if (msg[1].equals("murderer")){
-				gWorld.setGameOver(true);
+
+		else if (msg[0].equals("win")) {
+			if (msg[1].equals("civilian")) {
+				gWorld.setCivWin(true);
+			} else if (msg[1].equals("murderer")) {
+				gWorld.setMurWin(true);
 			}
 		}
 	}
@@ -821,8 +827,8 @@ class clientListener extends Thread {
 		while (!isInterrupted()) {
 			try {
 				if ((msg = input.readLine()) != null) {
-					System.out.println("MMClient Message received: "+msg);
-//					String message = new String(msg);
+					System.out.println("MMClient Message received: " + msg);
+					// String message = new String(msg);
 					client.handleMessage(msg);
 				}
 			} catch (Exception e) {
