@@ -134,19 +134,20 @@ public class AssetLoader {
 	public static TextureRegion civ_panic_rest2;
 	public static Animation civShotgunAnimation2;
 	
-	public static Texture mur_walk;
+	public static Texture murderer;
+	//public static Texture mur_walk;
 	public static Animation murAnimation;
-	public static Texture mur_knife;
+	//public static Texture mur_knife;
 	public static Animation murKnifeAnimation;
-	public static Texture mur_plantTrap;
+	//public static Texture mur_plantTrap;
 	public static Animation murPlantTrapAnimation;
-	public static Texture mur_death;
+	//public static Texture mur_death;
 	public static Animation murDeathAnimation;
-	public static Texture mur_civTransformation;
+	//public static Texture mur_civTransformation;
 	public static Animation murToCivAnimation;
-	public static Texture civ_murTransformation;
+	//public static Texture civ_murTransformation;
 	public static Animation civToMurAnimation;
-	public static Texture mur_stun;
+	//public static Texture mur_stun;
 	public static Animation murStunAnimation;
 	
 	public static Texture ghost_haunt;
@@ -364,6 +365,17 @@ public class AssetLoader {
 		civDropDisarmAnimation2 = new Animation(0.1f,civilianTR2[5]);
 		civDropDisarmAnimation2.setPlayMode(PlayMode.NORMAL);
 
+		murderer = new Texture(Gdx.files.internal("animation/MUR.png"));
+		murderer.setFilter(TextureFilter.Nearest, TextureFilter.Nearest);
+		TextureRegion[][] murTR = TextureRegion.split(murderer, 250, 250);
+		
+		murAnimation = new Animation(0.9f, Arrays.copyOfRange(murTR[0],0,3));
+		murAnimation.setPlayMode(PlayMode.LOOP_PINGPONG);
+		mur_rest = murTR[0][1];
+		
+		murKnifeAnimation = new Animation(0.2f, Arrays.copyOfRange(murTR[1],0,3));
+		murKnifeAnimation.setPlayMode(PlayMode.NORMAL);
+		
 		
 		// HUD COOLDOWN
 		cooldownTexture = new Texture(Gdx.files.internal("animation/cooldown_animation.png"));
@@ -405,24 +417,9 @@ public class AssetLoader {
 		civilianTexture0.dispose();
 		civilianTexture1.dispose();
 		civilianTexture2.dispose();
-		//civ_walk.dispose();
 		civ_dead_lines.dispose();
-		//civ_bat.dispose();
-		//civ_disarm.dispose();
-		// civ_knifeDeath.dispose();
-		// civ_trapDeath.dispose();
-		// civ_stun.dispose();
-		// civ_panic.dispose();
-		// civ_shotgun.dispose();
-		// mur_walk.dispose();
-		// mur_knife.dispose();
-		// mur_plantTrap.dispose();
-		// mur_death.dispose();
-		// mur_civTransformation.dispose();
-		// civ_murTransformation.dispose();
 		// ghost_haunt.dispose();
 		ghost_float.dispose();
-		//mur_stun.dispose();
 		plantedTrapTexture.dispose();
 		restingTrapTexture.dispose();
 		disarmTrapSpriteTexture.dispose();

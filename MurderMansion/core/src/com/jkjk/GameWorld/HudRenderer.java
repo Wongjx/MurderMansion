@@ -222,7 +222,6 @@ public class HudRenderer {
 				WeaponsCD = false;
 			}
 		}
-		System.out.println("cool down animation check: WeaponsCD == " + WeaponsCD);
 		if(WeaponsCD == true){
 			if(player.getWeapon()!=null){
 				WeaponsAnimationRunTime += Gdx.graphics.getRawDeltaTime();
