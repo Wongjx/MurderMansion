@@ -164,7 +164,7 @@ public class MMServer {
 				playerStats.getPlayerType().put("Player " + i, 1);
 			}
 
-			playerStats.getPlayerPosition().put("Player " + i, new float[] { 850 - ((i + 1) * 40), 515 });
+			playerStats.getPlayerPosition().put("Player " + i, new float[] { 880, 580 - ((i + 1) * 30)});
 			playerStats.getPlayerAngle().put("Player " + i, 3.1427f);
 
 		}
@@ -352,13 +352,17 @@ public class MMServer {
 		if (msg[0].equals("loc")) {
 			float[] position = { Float.parseFloat(msg[2]), Float.parseFloat(msg[3]) };
 			float angle = Float.parseFloat(msg[4]);
-			playerStats.updatePositionAndAngle(Integer.parseInt(msg[1]), position, angle);
+			float velocity = Float.parseFloat(msg[5]);
+			playerStats.updatePositionAndAngle(Integer.parseInt(msg[1]), position, angle, velocity);
 		} else if (msg[0].equals("pos")) {
 			float[] position = { Float.parseFloat(msg[2]), Float.parseFloat(msg[3]) };
 			playerStats.updatePosition(Integer.parseInt(msg[1]), position);
 		} else if (msg[0].equals("ang")) {
 			float angle = Float.parseFloat(msg[2]);
 			playerStats.updateAngle(Integer.parseInt(msg[1]), angle);
+		} else if (msg[0].equals("vel")){
+			float velocity = Float.parseFloat(msg[2]);
+			playerStats.updateVelocity(Integer.parseInt(msg[1]), velocity);
 		} else if (msg[0].equals("type")) {
 			playerStats.updateType(Integer.parseInt(msg[1]), Integer.parseInt(msg[2]),
 					Integer.parseInt(msg[3]));

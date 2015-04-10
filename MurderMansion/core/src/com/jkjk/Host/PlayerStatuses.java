@@ -12,6 +12,7 @@ public class PlayerStatuses implements Subject{
 	private final ConcurrentHashMap<String, Integer> playerType; // If 0 -> murderer; If 1 -> civilian; If 2-> Ghost
 	private final ConcurrentHashMap<String, float[]> playerPosition;
 	private final ConcurrentHashMap<String, Float> playerAngle;
+	private final ConcurrentHashMap<String, Float> playerVelocity;
 	private final ConcurrentHashMap<String, Integer> playerIsInSafeRegion; 
 	//TODO useItem
 	private final ConcurrentHashMap<String, Integer> playerUseItem;
@@ -34,6 +35,7 @@ public class PlayerStatuses implements Subject{
 		
 		this.playerPosition = new ConcurrentHashMap<String, float[]>(numOfPlayers);
 		this.playerAngle = new ConcurrentHashMap<String, Float>(numOfPlayers);
+		this.playerVelocity = new ConcurrentHashMap<String, Float>(numOfPlayers);
 		
 	}
 	
@@ -108,14 +110,22 @@ public class PlayerStatuses implements Subject{
 		message="ang_"+id+"_"+Float.toString(angle);
 		updateAll(id);
 	}
+	
+	public void updateVelocity(int id, float velocity){
+		playerVelocity.put("Player " + id, velocity);
+		message = "vel_" + id + "_" + Float.toString(velocity);
+		updateAll(id);
+	}
+	
 	/**Update player angle
 	 * @param id	id of client to update
 	 * @param angle Angle of player
 	 */
-	public void updatePositionAndAngle(int id,float[] position ,float angle){
+	public void updatePositionAndAngle(int id,float[] position ,float angle, float velocity){
 		playerPosition.put("Player "+id, position);
 		playerAngle.put("Player "+id, angle);
-		message="loc_"+id+"_"+Float.toString(position[0])+"_"+Float.toString(position[1])+"_"+Float.toString(angle);
+		playerVelocity.put("Player " + id, velocity);
+		message="loc_"+id+"_"+Float.toString(position[0])+"_"+Float.toString(position[1])+"_"+Float.toString(angle)+"_"+Float.toString(velocity);
 		updateAll(id);
 	}
 	
@@ -161,6 +171,9 @@ public class PlayerStatuses implements Subject{
 	}
 	public float getPlayerAngleValue(String key){
 		return playerAngle.get(key);
+	}	
+	public float getPlayerVelocityValue(String key){
+		return playerVelocity.get(key);
 	}
 	public int getPlayerIsInSafeRegion(String key){
 		return playerIsInSafeRegion.get(key);
@@ -192,6 +205,9 @@ public class PlayerStatuses implements Subject{
 	}
 	public ConcurrentHashMap<String, Float> getPlayerAngle() {
 		return playerAngle;
+	}	
+	public ConcurrentHashMap<String, Float> getPlayerVelocity() {
+		return playerVelocity;
 	}	
 	public ConcurrentHashMap<String, Integer> getPlayerIsInSafeRegion() {
 		return playerIsInSafeRegion;

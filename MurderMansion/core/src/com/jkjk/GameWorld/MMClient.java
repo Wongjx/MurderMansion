@@ -75,6 +75,7 @@ public class MMClient {
 																	// Ghost
 	private final ConcurrentHashMap<String, float[]> playerPosition;
 	private final ConcurrentHashMap<String, Float> playerAngle;
+	private final ConcurrentHashMap<String, Float> playerVelocity;
 	private boolean playerIsInSafeArea;
 
 	// private ArrayList<Location> playerLocations;
@@ -189,6 +190,7 @@ public class MMClient {
 		playerUseItem = new ConcurrentHashMap<String, Integer>(numOfPlayers);
 		playerPosition = new ConcurrentHashMap<String, float[]>(numOfPlayers);
 		playerAngle = new ConcurrentHashMap<String, Float>(numOfPlayers);
+		playerVelocity = new ConcurrentHashMap<String, Float>(numOfPlayers);
 		playerIsInSafeArea = false;
 
 		// Receive spawn positions
@@ -226,24 +228,24 @@ public class MMClient {
 
 		// CREATE SPRITES FOR TESTING
 		ItemSprite temporaryItem = new ItemSprite(gWorld);
-		gWorld.getItemList().put(new Vector2(750f, 511.8f), temporaryItem);
-		temporaryItem.spawn(750f, 511.8f, 0);
+		gWorld.getItemList().put(new Vector2(800f, 490), temporaryItem);
+		temporaryItem.spawn(800f, 490, 0);
 		WeaponSprite tempWeap = new WeaponSprite(gWorld);
-		gWorld.getWeaponList().put(new Vector2(720f, 511.8f), tempWeap);
-		tempWeap.spawn(720f, 511.8f, 0);
+		gWorld.getWeaponList().put(new Vector2(750f, 490), tempWeap);
+		tempWeap.spawn(750f, 490, 0);
 
 		for (int i = 0; i < 8; i++) {
-			createWeaponParts(600 + (20 * i), 490);
+			createWeaponParts(750 + (20 * i), 460);
 		}
 
 		// CREATING ITEMSPRITE FOR DEBUG PURPOSE
 		ItemSprite is = new ItemSprite(gWorld);
-		Vector2 location = new Vector2(750, 511.8f);
+		Vector2 location = new Vector2(800f, 540);
 		gWorld.getItemList().put(location, is);
 		is.spawn(location.x, location.y, 0);
 		// CREATING WEAPONSPRITE FOR DEBUG PURPOSE
 		WeaponSprite ws = new WeaponSprite(gWorld);
-		Vector2 location2 = new Vector2(750, 450.8f);
+		Vector2 location2 = new Vector2(750f, 540);
 		gWorld.getWeaponList().put(location2, ws);
 		ws.spawn(location2.x, location2.y, 0);
 
@@ -405,14 +407,16 @@ public class MMClient {
 		float angle = gWorld.getPlayer().getBody().getAngle();
 		float[] position = { gWorld.getPlayer().getBody().getPosition().x,
 				gWorld.getPlayer().getBody().getPosition().y };
+		float velocity = gWorld.getPlayer().getBody().getLinearVelocity().x;
 		// if angle and position has changed
 		if ((playerPosition.get("Player " + id) != position) && (playerAngle.get("Player " + id) != angle)) {
 			// Update client Hashmap
 			playerPosition.put("Player " + id, position);
 			playerAngle.put("Player " + id, angle);
+			playerVelocity.put("Player " + id, velocity);
 			// Update server
 			clientOutput.println("loc_" + id + "_" + Float.toString(position[0]) + "_"
-					+ Float.toString(position[1]) + "_" + Float.toString(angle));
+					+ Float.toString(position[1]) + "_" + Float.toString(angle) + "_" + Float.toString(velocity));
 			clientOutput.flush();
 			lastUpdated = System.currentTimeMillis();
 		}
@@ -501,24 +505,6 @@ public class MMClient {
 		}
 	}
 
-	// // FOR DEBUG PURPOSE
-	// private void createTrap() {
-	// bdef = new BodyDef();
-	// fdef = new FixtureDef();
-	// bdef.type = BodyType.StaticBody;
-	// bdef.position.set(1010, 570);
-	// body = gWorld.getWorld().createBody(bdef);
-	//
-	// CircleShape shape = new CircleShape();
-	// shape.setRadius(10);
-	// fdef.shape = shape;
-	// fdef.isSensor = true;
-	// fdef.filter.maskBits = 1;
-	//
-	// body.createFixture(fdef).setUserData("trap");
-	// }
-	//
-
 	/**
 	 * Create item sprites on the map.
 	 * 
@@ -570,37 +556,7 @@ public class MMClient {
 	 *            Y coordinate on the map.
 	 */
 	private void createTraps(float x, float y) {
-		// ItemSprite is = new ItemSprite(gWorld);
-		// gWorld.getItemList().put(new Vector2(x, y), is);
-		// is.spawn(x, y, 0);
-
 		trapList.put(new Vector2(x, y), new Trap(gWorld, this));
-
-		// Trap trap = new Trap(gWorld, this);
-		//
-		// trap.spawn(x, y, 0);
-
-		// System.out.println("Define body definition");
-		// bdef.type = BodyType.StaticBody;
-		// bdef.position.set(x, y);
-		// System.out.println("Create body in world");
-		// body = gWorld.getWorld().createBody(bdef);
-		//
-		// System.out.println("Create and define shape fixture");
-		// CircleShape shape = new CircleShape();
-		// shape.setRadius(10);
-		// shape.setPosition(new Vector2(x, y));
-		// fdef.shape = shape;
-		// fdef.isSensor = true;
-		// fdef.filter.maskBits = 1;
-		//
-		// System.out.println("Set fixture to body");
-		// body.createFixture(fdef).setUserData("trap");
-		// System.out.println("Create new trap using body and fixture");
-		// // Trap trap = new Trap(gWorld,bdef,fdef,body);s
-		// System.out.println("Put body into gameworld trap list");
-		// // gWorld.getTrapList().put(body.getPosition(), trap);
-		// System.out.println("Trap created @ x:"+bdef.position.x+" y: "+bdef.position.y);
 	}
 
 	/**
@@ -701,19 +657,25 @@ public class MMClient {
 		if (msg[0].equals("loc")) {
 			float[] position = { Float.parseFloat(msg[2]), Float.parseFloat(msg[3]) };
 			float angle = Float.parseFloat(msg[4]);
+			float velocity = Float.parseFloat(msg[5]);
 			playerPosition.put("Player " + msg[1], position);
 			playerAngle.put("Player " + msg[1], angle);
+			playerVelocity.put("Player " + msg[1], velocity);
 			// Get and change position of opponent
-			playerList.get(Integer.parseInt(msg[1])).spawn(position[0], position[1], angle);
+			playerList.get(Integer.parseInt(msg[1])).setPosition(position[0], position[1], angle, velocity);
 
 		} else if (msg[0].equals("pos")) {
-			System.out.println("Change player " + msg[1] + " positon");
+			System.out.println("Change player " + msg[1] + " position");
 			float[] position = { Float.parseFloat(msg[2]), Float.parseFloat(msg[3]) };
 			playerPosition.put("Player " + Integer.parseInt(msg[1]), position);
 		} else if (msg[0].equals("ang")) {
 			System.out.println("Change player " + msg[1] + " angle");
 			float angle = Float.parseFloat(msg[2]);
 			playerAngle.put("Player " + Integer.parseInt(msg[1]), angle);
+		} else if (msg[0].equals("vel")) {
+			System.out.println("Change player " + msg[1] + " velocity");
+			float velocity = Float.parseFloat(msg[2]);
+			playerVelocity.put("Player " + Integer.parseInt(msg[1]), velocity);
 		}
 
 		// Player Status updates

@@ -128,6 +128,11 @@ public class Murderer extends GameCharacter {
 		super.render(cam, batch);
 
 	}
+	
+	public void die(){
+		pointLight.remove();
+		super.die();
+	}
 
 	@Override
 	public void useAbility() {
