@@ -1,5 +1,7 @@
 package com.jkjk.Screens;
 
+import com.badlogic.gdx.Game;
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
 import com.jkjk.GameWorld.GameRenderer;
 import com.jkjk.GameWorld.GameWorld;
@@ -15,12 +17,17 @@ public class GameScreen implements Screen {
 	private GameRenderer renderer;
 	private HudRenderer hudRenderer;
 	private float runTime;
+	private float gameWidth;
+	private float gameHeight;
+	private MurderMansion game;
 
 	private MMServer server;
 	private MMClient client;
 
 	public GameScreen(MurderMansion game, float gameWidth, float gameHeight, GameWorld world, GameRenderer renderer) {
-		
+		this.game = game;
+		this.gameWidth = gameWidth;
+		this.gameHeight = gameHeight;
 		this.client=game.mMultiplayerSeisson.getClient();
 		this.info=game.mMultiplayerSeisson;
 		this.gWorld=client.getgWorld();
@@ -47,6 +54,14 @@ public class GameScreen implements Screen {
 		//if phone is designated server
 		if(info.isServer){
 			info.getServer().update();
+		}
+		
+		if (gWorld.isCivWin() || gWorld.isMurWin()){
+			gWorld.getGameOverTimer().update();
+			if (!gWorld.getGameOverTimer().isCountingDown()){
+//				System.out.println("GAMEWORLD UPDATE: GAMEOVER COMPLETE");
+//                ((Game)Gdx.app.getApplicationListener()).setScreen(new ScoreScreen(game, gameWidth, gameHeight, gWorld.isMurWin()));
+			}
 		}
 	}
 

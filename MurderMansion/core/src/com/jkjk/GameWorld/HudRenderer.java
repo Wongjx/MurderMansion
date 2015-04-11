@@ -41,6 +41,12 @@ public class HudRenderer {
 	private BitmapFont font;
 	private String time;
 	private Float playTime;
+	
+	// PAUSE SCREEN
+	private TextureRegionDrawable pauseButtonDraw;
+	private ImageButton pauseButton;
+	private boolean gameIsPaused = false;
+	private Texture pause_main;
 
 	private float x, y;
 	private ImageButton weaponButton, itemButton, dashButton, disguiseToCiv, disguiseToMur, hauntButton;
@@ -95,6 +101,7 @@ public class HudRenderer {
 		stage.addActor(getTimebox());
 		stage.addActor(getWeaponPartsCounter());
 		stage.addActor(getEmptySlot());
+		stage.addActor(getPauseButton());
 		abilityCheck();
 
 		Gdx.input.setInputProcessor(stage);
@@ -138,11 +145,13 @@ public class HudRenderer {
 		touchKnob.setMinHeight(touchpad.getHeight() / 4);
 		touchKnob.setMinWidth(touchpad.getWidth() / 4);
 
-		// Top Left of the screen
+		// Top part of the screen
 		timebox = AssetLoader.time;
 		weapon_parts_counter = AssetLoader.weapon_parts_counter;
 		font = AssetLoader.basker32blackTime;
-
+		pauseButtonDraw = AssetLoader.pause_button_draw;
+		pause_main = AssetLoader.pause_main;
+		
 	}
 
 	/**
@@ -155,7 +164,7 @@ public class HudRenderer {
 
 		batch.begin();
 		batch.draw(timebox, 55, 280);
-		batch.draw(weapon_parts_counter, 480, 235);
+		batch.draw(weapon_parts_counter, 440, 235);
 		batch.draw(emptySlot, 480, 22, 120, 120);
 		font.draw(batch, getTime(), 75, 330);
 		
@@ -163,6 +172,11 @@ public class HudRenderer {
 			coolDownAnimationCheck();
 			prohibitButtonsCheck();
 		}
+		
+		if (gameIsPaused==true){
+			batch.draw(pause_main, 0, 0);
+		}
+		
 		batch.end();
 
 		if (gWorld.getPlayer().getItemChange())
@@ -371,6 +385,36 @@ public class HudRenderer {
 		emptySlot_actor.setName("empty slot");
 
 		return emptySlot_actor;
+	}
+	
+	
+	
+	/**
+	 * Creates the actor for the PAUSE BUTTON at 502,253.
+	 * 
+	 * @return Actor for Bat slot
+	 */
+	public ImageButton getPauseButton() {
+
+		x = 565;
+		y = 280;
+
+		pauseButton = new ImageButton(pauseButtonDraw);
+		pauseButton.setX(x);
+		pauseButton.setY(y);
+		pauseButton.setWidth(50);
+		pauseButton.setHeight(50);
+		pauseButton.setName("Pause Button");
+
+		pauseButton.addListener(new ClickListener() {
+			public void clicked(InputEvent event, float x, float y) {
+
+				System.out.println("Clicked on pause button");
+				gameIsPaused = true;
+			}
+		});
+
+		return pauseButton;
 	}
 
 	/**

@@ -14,7 +14,6 @@ import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.jkjk.GameObjects.Items.ItemSprite;
 import com.jkjk.GameObjects.Weapons.WeaponSprite;
 import com.jkjk.GameWorld.GameWorld;
-import com.jkjk.GameWorld.MMClient;
 import com.jkjk.MMHelpers.AssetLoader;
 
 public class Ghost extends GameCharacter {
@@ -33,7 +32,7 @@ public class Ghost extends GameCharacter {
 		bdef.type = BodyType.DynamicBody;
 		body = gWorld.getWorld().createBody(bdef);
 
-		// triangular body fixture
+		// circular body fixture
 		FixtureDef fdef = new FixtureDef();
 		CircleShape shape = new CircleShape();
 		shape.setRadius(10);
@@ -59,7 +58,8 @@ public class Ghost extends GameCharacter {
 		batch.begin();
 		batch.draw(AssetLoader.civ_dead_lines, this.get_deathPositionX() - 18,
 				this.get_deathPositionY() - 18, 36, 36);
-		batch.draw(AssetLoader.ghost_float, body.getPosition().x - 16, body.getPosition().y - 17, 32, 32);
+		batch.draw(AssetLoader.ghost_float, body.getPosition().x - 9, body.getPosition().y - 9, 9, 9, 18, 18,
+				1, 1, (float) (body.getAngle() * 180 / Math.PI) - 90, 0, 0, 44, 44, false, false);
 		// (float) (body.getAngle()*180/Math.PI)-90);
 		batch.end();
 

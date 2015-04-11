@@ -9,13 +9,13 @@ import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
 import com.badlogic.gdx.physics.box2d.CircleShape;
 import com.badlogic.gdx.physics.box2d.FixtureDef;
-import com.badlogic.gdx.utils.Pool.Poolable;
 import com.jkjk.GameWorld.GameWorld;
 import com.jkjk.GameWorld.MMClient;
 import com.jkjk.MMHelpers.AssetLoader;
 
-public class Trap extends Item implements Poolable {
-	private MMClient client;
+
+public class Trap extends Item  {
+	public MMClient client;
 
 	private BodyDef bdef;
 	private Body body;
@@ -55,23 +55,28 @@ public class Trap extends Item implements Poolable {
 		playerAngle = gWorld.getPlayer().getBody().getAngle();
 
 		spawn(playerPosition.x, playerPosition.y, playerAngle);
-		client.produceTrapLocation(body.getPosition().x, body.getPosition().y);
+
+		client.produceTrapLocation(body.getPosition().x,body.getPosition().y);
 
 		isCompleted = true;
 	}
 
 	public void spawn(float x, float y, float angle) {
-
+//		Gdx.app.postRunnable(new spawnRun(this,x,y,angle));
+		
 		bdef.type = BodyType.StaticBody;
-		if (angle != 0) {
+System.out.println("Angle: " + angle);
+		if (angle == 0) {
 			bdef.position.set(x, y);
 		} else {
 			bdef.position.set(x + (float) (25f * Math.cos(angle)), y + (float) (25f * Math.sin(angle)));
 		}
+
 		body = gWorld.getWorld().createBody(bdef);
 
 		CircleShape shape = new CircleShape();
 		shape.setRadius(10);
+
 		fdef.shape = shape;
 		fdef.isSensor = true;
 		fdef.filter.maskBits = 1;
@@ -88,14 +93,28 @@ public class Trap extends Item implements Poolable {
 		}
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.badlogic.gdx.utils.Pool.Poolable#reset()
-	 */
-	@Override
-	public void reset() {
-		body.setTransform(0, 0, 0);
+
+	public BodyDef getBdef() {
+		return bdef;
 	}
 
+	public void setBdef(BodyDef bdef) {
+		this.bdef = bdef;
+	}
+
+	public Body getBody() {
+		return body;
+	}
+
+	public void setBody(Body body) {
+		this.body = body;
+	}
+
+	public FixtureDef getFdef() {
+		return fdef;
+	}
+
+	public void setFdef(FixtureDef fdef) {
+		this.fdef = fdef;
+	}
 }

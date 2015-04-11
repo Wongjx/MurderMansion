@@ -153,6 +153,12 @@ public class Civilian extends GameCharacter {
 		}
 
 	}
+	
+	public void die(){
+		coneLight.remove();
+		pointLight.remove();
+		super.die();
+	}
 
 	public void useAbility() {// panic
 		//if(currentAnimation == civWalkAnimation){

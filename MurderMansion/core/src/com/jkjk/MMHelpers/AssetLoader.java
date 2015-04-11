@@ -29,7 +29,11 @@ public class AssetLoader {
 	public static Drawable touchBackground;
 	public static Drawable touchKnob;
 	public static Texture emptySlot;
+	public static Texture pause_button_tex;
+	public static TextureRegionDrawable pause_button_draw;
 	
+	//PAUSE SCREEN
+	public static Texture pause_main;
 
 	// CIVILIAN
 	public static Texture civ_weapon_bat_tex;
@@ -197,6 +201,9 @@ public class AssetLoader {
 		title.font = menuSkin.getFont("basker45");
 		title.font.scale((Gdx.graphics.getWidth() - gameWidth) / gameWidth);
 
+		// PAUSE SCREEN
+		pause_main = new Texture(Gdx.files.internal("paused_screen/main.png"));
+		
 		// Create a touchpad
 		touchpadSkin = new Skin();
 		touchpadSkin.add("touchBackground", new Texture("HUD/touchBackground.png"));
@@ -209,6 +216,9 @@ public class AssetLoader {
 		touchpad = new Touchpad(5, touchpadStyle);
 
 		emptySlot = new Texture(Gdx.files.internal("HUD/slots.png"));
+		pause_button_tex = new Texture(Gdx.files.internal("HUD/pause_button.png"));
+		pause_button_draw = new TextureRegionDrawable(new TextureRegion(pause_button_tex));
+		
 
 		// CIVILIANS HUD
 		civ_weapon_bat_tex = new Texture(Gdx.files.internal("HUD/civ_weapon_bat.png"));
@@ -402,11 +412,13 @@ public class AssetLoader {
 		logoTexture.dispose();
 		touchpadSkin.dispose();
 		menuBackground.dispose();
+		pause_main.dispose();
 		cooldownTexture.dispose();
 		time.dispose();
 		weapon_parts_counter.dispose();
 		tiledMap.dispose();
 		emptySlot.dispose();
+		pause_button_tex.dispose();
 		civ_weapon_bat_tex.dispose();
 		civ_item_tex.dispose();
 		civ_dash_tex.dispose();
