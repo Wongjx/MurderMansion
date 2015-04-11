@@ -158,6 +158,7 @@ public class HudRenderer {
 		batch.draw(weapon_parts_counter, 480, 235);
 		batch.draw(emptySlot, 480, 22, 120, 120);
 		font.draw(batch, getTime(), 75, 330);
+		
 		if(player.getType().equals("Civilian")||player.getType().equals("Murderer")){
 			coolDownAnimationCheck();
 			prohibitButtonsCheck();
@@ -212,6 +213,12 @@ public class HudRenderer {
 
 		return counter_actor;
 	}
+	
+	private void WeaponPartsDisplay(){
+		int numParts = gWorld.getNumOfWeaponPartsCollected();
+		
+	}
+	
 	
 	/**
 	 * Handles the cool down animations of the item slots

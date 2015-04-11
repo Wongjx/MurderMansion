@@ -154,6 +154,8 @@ public class GameWorld {
 //				System.out.println("GAMEWORLD UPDATE: GAMEOVER COMPLETE");
 			}
 		}
+		
+		System.out.println("umm, num weapon parts: " + numOfWeaponPartsCollected);
 
 	}
 
