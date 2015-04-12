@@ -13,6 +13,8 @@ import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
+import com.badlogic.gdx.scenes.scene2d.ui.ImageButton.ImageButtonStyle;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton.TextButtonStyle;
@@ -42,9 +44,8 @@ public class ScoreScreen implements Screen {
     private Texture background;
     private Sprite sprite;
 
-    private TextButtonStyle normal = AssetLoader.normal;
-
-    private TextButton buttonMenu = new TextButton("Main Menu",normal);
+    private ImageButtonStyle normal1;
+    private ImageButton nextButton;
 	
 	private boolean murWin;
 	
@@ -60,6 +61,11 @@ public class ScoreScreen implements Screen {
 		// Create a Stage and add TouchPad
 		stage = new Stage();
 		table = new Table();
+		
+		BUTTON_WIDTH=60;
+    	BUTTON_HEIGHT=60;
+    	
+    	nextButton = new ImageButton(normal1);
 	}
 
 	/**
@@ -71,6 +77,7 @@ public class ScoreScreen implements Screen {
 	 *            Game Height.
 	 */
 	private void initAssets(float w, float h) {
+		normal1 = AssetLoader.normal1;
 
 	}
 	
@@ -81,22 +88,29 @@ public class ScoreScreen implements Screen {
 	public void show() {
     	
     	batch = new SpriteBatch();
-    	background = AssetLoader.menuBackground;
+    	background = AssetLoader.scoreBackground;
     	background.setFilter(TextureFilter.Linear, TextureFilter.Linear);
     	sprite = new Sprite(background);
     	sprite.setSize(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
     	
         
-        buttonMenu.addListener(new ClickListener(){
+        nextButton.addListener(new ClickListener(){
             @Override
             public void clicked(InputEvent event, float x, float y) {
             	((Game)Gdx.app.getApplicationListener()).setScreen(new MenuScreen(game, gameWidth, gameHeight));
             }
         });
-        table.add(buttonMenu).size(this.BUTTON_WIDTH,this.BUTTON_HEIGHT).padBottom(this.BUTTON_PAD).row();
+        
+        nextButton.setSize(this.BUTTON_WIDTH,this.BUTTON_HEIGHT);
+        nextButton.setPosition(560, 20);
+	    stage.addActor(nextButton);
+	    
+	    
+//        table.add(nextButton).size(this.BUTTON_WIDTH,this.BUTTON_HEIGHT);
 
         table.setFillParent(true);
         stage.addActor(table);
+        table.debug();
 
         Gdx.input.setInputProcessor(stage);
 	}
