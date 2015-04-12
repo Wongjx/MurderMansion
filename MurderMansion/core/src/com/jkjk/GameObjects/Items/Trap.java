@@ -9,6 +9,7 @@ import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
 import com.badlogic.gdx.physics.box2d.CircleShape;
 import com.badlogic.gdx.physics.box2d.FixtureDef;
+import com.jkjk.GameObjects.Characters.GameCharacter;
 import com.jkjk.GameWorld.GameWorld;
 import com.jkjk.GameWorld.MMClient;
 import com.jkjk.MMHelpers.AssetLoader;
@@ -24,9 +25,11 @@ public class Trap extends Item  {
 	private float playerAngle;
 	private Animation plantedTrapAnimation;
 	private float animationRunTime;
+	private GameCharacter character;
 
-	public Trap(GameWorld gWorld, MMClient client) {
-		super(gWorld);
+	public Trap(GameWorld gWorld, MMClient client, GameCharacter character) {
+		super(gWorld, character);
+		this.character = character;
 		this.client = client;
 		bdef = new BodyDef();
 		fdef = new FixtureDef();
@@ -49,10 +52,9 @@ public class Trap extends Item  {
 	 */
 	@Override
 	public void endUse() {
-
 		// gWorld.getPlayer().getBody().setUserData(AssetLoader.murPlantTrapAnimation);
-		playerPosition = gWorld.getPlayer().getBody().getPosition();
-		playerAngle = gWorld.getPlayer().getBody().getAngle();
+		playerPosition = character.getBody().getPosition();
+		playerAngle = character.getBody().getAngle();
 
 		spawn(playerPosition.x, playerPosition.y, playerAngle);
 
@@ -65,7 +67,6 @@ public class Trap extends Item  {
 //		Gdx.app.postRunnable(new spawnRun(this,x,y,angle));
 		
 		bdef.type = BodyType.StaticBody;
-System.out.println("Angle: " + angle);
 		if (angle == 0) {
 			bdef.position.set(x, y);
 		} else {

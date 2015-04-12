@@ -2,6 +2,7 @@ package com.jkjk.GameObjects.Weapons;
 
 import com.badlogic.gdx.physics.box2d.Body;
 import com.jkjk.GameObjects.Duration;
+import com.jkjk.GameObjects.Characters.GameCharacter;
 import com.jkjk.GameWorld.GameWorld;
 
 public abstract class Weapon {
@@ -14,7 +15,7 @@ public abstract class Weapon {
 	protected float runTime;
 	private boolean isCompleted;
 
-	Weapon(GameWorld gWorld) {
+	Weapon(GameWorld gWorld, GameCharacter character) {
 		cooldown = new Duration(5000);
 		hitBoxExposure = new Duration(10);
 		this.gWorld = gWorld;

@@ -7,13 +7,10 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
-import com.badlogic.gdx.scenes.scene2d.ui.Button.ButtonStyle;
 import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
-import com.badlogic.gdx.scenes.scene2d.ui.ImageButton.ImageButtonStyle;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton.TextButtonStyle;
 import com.badlogic.gdx.scenes.scene2d.ui.Touchpad;
@@ -23,10 +20,8 @@ import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.viewport.ExtendViewport;
 import com.jkjk.GameObjects.Characters.GameCharacter;
 import com.jkjk.GameObjects.Characters.Murderer;
-import com.jkjk.Host.MMServer;
 import com.jkjk.MMHelpers.AssetLoader;
 import com.jkjk.MurderMansion.MurderMansion;
-import com.jkjk.Screens.GameScreen;
 import com.jkjk.Screens.MenuScreen;
 
 /**
@@ -36,18 +31,15 @@ import com.jkjk.Screens.MenuScreen;
  */
 public class HudRenderer {
 	private static HudRenderer instance;
-	private static MurderMansion game;
-	private static float gameWidth;
-	private static float gameHeight;
+	private MurderMansion game;
+	private MMClient client;
+	private float gameWidth;
+	private float gameHeight;
 	private float BUTTON_WIDTH;
-    private float BUTTON_HEIGHT;
+	private float BUTTON_HEIGHT;
 
 	private GameWorld gWorld;
 	private GameCharacter player;
-	
-	public static final int V_WIDTH = 320;
-	public static final int V_HEIGHT = 180;
-	public static final int SCALE = 2;
 
 	private TextureRegionDrawable civ_bat, civ_item, civ_dash, mur_knife, mur_item, mur_CtM, mur_MtC;
 	private Texture emptySlot;
@@ -59,7 +51,7 @@ public class HudRenderer {
 	private BitmapFont font;
 	private String time;
 	private Float playTime;
-	
+
 	// PAUSE SCREEN
 	private TextureRegionDrawable pauseButtonDraw;
 	private ImageButton pauseButton;
@@ -79,7 +71,7 @@ public class HudRenderer {
 
 	private boolean PanicCD;
 	private boolean DisguiseCD;
-	//private boolean ItemsCD;
+	// private boolean ItemsCD;
 	private boolean WeaponsCD;
 	private Animation PanicCoolDownAnimation;
 	private Animation DisguiseCoolDownAnimation;
@@ -87,12 +79,11 @@ public class HudRenderer {
 	private float PanicAnimationRunTime;
 	private float DisguiseAnimationRunTime;
 	private float WeaponsAnimationRunTime;
-	
+
 	private TextButtonStyle normal;
 	private TextButton buttonMainMenu;
 	private TextButton buttonContinue;
 	private TextButton buttonSettings;
-	
 
 	/**
 	 * Constructs the link from the Box2D world created in GameWorld to HudRenderer. Allows rendering of the
@@ -106,15 +97,17 @@ public class HudRenderer {
 	 * @param gameHeight
 	 *            Accesses the virtual game height.
 	 */
-	private HudRenderer(GameWorld gWorld, float gameWidth, float gameHeight, MurderMansion game) {
+	private HudRenderer(GameWorld gWorld, MMClient client, float gameWidth, float gameHeight,
+			MurderMansion game) {
 		initAssets(gameWidth, gameHeight);
 		this.gWorld = gWorld;
+		this.client = client;
 		this.game = game;
 		this.gameWidth = gameWidth;
 		this.gameHeight = gameHeight;
-		
-		BUTTON_WIDTH=130;
-    	BUTTON_HEIGHT=100;
+
+		BUTTON_WIDTH = 130;
+		BUTTON_HEIGHT = 100;
 
 		// countdown
 		playTime = 240.0f;
@@ -133,15 +126,16 @@ public class HudRenderer {
 		abilityCheck();
 
 		Gdx.input.setInputProcessor(stage);
-		
+
 		buttonMainMenu = new TextButton("Main Menu", normal);
 		buttonContinue = new TextButton("Continue", normal);
 		buttonSettings = new TextButton("Settings", normal);
 	}
 
-	public static HudRenderer getInstance(GameWorld gWorld, float gameWidth, float gameHeight, MurderMansion game) {
+	public static HudRenderer getInstance(GameWorld gWorld, MMClient client, float gameWidth,
+			float gameHeight, MurderMansion game) {
 		if (instance == null) {
-			instance = new HudRenderer(gWorld, gameWidth, gameHeight,game);
+			instance = new HudRenderer(gWorld, client, gameWidth, gameHeight, game);
 		}
 		return instance;
 	}
@@ -184,7 +178,7 @@ public class HudRenderer {
 		pauseButtonDraw = AssetLoader.pause_button_draw;
 		pause_main = AssetLoader.pause_main;
 		normal = AssetLoader.normal;
-		
+
 	}
 
 	/**
@@ -196,60 +190,60 @@ public class HudRenderer {
 	public void render(float delta) {
 
 		batch.begin();
-		
-		if (gameIsPaused==false){
+
+		if (gameIsPaused == false) {
 			batch.draw(timebox, 55, 280);
 			batch.draw(weapon_parts_counter, 440, 235);
 			batch.draw(emptySlot, 480, 22, 120, 120);
 			font.draw(batch, getTime(), 75, 330);
 		}
-		
-		if(player.getType().equals("Civilian")||player.getType().equals("Murderer")){
+
+		if (player.getType().equals("Civilian") || player.getType().equals("Murderer")) {
 			coolDownAnimationCheck();
 			prohibitButtonsCheck();
 		}
-		
-		//PAUSE SCREEN IS LOADED
-		if (gameIsPaused==true){
+
+		// PAUSE SCREEN IS LOADED
+		if (gameIsPaused == true) {
 			batch.draw(pause_main, 0, 0);
 			stage.clear(); // why got a lonely hexagon HUD left ah??
-			
-			 buttonMainMenu.addListener(new ClickListener(){
-		            @Override
-		            public void clicked(InputEvent event, float x, float y) {
-		            	((Game)Gdx.app.getApplicationListener()).setScreen(new MenuScreen(game, gameWidth, gameHeight));
-		            }
-		        });
-			 
-			 buttonContinue.addListener(new ClickListener(){
-		            @Override
-		            public void clicked(InputEvent event, float x, float y) {
-		            	gameIsPaused=false;
-		            }
-		        });
-			 
-			 buttonSettings.addListener(new ClickListener(){
-		            @Override
-		            public void clicked(InputEvent event, float x, float y) {
-		            	System.out.println("Settings button is pressed");
-		            }
-		        });
-			 
-			 buttonMainMenu.setSize(this.BUTTON_WIDTH,this.BUTTON_HEIGHT);
-			 buttonMainMenu.setPosition(146, 90);
-		     stage.addActor(buttonMainMenu);
-		     
-		     buttonContinue.setSize(this.BUTTON_WIDTH,this.BUTTON_HEIGHT);
-		     buttonContinue.setPosition(275, 90);
-		     stage.addActor(buttonContinue);
-		     
-		     buttonSettings.setSize(this.BUTTON_WIDTH,this.BUTTON_HEIGHT);
-		     buttonSettings.setPosition(390, 90);
-		     stage.addActor(buttonSettings);
-		     
-		
+
+			buttonMainMenu.addListener(new ClickListener() {
+				@Override
+				public void clicked(InputEvent event, float x, float y) {
+					((Game) Gdx.app.getApplicationListener()).setScreen(new MenuScreen(game, gameWidth,
+							gameHeight));
+				}
+			});
+
+			buttonContinue.addListener(new ClickListener() {
+				@Override
+				public void clicked(InputEvent event, float x, float y) {
+					gameIsPaused = false;
+				}
+			});
+
+			buttonSettings.addListener(new ClickListener() {
+				@Override
+				public void clicked(InputEvent event, float x, float y) {
+					System.out.println("Settings button is pressed");
+				}
+			});
+
+			buttonMainMenu.setSize(this.BUTTON_WIDTH, this.BUTTON_HEIGHT);
+			buttonMainMenu.setPosition(146, 90);
+			stage.addActor(buttonMainMenu);
+
+			buttonContinue.setSize(this.BUTTON_WIDTH, this.BUTTON_HEIGHT);
+			buttonContinue.setPosition(275, 90);
+			stage.addActor(buttonContinue);
+
+			buttonSettings.setSize(this.BUTTON_WIDTH, this.BUTTON_HEIGHT);
+			buttonSettings.setPosition(390, 90);
+			stage.addActor(buttonSettings);
+
 		}
-		
+
 		batch.end();
 
 		if (gWorld.getPlayer().getItemChange())
@@ -300,58 +294,54 @@ public class HudRenderer {
 
 		return counter_actor;
 	}
-	
+
 	/**
 	 * Handles the cool down animations of the item slots
 	 */
-	private void coolDownAnimationCheck(){
-		if(player.getType().equals("Murderer")){
-			if (((Murderer)player).isDisguised()==true){
+	private void coolDownAnimationCheck() {
+		if (player.getType().equals("Murderer")) {
+			if (((Murderer) player).isDisguised() == true) {
 				WeaponsCD = false;
 			}
 		}
-		if(WeaponsCD == true){
-			if(player.getWeapon()!=null){
+		if (WeaponsCD == true) {
+			if (player.getWeapon() != null) {
 				WeaponsAnimationRunTime += Gdx.graphics.getRawDeltaTime();
-				if(WeaponsCoolDownAnimation.isAnimationFinished(WeaponsAnimationRunTime)){
+				if (WeaponsCoolDownAnimation.isAnimationFinished(WeaponsAnimationRunTime)) {
 					WeaponsAnimationRunTime = 0f;
 					WeaponsCD = false;
+				} else {
+					batch.draw(WeaponsCoolDownAnimation.getKeyFrame(WeaponsAnimationRunTime), 477, 25, 72, 72);
 				}
-				else{
-					batch.draw(WeaponsCoolDownAnimation.getKeyFrame(WeaponsAnimationRunTime),477,25,72,72);
-				}
-			}
-			else{
+			} else {
 				WeaponsCD = false;
 			}
 		}
-		if(PanicCD == true){
+		if (PanicCD == true) {
 			PanicAnimationRunTime += Gdx.graphics.getRawDeltaTime();
-			if(PanicCoolDownAnimation.isAnimationFinished(PanicAnimationRunTime)){
+			if (PanicCoolDownAnimation.isAnimationFinished(PanicAnimationRunTime)) {
 				PanicAnimationRunTime = 0f;
 				PanicCD = false;
-			}
-			else{
-				batch.draw(PanicCoolDownAnimation.getKeyFrame(PanicAnimationRunTime),503,70,72,72);
+			} else {
+				batch.draw(PanicCoolDownAnimation.getKeyFrame(PanicAnimationRunTime), 503, 70, 72, 72);
 			}
 		}
-		if(DisguiseCD == true){
+		if (DisguiseCD == true) {
 			DisguiseAnimationRunTime += Gdx.graphics.getRawDeltaTime();
-			if(DisguiseCoolDownAnimation.isAnimationFinished(DisguiseAnimationRunTime)){
+			if (DisguiseCoolDownAnimation.isAnimationFinished(DisguiseAnimationRunTime)) {
 				DisguiseAnimationRunTime = 0f;
 				DisguiseCD = false;
-			}
-			else{
-				batch.draw(DisguiseCoolDownAnimation.getKeyFrame(DisguiseAnimationRunTime),503,70,72,72);
+			} else {
+				batch.draw(DisguiseCoolDownAnimation.getKeyFrame(DisguiseAnimationRunTime), 503, 70, 72, 72);
 			}
 		}
-	
+
 	}
-	
-	private void prohibitButtonsCheck(){
-		if(player.getType().equals("Murderer")){
-			if (((Murderer)player).isDisguised()==true){
-				batch.draw(AssetLoader.prohibitedButton,477,25,72,72);
+
+	private void prohibitButtonsCheck() {
+		if (player.getType().equals("Murderer")) {
+			if (((Murderer) player).isDisguised() == true) {
+				batch.draw(AssetLoader.prohibitedButton, 477, 25, 72, 72);
 			}
 		}
 	}
@@ -453,9 +443,7 @@ public class HudRenderer {
 
 		return emptySlot_actor;
 	}
-	
-	
-	
+
 	/**
 	 * Creates the actor for the PAUSE BUTTON at 502,253.
 	 * 
@@ -510,9 +498,10 @@ public class HudRenderer {
 			public void clicked(InputEvent event, float x, float y) {
 
 				System.out.println("Clicked on bat button");
-				if(gWorld.getPlayer().useWeapon()){
+				if (gWorld.getPlayer().useWeapon()) {
 					// start drawing cool down animation.
 					WeaponsCD = true;
+					client.updatePlayerUseWeapon(client.getId(), 1);
 				}
 			}
 		});
@@ -544,9 +533,11 @@ public class HudRenderer {
 
 			public void clicked(InputEvent event, float x, float y) {
 				System.out.println("Clicked on shotgun button");
-				gWorld.getPlayer().useWeapon();
-				// start drawing cool down animation
-				WeaponsCD = true;
+				if (gWorld.getPlayer().useWeapon()) {
+					// start drawing cool down animation
+					WeaponsCD = true;
+					client.updatePlayerUseWeapon(client.getId(), 1);
+				}
 			}
 		});
 
@@ -578,7 +569,7 @@ public class HudRenderer {
 			public void clicked(InputEvent event, float x, float y) {
 				System.out.println("Clicked on disarm trap button");
 				gWorld.getPlayer().useItem();
-				// start drawing cool down animation
+				client.updatePlayerUseItem(client.getId(), 1);
 			}
 		});
 
@@ -637,9 +628,11 @@ public class HudRenderer {
 
 			public void clicked(InputEvent event, float x, float y) {
 				System.out.println("Clicked on knife button");
-				gWorld.getPlayer().useWeapon();
-				// start to draw cool down animation
-				WeaponsCD = true;
+				if (gWorld.getPlayer().useWeapon()) {
+					// start to draw cool down animation
+					WeaponsCD = true;
+					client.updatePlayerUseWeapon(client.getId(), 1);
+				}
 			}
 		});
 
@@ -672,7 +665,7 @@ public class HudRenderer {
 			public void clicked(InputEvent event, float x, float y) {
 				System.out.println("Clicked on trap button");
 				gWorld.getPlayer().useItem();
-				//start to draw cool down animation
+				client.updatePlayerUseItem(client.getId(), 1);
 			}
 		});
 

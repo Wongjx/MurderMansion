@@ -67,10 +67,6 @@ public class Ghost extends GameCharacter {
 
 	}
 
-	public boolean lightContains(float x, float y) {
-		return pointLight.contains(x, y);
-	}
-
 	@Override
 	public boolean useWeapon() {
 		spawnLocation = new Vector2(body.getPosition().x + (float) (25f * Math.cos(body.getAngle())),

@@ -44,6 +44,7 @@ public class PlayerStatuses implements Subject{
 	 * @param status 1 -> true; 0 -> false;
 	 */
 	public void updateIsAlive(int origin,int id,int status){
+		System.out.println("UPDATE IS ALIVE: " + status);
 		playerIsAlive.put("Player "+id, status);
 		message="alive_"+origin+"_"+id+"_"+status;
 		updateAll(origin);
@@ -74,6 +75,7 @@ public class PlayerStatuses implements Subject{
 	 * @param status 1 -> using; 0 -> normal;
 	 */
 	public void updateUseWeapon(int id,int status){
+		System.out.println("UPDATE USE WEAPON " + status);
 		playerUseWeapon.put("Player "+id, status);
 		message="useWeapon_"+id+"_"+status;
 		updateAll(id);

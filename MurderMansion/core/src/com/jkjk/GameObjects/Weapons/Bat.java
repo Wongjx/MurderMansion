@@ -5,6 +5,7 @@ import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
 import com.badlogic.gdx.physics.box2d.FixtureDef;
+import com.jkjk.GameObjects.Characters.GameCharacter;
 import com.jkjk.GameWorld.GameWorld;
 import com.jkjk.MMHelpers.AssetLoader;
 
@@ -14,9 +15,11 @@ public class Bat extends Weapon {
 	private FixtureDef fdef;
 	private Vector2 playerPosition;
 	private float playerAngle;
+	private GameCharacter character;
 
-	Bat(GameWorld gWorld) {
-		super(gWorld);
+	Bat(GameWorld gWorld, GameCharacter character) {
+		super(gWorld, character);
+		this.character = character;
 		bdef = new BodyDef();
 		fdef = new FixtureDef();
 		name = "Bat";
@@ -27,8 +30,8 @@ public class Bat extends Weapon {
 	public void use() {
 		super.use();
 		System.out.println("Used bat");
-		playerPosition = gWorld.getPlayer().getBody().getPosition();
-		playerAngle = gWorld.getPlayer().getBody().getAngle();
+		playerPosition = character.getBody().getPosition();
+		playerAngle = character.getBody().getAngle();
 		bdef.type = BodyType.DynamicBody;
 		bdef.position.set(playerPosition.x, playerPosition.y);
 		bdef.angle = playerAngle;

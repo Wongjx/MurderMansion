@@ -116,7 +116,7 @@ public class Civilian extends GameCharacter {
 					body.setUserData(civWalkAnimation);
 				}
 				if (!body.getLinearVelocity().isZero() && checkMovable()) {
-					batch.draw(currentAnimation.getKeyFrame(runTime * 3, true), body.getPosition().x - 9,
+					batch.draw(currentAnimation.getKeyFrame(runTime * 5, true), body.getPosition().x - 9,
 							body.getPosition().y - 9, 9, 9, 18, 18, 6f, 6f,
 							(float) (body.getAngle() * 180 / Math.PI) - 90);
 
@@ -126,7 +126,7 @@ public class Civilian extends GameCharacter {
 				}
 			} else if (currentAnimation == civWalkAnimation) {
 				if (!body.getLinearVelocity().isZero() && checkMovable()) {
-					batch.draw(currentAnimation.getKeyFrame(runTime * 3, true), body.getPosition().x - 9,
+					batch.draw(currentAnimation.getKeyFrame(runTime * 4, true), body.getPosition().x - 9,
 							body.getPosition().y - 9, 9, 9, 18, 18, 6f, 6f,
 							(float) (body.getAngle() * 180 / Math.PI) - 90);
 

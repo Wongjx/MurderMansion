@@ -6,6 +6,7 @@ import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
 import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.jkjk.GameObjects.Duration;
+import com.jkjk.GameObjects.Characters.GameCharacter;
 import com.jkjk.GameWorld.GameWorld;
 import com.jkjk.MMHelpers.AssetLoader;
 
@@ -16,9 +17,11 @@ public class DisarmTrap extends Item {
 	private Vector2 playerPosition;
 	private float playerAngle;
 	private Duration hitBoxExposure;
+	private GameCharacter character;
 
-	DisarmTrap(GameWorld gWorld) {
-		super(gWorld);
+	DisarmTrap(GameWorld gWorld, GameCharacter character) {
+		super(gWorld, character);
+		this.character = character;
 		bdef = new BodyDef();
 		fdef = new FixtureDef();
 		hitBoxExposure = new Duration(10);
@@ -27,8 +30,8 @@ public class DisarmTrap extends Item {
 	@Override
 	public void startUse() {
 		System.out.println("Used disarm trap");
-		playerPosition = gWorld.getPlayer().getBody().getPosition();
-		playerAngle = gWorld.getPlayer().getBody().getAngle();
+		playerPosition = character.getBody().getPosition();
+		playerAngle = character.getBody().getAngle();
 		bdef.type = BodyType.DynamicBody;
 		bdef.position.set(playerPosition.x, playerPosition.y);
 		bdef.angle = playerAngle;
@@ -58,8 +61,8 @@ public class DisarmTrap extends Item {
 
 		isCompleted = false;
 		//gWorld.getPlayer().getBody().setUserData(AssetLoader.civDisarmAnimation);
-		playerPosition = gWorld.getPlayer().getBody().getPosition();
-		playerAngle = gWorld.getPlayer().getBody().getAngle();
+		playerPosition = character.getBody().getPosition();
+		playerAngle = character.getBody().getAngle();
 		bdef.type = BodyType.DynamicBody;
 		bdef.position.set(playerPosition.x, playerPosition.y);
 		bdef.angle = playerAngle;
@@ -91,8 +94,7 @@ public class DisarmTrap extends Item {
 		}
 
 	}
-	
-	@Override
+
 	public void foundTrap(){
 		isInterrupted = false;
 	}

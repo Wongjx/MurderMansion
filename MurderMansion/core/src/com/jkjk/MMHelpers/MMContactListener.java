@@ -8,6 +8,7 @@ import com.badlogic.gdx.physics.box2d.Fixture;
 import com.badlogic.gdx.physics.box2d.Manifold;
 import com.badlogic.gdx.utils.Array;
 import com.jkjk.GameWorld.GameWorld;
+import com.jkjk.GameObjects.Items.DisarmTrap;
 
 /**
  * @author JunXiang Will handle contact between weapons and characters
@@ -100,8 +101,8 @@ public class MMContactListener implements ContactListener {
 					atStairs = true;
 					stairsName = "LbS1";
 				} else if (faUD.equals("bat") || fbUD.equals("bat")) {
-					if (!gWorld.getPlayer().getType().equals("Ghost"))
-						gWorld.getPlayer().stun(true);
+					if (!gWorld.getPlayer().getType().equals("Ghost")){
+						gWorld.getPlayer().stun(true);}
 				} else if (faUD.equals("trap")) {
 					if (gWorld.getPlayer().getType().equals("Civilian")) {
 						gWorld.getPlayer().die();
@@ -113,24 +114,21 @@ public class MMContactListener implements ContactListener {
 						trapToRemove.add(fb.getBody());
 					}
 				} else if (faUD.equals("knife") || fbUD.equals("knife")) {
-					if (!gWorld.getPlayer().getType().equals("Ghost"))
+					if (!gWorld.getPlayer().getType().equals("Ghost")) {
 						gWorld.getPlayer().die();
+					}
 				} else if (faUD.equals("shotgun") || fbUD.equals("shotgun")) {
-					if (!gWorld.getPlayer().getType().equals("Ghost"))
+					if (!gWorld.getPlayer().getType().equals("Ghost")) {
 						gWorld.getPlayer().die();
+					}
 				} else if (faUD.equals("saferegion") || fbUD.equals("saferegion")) {
 					gWorld.setInSafeArea(true);
 				}
-			} else { // non player fixture interaction
-						// in contact with all other object fixtures but other light fixtures
-				/*
-				 * if (faUD.equals("lightBody") && !fbUD.equals("lightBody")) {
-				 * System.out.println("FB: draw sprite of " + fbUD); bodiesToDraw.add(fb.getBody()); }
-				 */
+			} else {
 
 				if (faUD.equals("pre disarm trap") || fbUD.equals("pre disarm trap")) {
 					if (faUD.equals("trap") || fbUD.equals("trap")) {
-						gWorld.getPlayer().getItem().foundTrap();
+						((DisarmTrap)gWorld.getPlayer().getItem()).foundTrap();
 					}
 				}
 

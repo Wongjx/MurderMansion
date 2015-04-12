@@ -68,7 +68,7 @@ public abstract class GameCharacter {
 		this.deathPositionX = 0;
 		this.deathPositionY = 0;
 
-		if (isPlayer || type == "Ghost"){
+		if (isPlayer || type == "Ghost") {
 			rayHandler = gWorld.getRayHandler();
 		} else {
 			rayHandler = new RayHandler(gWorld.getWorld());
@@ -127,7 +127,9 @@ public abstract class GameCharacter {
 	}
 
 	public void stun(boolean stun) {
+		System.out.println("STUN LIAO LOR");
 		this.stun = stun;
+		stunDuration.startCountdown();
 	}
 
 	public boolean isStun() {
@@ -202,7 +204,8 @@ public abstract class GameCharacter {
 	}
 
 	public void useItem() {
-		item.startUse();
+		if (isPlayer)
+			item.startUse();
 	}
 
 	public boolean getItemChange() {
@@ -221,55 +224,55 @@ public abstract class GameCharacter {
 		this.abilityChange = abilityChange;
 	}
 
-	public abstract boolean lightContains(float x, float y);
+	public boolean lightContains(float x, float y) {
+		return rayHandler.pointAtLight(x, y);
+	}
 
 	public void update() {
-		if (isPlayer) {
-			if (weapon != null) {
-				weapon.update();
-				if (weapon.isCompleted() && weaponUses == 0) {
-					weapon = null;
-					weaponChange = true;
-				}
+		if (weapon != null) {
+			weapon.update();
+			if (weapon.isCompleted() && weaponUses == 0) {
+				weapon = null;
+				weaponChange = true;
 			}
-			if (item != null) {
-				item.update();
-				if (!item.inUse() && item.isCompleted()) {
-					item = null;
-					itemChange = true;
-				}
+		}
+		if (item != null) {
+			item.update();
+			if (!item.inUse() && item.isCompleted()) {
+				item = null;
+				itemChange = true;
 			}
-			if (ability != null) {
-				ability.update();
-			}
-			if (stun) {
-				stunDuration.update();
-				if (!stunDuration.isCountingDown())
-					stun = false;
-			}
+		}
+		if (ability != null) {
+			ability.update();
+		}
+		if (stun) {
+			stunDuration.update();
+			if (!stunDuration.isCountingDown())
+				stun = false;
 		}
 	}
 
 	public void render(OrthographicCamera cam, SpriteBatch batch) {
 		if (isPlayer) {
-				brightTime = System.currentTimeMillis() - startTime;
+			brightTime = System.currentTimeMillis() - startTime;
 
-				if (brightTime > nextBrightTime) {
-					System.out.println("BRIGHTER!");
-					ambientLightValue += 0.009;
-					rayHandler.setAmbientLight(ambientLightValue);
-					nextBrightTime += 10000;
-				}
+			if (brightTime > nextBrightTime) {
+				System.out.println("BRIGHTER!");
+				ambientLightValue += 0.009;
+				rayHandler.setAmbientLight(ambientLightValue);
+				nextBrightTime += 10000;
+			}
 
-				if (checkMovable()) {
-					playerMovement();
-				} else {
-					body.setAngularVelocity(0);
-					body.setLinearVelocity(0, 0);
-				}
+			if (checkMovable()) {
+				playerMovement();
+			} else {
+				body.setAngularVelocity(0);
+				body.setLinearVelocity(0, 0);
+			}
 
-				cam.position.set(body.getPosition(), 0); // Set cam position to be on player
-			
+			cam.position.set(body.getPosition(), 0); // Set cam position to be on player
+
 			rayHandler.setCombinedMatrix(cam.combined);
 			rayHandler.updateAndRender();
 		}
@@ -277,8 +280,10 @@ public abstract class GameCharacter {
 	}
 
 	protected boolean checkMovable() {
-		if (stun)
+		if (stun) {
+			System.out.println("IM STUNNED!");
 			return false;
+		}
 		if (item != null)
 			if (item.inUse())
 				return false;
@@ -320,7 +325,7 @@ public abstract class GameCharacter {
 
 	public void setPosition(float x, float y, float angle, float velocity) {
 		body.setTransform(x, y, angle);
-		if (velocity != 0){
+		if (velocity != 0) {
 			body.setLinearVelocity(0.00001f, 0.000001f);
 		}
 	}

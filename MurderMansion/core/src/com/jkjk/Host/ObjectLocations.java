@@ -76,7 +76,7 @@ public class ObjectLocations implements Subject{
 	public void consumeTrap(Location location,int origin) throws InterruptedException {
 		synchronized (trapLocations) {
 			trapLocations.consume(location);
-			message="trap"+origin+"_con_"+Float.toString(location.get()[0])+"_"+Float.toString(location.get()[1]);
+			message="trap_"+origin+"_con_"+Float.toString(location.get()[0])+"_"+Float.toString(location.get()[1]);
 			updateAll(origin);
 		}
 	}

@@ -22,7 +22,7 @@ public class Murderer extends GameCharacter {
 	private GameWorld gWorld;
 	private float animationRunTime;
 	private boolean disguised; // true for civilian, false for murderer
-	
+
 	// Animations for disguised
 	private Animation civWalkAnimation;
 	private Animation civStunAnimation;
@@ -51,22 +51,22 @@ public class Murderer extends GameCharacter {
 		pointLight.attachToBody(body);
 		Light.setContactFilter((short) 2, (short) 2, (short) 1);
 		disguised = true;
-		
+
 		// INITIATE ANIMATIONS
-		
+
 		animationRunTime = 0;
-		switch(id%AssetLoader.NUM_CIVILIAN_TEXTURES){
-		case 0: 
+		switch (id % AssetLoader.NUM_CIVILIAN_TEXTURES) {
+		case 0:
 			civWalkAnimation = AssetLoader.civAnimation0;
 			civStunAnimation = AssetLoader.civStunAnimation0;
 			civRest = AssetLoader.civ_rest0;
-			break;				
-		case 1: 
+			break;
+		case 1:
 			civWalkAnimation = AssetLoader.civAnimation1;
 			civStunAnimation = AssetLoader.civStunAnimation1;
 			civRest = AssetLoader.civ_rest1;
 			break;
-		case 2: 
+		case 2:
 			civWalkAnimation = AssetLoader.civAnimation2;
 			civStunAnimation = AssetLoader.civStunAnimation2;
 			civRest = AssetLoader.civ_rest2;
@@ -83,25 +83,24 @@ public class Murderer extends GameCharacter {
 			runTime += Gdx.graphics.getRawDeltaTime();
 			currentAnimation = (Animation) body.getUserData();
 			batch.begin();
-			
-			 if(currentAnimation == AssetLoader.murAnimation || currentAnimation == civWalkAnimation){
-				 if (!body.getLinearVelocity().isZero() && checkMovable()) {
-					 batch.draw(currentAnimation.getKeyFrame(runTime*3, true), body.getPosition().x -9,
-							 body.getPosition().y - 9, 9, 9, 18, 18, 6f, 6f,
-							 (float) (body.getAngle() * 180 / Math.PI) - 90);
-				 } else {
-					 if (isDisguised()) {
-						 batch.draw(civRest, body.getPosition().x -9,
-								 body.getPosition().y - 9, 9, 9, 18, 18, 6f, 6f,
-								 (float) (body.getAngle() * 180 / Math.PI) - 90);
-					 } else {
-						 batch.draw(AssetLoader.mur_rest, body.getPosition().x -9,//to be changed to mur_rest when ready.
-								 body.getPosition().y - 9, 9, 9, 18, 18, 6f, 6f,
-								 (float) (body.getAngle() * 180 / Math.PI) - 90);
-					 }
-				 }
-			 }
-			else {
+
+			if (currentAnimation == AssetLoader.murAnimation || currentAnimation == civWalkAnimation) {
+				if (!body.getLinearVelocity().isZero() && checkMovable()) {
+					batch.draw(currentAnimation.getKeyFrame(runTime * 4, true), body.getPosition().x - 9,
+							body.getPosition().y - 9, 9, 9, 18, 18, 6f, 6f,
+							(float) (body.getAngle() * 180 / Math.PI) - 90);
+				} else {
+					if (isDisguised()) {
+						batch.draw(civRest, body.getPosition().x - 9, body.getPosition().y - 9, 9, 9, 18, 18,
+								6f, 6f, (float) (body.getAngle() * 180 / Math.PI) - 90);
+					} else {
+						batch.draw(AssetLoader.mur_rest,
+								body.getPosition().x - 9,// to be changed to mur_rest when ready.
+								body.getPosition().y - 9, 9, 9, 18, 18, 6f, 6f,
+								(float) (body.getAngle() * 180 / Math.PI) - 90);
+					}
+				}
+			} else {
 				animationRunTime += Gdx.graphics.getRawDeltaTime();
 				if (currentAnimation.isAnimationFinished(animationRunTime)) { // reset
 					animationRunTime = 0;
@@ -109,27 +108,26 @@ public class Murderer extends GameCharacter {
 						body.setUserData(civWalkAnimation);
 					} else {
 						System.out.println("waiting for murderer png yeah?");
-						//body.setUserData(civWalkAnimation);
+						// body.setUserData(civWalkAnimation);
 						body.setUserData(AssetLoader.murAnimation);
 					}
 				} else {// disable touchpad while special animation occurs.
 					body.setLinearVelocity(0, 0);
 					body.setAngularVelocity(0);
 					batch.draw(currentAnimation.getKeyFrame(animationRunTime, true),
-							body.getPosition().x -9,
-							body.getPosition().y - 9, 9, 9, 18, 18, 6f, 6f,
+							body.getPosition().x - 9, body.getPosition().y - 9, 9, 9, 18, 18, 6f, 6f,
 							(float) (body.getAngle() * 180 / Math.PI) - 90);
 				}
 			}
 
 			batch.end();
 		}
-		
+
 		super.render(cam, batch);
 
 	}
-	
-	public void die(){
+
+	public void die() {
 		pointLight.remove();
 		super.die();
 	}
@@ -142,7 +140,7 @@ public class Murderer extends GameCharacter {
 			abilityChange = true;
 		}
 	}
-	
+
 	public boolean isDisguised() {
 		return disguised;
 	}
@@ -151,26 +149,24 @@ public class Murderer extends GameCharacter {
 		this.disguised = disguised;
 	}
 
-	public boolean lightContains(float x, float y) {
-		return pointLight.contains(x, y);
-	}
-	
-	public boolean useWeapon(){
-		if (!disguised){
+	public boolean useWeapon() {
+		if (!disguised) {
+			if (!weapon.isOnCooldown())
+				body.setUserData(AssetLoader.murKnifeAnimation);
 			super.useWeapon();
-			body.setUserData(AssetLoader.murKnifeAnimation);
 			return true;
 		} else {
 			System.out.println("You cannot use your weapon while disguised.");
 			return false;
 		}
 	}
-	public void stun(boolean stun){
-		if(!isDisguised()){
-			//body.setUserData(AssetLoader.murStunAnimation);
+
+	public void stun(boolean stun) {
+		super.stun(true);
+		if (!isDisguised()) {
+			// body.setUserData(AssetLoader.murStunAnimation);
 			body.setUserData(civStunAnimation);
-		}
-		else{
+		} else {
 			body.setUserData(civStunAnimation);
 		}
 	}

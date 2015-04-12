@@ -373,14 +373,14 @@ public class MMServer {
 			playerStats.updateIsStun(Integer.parseInt(msg[1]), Integer.parseInt(msg[2]),
 					Integer.parseInt(msg[3]));
 		} else if (msg[0].equals("safe")) {
-			System.out.println("Player " + msg[1] + "is safe.");
+			System.out.println("Player " + msg[1] + " is safe.");
 			playerStats.updateIsInSafeRegion(Integer.parseInt(msg[1]), Integer.parseInt(msg[2]));
 		} else if (msg[0].equals("useItem")) {
-			System.out.println("Player " + msg[1] + "using item.");
-			playerStats.updateUseItem(Integer.parseInt(msg[1]), Integer.parseInt(msg[2]));
+			System.out.println("Player " + msg[1] + " using item.");
+			playerStats.updateUseItem(Integer.parseInt(msg[2]), Integer.parseInt(msg[3]));
 		} else if (msg[0].equals("useWeapon")) {
-			System.out.println("Player " + msg[1] + "using weapon.");
-			playerStats.updateUseWeapon(Integer.parseInt(msg[1]), Integer.parseInt(msg[2]));
+			System.out.println("Player " + msg[1] + " using weapon.");
+			playerStats.updateUseWeapon(Integer.parseInt(msg[2]), Integer.parseInt(msg[3]));
 		}
 
 		// If item consumption or production message
