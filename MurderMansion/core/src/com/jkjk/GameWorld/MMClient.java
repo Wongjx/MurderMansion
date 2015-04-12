@@ -461,18 +461,18 @@ public class MMClient {
 	 * @param playerID ID of player status to change
 	 * @param value If 1 -> true; If 0 -> false;
 	 */
-	public void updatePlayerUseItem(int playerID, int value){
-		playerUseItem.put("Player "+id,value);
-		clientOutput.println("alive_"+id+"_"+playerID+"_"+value);
+	public void updatePlayerUseItem(int value){
+		playerUseItem.put("Player "+id,value); 
+		clientOutput.println("useItem_"+id+"_"+value);
 	}
 	
 	/** Update server about change in player's use weapon
 	 * @param playerID ID of player status to change
 	 * @param value If 1 -> true; If 0 -> false;
 	 */
-	public void updatePlayerUseWeapon(int playerID, int value){
+	public void updatePlayerUseWeapon(int value){
 		playerUseWeapon.put("Player "+id,value);
-		clientOutput.println("alive_"+id+"_"+playerID+"_"+value);
+		clientOutput.println("useWeapon_"+id+"_"+value);
 	}
 	
 	/** Update server about change in player's type
@@ -782,7 +782,6 @@ public class MMClient {
 //				gWorld.getWeaponPartList().remove(position);
 			}else if (msg[2].equals("pro")){
 				System.out.println("Produce trap");;
-				//TODO add in trap body from game world
 				if(Integer.parseInt(msg[1])!= id){
 					createTraps(Float.parseFloat(msg[3]), Float.parseFloat(msg[4]));
 				}
