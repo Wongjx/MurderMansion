@@ -133,12 +133,14 @@ public class Murderer extends GameCharacter {
 	}
 
 	@Override
-	public void useAbility() {
+	public boolean useAbility() {
 		if (!ability.isOnCoolDown()) {
 			ability.use();
 			ability.cooldown();
 			abilityChange = true;
+			return true;
 		}
+		return false;
 	}
 
 	public boolean isDisguised() {

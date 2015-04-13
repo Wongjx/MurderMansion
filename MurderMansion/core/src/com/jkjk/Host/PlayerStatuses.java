@@ -75,10 +75,26 @@ public class PlayerStatuses implements Subject{
 	 * @param status 1 -> using; 0 -> normal;
 	 */
 	public void updateUseWeapon(int id,int status){
-		System.out.println("UPDATE USE WEAPON " + status);
 		playerUseWeapon.put("Player "+id, status);
 		message="useWeapon_"+id+"_"+status;
 		updateAll(id);
+	}
+	
+	/** Update player use ability state
+	 * @param id Id of client to update
+	 * @param status 1 -> using; 0 -> normal;
+	 */
+	public void updateUseAbility(int id,int status){
+		playerUseWeapon.put("Player "+id, status);
+		message="useAbility_"+id+"_"+status;
+		updateAll(id);
+	}
+	
+	/** Update player to create shotgun
+	 */
+	public void updateShotgunCreated(){
+		message="createShotgun";
+		updateAll(-1);
 	}
 	
 	/**Update player type
@@ -214,6 +230,5 @@ public class PlayerStatuses implements Subject{
 	public ConcurrentHashMap<String, Integer> getPlayerIsInSafeRegion() {
 		return playerIsInSafeRegion;
 	}
-
 
 }

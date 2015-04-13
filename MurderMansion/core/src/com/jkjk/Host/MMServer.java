@@ -46,7 +46,8 @@ public class MMServer {
 
 	private final ObstaclesHandler obstaclesHandler;
 	private float[] obstacleDestroyed; // To transmit position of obstacle destroyed to clients
-
+	
+	private int weaponPartsCollected;
 	private GameStatus gameStatus;
 	private int numInSafeRegion;
 	private int numStillAlive;
@@ -381,6 +382,15 @@ public class MMServer {
 		} else if (msg[0].equals("useWeapon")) {
 			System.out.println("Player " + msg[1] + " using weapon.");
 			playerStats.updateUseWeapon(Integer.parseInt(msg[2]), Integer.parseInt(msg[3]));
+		} else if (msg[0].equals("useAbility")) {
+			System.out.println("Player " + msg[1] + " using ability.");
+			playerStats.updateUseAbility(Integer.parseInt(msg[2]), Integer.parseInt(msg[3]));
+		} else if (msg[0].equals("addWeaponPart")) {
+			System.out.println("Add weapon part");
+			weaponPartsCollected++;
+			if (weaponPartsCollected == numOfPlayers*2){
+				playerStats.updateShotgunCreated();
+			}
 		}
 
 		// If item consumption or production message

@@ -46,7 +46,6 @@ public class GameWorld {
 	private ConcurrentHashMap<Vector2, WeaponSprite> weaponList;
 
 	private ConcurrentHashMap<Vector2, WeaponPartSprite> weaponPartList;
-	private int numOfWeaponPartsCollected;
 	private boolean shotgunCreated;
 	private boolean inSafeArea;
 	private boolean civWin;
@@ -108,7 +107,6 @@ public class GameWorld {
 		weaponFac = new WeaponFactory();
 		weaponList = new ConcurrentHashMap<Vector2, WeaponSprite>();
 
-		numOfWeaponPartsCollected = 0;
 		weaponPartList = new ConcurrentHashMap<Vector2, WeaponPartSprite>();
 
 		obstacleList = new ConcurrentHashMap<Vector2, Obstacles>();
@@ -151,11 +149,6 @@ public class GameWorld {
 		checkWeaponPartSprite(client);
 		checkTrap(client);
 
-		if (numOfWeaponPartsCollected == 8 && !shotgunCreated) {
-			createShotgun();
-			shotgunCreated = true;
-		}
-
 	}
 
 	/**
@@ -183,15 +176,6 @@ public class GameWorld {
 	public void createDoor() {
 		if (player.getType() == "Murderer") {
 			new Obstacles(this, new Vector2(915.2f, 511.8f), 0);
-		}
-	}
-
-	/**
-	 * If the player is a civilian, his weapon will be replaced with a shotgun
-	 */
-	private void createShotgun() {
-		if (player.getType().equals("Civilian")) {
-			player.addWeapon(weaponFac.createWeapon("Shotgun", this, player));
 		}
 	}
 
@@ -275,7 +259,7 @@ public class GameWorld {
 			weaponPartList.remove(bodyToRemove.getPosition());
 			world.destroyBody(bodyToRemove);
 			if (player.getType().equals("Civilian")) {
-				numOfWeaponPartsCollected++;
+				client.addWeaponPartCollected();
 			}
 		}
 	}
@@ -353,20 +337,6 @@ public class GameWorld {
 	 */
 	public GameCharacter getPlayer() {
 		return player;
-	}
-
-	/**
-	 * @return Number of Weapon Parts Collected
-	 */
-	public int getNumOfWeaponPartsCollected() {
-		return numOfWeaponPartsCollected;
-	}
-
-	/**
-	 * Adds 1 to number of weapon parts collected.
-	 */
-	public void weaponPartsCollected() {
-		this.numOfWeaponPartsCollected++;
 	}
 
 	/**

@@ -156,11 +156,13 @@ public abstract class GameCharacter {
 		return ability;
 	}
 
-	public void useAbility() {
+	public boolean useAbility() {
 		if (!ability.isOnCoolDown()) {
 			ability.use();
 			ability.cooldown();
+			return true;
 		}
+		return false;
 	}
 
 	public void addWeapon(Weapon weapon) {

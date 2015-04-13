@@ -153,18 +153,19 @@ public class Civilian extends GameCharacter {
 		}
 
 	}
-	
-	public void die(){
+
+	public void die() {
 		coneLight.remove();
 		pointLight.remove();
 		super.die();
 	}
 
-	public void useAbility() {// panic
-		//if(currentAnimation == civWalkAnimation){
-			super.useAbility();
+	public boolean useAbility() {// panic
+		if (super.useAbility()) {
 			body.setUserData(civPanicAnimation);
-		//}
+			return true;
+		}
+		return false;
 	}
 
 	public void stun(boolean stun) {// stun
@@ -174,8 +175,8 @@ public class Civilian extends GameCharacter {
 	}
 
 	public boolean useWeapon() {// bat
-		if(currentAnimation == civWalkAnimation || currentAnimation == civPanicAnimation){
-			if(super.useWeapon()){//boolean
+		if (currentAnimation == civWalkAnimation || currentAnimation == civPanicAnimation) {
+			if (super.useWeapon()) {// boolean
 				if (weapon.getName().equals("Shotgun")) {
 					body.setUserData(civShotgunAnimation);
 				} else {
@@ -188,7 +189,7 @@ public class Civilian extends GameCharacter {
 	}
 
 	public void useItem() {
-		if(currentAnimation == civWalkAnimation || currentAnimation == civPanicAnimation){
+		if (currentAnimation == civWalkAnimation || currentAnimation == civPanicAnimation) {
 			super.useItem();
 			body.setUserData(civDisarmAnimation);
 		}

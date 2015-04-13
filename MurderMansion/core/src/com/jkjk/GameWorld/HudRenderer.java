@@ -596,9 +596,12 @@ public class HudRenderer {
 				System.out.println("Clicked on panic button");
 				// Used to check character position FOR TESTING
 				System.out.println(gWorld.getPlayer().getBody().getPosition());
-				gWorld.getPlayer().useAbility();
-				// start drawing cool down animation with ability frame time.
-				PanicCD = true;
+
+				if (gWorld.getPlayer().useAbility()) {
+					// start drawing cool down animation with ability frame time.
+					PanicCD = true;
+					client.updatePlayerUseAbility(client.getId(), 1);
+				}
 			}
 		});
 
@@ -693,9 +696,11 @@ public class HudRenderer {
 				System.out.println("Clicked on disguise to civilian button");
 				// Used to check character position FOR TESTING
 				System.out.println(gWorld.getPlayer().getBody().getPosition());
-				gWorld.getPlayer().useAbility();
-				// start to draw cool down animation with ability frame time
-				DisguiseCD = true;
+				if (gWorld.getPlayer().useAbility()) {
+					// start drawing cool down animation with ability frame time.
+					DisguiseCD = true;
+					client.updatePlayerUseAbility(client.getId(), 1);
+				}
 			}
 		});
 
@@ -730,9 +735,11 @@ public class HudRenderer {
 				System.out.println("Clicked on disguise to murderer button");
 				// Used to check character position FOR TESTING
 				System.out.println(gWorld.getPlayer().getBody().getPosition());
-				gWorld.getPlayer().useAbility();
-				// start to draw cool down animation with ability frame time
-				DisguiseCD = true;
+				if (gWorld.getPlayer().useAbility()) {
+					// start drawing cool down animation with ability frame time.
+					DisguiseCD = true;
+					client.updatePlayerUseAbility(client.getId(), 1);
+				}
 			}
 		});
 
