@@ -60,6 +60,9 @@ public class MMClient {
 	private BufferedReader clientInput;
 	private PrintWriter clientOutput;
 
+	private float currentPositionX;
+	private float currentPositionY;
+
 	private int numOfPlayers;
 	private int id;
 	private int murdererId;
@@ -70,10 +73,6 @@ public class MMClient {
 
 	private final ConcurrentHashMap<String, Integer> playerIsAlive; // If 1 ->true; If 0 -> false;
 	private final ConcurrentHashMap<String, Integer> playerIsStun; // If 1 -> true; If 0 -> false;
-
-	private final ConcurrentHashMap<String, Integer> playerUseAbility; // If 1 -> true; If 0 -> false;
-	private final ConcurrentHashMap<String, Integer> playerUseWeapon; // If 1 -> true; If 0 -> false;
-	private final ConcurrentHashMap<String, Integer> playerUseItem; // If 1 -> true; If 0 -> false;
 	private final ConcurrentHashMap<String, Integer> playerType; // If 0 -> murderer;If 1 -> civilian; If 2 ->
 																	// Ghost
 	private final ConcurrentHashMap<String, float[]> playerPosition;
@@ -89,14 +88,6 @@ public class MMClient {
 	private ObstaclesHandler obstaclesHandler;
 
 	private HashMap<Vector2, Trap> trapList;
-
-	public HashMap<Vector2, Trap> getTrapList() {
-		return trapList;
-	}
-
-	public void setTrapList(HashMap<Vector2, Trap> trapList) {
-		this.trapList = trapList;
-	}
 
 	/**
 	 * Constructs the multiplayer world, including creation of opponents.
@@ -185,9 +176,6 @@ public class MMClient {
 		playerType = new ConcurrentHashMap<String, Integer>(numOfPlayers);
 		playerIsAlive = new ConcurrentHashMap<String, Integer>(numOfPlayers);
 		playerIsStun = new ConcurrentHashMap<String, Integer>(numOfPlayers);
-		playerUseAbility = new ConcurrentHashMap<String, Integer>(numOfPlayers);
-		playerUseWeapon = new ConcurrentHashMap<String, Integer>(numOfPlayers);
-		playerUseItem = new ConcurrentHashMap<String, Integer>(numOfPlayers);
 		playerPosition = new ConcurrentHashMap<String, float[]>(numOfPlayers);
 		playerAngle = new ConcurrentHashMap<String, Float>(numOfPlayers);
 		playerVelocity = new ConcurrentHashMap<String, Float>(numOfPlayers);
@@ -289,8 +277,6 @@ public class MMClient {
 		for (int i = 0; i < numOfPlayers; i++) {
 			playerIsAlive.put("Player " + i, 1);
 			playerIsStun.put("Player " + i, 0);
-			playerUseItem.put("Player " + i, 0);
-			playerUseWeapon.put("Player " + i, 0);
 			if (i == id) {
 				System.out.println("I'M PLAYER NUMBER " + id);
 				// If self
@@ -474,9 +460,8 @@ public class MMClient {
 	 * @param value
 	 *            If 1 -> true; If 0 -> false;
 	 */
-	public void updatePlayerUseItem(int playerID, int value) {
-		playerUseItem.put("Player " + id, value);
-		clientOutput.println("useItem_" + id + "_" + playerID + "_" + value);
+	public void updatePlayerUseItem() {
+		clientOutput.println("useItem_" + id);
 	}
 
 	/**
@@ -487,9 +472,8 @@ public class MMClient {
 	 * @param value
 	 *            If 1 -> true; If 0 -> false;
 	 */
-	public void updatePlayerUseWeapon(int playerID, int value) {
-		playerUseWeapon.put("Player " + id, value);
-		clientOutput.println("useWeapon_" + id + "_" + playerID + "_" + value);
+	public void updatePlayerUseWeapon() {
+		clientOutput.println("useWeapon_" + id);
 	}
 
 	/**
@@ -500,9 +484,8 @@ public class MMClient {
 	 * @param value
 	 *            If 1 -> true; If 0 -> false;
 	 */
-	public void updatePlayerUseAbility(int playerID, int value) {
-		playerUseWeapon.put("Player " + id, value);
-		clientOutput.println("useAbility_" + id + "_" + playerID + "_" + value);
+	public void updatePlayerUseAbility() {
+		clientOutput.println("useAbility_" + id);
 	}
 
 	/**
@@ -613,6 +596,7 @@ public class MMClient {
 	 * Player uses weapon
 	 */
 	private void weaponUsed(int id) {
+		System.out.println("WHO USED WEAPON? PLAYER " + id + " DID!");
 		if (playerType.get("Player " + id) == 0) {
 			playerList.get(id).addWeapon(weaponFac.createWeapon("Knife", gWorld, playerList.get(id)));
 		} else if (playerType.get("Player " + id) == 1) {
@@ -622,6 +606,9 @@ public class MMClient {
 		playerList.get(id).useWeapon();
 	}
 
+	/**
+	 * Creates shotgun for all players in their weapon.
+	 */
 	private void createShotgun() {
 		for (GameCharacter gc : playerList) {
 			if (gc.getType() == "Civilian") {
@@ -634,6 +621,7 @@ public class MMClient {
 	 * Player uses ability
 	 */
 	private void abilityUsed(int id) {
+		System.out.println("WHO USED ABILITY? PLAYER " + id + " DID!");
 		playerList.get(id).useAbility();
 	}
 
@@ -681,6 +669,14 @@ public class MMClient {
 		return id;
 	}
 
+	public HashMap<Vector2, Trap> getTrapList() {
+		return trapList;
+	}
+
+	public void setTrapList(HashMap<Vector2, Trap> trapList) {
+		this.trapList = trapList;
+	}
+
 	public void sendToServer(String message) {
 		clientOutput.println(message);
 		clientOutput.flush();
@@ -690,6 +686,23 @@ public class MMClient {
 		clientInput.close();
 		clientOutput.close();
 		clientSocket.close();
+	}
+
+	/**
+	 * @param parseInt
+	 */
+	private void killPlayer(int id) {
+		currentPositionX = playerList.get(id).getBody().getPosition().x;
+		currentPositionY = playerList.get(id).getBody().getPosition().y;
+
+		playerList.get(id).die();
+		gWorld.getWorld().destroyBody(playerList.get(id).getBody());
+		playerList.set(id, gameCharFac.createCharacter("Ghost", id, gWorld, false));
+		playerList.get(id).spawn(playerPosition.get("Player " + id)[0],
+				playerPosition.get("Player " + id)[1], playerAngle.get("Player " + id));
+
+		playerList.get(id).set_deathPositionX(currentPositionX);
+		playerList.get(id).set_deathPositionY(currentPositionY);
 	}
 
 	public void handleMessage(String message) {
@@ -724,22 +737,19 @@ public class MMClient {
 			playerType.put("Player " + Integer.parseInt(msg[2]), Integer.parseInt(msg[3]));
 		} else if (msg[0].equals("alive")) {
 			playerIsAlive.put("Player " + Integer.parseInt(msg[2]), Integer.parseInt(msg[3]));
-			playerList.get(Integer.parseInt(msg[2])).die();
-			gWorld.getWorld().destroyBody(playerList.get(Integer.parseInt(msg[2])).getBody());
-			playerList.set((Integer.parseInt(msg[2])),
-					gameCharFac.createCharacter("Ghost", Integer.parseInt(msg[2]), gWorld, false));
+			killPlayer(Integer.parseInt(msg[2]));
+
 		} else if (msg[0].equals("stun")) {
 			playerIsStun.put("Player " + Integer.parseInt(msg[2]), Integer.parseInt(msg[3]));
 			playerList.get(Integer.parseInt(msg[2])).stun(true);
 		} else if (msg[0].equals("useItem")) {
-			playerUseItem.put("Player " + Integer.parseInt(msg[1]), Integer.parseInt(msg[2]));
 			itemUsed(Integer.parseInt(msg[1]));
 		} else if (msg[0].equals("useWeapon")) {
-			playerUseWeapon.put("Player " + Integer.parseInt(msg[1]), Integer.parseInt(msg[2]));
 			weaponUsed(Integer.parseInt(msg[1]));
 		} else if (msg[0].equals("useAbility")) {
-			playerUseAbility.put("Player " + Integer.parseInt(msg[1]), Integer.parseInt(msg[2]));
 			abilityUsed(Integer.parseInt(msg[1]));
+		} else if (msg[0].equals("weaponPartCollected")) {
+			gWorld.addNumOfWeaponPartsCollected();
 		} else if (msg[0].equals("createShotgun")) {
 			createShotgun();
 		}
@@ -758,7 +768,6 @@ public class MMClient {
 				System.out.println("Produce item");
 				itemLocations.produce(new Location(new float[] { Float.parseFloat(msg[3]),
 						Float.parseFloat(msg[4]) }));
-				// Spawn weapon in game world
 				createItems(Float.parseFloat(msg[3]), Float.parseFloat(msg[4]));
 			}
 		} else if (msg[0].equals("weapon")) {
@@ -773,7 +782,6 @@ public class MMClient {
 				System.out.println("Produce weapon");
 				weaponLocations.produce(new Location(new float[] { Float.parseFloat(msg[3]),
 						Float.parseFloat(msg[4]) }));
-				// Spawn weapon in game world
 				createWeapons(Float.parseFloat(msg[3]), Float.parseFloat(msg[4]));
 			}
 		} else if (msg[0].equals("weaponpart")) {
@@ -788,7 +796,6 @@ public class MMClient {
 				System.out.println("Produce weaponpart");
 				weaponPartLocations.produce(new Location(new float[] { Float.parseFloat(msg[3]),
 						Float.parseFloat(msg[4]) }));
-				// Spawn weapon in game world
 				createWeaponParts(Float.parseFloat(msg[3]), Float.parseFloat(msg[4]));
 			}
 		} else if (msg[0].equals("trap")) {

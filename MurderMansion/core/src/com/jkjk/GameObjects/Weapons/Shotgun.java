@@ -23,6 +23,20 @@ public class Shotgun extends Weapon {
 		bdef = new BodyDef();
 		fdef = new FixtureDef();
 		name = "Shotgun";
+		bdef.type = BodyType.DynamicBody;
+		bdef.position.set(0, 0);
+		body = gWorld.getWorld().createBody(bdef);
+		body.setActive(false);
+
+		Vector2[] vertices = { new Vector2(15, 0), new Vector2(43.3f, 25), new Vector2(47, 17.1f),
+				new Vector2(49.2f, 8.7f), new Vector2(50, 0), new Vector2(49.2f, -8.7f),
+				new Vector2(47, -17.1f), new Vector2(43.3f, -25) };
+		PolygonShape shape = new PolygonShape();
+		shape.set(vertices);
+		fdef.shape = shape;
+		fdef.isSensor = true;
+		fdef.filter.maskBits = 1;
+		body.createFixture(fdef).setUserData("shotgun");
 	}
 
 	@Override
@@ -31,20 +45,9 @@ public class Shotgun extends Weapon {
 		System.out.println("Used shotgun");
 		playerPosition = character.getBody().getPosition();
 		playerAngle = character.getBody().getAngle();
-		bdef.type = BodyType.DynamicBody;
-		bdef.position.set(playerPosition.x, playerPosition.y);
-		bdef.angle = playerAngle;
-		body = gWorld.getWorld().createBody(bdef);
-		
-		Vector2[] vertices = { new Vector2(15, 0), new Vector2(110.85f, 64), new Vector2(120.28f, 43.78f),
-				new Vector2(126.06f, 22.23f), new Vector2(128, 0), new Vector2(126.06f, -22.23f),
-				new Vector2(120.28f, -43.78f), new Vector2(110.85f, -64) };
-		PolygonShape shape = new PolygonShape();
-		shape.set(vertices);
-		fdef.shape = shape;
-		fdef.isSensor = true;
-		fdef.filter.maskBits = 1;
-		body.createFixture(fdef).setUserData("shotgun");
+
+		body.setActive(true);
+		body.setTransform(playerPosition.x, playerPosition.y, playerAngle);
 
 		hitBoxExposure.startCountdown();
 	}

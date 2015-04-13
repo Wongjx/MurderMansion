@@ -46,7 +46,8 @@ public class GameWorld {
 	private ConcurrentHashMap<Vector2, WeaponSprite> weaponList;
 
 	private ConcurrentHashMap<Vector2, WeaponPartSprite> weaponPartList;
-	private boolean shotgunCreated;
+	private int numOfWeaponPartsCollected;
+
 	private boolean inSafeArea;
 	private boolean civWin;
 	private boolean murWin;
@@ -423,6 +424,14 @@ public class GameWorld {
 
 	public void setTrapToRemove(Body value) {
 		this.trapToRemove.add(value);
+	}
+	
+	public int getNumOfWeaponPartsCollected() {
+		return numOfWeaponPartsCollected;
+	}
+
+	public void addNumOfWeaponPartsCollected() {
+		this.numOfWeaponPartsCollected++;
 	}
 
 }

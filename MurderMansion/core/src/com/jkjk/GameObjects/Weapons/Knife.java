@@ -24,18 +24,10 @@ public class Knife extends Weapon {
 		bdef = new BodyDef();
 		fdef = new FixtureDef();
 		name = "Knife";
-	}
-
-	@Override
-	public void use() {
-		super.use();
-		System.out.println("Used knife");
-		playerPosition = character.getBody().getPosition();
-		playerAngle = character.getBody().getAngle();
 		bdef.type = BodyType.DynamicBody;
-		bdef.position.set(playerPosition.x, playerPosition.y);
-		bdef.angle = playerAngle;
+		bdef.position.set(0, 0);
 		body = gWorld.getWorld().createBody(bdef);
+		body.setActive(false);
 
 		Vector2[] vertices = { new Vector2(15, 0), new Vector2(20, 8.9f), new Vector2(28, 5.6f),
 				new Vector2(32, 0), new Vector2(28, -5.6f), new Vector2(20, -8.9f) };
@@ -45,6 +37,17 @@ public class Knife extends Weapon {
 		fdef.isSensor = true;
 		fdef.filter.maskBits = 1;
 		body.createFixture(fdef).setUserData("knife");
+	}
+
+	@Override
+	public void use() {
+		super.use();
+		System.out.println("Used knife");
+		playerPosition = character.getBody().getPosition();
+		playerAngle = character.getBody().getAngle();
+
+		body.setActive(true);
+		body.setTransform(playerPosition.x, playerPosition.y, playerAngle);
 
 		hitBoxExposure.startCountdown();
 	}

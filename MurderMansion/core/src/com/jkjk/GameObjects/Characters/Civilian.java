@@ -95,6 +95,16 @@ public class Civilian extends GameCharacter {
 			civRest = AssetLoader.civ_rest2;
 			civPanicRest = AssetLoader.civ_panic_rest2;
 			break;
+		case 3:
+			civWalkAnimation = AssetLoader.civAnimation3;
+			civPanicAnimation = AssetLoader.civPanicAnimation3;
+			civStunAnimation = AssetLoader.civStunAnimation3;
+			civBatAnimation = AssetLoader.civBatAnimation3;
+			civShotgunAnimation = AssetLoader.civShotgunAnimation3;
+			civDisarmAnimation = AssetLoader.civDisarmAnimation3;
+			civRest = AssetLoader.civ_rest3;
+			civPanicRest = AssetLoader.civ_panic_rest3;
+			break;
 		default:
 			System.out.println("CIVILIAN CLASS ANIMATION ERROR");
 		}
@@ -193,9 +203,5 @@ public class Civilian extends GameCharacter {
 			super.useItem();
 			body.setUserData(civDisarmAnimation);
 		}
-	}
-
-	public boolean lightContains(float x, float y) {
-		return coneLight.contains(x, y) || pointLight.contains(x, y);
 	}
 }

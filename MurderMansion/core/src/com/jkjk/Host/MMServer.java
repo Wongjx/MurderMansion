@@ -13,8 +13,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Enumeration;
 import java.util.Random;
-import java.util.concurrent.ConcurrentHashMap;
-
 import com.badlogic.gdx.Gdx;
 import com.jkjk.Host.Helpers.Location;
 import com.jkjk.Host.Helpers.ObstaclesHandler;
@@ -52,6 +50,7 @@ public class MMServer {
 	private int numInSafeRegion;
 	private int numStillAlive;
 	private boolean win;
+	private Random random;
 
 	private MMServer(int numOfPlayers, MultiplayerSeissonInfo info) throws InterruptedException {
 		this.numOfPlayers = numOfPlayers;
@@ -75,6 +74,7 @@ public class MMServer {
 		nextObstacleRemoveTime = 30000;
 
 		gameStatus = new GameStatus();
+		random = new Random();
 
 		initPlayers();
 
@@ -107,7 +107,7 @@ public class MMServer {
 				objectLocations.spawnWeapons(1);
 			if (!objectLocations.getWeaponPartLocations().isFull())
 				objectLocations.spawnWeaponParts(1);
-			nextItemSpawnTime += (new Random().nextInt(15000) + 10000);
+			nextItemSpawnTime += (random.nextInt(15000) + 10000);
 		}
 
 		// Opens random door in mansion
@@ -156,8 +156,6 @@ public class MMServer {
 		for (int i = 0; i < numOfPlayers; i++) {
 			playerStats.getPlayerIsAlive().put("Player " + i, 1);
 			playerStats.getPlayerIsStun().put("Player " + i, 0);
-			playerStats.getPlayerUseItem().put("Player " + i, 0);
-			playerStats.getPlayerUseWeapon().put("Player " + i, 0);
 			playerStats.getPlayerIsInSafeRegion().put("Player " + i, 0);
 			if (i == murdererId) {
 				playerStats.getPlayerType().put("Player " + i, 0);
@@ -378,16 +376,17 @@ public class MMServer {
 			playerStats.updateIsInSafeRegion(Integer.parseInt(msg[1]), Integer.parseInt(msg[2]));
 		} else if (msg[0].equals("useItem")) {
 			System.out.println("Player " + msg[1] + " using item.");
-			playerStats.updateUseItem(Integer.parseInt(msg[2]), Integer.parseInt(msg[3]));
+			playerStats.updateUseItem(Integer.parseInt(msg[1]));
 		} else if (msg[0].equals("useWeapon")) {
 			System.out.println("Player " + msg[1] + " using weapon.");
-			playerStats.updateUseWeapon(Integer.parseInt(msg[2]), Integer.parseInt(msg[3]));
+			playerStats.updateUseWeapon(Integer.parseInt(msg[1]));
 		} else if (msg[0].equals("useAbility")) {
 			System.out.println("Player " + msg[1] + " using ability.");
-			playerStats.updateUseAbility(Integer.parseInt(msg[2]), Integer.parseInt(msg[3]));
+			playerStats.updateUseAbility(Integer.parseInt(msg[1]));
 		} else if (msg[0].equals("addWeaponPart")) {
 			System.out.println("Add weapon part");
 			weaponPartsCollected++;
+			playerStats.updateWeaponPartsCollected();
 			if (weaponPartsCollected == numOfPlayers*2){
 				playerStats.updateShotgunCreated();
 			}

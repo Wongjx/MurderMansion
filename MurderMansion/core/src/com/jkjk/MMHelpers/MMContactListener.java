@@ -121,6 +121,10 @@ public class MMContactListener implements ContactListener {
 					if (!gWorld.getPlayer().getType().equals("Ghost")) {
 						gWorld.getPlayer().die();
 					}
+				} else if (faUD.equals("haunt") || fbUD.equals("haunt")) {
+					if (!gWorld.getPlayer().getType().equals("Ghost")) {
+						gWorld.getPlayer().haunt(true);
+					}
 				} else if (faUD.equals("saferegion") || fbUD.equals("saferegion")) {
 					gWorld.setInSafeArea(true);
 				}

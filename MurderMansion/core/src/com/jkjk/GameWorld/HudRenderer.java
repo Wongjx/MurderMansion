@@ -41,7 +41,7 @@ public class HudRenderer {
 	private GameWorld gWorld;
 	private GameCharacter player;
 
-	private TextureRegionDrawable civ_bat, civ_item, civ_dash, mur_knife, mur_item, mur_CtM, mur_MtC;
+	private TextureRegionDrawable civ_bat, civ_item, civ_dash, mur_knife, mur_item, mur_CtM, mur_MtC, haunt;
 	private Texture emptySlot;
 	private Actor emptySlot_actor;
 	private Texture timebox;
@@ -71,19 +71,25 @@ public class HudRenderer {
 
 	private boolean PanicCD;
 	private boolean DisguiseCD;
+	private boolean HauntCD;
 	// private boolean ItemsCD;
 	private boolean WeaponsCD;
 	private Animation PanicCoolDownAnimation;
 	private Animation DisguiseCoolDownAnimation;
+	private Animation HauntCoolDownAnimation;
 	private Animation WeaponsCoolDownAnimation;
 	private float PanicAnimationRunTime;
 	private float DisguiseAnimationRunTime;
 	private float WeaponsAnimationRunTime;
+	private float HauntAnimationRunTime;
 
 	private TextButtonStyle normal;
 	private TextButton buttonMainMenu;
 	private TextButton buttonContinue;
 	private TextButton buttonSettings;
+	
+	private int minutes;
+	private int seconds;
 
 	/**
 	 * Constructs the link from the Box2D world created in GameWorld to HudRenderer. Allows rendering of the
@@ -152,9 +158,10 @@ public class HudRenderer {
 		emptySlot = AssetLoader.emptySlot;
 		PanicCoolDownAnimation = AssetLoader.PanicCoolDownAnimation;
 		DisguiseCoolDownAnimation = AssetLoader.DisguiseCoolDownAnimation;
+		HauntCoolDownAnimation = AssetLoader.HauntCoolDownAnimation;
 		WeaponsCoolDownAnimation = AssetLoader.WeaponsCoolDownAnimation;
-		PanicCD = DisguiseCD = WeaponsCD = false;
-		WeaponsAnimationRunTime = DisguiseAnimationRunTime = PanicAnimationRunTime = 0f;
+		PanicCD = DisguiseCD = WeaponsCD = HauntCD = false;
+		WeaponsAnimationRunTime = DisguiseAnimationRunTime = PanicAnimationRunTime = HauntAnimationRunTime = 0f;
 		civ_bat = AssetLoader.civ_weapon_bat_draw;
 		civ_item = AssetLoader.civ_item_draw;
 		civ_dash = AssetLoader.civ_dash_draw;
@@ -162,6 +169,7 @@ public class HudRenderer {
 		mur_item = AssetLoader.mur_item_draw;
 		mur_CtM = AssetLoader.mur_swap_M_draw;
 		mur_MtC = AssetLoader.mur_swap_C_draw;
+		haunt = AssetLoader.haunt_draw;
 
 		// Touchpad stuff
 		touchpad = AssetLoader.touchpad;
@@ -190,18 +198,14 @@ public class HudRenderer {
 	public void render(float delta) {
 
 		batch.begin();
+		batch.draw(timebox, 55, 280);
+		batch.draw(weapon_parts_counter, 440, 235);
+		batch.draw(emptySlot, 480, 22, 120, 120);
+		font.draw(batch, getTime(delta), 80, 328);
+		WeaponPartsDisplay();
 
-		if (gameIsPaused == false) {
-			batch.draw(timebox, 55, 280);
-			batch.draw(weapon_parts_counter, 440, 235);
-			batch.draw(emptySlot, 480, 22, 120, 120);
-			font.draw(batch, getTime(), 75, 330);
-		}
-
-		if (player.getType().equals("Civilian") || player.getType().equals("Murderer")) {
-			coolDownAnimationCheck();
-			prohibitButtonsCheck();
-		}
+		coolDownAnimationCheck(delta);
+		prohibitButtonsCheck();
 
 		// PAUSE SCREEN IS LOADED
 		if (gameIsPaused == true) {
@@ -261,11 +265,11 @@ public class HudRenderer {
 	/**
 	 * @return Time left in the game
 	 */
-	public String getTime() {
+	public String getTime(float delta) {
 
-		playTime -= Gdx.graphics.getDeltaTime(); //
-		int minutes = (int) Math.floor(playTime / 60.0f);
-		int seconds = (int) Math.floor(playTime - minutes * 60);
+		playTime -= delta; //
+		minutes = (int) Math.floor(playTime / 60.0f);
+		seconds = (int) Math.floor(playTime - minutes * 60);
 		time = String.format("%d:%02d", minutes, seconds);
 
 		return time;
@@ -295,30 +299,39 @@ public class HudRenderer {
 		return counter_actor;
 	}
 
+	private void WeaponPartsDisplay() {
+		int numParts = gWorld.getNumOfWeaponPartsCollected();
+		font.draw(batch, Integer.toString(numParts), 456, 325);
+		font.draw(batch, Integer.toString(client.getNumOfPlayers() * 2), 520, 312);
+	}
+
 	/**
 	 * Handles the cool down animations of the item slots
 	 */
-	private void coolDownAnimationCheck() {
+	private void coolDownAnimationCheck(float delta) {
 		if (player.getType().equals("Murderer")) {
 			if (((Murderer) player).isDisguised() == true) {
 				WeaponsCD = false;
 			}
 		}
 		if (WeaponsCD == true) {
-			if (player.getWeapon() != null) {
-				WeaponsAnimationRunTime += Gdx.graphics.getRawDeltaTime();
-				if (WeaponsCoolDownAnimation.isAnimationFinished(WeaponsAnimationRunTime)) {
-					WeaponsAnimationRunTime = 0f;
-					WeaponsCD = false;
+			if (player.getType().equals("Civilian") || player.getType().equals("Murderer")) {
+				if (player.getWeapon() != null) {
+					WeaponsAnimationRunTime += delta;
+					if (WeaponsCoolDownAnimation.isAnimationFinished(WeaponsAnimationRunTime)) {
+						WeaponsAnimationRunTime = 0f;
+						WeaponsCD = false;
+					} else {
+						batch.draw(WeaponsCoolDownAnimation.getKeyFrame(WeaponsAnimationRunTime), 477, 25,
+								72, 72);
+					}
 				} else {
-					batch.draw(WeaponsCoolDownAnimation.getKeyFrame(WeaponsAnimationRunTime), 477, 25, 72, 72);
+					WeaponsCD = false;
 				}
-			} else {
-				WeaponsCD = false;
 			}
 		}
 		if (PanicCD == true) {
-			PanicAnimationRunTime += Gdx.graphics.getRawDeltaTime();
+			PanicAnimationRunTime += delta;
 			if (PanicCoolDownAnimation.isAnimationFinished(PanicAnimationRunTime)) {
 				PanicAnimationRunTime = 0f;
 				PanicCD = false;
@@ -327,12 +340,21 @@ public class HudRenderer {
 			}
 		}
 		if (DisguiseCD == true) {
-			DisguiseAnimationRunTime += Gdx.graphics.getRawDeltaTime();
+			DisguiseAnimationRunTime += delta;
 			if (DisguiseCoolDownAnimation.isAnimationFinished(DisguiseAnimationRunTime)) {
 				DisguiseAnimationRunTime = 0f;
 				DisguiseCD = false;
 			} else {
 				batch.draw(DisguiseCoolDownAnimation.getKeyFrame(DisguiseAnimationRunTime), 503, 70, 72, 72);
+			}
+		}
+		if (HauntCD == true) {
+			HauntAnimationRunTime += delta;
+			if (HauntCoolDownAnimation.isAnimationFinished(HauntAnimationRunTime)) {
+				HauntAnimationRunTime = 0f;
+				HauntCD = false;
+			} else {
+				batch.draw(HauntCoolDownAnimation.getKeyFrame(HauntAnimationRunTime), 503, 70, 72, 72);
 			}
 		}
 
@@ -479,8 +501,8 @@ public class HudRenderer {
 	 */
 	public ImageButton getBat() {
 
-		x = 502;
-		y = 43;
+		x = 493;
+		y = 40;
 
 		weaponButton = new ImageButton(civ_bat);
 		weaponButton.setX(x);
@@ -501,7 +523,7 @@ public class HudRenderer {
 				if (gWorld.getPlayer().useWeapon()) {
 					// start drawing cool down animation.
 					WeaponsCD = true;
-					client.updatePlayerUseWeapon(client.getId(), 1);
+					client.updatePlayerUseWeapon();
 				}
 			}
 		});
@@ -516,8 +538,8 @@ public class HudRenderer {
 	 */
 	public ImageButton getShotgun() {
 
-		x = 505;
-		y = 41;
+		x = 493;
+		y = 40;
 
 		weaponButton = new ImageButton(AssetLoader.civ_weapon_gun_draw);
 		weaponButton.setX(x);
@@ -536,7 +558,7 @@ public class HudRenderer {
 				if (gWorld.getPlayer().useWeapon()) {
 					// start drawing cool down animation
 					WeaponsCD = true;
-					client.updatePlayerUseWeapon(client.getId(), 1);
+					client.updatePlayerUseWeapon();
 				}
 			}
 		});
@@ -551,8 +573,8 @@ public class HudRenderer {
 	 */
 	public ImageButton getDisarmTrap() {
 
-		x = 557;
-		y = 45;
+		x = 547;
+		y = 40;
 
 		itemButton = new ImageButton(civ_item);
 		itemButton.setX(x);
@@ -569,7 +591,7 @@ public class HudRenderer {
 			public void clicked(InputEvent event, float x, float y) {
 				System.out.println("Clicked on disarm trap button");
 				gWorld.getPlayer().useItem();
-				client.updatePlayerUseItem(client.getId(), 1);
+				client.updatePlayerUseItem();
 			}
 		});
 
@@ -600,7 +622,7 @@ public class HudRenderer {
 				if (gWorld.getPlayer().useAbility()) {
 					// start drawing cool down animation with ability frame time.
 					PanicCD = true;
-					client.updatePlayerUseAbility(client.getId(), 1);
+					client.updatePlayerUseAbility();
 				}
 			}
 		});
@@ -614,7 +636,7 @@ public class HudRenderer {
 	 * @return Actor for Knife slot
 	 */
 	public ImageButton getKnife() {
-		x = 505;
+		x = 493;
 		y = 40;
 
 		weaponButton = new ImageButton(mur_knife);
@@ -634,7 +656,7 @@ public class HudRenderer {
 				if (gWorld.getPlayer().useWeapon()) {
 					// start to draw cool down animation
 					WeaponsCD = true;
-					client.updatePlayerUseWeapon(client.getId(), 1);
+					client.updatePlayerUseWeapon();
 				}
 			}
 		});
@@ -668,7 +690,7 @@ public class HudRenderer {
 			public void clicked(InputEvent event, float x, float y) {
 				System.out.println("Clicked on trap button");
 				gWorld.getPlayer().useItem();
-				client.updatePlayerUseItem(client.getId(), 1);
+				client.updatePlayerUseItem();
 			}
 		});
 
@@ -699,7 +721,7 @@ public class HudRenderer {
 				if (gWorld.getPlayer().useAbility()) {
 					// start drawing cool down animation with ability frame time.
 					DisguiseCD = true;
-					client.updatePlayerUseAbility(client.getId(), 1);
+					client.updatePlayerUseAbility();
 				}
 			}
 		});
@@ -738,7 +760,7 @@ public class HudRenderer {
 				if (gWorld.getPlayer().useAbility()) {
 					// start drawing cool down animation with ability frame time.
 					DisguiseCD = true;
-					client.updatePlayerUseAbility(client.getId(), 1);
+					client.updatePlayerUseAbility();
 				}
 			}
 		});
@@ -752,10 +774,10 @@ public class HudRenderer {
 	 * @return Actor for Haunt slot.
 	 */
 	public ImageButton getHaunt() {
-		x = 528;
-		y = 100;
+		x = 518;
+		y = 85;
 
-		hauntButton = new ImageButton(civ_item);
+		hauntButton = new ImageButton(haunt);
 		hauntButton.setX(x);
 		hauntButton.setY(y);
 		hauntButton.setName("Haunt");
@@ -765,9 +787,11 @@ public class HudRenderer {
 				System.out.println("Clicked haunt button");
 				// Used to check character position FOR TESTING
 				System.out.println(gWorld.getPlayer().getBody().getPosition());
-				gWorld.getPlayer().useAbility();
-				// start to draw cool down animation with ability frame time
-				DisguiseCD = true;
+				if (gWorld.getPlayer().useAbility()) {
+					// start drawing cool down animation with ability frame time.
+					HauntCD = true;
+					client.updatePlayerUseAbility();
+				}
 			}
 		});
 

@@ -23,7 +23,21 @@ public class Bat extends Weapon {
 		bdef = new BodyDef();
 		fdef = new FixtureDef();
 		name = "Bat";
-		
+		bdef.type = BodyType.DynamicBody;
+		bdef.position.set(0, 0);
+		body = gWorld.getWorld().createBody(bdef);
+		body.setActive(false);
+
+		Vector2[] vertices = { new Vector2(15, 0), new Vector2(27.7f, 16), new Vector2(30, 10.9f),
+				new Vector2(31.5f, 5.6f), new Vector2(32, 0), new Vector2(31.5f, -5.6f),
+				new Vector2(30, -10.9f), new Vector2(27.7f, -16) };
+		PolygonShape shape = new PolygonShape();
+		shape.set(vertices);
+		fdef.shape = shape;
+		fdef.isSensor = true;
+		fdef.filter.maskBits = 1;
+		body.createFixture(fdef).setUserData("bat");
+
 	}
 
 	@Override
@@ -32,22 +46,11 @@ public class Bat extends Weapon {
 		System.out.println("Used bat");
 		playerPosition = character.getBody().getPosition();
 		playerAngle = character.getBody().getAngle();
-		bdef.type = BodyType.DynamicBody;
-		bdef.position.set(playerPosition.x, playerPosition.y);
-		bdef.angle = playerAngle;
-		body = gWorld.getWorld().createBody(bdef);
 
-		Vector2[] vertices = { new Vector2(15, 0), new Vector2(27.7f, 16), new Vector2(30, 10.9f), new Vector2(31.5f, 5.6f),
-				new Vector2(32, 0), new Vector2(31.5f,-5.6f), new Vector2(30, -10.9f), new Vector2(27.7f,-16) };
-		PolygonShape shape = new PolygonShape();
-		shape.set(vertices);
-		fdef.shape = shape;
-		fdef.isSensor = true;
-		fdef.filter.maskBits = 1;
-		body.createFixture(fdef).setUserData("bat");
-		
+		body.setActive(true);
+		body.setTransform(playerPosition.x, playerPosition.y, playerAngle);
+
 		hitBoxExposure.startCountdown();
 	}
-	
 
 }

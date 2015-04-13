@@ -17,13 +17,13 @@ public abstract class Weapon {
 
 	Weapon(GameWorld gWorld, GameCharacter character) {
 		cooldown = new Duration(5000);
-		hitBoxExposure = new Duration(10);
+		hitBoxExposure = new Duration(50);
 		this.gWorld = gWorld;
 		runTime = 0;
 		isCompleted = false;
 	}
-	
-	public String getName(){
+
+	public String getName() {
 		return name;
 	}
 
@@ -31,15 +31,15 @@ public abstract class Weapon {
 		return cooldown.isCountingDown();
 	}
 
-	public void use(){
+	public void use() {
 		isCompleted = false;
 	}
 
 	public void cooldown() {
 		cooldown.startCountdown();
 	}
-	
-	public boolean isCompleted(){
+
+	public boolean isCompleted() {
 		return isCompleted;
 	}
 
@@ -47,16 +47,17 @@ public abstract class Weapon {
 		cooldown.update();
 		hitBoxExposure.update();
 		if (!hitBoxExposure.isCountingDown()) {
-			if (body != null){
-				gWorld.getWorld().destroyBody(body);
-				body = null;
+			if (body.isActive()) {
+				body.setActive(false);
+				body.setTransform(0, 0, 0);
 				isCompleted = true;
 			}
 		}
 
 	}
-	public void render(){
-		
+
+	public void render() {
+
 	}
 
 }

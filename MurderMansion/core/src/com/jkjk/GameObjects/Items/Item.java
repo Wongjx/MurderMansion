@@ -8,7 +8,6 @@ import com.jkjk.GameWorld.GameWorld;
 public abstract class Item {
 
 	protected GameWorld gWorld;
-	protected Body body;
 	protected boolean isCompleted;
 	private Duration executionTime;
 	private boolean wasInUse;
