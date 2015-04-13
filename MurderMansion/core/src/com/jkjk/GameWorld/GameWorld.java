@@ -51,7 +51,6 @@ public class GameWorld {
 	private boolean inSafeArea;
 	private boolean civWin;
 	private boolean murWin;
-	private boolean gameOver;// temporary to get rid of error.
 	private Duration gameOverTimer;
 
 	private HashMap<Vector2, Obstacles> obstacleList;
@@ -115,8 +114,7 @@ public class GameWorld {
 
 		obstacleList = new HashMap<Vector2, Obstacles>();
 
-		gameOverTimer = new Duration(5000);
-		gameOver = false; // temporary to get rid of error.
+		gameOverTimer = new Duration(50000);
 
 		Box2DMapObjectParser parser = new Box2DMapObjectParser();
 		parser.load(world, AssetLoader.tiledMap);
@@ -158,7 +156,7 @@ public class GameWorld {
 			shotgunCreated = true;
 		}
 		
-		if (!gameOver){// temporary to get rid of error.
+		if (!civWin||!murWin){// temporary to get rid of error.
 			gameOverTimer.update();
 			if (!gameOverTimer.isCountingDown()){
 //				System.out.println("GAMEWORLD UPDATE: GAMEOVER COMPLETE");

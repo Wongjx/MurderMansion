@@ -196,13 +196,11 @@ public class HudRenderer {
 	public void render(float delta) {
 
 		batch.begin();
-<<<<<<< HEAD
 		batch.draw(timebox, 55, 280);
 		batch.draw(weapon_parts_counter, 440, 235);
 		batch.draw(emptySlot, 480, 22, 120, 120);
 		font.draw(batch, getTime(), 75, 330);
 		WeaponPartsDisplay();
-=======
 		
 		if (gameIsPaused==false){
 			batch.draw(timebox, 55, 280);
@@ -211,7 +209,6 @@ public class HudRenderer {
 			font.draw(batch, getTime(), 75, 330);
 		}
 		
->>>>>>> 9d08c05151c8e0a0359da10b7c626c4c1de4e222
 		if(player.getType().equals("Civilian")||player.getType().equals("Murderer")){
 			coolDownAnimationCheck();
 			prohibitButtonsCheck();
