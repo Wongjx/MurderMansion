@@ -36,7 +36,7 @@ public class GameScreen implements Screen {
 //		this.renderer=renderer;
 
 //		client = new MMClient(server, gWorld, renderer);
-		hudRenderer = HudRenderer.getInstance(gWorld, gameWidth, gameHeight);
+		hudRenderer = HudRenderer.getInstance(gWorld, gameWidth, gameHeight,game);
 	}
 
 	@Override
@@ -59,8 +59,8 @@ public class GameScreen implements Screen {
 		if (gWorld.isCivWin() || gWorld.isMurWin()){
 			gWorld.getGameOverTimer().update();
 			if (!gWorld.getGameOverTimer().isCountingDown()){
-//				System.out.println("GAMEWORLD UPDATE: GAMEOVER COMPLETE");
-//                ((Game)Gdx.app.getApplicationListener()).setScreen(new ScoreScreen(game, gameWidth, gameHeight, gWorld.isMurWin()));
+				System.out.println("GAMEWORLD UPDATE: GAMEOVER COMPLETE");
+                ((Game)Gdx.app.getApplicationListener()).setScreen(new ScoreScreen(game, gameWidth, gameHeight, gWorld.isMurWin()));
 			}
 		}
 	}

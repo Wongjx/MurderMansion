@@ -1,5 +1,6 @@
 package com.jkjk.GameWorld;
 
+import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
@@ -10,7 +11,11 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.ui.Button.ButtonStyle;
 import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
+import com.badlogic.gdx.scenes.scene2d.ui.ImageButton.ImageButtonStyle;
+import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
+import com.badlogic.gdx.scenes.scene2d.ui.TextButton.TextButtonStyle;
 import com.badlogic.gdx.scenes.scene2d.ui.Touchpad;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
@@ -18,7 +23,11 @@ import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.viewport.ExtendViewport;
 import com.jkjk.GameObjects.Characters.GameCharacter;
 import com.jkjk.GameObjects.Characters.Murderer;
+import com.jkjk.Host.MMServer;
 import com.jkjk.MMHelpers.AssetLoader;
+import com.jkjk.MurderMansion.MurderMansion;
+import com.jkjk.Screens.GameScreen;
+import com.jkjk.Screens.MenuScreen;
 
 /**
  * HudRenderer contains the rendering of all HUD icons, such as touchpad, item slots and timers.
@@ -27,9 +36,18 @@ import com.jkjk.MMHelpers.AssetLoader;
  */
 public class HudRenderer {
 	private static HudRenderer instance;
+	private static MurderMansion game;
+	private static float gameWidth;
+	private static float gameHeight;
+	private float BUTTON_WIDTH;
+    private float BUTTON_HEIGHT;
 
 	private GameWorld gWorld;
 	private GameCharacter player;
+	
+	public static final int V_WIDTH = 320;
+	public static final int V_HEIGHT = 180;
+	public static final int SCALE = 2;
 
 	private TextureRegionDrawable civ_bat, civ_item, civ_dash, mur_knife, mur_item, mur_CtM, mur_MtC;
 	private Texture emptySlot;
@@ -70,7 +88,11 @@ public class HudRenderer {
 	private float DisguiseAnimationRunTime;
 	private float WeaponsAnimationRunTime;
 	
-	private TextureRegion prohibitedButton = AssetLoader.prohibitedButton;
+	private TextButtonStyle normal;
+	private TextButton buttonMainMenu;
+	private TextButton buttonContinue;
+	private TextButton buttonSettings;
+	
 
 	/**
 	 * Constructs the link from the Box2D world created in GameWorld to HudRenderer. Allows rendering of the
@@ -84,9 +106,15 @@ public class HudRenderer {
 	 * @param gameHeight
 	 *            Accesses the virtual game height.
 	 */
-	private HudRenderer(GameWorld gWorld, float gameWidth, float gameHeight) {
+	private HudRenderer(GameWorld gWorld, float gameWidth, float gameHeight, MurderMansion game) {
 		initAssets(gameWidth, gameHeight);
 		this.gWorld = gWorld;
+		this.game = game;
+		this.gameWidth = gameWidth;
+		this.gameHeight = gameHeight;
+		
+		BUTTON_WIDTH=130;
+    	BUTTON_HEIGHT=100;
 
 		// countdown
 		playTime = 240.0f;
@@ -105,11 +133,15 @@ public class HudRenderer {
 		abilityCheck();
 
 		Gdx.input.setInputProcessor(stage);
+		
+		buttonMainMenu = new TextButton("Main Menu", normal);
+		buttonContinue = new TextButton("Continue", normal);
+		buttonSettings = new TextButton("Settings", normal);
 	}
 
-	public static HudRenderer getInstance(GameWorld gWorld, float gameWidth, float gameHeight) {
+	public static HudRenderer getInstance(GameWorld gWorld, float gameWidth, float gameHeight, MurderMansion game) {
 		if (instance == null) {
-			instance = new HudRenderer(gWorld, gameWidth, gameHeight);
+			instance = new HudRenderer(gWorld, gameWidth, gameHeight,game);
 		}
 		return instance;
 	}
@@ -151,6 +183,7 @@ public class HudRenderer {
 		font = AssetLoader.basker32blackTime;
 		pauseButtonDraw = AssetLoader.pause_button_draw;
 		pause_main = AssetLoader.pause_main;
+		normal = AssetLoader.normal;
 		
 	}
 
@@ -163,18 +196,66 @@ public class HudRenderer {
 	public void render(float delta) {
 
 		batch.begin();
+<<<<<<< HEAD
 		batch.draw(timebox, 55, 280);
 		batch.draw(weapon_parts_counter, 440, 235);
 		batch.draw(emptySlot, 480, 22, 120, 120);
 		font.draw(batch, getTime(), 75, 330);
 		WeaponPartsDisplay();
+=======
+		
+		if (gameIsPaused==false){
+			batch.draw(timebox, 55, 280);
+			batch.draw(weapon_parts_counter, 440, 235);
+			batch.draw(emptySlot, 480, 22, 120, 120);
+			font.draw(batch, getTime(), 75, 330);
+		}
+		
+>>>>>>> 9d08c05151c8e0a0359da10b7c626c4c1de4e222
 		if(player.getType().equals("Civilian")||player.getType().equals("Murderer")){
 			coolDownAnimationCheck();
 			prohibitButtonsCheck();
 		}
 		
+		//PAUSE SCREEN IS LOADED
 		if (gameIsPaused==true){
 			batch.draw(pause_main, 0, 0);
+			stage.clear(); // why got a lonely hexagon HUD left ah??
+			
+			 buttonMainMenu.addListener(new ClickListener(){
+		            @Override
+		            public void clicked(InputEvent event, float x, float y) {
+		            	((Game)Gdx.app.getApplicationListener()).setScreen(new MenuScreen(game, gameWidth, gameHeight));
+		            }
+		        });
+			 
+			 buttonContinue.addListener(new ClickListener(){
+		            @Override
+		            public void clicked(InputEvent event, float x, float y) {
+		            	gameIsPaused=false;
+		            }
+		        });
+			 
+			 buttonSettings.addListener(new ClickListener(){
+		            @Override
+		            public void clicked(InputEvent event, float x, float y) {
+		            	System.out.println("Settings button is pressed");
+		            }
+		        });
+			 
+			 buttonMainMenu.setSize(this.BUTTON_WIDTH,this.BUTTON_HEIGHT);
+			 buttonMainMenu.setPosition(146, 90);
+		     stage.addActor(buttonMainMenu);
+		     
+		     buttonContinue.setSize(this.BUTTON_WIDTH,this.BUTTON_HEIGHT);
+		     buttonContinue.setPosition(275, 90);
+		     stage.addActor(buttonContinue);
+		     
+		     buttonSettings.setSize(this.BUTTON_WIDTH,this.BUTTON_HEIGHT);
+		     buttonSettings.setPosition(390, 90);
+		     stage.addActor(buttonSettings);
+		     
+		
 		}
 		
 		batch.end();

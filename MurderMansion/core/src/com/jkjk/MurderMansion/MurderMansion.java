@@ -8,6 +8,7 @@ import com.jkjk.MMHelpers.ActionResolver;
 import com.jkjk.MMHelpers.AssetLoader;
 import com.jkjk.MMHelpers.MultiplayerSeissonInfo;
 import com.jkjk.Screens.MenuScreen;
+import com.jkjk.Screens.ScoreScreen;
 
 public class MurderMansion extends Game {
 	public ActionResolver actionResolver;
@@ -35,6 +36,7 @@ public class MurderMansion extends Game {
 //		setScreen(new WaitScreen(this, V_WIDTH * SCALE, V_HEIGHT * SCALE));
 		setScreen(new MenuScreen(this,V_WIDTH * SCALE, V_HEIGHT * SCALE));
 //		setScreen(new GameScreen(V_WIDTH * SCALE, V_HEIGHT * SCALE));
+//		setScreen(new ScoreScreen(this,V_WIDTH * SCALE, V_HEIGHT * SCALE, true));
 	}
 
 	@Override

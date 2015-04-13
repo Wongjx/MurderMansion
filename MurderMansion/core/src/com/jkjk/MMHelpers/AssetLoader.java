@@ -11,6 +11,8 @@ import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TmxMapLoader;
+import com.badlogic.gdx.scenes.scene2d.ui.Button.ButtonStyle;
+import com.badlogic.gdx.scenes.scene2d.ui.ImageButton.ImageButtonStyle;
 import com.badlogic.gdx.scenes.scene2d.ui.Label.LabelStyle;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton.TextButtonStyle;
@@ -34,6 +36,11 @@ public class AssetLoader {
 	
 	//PAUSE SCREEN
 	public static Texture pause_main;
+	
+	//SCORE SCREEN
+	public static Texture scoreBackground;
+	public static Skin scoreSkin;
+	public static ImageButtonStyle normal1;
 
 	// CIVILIAN
 	public static Texture civ_weapon_bat_tex;
@@ -200,22 +207,35 @@ public class AssetLoader {
 		menuSkin.add("basker32", basker32black);
 		menuSkin.add("basker45", basker45black);
 		// Set menu buttons
-		menuSkin.add("buttonUp", new Texture("basic/butt1.png"));
-		menuSkin.add("buttonDown", new Texture("basic/butt2.png"));
+		menuSkin.add("buttonUp", new Texture("basic/button_up.png"));
+		menuSkin.add("buttonDown", new Texture("basic/button_down.png"));
 		// Create Text button Style
 		normal = new TextButtonStyle();
 		normal.font = menuSkin.getFont("basker32");
 		normal.font.scale((Gdx.graphics.getWidth() - gameWidth) / gameWidth);
 		normal.up = menuSkin.getDrawable("buttonUp");
 		normal.down = menuSkin.getDrawable("buttonDown");
-		normal.pressedOffsetY = -4;
+		normal.pressedOffsetY = -1;
 		// Set label style for title
 		title = new LabelStyle();
 		title.font = menuSkin.getFont("basker45");
 		title.font.scale((Gdx.graphics.getWidth() - gameWidth) / gameWidth);
 
 		// PAUSE SCREEN
-		pause_main = new Texture(Gdx.files.internal("paused_screen/main.png"));
+		pause_main = new Texture(Gdx.files.internal("basic/pause_background.png"));
+		
+		// SCORE SCREEN
+		scoreBackground = new Texture(Gdx.files.internal("score_screen/score_background.png"));
+		scoreSkin = new Skin();
+		scoreSkin.add("basker32", basker32black);
+		scoreSkin.add("basker45", basker45black);
+		scoreSkin.add("buttonUp", new Texture("score_screen/next_button_up.png"));
+		scoreSkin.add("buttonDown", new Texture("score_screen/next_button_down.png"));
+		normal1 = new ImageButtonStyle();
+		normal1.up = scoreSkin.getDrawable("buttonUp");
+		normal1.down = scoreSkin.getDrawable("buttonDown");
+		normal1.pressedOffsetY = -1;
+		
 		
 		// Create a touchpad
 		touchpadSkin = new Skin();
@@ -456,6 +476,7 @@ public class AssetLoader {
 		logoTexture.dispose();
 		touchpadSkin.dispose();
 		menuBackground.dispose();
+		scoreBackground.dispose();
 		pause_main.dispose();
 		cooldownTexture.dispose();
 		time.dispose();
