@@ -167,7 +167,7 @@ public class HudRenderer {
 		batch.draw(weapon_parts_counter, 440, 235);
 		batch.draw(emptySlot, 480, 22, 120, 120);
 		font.draw(batch, getTime(), 75, 330);
-		
+		WeaponPartsDisplay();
 		if(player.getType().equals("Civilian")||player.getType().equals("Murderer")){
 			coolDownAnimationCheck();
 			prohibitButtonsCheck();
@@ -230,7 +230,8 @@ public class HudRenderer {
 	
 	private void WeaponPartsDisplay(){
 		int numParts = gWorld.getNumOfWeaponPartsCollected();
-		
+		font.draw(batch, Integer.toString(numParts), 456,325 );
+		font.draw(batch, "8", 520, 312);
 	}
 	
 	
@@ -570,9 +571,10 @@ public class HudRenderer {
 
 			public void clicked(InputEvent event, float x, float y) {
 				System.out.println("Clicked on knife button");
-				gWorld.getPlayer().useWeapon();
+				if(gWorld.getPlayer().useWeapon()){
 				// start to draw cool down animation
-				WeaponsCD = true;
+					WeaponsCD = true;
+				}
 			}
 		});
 

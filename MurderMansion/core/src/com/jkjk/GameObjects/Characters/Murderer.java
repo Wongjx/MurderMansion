@@ -71,6 +71,11 @@ public class Murderer extends GameCharacter {
 			civStunAnimation = AssetLoader.civStunAnimation2;
 			civRest = AssetLoader.civ_rest2;
 			break;
+		case 3: 
+			civWalkAnimation = AssetLoader.civAnimation3;
+			civStunAnimation = AssetLoader.civStunAnimation3;
+			civRest = AssetLoader.civ_rest3;
+			break;
 		default:
 			System.out.println("MURDERER CLASS ANIMATION ERROR");
 		}
@@ -157,9 +162,12 @@ public class Murderer extends GameCharacter {
 	
 	public boolean useWeapon(){
 		if (!disguised){
-			super.useWeapon();
-			body.setUserData(AssetLoader.murKnifeAnimation);
-			return true;
+			if(super.useWeapon()){
+				body.setUserData(AssetLoader.murKnifeAnimation);
+				return true;
+			}
+			else{return false;}
+			
 		} else {
 			System.out.println("You cannot use your weapon while disguised.");
 			return false;

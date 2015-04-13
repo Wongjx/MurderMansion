@@ -93,7 +93,7 @@ public class AssetLoader {
 	public static Animation shotgunPartSpriteAnimation;
 
 	// Character Animations and Textures
-	public static final int NUM_CIVILIAN_TEXTURES = 2; //starting from zero.
+	public static final int NUM_CIVILIAN_TEXTURES = 3; //starting from zero.
 	
 	public static Texture cooldownTexture;
 	public static Animation PanicCoolDownAnimation;
@@ -102,6 +102,7 @@ public class AssetLoader {
 	public static Texture civilianTexture0;
 	public static Texture civilianTexture1;
 	public static Texture civilianTexture2;
+	public static Texture civilianTexture3;
 	public static TextureRegion civ_rest0;
 	public static Animation civAnimation0;
 	public static Animation civDisarmAnimation0;
@@ -137,6 +138,18 @@ public class AssetLoader {
 	public static Animation civPanicAnimation2;
 	public static TextureRegion civ_panic_rest2;
 	public static Animation civShotgunAnimation2;
+	
+	public static TextureRegion civ_rest3;
+	public static Animation civAnimation3;
+	public static Animation civDisarmAnimation3;
+	public static Animation civDropDisarmAnimation3;
+	public static Animation civBatAnimation3;
+//	public static Animation civTrapDeathAnimation;
+//	public static Animation civKnifeDeathAnimation;
+	public static Animation civStunAnimation3;
+	public static Animation civPanicAnimation3;
+	public static TextureRegion civ_panic_rest3;
+	public static Animation civShotgunAnimation3;
 	
 	public static Texture murderer;
 	//public static Texture mur_walk;
@@ -328,7 +341,7 @@ public class AssetLoader {
 
 		civPanicAnimation1 = new Animation(0.5f, Arrays.copyOfRange(civilianTR1[1],0,3));
 		civPanicAnimation1.setPlayMode(PlayMode.LOOP);
-		civ_panic_rest1 = civilianTR0[1][0];
+		civ_panic_rest1 = civilianTR1[1][0];
 		
 		civStunAnimation1 = new Animation(0.5f, Arrays.copyOfRange(civilianTR1[2],0,3));
 		civStunAnimation1.setPlayMode(PlayMode.NORMAL);
@@ -353,12 +366,12 @@ public class AssetLoader {
 		civAnimation2 = new Animation(0.9f, Arrays.copyOfRange(civilianTR2[0],0,3));
 		civAnimation2.setPlayMode(Animation.PlayMode.LOOP_PINGPONG);
 		
-		civ_rest2 = civilianTR1[0][1];
+		civ_rest2 = civilianTR2[0][1];
 		//civ_dead_lines = new Texture(Gdx.files.internal("gamehelper/dead_lines.png"));
 
 		civPanicAnimation2 = new Animation(0.5f, Arrays.copyOfRange(civilianTR2[1],0,3));
 		civPanicAnimation2.setPlayMode(PlayMode.LOOP);
-		civ_panic_rest1 = civilianTR0[1][0];
+		civ_panic_rest2 = civilianTR2[1][0];
 		
 		civStunAnimation2 = new Animation(0.5f, Arrays.copyOfRange(civilianTR2[2],0,3));
 		civStunAnimation2.setPlayMode(PlayMode.NORMAL);
@@ -374,6 +387,37 @@ public class AssetLoader {
 		
 		civDropDisarmAnimation2 = new Animation(0.1f,civilianTR2[5]);
 		civDropDisarmAnimation2.setPlayMode(PlayMode.NORMAL);
+		
+		
+		civilianTexture3 = new Texture(Gdx.files.internal("animation/CIV3.png"));
+		civilianTexture3.setFilter(TextureFilter.Nearest, TextureFilter.Nearest);
+		TextureRegion[][] civilianTR3 = TextureRegion.split(civilianTexture3, 250, 250);
+		
+		civAnimation3 = new Animation(0.9f, Arrays.copyOfRange(civilianTR3[0],0,3));
+		civAnimation3.setPlayMode(Animation.PlayMode.LOOP_PINGPONG);
+		
+		civ_rest3 = civilianTR3[0][1];
+		//civ_dead_lines = new Texture(Gdx.files.internal("gamehelper/dead_lines.png"));
+
+		civPanicAnimation3 = new Animation(0.5f, Arrays.copyOfRange(civilianTR3[1],0,3));
+		civPanicAnimation3.setPlayMode(PlayMode.LOOP);
+		civ_panic_rest3 = civilianTR3[1][0];
+		
+		civStunAnimation3 = new Animation(0.5f, Arrays.copyOfRange(civilianTR3[2],0,3));
+		civStunAnimation3.setPlayMode(PlayMode.NORMAL);
+		
+		civBatAnimation3 = new Animation(0.1f, Arrays.copyOfRange(civilianTR3[3],0,3));
+		civBatAnimation3.setPlayMode(PlayMode.NORMAL);
+		
+		civShotgunAnimation3 = new Animation(0.2f, Arrays.copyOfRange(civilianTR3[4],0,3));
+		civShotgunAnimation3.setPlayMode(PlayMode.NORMAL);
+		
+		civDisarmAnimation3 = new Animation(0.3f, civilianTR3[5]);
+		civDisarmAnimation3.setPlayMode(PlayMode.NORMAL);
+		
+		civDropDisarmAnimation3 = new Animation(0.1f,civilianTR3[5]);
+		civDropDisarmAnimation3.setPlayMode(PlayMode.NORMAL);
+		
 
 		murderer = new Texture(Gdx.files.internal("animation/MUR.png"));
 		murderer.setFilter(TextureFilter.Nearest, TextureFilter.Nearest);
