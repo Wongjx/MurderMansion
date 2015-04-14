@@ -99,6 +99,9 @@ public class Murderer extends GameCharacter {
 
 	@Override
 	public void render(OrthographicCamera cam, SpriteBatch batch) {
+		
+		super.render(cam, batch);
+		
 		if (gWorld.getPlayer().lightContains(body.getPosition().x, body.getPosition().y)) {
 			runTime += Gdx.graphics.getRawDeltaTime();
 			currentAnimation = (Animation) body.getUserData();
@@ -125,11 +128,9 @@ public class Murderer extends GameCharacter {
 				animationRunTime += Gdx.graphics.getRawDeltaTime();
 				if (currentAnimation.isAnimationFinished(animationRunTime)) { // reset
 					animationRunTime = 0;
-					if (isDisguised()) {
+					if (isDisguised()){// once animation ends, if disguised, go back to civ, else go back to mur.
 						body.setUserData(civWalkAnimation);
 					} else {
-						System.out.println("waiting for murderer png yeah?");
-						//body.setUserData(civWalkAnimation);
 						body.setUserData(AssetLoader.murAnimation);
 					}
 				} else {// disable touchpad while special animation occurs.
@@ -145,7 +146,7 @@ public class Murderer extends GameCharacter {
 			batch.end();
 		}
 		
-		super.render(cam, batch);
+		
 
 	}
 	
@@ -182,8 +183,9 @@ public class Murderer extends GameCharacter {
 	}
 	
 	public boolean useWeapon(){
-		if (currentAnimation == AssetLoader.murAnimation){
+		if (currentAnimation == AssetLoader.murAnimation && !disguised){
 			if(super.useWeapon()){
+				AssetLoader.knifeStabSound.play();
 				body.setUserData(AssetLoader.murKnifeAnimation);
 				return true;
 			}
@@ -207,9 +209,9 @@ public class Murderer extends GameCharacter {
 		}
 	}
 	public void stun(boolean stun){
+		super.stun(stun);
 		if(!isDisguised()){
-			//body.setUserData(AssetLoader.murStunAnimation);
-			body.setUserData(civStunAnimation);
+			body.setUserData(AssetLoader.murStunAnimation);
 		}
 		else{
 			body.setUserData(civStunAnimation);

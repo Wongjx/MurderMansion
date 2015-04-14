@@ -685,7 +685,6 @@ public class HudRenderer {
 			public void clicked(InputEvent event, float x, float y) {
 				System.out.println("Clicked on trap button");
 				gWorld.getPlayer().useItem();
-				//start to draw cool down animation
 			}
 		});
 

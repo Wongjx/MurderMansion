@@ -3,6 +3,7 @@ package com.jkjk.MMHelpers;
 import java.util.Arrays;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.Texture.TextureFilter;
 import com.badlogic.gdx.graphics.g2d.Animation;
@@ -11,7 +12,6 @@ import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TmxMapLoader;
-import com.badlogic.gdx.scenes.scene2d.ui.Button.ButtonStyle;
 import com.badlogic.gdx.scenes.scene2d.ui.ImageButton.ImageButtonStyle;
 import com.badlogic.gdx.scenes.scene2d.ui.Label.LabelStyle;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
@@ -190,6 +190,8 @@ public class AssetLoader {
 
 	public static TextureRegion prohibitedButton;
 	
+	public static Sound knifeStabSound;
+	
 	public static void load() {
 
 		int gameWidth = (MurderMansion.V_WIDTH * MurderMansion.SCALE);
@@ -339,7 +341,14 @@ public class AssetLoader {
 		civPanicAnimation0.setPlayMode(PlayMode.LOOP);
 		civ_panic_rest0 = civilianTR0[1][0];
 		
-		civStunAnimation0 = new Animation(0.5f, Arrays.copyOfRange(civilianTR0[2],0,3));
+		TextureRegion[] civstun0 = Arrays.copyOfRange(civilianTR0[2],0,3);
+		TextureRegion[] civStun0 = new TextureRegion[21];
+		for(int i=0; i<civStun0.length-2;i++){
+			civStun0[i] = civstun0[0];
+			civStun0[i+1] = civstun0[1];
+			civStun0[i+2] = civstun0[2];
+		}
+		civStunAnimation0 = new Animation(0.2f, civStun0 );
 		civStunAnimation0.setPlayMode(PlayMode.NORMAL);
 		
 		civBatAnimation0 = new Animation(0.1f, Arrays.copyOfRange(civilianTR0[3],0,3));
@@ -367,7 +376,14 @@ public class AssetLoader {
 		civPanicAnimation1.setPlayMode(PlayMode.LOOP);
 		civ_panic_rest1 = civilianTR1[1][0];
 		
-		civStunAnimation1 = new Animation(0.5f, Arrays.copyOfRange(civilianTR1[2],0,3));
+		TextureRegion[] civstun1 = Arrays.copyOfRange(civilianTR1[2],0,3);
+		TextureRegion[] civStun1 = new TextureRegion[21];
+		for(int i=0; i<civStun1.length-2;i++){
+			civStun1[i] = civstun1[0];
+			civStun1[i+1] = civstun1[1];
+			civStun1[i+2] = civstun1[2];
+		}
+		civStunAnimation1 = new Animation(0.5f, civStun1);
 		civStunAnimation1.setPlayMode(PlayMode.NORMAL);
 		
 		civBatAnimation1 = new Animation(0.1f, Arrays.copyOfRange(civilianTR1[3],0,3));
@@ -396,6 +412,13 @@ public class AssetLoader {
 		civPanicAnimation2.setPlayMode(PlayMode.LOOP);
 		civ_panic_rest2 = civilianTR2[1][0];
 		
+		TextureRegion[] civstun2 = Arrays.copyOfRange(civilianTR2[2],0,3);
+		TextureRegion[] civStun2 = new TextureRegion[21];
+		for(int i=0; i<civStun2.length-2;i++){
+			civStun2[i] = civstun2[0];
+			civStun2[i+1] = civstun2[1];
+			civStun2[i+2] = civstun2[2];
+		}
 		civStunAnimation2 = new Animation(0.5f, Arrays.copyOfRange(civilianTR2[2],0,3));
 		civStunAnimation2.setPlayMode(PlayMode.NORMAL);
 		
@@ -425,6 +448,13 @@ public class AssetLoader {
 		civPanicAnimation3.setPlayMode(PlayMode.LOOP);
 		civ_panic_rest3 = civilianTR3[1][0];
 		
+		TextureRegion[] civstun3 = Arrays.copyOfRange(civilianTR3[2],0,3);
+		TextureRegion[] civStun3 = new TextureRegion[21];
+		for(int i=0; i<civStun3.length-2;i++){
+			civStun3[i] = civstun3[0];
+			civStun3[i+1] = civstun3[1];
+			civStun3[i+2] = civstun3[2];
+		}
 		civStunAnimation3 = new Animation(0.5f, Arrays.copyOfRange(civilianTR3[2],0,3));
 		civStunAnimation3.setPlayMode(PlayMode.NORMAL);
 		
@@ -444,6 +474,12 @@ public class AssetLoader {
 		murderer = new Texture(Gdx.files.internal("animation/MUR_CIV0.png"));
 		murderer.setFilter(TextureFilter.Nearest, TextureFilter.Nearest);
 		TextureRegion[][] murTR = TextureRegion.split(murderer, 250, 250);
+		
+		for(int i=0;i<murTR.length;i++){
+			for(int j=0;j<murTR[0].length;j++){
+				murTR[i][j].setRegion(murTR[i][j].getRegionX()-10,murTR[i][j].getRegionY()-10,270,270);
+			}
+		}
 		
 		murAnimation = new Animation(0.9f, Arrays.copyOfRange(murTR[0],0,3));
 		murAnimation.setPlayMode(PlayMode.LOOP_PINGPONG);
@@ -526,6 +562,8 @@ public class AssetLoader {
 		murToCivAnimation2.setPlayMode(PlayMode.NORMAL);
 		murToCivAnimation3 = new Animation(0.2f,murciv3);
 		murToCivAnimation3.setPlayMode(PlayMode.NORMAL);
+		
+		knifeStabSound = Gdx.audio.newSound(Gdx.files.internal("sound/Knife Stab.mp3"));
 		
 		
 		// HUD COOLDOWN
