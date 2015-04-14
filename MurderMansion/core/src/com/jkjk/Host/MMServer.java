@@ -1,6 +1,7 @@
 package com.jkjk.Host;
 
 import java.io.BufferedReader;
+import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Inet4Address;
@@ -18,19 +19,20 @@ import java.util.concurrent.ConcurrentHashMap;
 import com.badlogic.gdx.Gdx;
 import com.jkjk.Host.Helpers.Location;
 import com.jkjk.Host.Helpers.ObstaclesHandler;
-import com.jkjk.MMHelpers.MultiplayerSeissonInfo;
+import com.jkjk.MMHelpers.MultiplayerSessionInfo;
 
 public class MMServer {
 	private static MMServer instance;
 
-	private MultiplayerSeissonInfo info;
+	private MultiplayerSessionInfo info;
 	public ServerSocket serverSocket;
 	private String serverAddress;
 	private int serverPort;
 
-	private ArrayList<Socket> clients;
+	private static ArrayList<Socket> clients;
 	private ArrayList<PrintWriter> serverOutput;
 	private ArrayList<BufferedReader> serverInput;
+	public static  ArrayList<Thread> serverListeners;
 
 	private final int numOfPlayers;
 	private final int murdererId;
@@ -52,14 +54,15 @@ public class MMServer {
 	private int numStillAlive;
 	private boolean win;
 
-	private MMServer(int numOfPlayers, MultiplayerSeissonInfo info) throws InterruptedException {
+	private MMServer(int numOfPlayers, MultiplayerSessionInfo info) throws InterruptedException {
 		this.numOfPlayers = numOfPlayers;
 		this.info = info;
-
+		
 		// System.out.println("Initialize Client list and listeners");
 		clients = new ArrayList<Socket>();
 		serverOutput = new ArrayList<PrintWriter>();
 		serverInput = new ArrayList<BufferedReader>();
+		serverListeners=new ArrayList<Thread>();
 
 		// System.out.println("Initialize fields");
 		startTime = System.currentTimeMillis();
@@ -82,14 +85,15 @@ public class MMServer {
 		initServerSocket(info);
 		acceptServerConnections();
 	}
-
-	public static MMServer getInstance(int numOfPlayers, MultiplayerSeissonInfo info)
-			throws InterruptedException {
-		if (instance == null) {
-			instance = new MMServer(numOfPlayers, info);
+	
+	public static MMServer getInstance(int numOfPlayers, MultiplayerSessionInfo info ) throws InterruptedException{
+		if (instance==null){
+			instance=new MMServer(numOfPlayers,info);
+			System.out.println("New MMServer created.");
 		}
 		return instance;
 	}
+
 
 	/**
 	 * Start updating only when all clients have successfully synchronized.
@@ -164,7 +168,7 @@ public class MMServer {
 				playerStats.getPlayerType().put("Player " + i, 1);
 			}
 
-			playerStats.getPlayerPosition().put("Player " + i, new float[] { 850 - ((i + 1) * 40), 515 });
+			playerStats.getPlayerPosition().put("Player " + i, new float[] { 880, 580 - ((i + 1) * 30)});
 			playerStats.getPlayerAngle().put("Player " + i, 3.1427f);
 
 		}
@@ -249,7 +253,7 @@ public class MMServer {
 	}
 
 	// Initialize server socket
-	public void initServerSocket(MultiplayerSeissonInfo info) {
+	public void initServerSocket(MultiplayerSessionInfo info) {
 		try {
 			// Randomly assign server to an open port
 			ServerSocket sock = new ServerSocket(0);
@@ -352,13 +356,17 @@ public class MMServer {
 		if (msg[0].equals("loc")) {
 			float[] position = { Float.parseFloat(msg[2]), Float.parseFloat(msg[3]) };
 			float angle = Float.parseFloat(msg[4]);
-			playerStats.updatePositionAndAngle(Integer.parseInt(msg[1]), position, angle);
+			float velocity = Float.parseFloat(msg[5]);
+			playerStats.updatePositionAndAngle(Integer.parseInt(msg[1]), position, angle, velocity);
 		} else if (msg[0].equals("pos")) {
 			float[] position = { Float.parseFloat(msg[2]), Float.parseFloat(msg[3]) };
 			playerStats.updatePosition(Integer.parseInt(msg[1]), position);
 		} else if (msg[0].equals("ang")) {
 			float angle = Float.parseFloat(msg[2]);
 			playerStats.updateAngle(Integer.parseInt(msg[1]), angle);
+		} else if (msg[0].equals("vel")){
+			float velocity = Float.parseFloat(msg[2]);
+			playerStats.updateVelocity(Integer.parseInt(msg[1]), velocity);
 		} else if (msg[0].equals("type")) {
 			playerStats.updateType(Integer.parseInt(msg[1]), Integer.parseInt(msg[2]),
 					Integer.parseInt(msg[3]));
@@ -418,7 +426,23 @@ public class MMServer {
 			}
 		}
 	}
-
+	
+	public static void endSession() throws IOException{
+		//Stop all listener threads
+		for(Thread t:serverListeners){
+			t.interrupt();
+		}
+//		serverListeners.clear();
+//		//Stop all input and output channels
+//		serverOutput.clear();
+//		serverInput.clear();
+//		//Close sockets and clear arraylist
+		for(Socket s:clients){
+			s.close();
+		}
+//		clients.clear();
+//	}
+		instance=null;
 }
 
 /**
@@ -560,6 +584,7 @@ class serverAcceptThread extends Thread {
 		// Start a listener thread for each client socket connected
 		for (BufferedReader read : server.getServerInput()) {
 			Thread thread = new serverListener(read, server);
+			server.serverListeners.add(thread);
 			thread.start();
 		}
 	}
@@ -581,14 +606,12 @@ class serverListener extends Thread {
 			try {
 				if ((msg = input.readLine()) != null) {
 					// System.out.println("MMServer Message received: "+msg);
-					// String message = new String(msg);
-					// Do something with message
 					server.handleMessage(msg);
 				}
 			} catch (Exception e) {
 				System.out.println("Error while reading: " + e.getMessage());
 			}
-
 		}
 	}
+}
 }

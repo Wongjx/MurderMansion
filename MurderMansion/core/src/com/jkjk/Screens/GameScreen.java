@@ -1,35 +1,42 @@
 package com.jkjk.Screens;
 
+import com.badlogic.gdx.Game;
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
 import com.jkjk.GameWorld.GameRenderer;
 import com.jkjk.GameWorld.GameWorld;
 import com.jkjk.GameWorld.HudRenderer;
 import com.jkjk.GameWorld.MMClient;
 import com.jkjk.Host.MMServer;
-import com.jkjk.MMHelpers.MultiplayerSeissonInfo;
+import com.jkjk.MMHelpers.MultiplayerSessionInfo;
 import com.jkjk.MurderMansion.MurderMansion;
 
 public class GameScreen implements Screen {
-	private MultiplayerSeissonInfo info;
+	private MultiplayerSessionInfo info;
 	private GameWorld gWorld;
 	private GameRenderer renderer;
 	private HudRenderer hudRenderer;
 	private float runTime;
+	private float gameWidth;
+	private float gameHeight;
+	private MurderMansion game;
 
 	private MMServer server;
 	private MMClient client;
 
 	public GameScreen(MurderMansion game, float gameWidth, float gameHeight, GameWorld world, GameRenderer renderer) {
-		
-		this.client=game.mMultiplayerSeisson.getClient();
-		this.info=game.mMultiplayerSeisson;
+		this.game = game;
+		this.gameWidth = gameWidth;
+		this.gameHeight = gameHeight;
+		this.client=game.mMultiplayerSession.getClient();
+		this.info=game.mMultiplayerSession;
 		this.gWorld=client.getgWorld();
 		this.renderer=client.getRenderer();
 //		this.gWorld=world;		
 //		this.renderer=renderer;
 
 //		client = new MMClient(server, gWorld, renderer);
-		hudRenderer = HudRenderer.getInstance(gWorld, gameWidth, gameHeight);
+		hudRenderer = HudRenderer.getInstance(gWorld, gameWidth, gameHeight,game);
 	}
 
 	@Override
@@ -47,6 +54,16 @@ public class GameScreen implements Screen {
 		//if phone is designated server
 		if(info.isServer){
 			info.getServer().update();
+		}
+		
+		if (gWorld.isCivWin() || gWorld.isMurWin()){
+			gWorld.getGameOverTimer().update();
+			if (!gWorld.getGameOverTimer().isCountingDown()){
+				System.out.println("GAMEWORLD UPDATE: GAMEOVER COMPLETE");
+				dispose();
+				System.out.println("Game renderer and HUD renderer disposed");
+                ((Game)Gdx.app.getApplicationListener()).setScreen(new ScoreScreen(game, gameWidth, gameHeight, gWorld.isMurWin()));
+			}
 		}
 	}
 

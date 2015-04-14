@@ -14,6 +14,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Label.LabelStyle;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton.TextButtonStyle;
+import com.badlogic.gdx.scenes.scene2d.utils.Align;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.jkjk.GameWorld.GameRenderer;
 import com.jkjk.GameWorld.GameWorld;
@@ -26,26 +27,23 @@ public class MenuScreen implements Screen{
     
 	private float gameWidth;
     private float gameHeight;
-    private float TITLE_PAD;
     private float BUTTON_WIDTH;
     private float BUTTON_HEIGHT;
-    private float BUTTON_PAD;
     
     private SpriteBatch batch;
     private Texture background;
     private Sprite sprite;
 
-    private TextButtonStyle normal = AssetLoader.normal;
-    private LabelStyle titleStyle = AssetLoader.title;
+    private TextButtonStyle normal;
 
     private Stage stage = new Stage();
-    private Table table = new Table();
-    private TextButton buttonPlay = new TextButton("Enter", normal),
-    		buttonLogin = new TextButton("Connect", normal),
-    		buttonLogout = new TextButton("Logout",normal),
-    		buttonQuick = new TextButton("Quick game", normal),
-    		buttonInvite = new TextButton("Invite",normal),
-    		buttonJoin = new TextButton("Join game",normal);
+    private TextButton buttonPlay;
+    private TextButton buttonJoin;
+    private TextButton buttonLogout;
+    private TextButton buttonLogin;
+    private TextButton buttonQuick;
+    private TextButton buttonInvite;
+    
     
     MurderMansion game;
 
@@ -53,10 +51,18 @@ public class MenuScreen implements Screen{
     	this.gameWidth = gameWidth;
     	this.gameHeight = gameHeight;
     	this.game=game;
-    	BUTTON_HEIGHT=Gdx.graphics.getHeight()*.1f;
-    	BUTTON_WIDTH=Gdx.graphics.getWidth()*.25f;
-    	BUTTON_PAD=Gdx.graphics.getHeight()*.02f;
-    	TITLE_PAD=Gdx.graphics.getHeight()*.04f;
+    	
+    	BUTTON_WIDTH=140;
+    	BUTTON_HEIGHT=100;
+    	
+    	normal = AssetLoader.normal;
+    	
+    	buttonPlay = new TextButton("Enter", normal);
+    	buttonJoin = new TextButton("Connect", normal);
+    	buttonLogout = new TextButton("Logout", normal);
+    	buttonLogin = new TextButton("Login", normal);
+    	buttonQuick = new TextButton("Quick Game", normal);
+    	buttonInvite = new TextButton("Join Game", normal);
     }
     
     @Override
@@ -73,18 +79,18 @@ public class MenuScreen implements Screen{
     	buttonPlay.addListener(new ClickListener(){
             @Override
             public void clicked(InputEvent event, float x, float y) {
-        		GameWorld world = GameWorld.getInstance();
-        		GameRenderer renderer= GameRenderer.getInstance(world, gameWidth, gameHeight);
-        		
+        		GameWorld world = new GameWorld();
+        		GameRenderer renderer= new GameRenderer(world, gameWidth, gameHeight);
         		
                 try {
-                	game.mMultiplayerSeisson.isServer=true;
-                	game.mMultiplayerSeisson.setServer(MMServer.getInstance(1,game.mMultiplayerSeisson));
-    				game.mMultiplayerSeisson.setClient(MMClient.getInstance(world, renderer, game.mMultiplayerSeisson.serverAddress,game.mMultiplayerSeisson.serverPort));
+                	game.mMultiplayerSession.isServer=true;
+                	game.mMultiplayerSession.setServer(MMServer.getInstance(1,game.mMultiplayerSession));
+    				game.mMultiplayerSession.setClient(MMClient.getInstance(world, renderer, game.mMultiplayerSession.serverAddress,game.mMultiplayerSession.serverPort));
     			} catch (Exception e) {
     				e.printStackTrace();
     			}
-        		
+                //Release unneeded resources 
+        		dispose();
                 ((Game)Gdx.app.getApplicationListener()).setScreen(new GameScreen(game,gameWidth, gameHeight,world,renderer));
             }
         });
@@ -108,7 +114,7 @@ public class MenuScreen implements Screen{
             public void clicked(InputEvent event, float x, float y) {
                 //Host multiplayer game
             	game.actionResolver.startQuickGame();
-            	game.mMultiplayerSeisson.mState=game.mMultiplayerSeisson.ROOM_WAIT;
+            	game.mMultiplayerSession.mState=game.mMultiplayerSession.ROOM_WAIT;
             	((Game)Gdx.app.getApplicationListener()).setScreen(new WaitScreen(game,gameWidth, gameHeight));
             }
         });
@@ -117,7 +123,7 @@ public class MenuScreen implements Screen{
             @Override
             public void clicked(InputEvent event, float x, float y) {
             	game.actionResolver.sendInvitations();
-            	game.mMultiplayerSeisson.mState=game.mMultiplayerSeisson.ROOM_WAIT;
+            	game.mMultiplayerSession.mState=game.mMultiplayerSession.ROOM_WAIT;
             	((Game)Gdx.app.getApplicationListener()).setScreen(new WaitScreen(game,gameWidth, gameHeight));
             }
         });
@@ -126,24 +132,37 @@ public class MenuScreen implements Screen{
             @Override
             public void clicked(InputEvent event, float x, float y) {
             	game.actionResolver.seeInvitations();
-            	game.mMultiplayerSeisson.mState=game.mMultiplayerSeisson.ROOM_WAIT;
+            	game.mMultiplayerSession.mState=game.mMultiplayerSession.ROOM_WAIT;
             	((Game)Gdx.app.getApplicationListener()).setScreen(new WaitScreen(game,gameWidth, gameHeight));
             }
         });
+        	
+        buttonPlay.setSize(this.BUTTON_WIDTH,this.BUTTON_HEIGHT);
+        buttonPlay.setPosition(345, 200);
+        stage.addActor(buttonPlay);
         
-        table.add(buttonPlay).size(this.BUTTON_WIDTH,this.BUTTON_HEIGHT).padBottom(this.BUTTON_PAD).row();
-        table.add(buttonLogin).size(this.BUTTON_WIDTH,this.BUTTON_HEIGHT).padBottom(this.BUTTON_PAD).row();
-        table.add(buttonLogout).size(this.BUTTON_WIDTH,this.BUTTON_HEIGHT).padBottom(this.BUTTON_PAD).row();
-        table.add(buttonQuick).size(this.BUTTON_WIDTH,this.BUTTON_HEIGHT).padBottom(this.BUTTON_PAD).row();
-        table.add(buttonInvite).size(this.BUTTON_WIDTH,this.BUTTON_HEIGHT).padBottom(this.BUTTON_PAD).row();
-        table.add(buttonJoin).size(this.BUTTON_WIDTH,this.BUTTON_HEIGHT).padBottom(this.BUTTON_PAD).row();
+        buttonQuick.setSize(this.BUTTON_WIDTH,this.BUTTON_HEIGHT);
+        buttonQuick.setPosition(475,200);
+        stage.addActor(buttonQuick);
+       
+        buttonLogin.setSize(this.BUTTON_WIDTH,this.BUTTON_HEIGHT);
+        buttonLogin.setPosition(345, 140);
+        stage.addActor(buttonLogin);
+        
+        buttonLogout.setSize(this.BUTTON_WIDTH,this.BUTTON_HEIGHT);
+        buttonLogout.setPosition(475, 140);
+        stage.addActor(buttonLogout);
+
+        buttonInvite.setSize(this.BUTTON_WIDTH,this.BUTTON_HEIGHT);
+        buttonInvite.setPosition(345, 80);
+        stage.addActor(buttonInvite);
+
+        buttonJoin.setSize(this.BUTTON_WIDTH,this.BUTTON_HEIGHT);
+        buttonJoin.setPosition(475, 80);
+        stage.addActor(buttonJoin);
 
         System.out.println("height: " + BUTTON_HEIGHT);
         System.out.println("width: " + BUTTON_WIDTH);
-
-
-        table.setFillParent(true);
-        stage.addActor(table);
 
         Gdx.input.setInputProcessor(stage);
     }

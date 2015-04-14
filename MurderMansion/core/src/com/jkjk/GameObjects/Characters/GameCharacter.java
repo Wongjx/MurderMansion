@@ -2,7 +2,6 @@ package com.jkjk.GameObjects.Characters;
 
 import box2dLight.RayHandler;
 
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.physics.box2d.Body;
@@ -319,8 +318,11 @@ public abstract class GameCharacter {
 		body.setLinearVelocity(touchpadX * maxVelocity, touchpadY * maxVelocity);
 	}
 
-	public void setPosition(float x, float y, float angle) {
+	public void setPosition(float x, float y, float angle, float velocity) {
 		body.setTransform(x, y, angle);
+		if (velocity != 0){
+			body.setLinearVelocity(0.00001f, 0.000001f);
+		}
 	}
 
 	public float getAmbientLightValue() {

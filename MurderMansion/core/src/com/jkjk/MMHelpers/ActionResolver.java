@@ -11,5 +11,6 @@ public interface ActionResolver {
 	public void startQuickGame();
 	public void seeInvitations();
 	public void sendInvitations();
+	public void leaveRoom();
 	
 }

@@ -54,24 +54,24 @@ public class WaitScreen implements Screen {
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
         stage.act();
         stage.draw();
-        if ((game.mMultiplayerSeisson.mState==game.mMultiplayerSeisson.ROOM_PLAY) && 
-        		(game.mMultiplayerSeisson.serverAddress!=null) &&
-        		(game.mMultiplayerSeisson.serverPort!=0)){
+        if ((game.mMultiplayerSession.mState==game.mMultiplayerSession.ROOM_PLAY) && 
+        		(game.mMultiplayerSession.serverAddress!=null) &&
+        		(game.mMultiplayerSession.serverPort!=0)){
         	
             //Create MMClient and connect to server
-    		GameWorld gWorld = GameWorld.getInstance();
-    		GameRenderer renderer= GameRenderer.getInstance(gWorld, gameWidth, gameHeight);
+    		GameWorld gWorld =new GameWorld();
+    		GameRenderer renderer= new GameRenderer(gWorld, gameWidth, gameHeight);
         	
             try {
-				game.mMultiplayerSeisson.setClient(MMClient.getInstance(gWorld, renderer, game.mMultiplayerSeisson.serverAddress,game.mMultiplayerSeisson.serverPort));
+				game.mMultiplayerSession.setClient(MMClient.getInstance(gWorld, renderer, game.mMultiplayerSession.serverAddress,game.mMultiplayerSession.serverPort));
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
-        	
+        	dispose();
         	((Game)Gdx.app.getApplicationListener()).setScreen(new GameScreen(game,gameWidth, gameHeight,gWorld,renderer));
         	
-        } else if (game.mMultiplayerSeisson.mState==game.mMultiplayerSeisson.ROOM_MENU){
-        	game.mMultiplayerSeisson.mState=game.mMultiplayerSeisson.ROOM_NULL;
+        } else if (game.mMultiplayerSession.mState==game.mMultiplayerSession.ROOM_MENU){
+        	game.mMultiplayerSession.mState=game.mMultiplayerSession.ROOM_NULL;
         	((Game)Gdx.app.getApplicationListener()).setScreen(new MenuScreen(game,gameWidth, gameHeight));
         	
         }
@@ -90,19 +90,16 @@ public class WaitScreen implements Screen {
 
 	@Override
 	public void pause() {
-		// TODO Auto-generated method stub
 
 	}
 
 	@Override
 	public void resume() {
-		// TODO Auto-generated method stub
 
 	}
 
 	@Override
 	public void dispose() {
-		// TODO Auto-generated method stub
 		stage.dispose();
 	}
 

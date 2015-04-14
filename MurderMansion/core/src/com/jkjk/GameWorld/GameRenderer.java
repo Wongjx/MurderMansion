@@ -24,7 +24,6 @@ import com.jkjk.MMHelpers.AssetLoader;
  * 
  */
 public class GameRenderer {
-	private static GameRenderer instance;
 
 	private GameWorld gWorld; // Box2D world. This will hold all objects (players, items, walls)
 	private OrthographicCamera cam; // Game camera. Views what is happening in the game.
@@ -50,7 +49,7 @@ public class GameRenderer {
 	 * @param gameHeight
 	 *            Accesses the virtual game height.
 	 */
-	private GameRenderer(GameWorld gWorld, float gameWidth, float gameHeight) {
+	public GameRenderer(GameWorld gWorld, float gameWidth, float gameHeight) {
 		this.gWorld = gWorld;
 		b2dr = new Box2DDebugRenderer();
 
@@ -65,12 +64,6 @@ public class GameRenderer {
 
 	}
 
-	public static GameRenderer getInstance(GameWorld gWorld, float gameWidth, float gameHeight) {
-		if (instance == null) {
-			instance = new GameRenderer(gWorld, gameWidth, gameHeight);
-		}
-		return instance;
-	}
 
 	/**
 	 * Renders all images and actions on the player's screen.
@@ -127,9 +120,8 @@ public class GameRenderer {
 	 * Releases the resources held by objects or images loaded.
 	 */
 	public void rendererDispose() {
-		gWorld.getWorld().dispose();
-		player.dispose();
 		b2dr.dispose();
+		gWorld.getWorld().dispose();
 	}
 
 }
