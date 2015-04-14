@@ -9,6 +9,7 @@ import com.jkjk.GameWorld.GameWorld;
 import com.jkjk.GameWorld.HudRenderer;
 import com.jkjk.GameWorld.MMClient;
 import com.jkjk.Host.MMServer;
+import com.jkjk.MMHelpers.AssetLoader;
 import com.jkjk.MMHelpers.MultiplayerSeissonInfo;
 import com.jkjk.MurderMansion.MurderMansion;
 
@@ -24,8 +25,6 @@ public class GameScreen implements Screen {
 
 	private MMServer server;
 	private MMClient client;
-	
-	private Music gameMusic;
 
 	public GameScreen(MurderMansion game, float gameWidth, float gameHeight, GameWorld world,
 			GameRenderer renderer) {
@@ -42,12 +41,12 @@ public class GameScreen implements Screen {
 		// client = new MMClient(server, gWorld, renderer);
 		hudRenderer = HudRenderer.getInstance(gWorld, client, gameWidth, gameHeight, game);
 		
-		gameMusic = Gdx.audio.newMusic(Gdx.files.internal("bgm/GameScreen Music.mp3"));
 	}
 
 	@Override
 	public void show() {
-		gameMusic.play();
+		AssetLoader.menuMusic.stop();
+		AssetLoader.gameMusic.play();
 	}
 
 	@Override
@@ -99,7 +98,6 @@ public class GameScreen implements Screen {
 	public void dispose() {
 		renderer.rendererDispose();
 		hudRenderer.hudDispose();
-		gameMusic.dispose();
 	}
 }
 

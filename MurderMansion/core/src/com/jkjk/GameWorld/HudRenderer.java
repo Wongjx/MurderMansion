@@ -527,6 +527,7 @@ public class HudRenderer {
 		weaponButton.setX(x);
 		weaponButton.setY(y);
 		weaponButton.setName("Weapon Button");
+		AssetLoader.pickUpItemSound.play();
 
 		weaponButton.addListener(new ClickListener() {
 			@Override
@@ -542,6 +543,7 @@ public class HudRenderer {
 				if (gWorld.getPlayer().useWeapon()) {
 					// start drawing cool down animation.
 					WeaponsCD = true;
+					AssetLoader.batSwingSound.play();
 					client.updatePlayerUseWeapon();
 				}
 			}
@@ -564,6 +566,7 @@ public class HudRenderer {
 		weaponButton.setX(x);
 		weaponButton.setY(y);
 		weaponButton.setName("Weapon Button");
+		AssetLoader.pickUpItemSound.play();
 
 		weaponButton.addListener(new ClickListener() {
 			@Override
@@ -578,6 +581,7 @@ public class HudRenderer {
 					// start drawing cool down animation
 					WeaponsCD = true;
 					client.updatePlayerUseWeapon();
+					AssetLoader.shotgunBlastSound.play();
 				}
 			}
 		});
@@ -599,6 +603,7 @@ public class HudRenderer {
 		itemButton.setX(x);
 		itemButton.setY(y);
 		itemButton.setName("Item Button");
+		AssetLoader.pickUpItemSound.play();
 
 		itemButton.addListener(new ClickListener() {
 			@Override
@@ -662,6 +667,7 @@ public class HudRenderer {
 		weaponButton.setX(x);
 		weaponButton.setY(y);
 		weaponButton.setName("Weapon Button");
+		AssetLoader.pickUpItemSound.play();
 
 		weaponButton.addListener(new ClickListener() {
 			@Override
@@ -676,6 +682,7 @@ public class HudRenderer {
 					// start to draw cool down animation
 					WeaponsCD = true;
 					client.updatePlayerUseWeapon();
+					AssetLoader.knifeThrustSound.play();
 				}
 			}
 		});
@@ -698,6 +705,7 @@ public class HudRenderer {
 		itemButton.setY(y);
 		itemButton.setName("Item Button");
 		itemButton.setSize(40, 40);
+		AssetLoader.pickUpItemSound.play();
 
 		itemButton.addListener(new ClickListener() {
 			@Override
@@ -710,6 +718,7 @@ public class HudRenderer {
 				System.out.println("Clicked on trap button");
 				gWorld.getPlayer().useItem();
 				client.updatePlayerUseItem();
+				AssetLoader.disarmTrapSound.play();
 			}
 		});
 
@@ -822,6 +831,7 @@ public class HudRenderer {
 	 */
 	public void hudDispose() {
 		stage.dispose();
+		pauseStage.dispose();
 	}
 
 }

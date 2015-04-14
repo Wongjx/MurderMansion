@@ -65,11 +65,15 @@ public class MMContactListener implements ContactListener {
 				} else if (faUD.equals("weapon") && gWorld.getPlayer().getWeapon() == null) {
 					weaponsToRemove.add(fa.getBody());
 				} else if (faUD.equals("weapon part")) {
-					if (!gWorld.getPlayer().getType().equals("Ghost"))
+					if (!gWorld.getPlayer().getType().equals("Ghost")) {
 						weaponPartsToRemove.add(fa.getBody());
+						AssetLoader.pickUpItemSound.play();
+					}
 				} else if (fbUD.equals("weapon part")) {
-					if (!gWorld.getPlayer().getType().equals("Ghost"))
+					if (!gWorld.getPlayer().getType().equals("Ghost")) {
 						weaponPartsToRemove.add(fb.getBody());
+						AssetLoader.pickUpItemSound.play();
+					}
 				} else if (faUD.equals("L1S1") || fbUD.equals("L1S1")) {
 					atStairs = true;
 					stairsName = "L1S1";
@@ -101,25 +105,31 @@ public class MMContactListener implements ContactListener {
 					atStairs = true;
 					stairsName = "LbS1";
 				} else if (faUD.equals("bat") || fbUD.equals("bat")) {
-					if (!gWorld.getPlayer().getType().equals("Ghost")){
-						gWorld.getPlayer().stun(true);}
+					if (!gWorld.getPlayer().getType().equals("Ghost")) {
+						gWorld.getPlayer().stun(true);
+						AssetLoader.batHitSound.play();
+					}
 				} else if (faUD.equals("trap")) {
 					if (gWorld.getPlayer().getType().equals("Civilian")) {
 						gWorld.getPlayer().die();
 						trapToRemove.add(fa.getBody());
+						AssetLoader.trappedSound.play();
 					}
 				} else if (fbUD.equals("trap")) {
 					if (gWorld.getPlayer().getType().equals("Civilian")) {
 						gWorld.getPlayer().die();
 						trapToRemove.add(fb.getBody());
+						AssetLoader.trappedSound.play();
 					}
 				} else if (faUD.equals("knife") || fbUD.equals("knife")) {
 					if (!gWorld.getPlayer().getType().equals("Ghost")) {
 						gWorld.getPlayer().die();
+						AssetLoader.knifeStabSound.play();
 					}
 				} else if (faUD.equals("shotgun") || fbUD.equals("shotgun")) {
 					if (!gWorld.getPlayer().getType().equals("Ghost")) {
 						gWorld.getPlayer().die();
+						AssetLoader.shotgunBlastSound.play();
 					}
 				} else if (faUD.equals("haunt") || fbUD.equals("haunt")) {
 					if (!gWorld.getPlayer().getType().equals("Ghost")) {
@@ -131,12 +141,14 @@ public class MMContactListener implements ContactListener {
 			} else {
 
 				if (faUD.equals("pre disarm trap") || fbUD.equals("pre disarm trap")) {
+					AssetLoader.disarmTrapSound.play();
 					if (faUD.equals("trap") || fbUD.equals("trap")) {
-						((DisarmTrap)gWorld.getPlayer().getItem()).foundTrap();
+						((DisarmTrap) gWorld.getPlayer().getItem()).foundTrap();
 					}
 				}
 
 				if (faUD.equals("post disarm trap") || fbUD.equals("post disarm trap")) {
+					AssetLoader.trapDisarmedSound.play();
 					if (faUD.equals("trap")) {
 						trapToRemove.add(fa.getBody());
 					} else if (fbUD.equals("trap")) {

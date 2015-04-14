@@ -45,8 +45,6 @@ public class MenuScreen implements Screen {
 	private TextButton buttonLogin;
 	private TextButton buttonQuick;
 	private TextButton buttonInvite;
-	
-	private Music menuMusic;
 
 	MurderMansion game;
 
@@ -67,16 +65,14 @@ public class MenuScreen implements Screen {
 		buttonQuick = new TextButton("Quick Game", normal);
 		buttonInvite = new TextButton("Join Game", normal);
 		scale = Gdx.graphics.getWidth() / gameWidth;
-		
-		menuMusic = Gdx.audio.newMusic(Gdx.files.internal("bgm/MenuScreen Music.mp3"));
 	}
 
 	@Override
 	public void show() {
 		// The elements are displayed in the order you add them.
 		// The first appear on top, the last at the bottom.
-
-		menuMusic.play();
+		AssetLoader.gameMusic.stop();
+		AssetLoader.menuMusic.play();
 		
 		batch = new SpriteBatch();
 		background = AssetLoader.menuBackground;
@@ -101,7 +97,6 @@ public class MenuScreen implements Screen {
 
 				((Game) Gdx.app.getApplicationListener()).setScreen(new GameScreen(game, gameWidth,
 						gameHeight, world, renderer));
-				menuMusic.stop();
 			}
 		});
 		buttonLogin.addListener(new ClickListener() {
@@ -217,7 +212,6 @@ public class MenuScreen implements Screen {
 	@Override
 	public void dispose() {
 		stage.dispose();
-		menuMusic.dispose();
 	}
 
 }

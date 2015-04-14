@@ -133,10 +133,10 @@ public class Civilian extends GameCharacter {
 					body.setUserData(civWalkAnimation);
 				}
 				if (!body.getLinearVelocity().isZero() && checkMovable()) {
-					if (walkSound.isPlaying()) {
+					if (walkSound.isPlaying() && isPlayer()) {
 						walkSound.stop();
 					}
-					if (!runSound.isPlaying()) {
+					if (!runSound.isPlaying() && isPlayer()) {
 						runSound.play();
 					}
 					batch.draw(currentAnimation.getKeyFrame(runTime * 5, true), body.getPosition().x - 9,
@@ -144,7 +144,7 @@ public class Civilian extends GameCharacter {
 							(float) (body.getAngle() * 180 / Math.PI) - 90);
 
 				} else {
-					if (runSound.isPlaying()) {
+					if (runSound.isPlaying() && isPlayer()) {
 						runSound.stop();
 					}
 					batch.draw(civPanicRest, body.getPosition().x - 9, body.getPosition().y - 9, 9, 9, 18,
@@ -152,10 +152,10 @@ public class Civilian extends GameCharacter {
 				}
 			} else if (currentAnimation == civWalkAnimation) {
 				if (!body.getLinearVelocity().isZero() && checkMovable()) {
-					if (!walkSound.isPlaying()) {
+					if (!walkSound.isPlaying() && isPlayer()) {
 						walkSound.play();
 					}
-					if (runSound.isPlaying()) {
+					if (runSound.isPlaying() && isPlayer()) {
 						runSound.stop();
 					}
 					batch.draw(currentAnimation.getKeyFrame(runTime * 4, true), body.getPosition().x - 9,
@@ -163,7 +163,7 @@ public class Civilian extends GameCharacter {
 							(float) (body.getAngle() * 180 / Math.PI) - 90);
 
 				} else {
-					if (walkSound.isPlaying()) {
+					if (walkSound.isPlaying() && isPlayer()) {
 						walkSound.stop();
 					}
 					batch.draw(civRest, body.getPosition().x - 9, body.getPosition().y - 9, 9, 9, 18, 18, 6f,

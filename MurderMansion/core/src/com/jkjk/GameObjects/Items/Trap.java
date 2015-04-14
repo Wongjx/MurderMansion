@@ -27,8 +27,6 @@ public class Trap extends Item  {
 	private Animation plantedTrapAnimation;
 	private float animationRunTime;
 	private GameCharacter character;
-	
-	private Sound plantTrapSound;
 
 	public Trap(GameWorld gWorld, MMClient client, GameCharacter character) {
 		super(gWorld, character);
@@ -39,8 +37,6 @@ public class Trap extends Item  {
 
 		plantedTrapAnimation = AssetLoader.plantedTrapAnimation;
 		animationRunTime = 0;
-		
-		plantTrapSound = AssetLoader.plantTrapSound;
 	}
 
 	@Override
@@ -62,7 +58,7 @@ public class Trap extends Item  {
 		playerAngle = character.getBody().getAngle();
 
 		spawn(playerPosition.x, playerPosition.y, playerAngle);
-		plantTrapSound.play();
+		AssetLoader.plantTrapSound.play();
 
 		client.produceTrapLocation(body.getPosition().x,body.getPosition().y);
 

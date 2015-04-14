@@ -51,6 +51,7 @@ public class Bat extends Weapon {
 		body.setTransform(playerPosition.x, playerPosition.y, playerAngle);
 
 		hitBoxExposure.startCountdown();
+		AssetLoader.batSwingSound.play();
 	}
 
 }

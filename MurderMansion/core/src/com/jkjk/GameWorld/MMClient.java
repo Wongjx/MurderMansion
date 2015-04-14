@@ -583,7 +583,6 @@ public class MMClient {
 	 * Produces knife body from the player that used the knife.
 	 */
 	private void itemUsed(int id) {
-		System.out.println("WHO USED ITEM? PLAYER " + id + " DID!");
 		if (playerType.get("Player " + id) == 0) {
 			playerList.get(id).addItem(itemFac.createItem("Trap", gWorld, this, playerList.get(id)));
 		} else if (playerType.get("Player " + id) == 1) {
@@ -596,7 +595,6 @@ public class MMClient {
 	 * Player uses weapon
 	 */
 	private void weaponUsed(int id) {
-		System.out.println("WHO USED WEAPON? PLAYER " + id + " DID!");
 		if (playerType.get("Player " + id) == 0) {
 			playerList.get(id).addWeapon(weaponFac.createWeapon("Knife", gWorld, playerList.get(id)));
 		} else if (playerType.get("Player " + id) == 1) {

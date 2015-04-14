@@ -104,6 +104,9 @@ public class Murderer extends GameCharacter {
 
 	@Override
 	public void render(OrthographicCamera cam, SpriteBatch batch) {
+		
+		super.render(cam, batch);
+		
 		if (gWorld.getPlayer().lightContains(body.getPosition().x, body.getPosition().y)) {
 			runTime += Gdx.graphics.getRawDeltaTime();
 			currentAnimation = (Animation) body.getUserData();
@@ -111,14 +114,14 @@ public class Murderer extends GameCharacter {
 
 			if (currentAnimation == AssetLoader.murAnimation || currentAnimation == civWalkAnimation) {
 				if (!body.getLinearVelocity().isZero() && checkMovable()) {
-					if (!walkSound.isPlaying()) {
+					if (!walkSound.isPlaying() && isPlayer()) {
 						walkSound.play();
 					}
 					batch.draw(currentAnimation.getKeyFrame(runTime * 4, true), body.getPosition().x - 9,
 							body.getPosition().y - 9, 9, 9, 18, 18, 6f, 6f,
 							(float) (body.getAngle() * 180 / Math.PI) - 90);
 				} else {
-					if (walkSound.isPlaying()) {
+					if (walkSound.isPlaying() && isPlayer()) {
 						walkSound.stop();
 					}
 					if (isDisguised()) {
@@ -151,8 +154,6 @@ public class Murderer extends GameCharacter {
 
 			batch.end();
 		}
-
-		super.render(cam, batch);
 
 	}
 
@@ -209,9 +210,9 @@ public class Murderer extends GameCharacter {
 			}
 		}
 	}
-
+	
 	public void stun(boolean stun) {
-		super.stun(true);
+		super.stun(stun);
 		if (!isDisguised()) {
 			body.setUserData(AssetLoader.murStunAnimation);
 		} else {
