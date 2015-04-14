@@ -9,12 +9,14 @@ import com.jkjk.GameWorld.GameWorld;
 import com.jkjk.GameWorld.HudRenderer;
 import com.jkjk.GameWorld.MMClient;
 import com.jkjk.Host.MMServer;
+
 import com.jkjk.MMHelpers.AssetLoader;
-import com.jkjk.MMHelpers.MultiplayerSeissonInfo;
+import com.jkjk.MMHelpers.MultiplayerSessionInfo;
+
 import com.jkjk.MurderMansion.MurderMansion;
 
 public class GameScreen implements Screen {
-	private MultiplayerSeissonInfo info;
+	private MultiplayerSessionInfo info;
 	private GameWorld gWorld;
 	private GameRenderer renderer;
 	private HudRenderer hudRenderer;
@@ -31,16 +33,16 @@ public class GameScreen implements Screen {
 		this.game = game;
 		this.gameWidth = gameWidth;
 		this.gameHeight = gameHeight;
-		this.client = game.mMultiplayerSeisson.getClient();
-		this.info = game.mMultiplayerSeisson;
-		this.gWorld = client.getgWorld();
-		this.renderer = client.getRenderer();
-		// this.gWorld=world;
-		// this.renderer=renderer;
+		this.client=game.mMultiplayerSession.getClient();
+		this.info=game.mMultiplayerSession;
+		this.gWorld=client.getgWorld();
+		this.renderer=client.getRenderer();
+//		this.gWorld=world;		
+//		this.renderer=renderer;
 
-		// client = new MMClient(server, gWorld, renderer);
-		hudRenderer = HudRenderer.getInstance(gWorld, client, gameWidth, gameHeight, game);
-		
+//		client = new MMClient(server, gWorld, renderer);
+		hudRenderer = HudRenderer.getInstance(gWorld, client,gameWidth, gameHeight,game);
+
 	}
 
 	@Override
@@ -62,11 +64,13 @@ public class GameScreen implements Screen {
 
 		if (gWorld.isCivWin() || gWorld.isMurWin()) {
 			gWorld.getGameOverTimer().update();
-			if (!gWorld.getGameOverTimer().isCountingDown()) {
-				// System.out.println("GAMEWORLD UPDATE: GAMEOVER COMPLETE");
-				// ((Game)Gdx.app.getApplicationListener()).setScreen(new ScoreScreen(game, gameWidth,
-				// gameHeight, gWorld.isMurWin()));
+			if (!gWorld.getGameOverTimer().isCountingDown()){
+				System.out.println("GAMEWORLD UPDATE: GAMEOVER COMPLETE");
+                ((Game)Gdx.app.getApplicationListener()).setScreen(new ScoreScreen(game, gameWidth, gameHeight, gWorld.isMurWin()));
 //				gameMusic.stop();
+                dispose();
+                System.out.println("Game renderer and HUD renderer disposed");
+
 			}
 		}
 	}

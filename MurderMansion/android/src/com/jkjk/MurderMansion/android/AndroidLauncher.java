@@ -19,7 +19,7 @@ import com.google.android.gms.games.multiplayer.realtime.RoomConfig;
 import com.google.example.games.basegameutils.GameHelper;
 import com.google.example.games.basegameutils.GameHelper.GameHelperListener;
 import com.jkjk.MMHelpers.ActionResolver;
-import com.jkjk.MMHelpers.MultiplayerSeissonInfo;
+import com.jkjk.MMHelpers.MultiplayerSessionInfo;
 import com.jkjk.MurderMansion.MurderMansion;
 
 
@@ -36,7 +36,7 @@ public class AndroidLauncher extends AndroidApplication implements GameHelperLis
 	public GoogleApiClient mGoogleApiClient;
 	public RealTimeCommunication mRealTimeCom;
 	private GPSListeners mGooglePlayListeners;
-	public MultiplayerSeissonInfo mMultiplayerSeisson;
+	public MultiplayerSessionInfo mMultiplayerSession;
 	
 	
 	@Override
@@ -56,19 +56,19 @@ public class AndroidLauncher extends AndroidApplication implements GameHelperLis
 		mGoogleApiClient=gameHelper.getApiClient();
 		
 		//Initalize helper class that stores all additional needed information for multiplayer games
-		mMultiplayerSeisson = new MultiplayerSeissonInfo();
+		mMultiplayerSession =new MultiplayerSessionInfo();
 		
 		//Initialize listener helper class
 		if (mGooglePlayListeners == null) {
 			mGooglePlayListeners = new GPSListeners(mGoogleApiClient,this);
 		}		
 		if (mRealTimeCom == null) {
-			mRealTimeCom = new RealTimeCommunication(mGoogleApiClient,this.mMultiplayerSeisson);
+			mRealTimeCom = new RealTimeCommunication(mGoogleApiClient,this.mMultiplayerSession);
 		}
 		
 		AndroidApplicationConfiguration config = new AndroidApplicationConfiguration();
 		
-		initialize(new MurderMansion(this,mMultiplayerSeisson), config);
+		initialize(new MurderMansion(this,mMultiplayerSession), config);
 
 
 	}
@@ -104,16 +104,16 @@ public class AndroidLauncher extends AndroidApplication implements GameHelperLis
              if (responseCode == Activity.RESULT_OK) {
                  Log.d(TAG, "GPS room returned OK");
                  //Change screen to game screen
-                 mMultiplayerSeisson.mState=mMultiplayerSeisson.ROOM_PLAY;
+                 mMultiplayerSession.mState=mMultiplayerSession.ROOM_PLAY;
 
                  
 //                 startGame(true);
              } else if (responseCode == GamesActivityResultCodes.RESULT_LEFT_ROOM) {
                  // player indicated that they want to leave the room
-            	 mMultiplayerSeisson.mState=mMultiplayerSeisson.ROOM_MENU;
+            	 mMultiplayerSession.mState=mMultiplayerSession.ROOM_MENU;
                  leaveRoom();
              } else if (responseCode == Activity.RESULT_CANCELED) {
-            	 mMultiplayerSeisson.mState=mMultiplayerSeisson.ROOM_MENU;
+            	 mMultiplayerSession.mState=mMultiplayerSession.ROOM_MENU;
                  // Dialog was cancelled (user pressed back key, for instance). In our game,
                  // this means leaving the room too. In more elaborate games, this could mean
                  // something else (like minimizing the waiting room UI).
@@ -225,7 +225,7 @@ public class AndroidLauncher extends AndroidApplication implements GameHelperLis
 	@Override
 	public void seeInvitations(){
 		if (gameHelper.isSignedIn()) {
-			mMultiplayerSeisson.isServer=false;
+			mMultiplayerSession.isServer=false;
 			Intent intent = Games.Invitations.getInvitationInboxIntent(mGoogleApiClient);
 			startActivityForResult(intent, RC_INVITATION_INBOX);
 			// show list of pending invitations
@@ -241,7 +241,7 @@ public class AndroidLauncher extends AndroidApplication implements GameHelperLis
 	public void sendInvitations(){
 		if (gameHelper.isSignedIn()) {
 			//Assign device as server and setup a socket to accept connections
-			mMultiplayerSeisson.isServer=true;
+			mMultiplayerSession.isServer=true;
 			// show list of inevitable players
 			//Choose from between 1 to 3 other opponents (APIclient,minOpponents, maxOpponents, boolean Automatch)
 			Intent intent = Games.RealTimeMultiplayer.getSelectOpponentsIntent(mGoogleApiClient, 1, 6);
@@ -252,15 +252,20 @@ public class AndroidLauncher extends AndroidApplication implements GameHelperLis
 		}
 	}
 	
+	@Override
     // Leave the room.
-    void leaveRoom() {
-        Log.d(TAG, "Leaving room.");
-        if (mMultiplayerSeisson.mRoomId != null) {
-            Games.RealTimeMultiplayer.leave(this.mGoogleApiClient, this.mGooglePlayListeners, mMultiplayerSeisson.mRoomId);  
-            mMultiplayerSeisson.mRoomId=null;
-            mMultiplayerSeisson.isServer=false;
+    public void leaveRoom() {
+        System.out.println("Leaving room.");
+        if (mMultiplayerSession.mRoomId != null) {
+        	System.out.println("If condition");
+            Games.RealTimeMultiplayer.leave(this.mGoogleApiClient, this.mGooglePlayListeners, mMultiplayerSession.mRoomId);
+            System.out.println("Real time multiplayer leave");
+            mMultiplayerSession.mRoomId=null;
+            System.out.println("room id null");
+            mMultiplayerSession.isServer=false;
+            System.out.println("isServer is false");
         } else {
-        	mMultiplayerSeisson.mState=mMultiplayerSeisson.ROOM_MENU;
+        	mMultiplayerSession.mState=mMultiplayerSession.ROOM_MENU;
         }
     }
     
@@ -269,7 +274,7 @@ public class AndroidLauncher extends AndroidApplication implements GameHelperLis
     private void handleSelectPlayersResult(int response, Intent data) {
         if (response != Activity.RESULT_OK) {
             Log.w(TAG, "*** select players UI cancelled, " + response);
-            mMultiplayerSeisson.mState=mMultiplayerSeisson.ROOM_MENU;
+            mMultiplayerSession.mState=mMultiplayerSession.ROOM_MENU;
             return;
         }
 
@@ -309,7 +314,7 @@ public class AndroidLauncher extends AndroidApplication implements GameHelperLis
     private void handleInvitationInboxResult(int response, Intent data) {
         if (response != Activity.RESULT_OK) {
             Log.w(TAG, "*** invitation inbox UI cancelled, " + response);
-            mMultiplayerSeisson.mState=mMultiplayerSeisson.ROOM_MENU;
+            mMultiplayerSession.mState=mMultiplayerSession.ROOM_MENU;
             return;
         }
 

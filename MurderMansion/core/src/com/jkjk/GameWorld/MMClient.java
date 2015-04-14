@@ -25,6 +25,7 @@ import com.jkjk.GameObjects.Items.Trap;
 import com.jkjk.GameObjects.Weapons.WeaponFactory;
 import com.jkjk.GameObjects.Weapons.WeaponPartSprite;
 import com.jkjk.GameObjects.Weapons.WeaponSprite;
+import com.jkjk.Host.MMServer;
 import com.jkjk.Host.Helpers.Location;
 import com.jkjk.Host.Helpers.ObstaclesHandler;
 import com.jkjk.Host.Helpers.SpawnBuffer;
@@ -44,7 +45,6 @@ import com.jkjk.Host.Helpers.SpawnBuffer;
  */
 public class MMClient {
 	private static MMClient instance;
-	private final String TAG = "MMClient";
 	// private final MultiplayerSeissonInfo info;
 
 	private GameWorld gWorld;
@@ -57,8 +57,10 @@ public class MMClient {
 	private int serverPort;
 
 	public Socket clientSocket;
+	public Thread clientListener;
 	private BufferedReader clientInput;
 	private PrintWriter clientOutput;
+	
 
 	private float currentPositionX;
 	private float currentPositionY;
@@ -210,6 +212,7 @@ public class MMClient {
 
 		// Create and start extra thread that reads any incoming messages
 		Thread thread = new clientListener(clientInput, this);
+		clientListener=thread;
 		thread.start();
 
 		trapList = new HashMap<Vector2, Trap>();
@@ -240,11 +243,11 @@ public class MMClient {
 		createTraps(700f, 540);
 
 	}
-
-	public static MMClient getInstance(GameWorld gWorld, GameRenderer renderer, String serverAddress,
-			int serverPort) throws Exception {
-		if (instance == null) {
-			instance = new MMClient(gWorld, renderer, serverAddress, serverPort);
+	
+	public static MMClient getInstance(GameWorld gWorld, GameRenderer renderer, String serverAddress, int serverPort) throws Exception{
+		if(instance==null){
+			instance= new MMClient(gWorld, renderer,serverAddress,serverPort);
+			System.out.println("New MMClient created.");
 		}
 		return instance;
 	}
@@ -266,7 +269,7 @@ public class MMClient {
 			setClientOutput(new PrintWriter(clientSocket.getOutputStream(), true));
 
 		} else {
-			Gdx.app.log(TAG, "Server Address/Port is null");
+			System.out.println("Server Address/Port is null");
 			// TODO Request information from server again
 		}
 	}
@@ -426,6 +429,23 @@ public class MMClient {
 		}
 	}
 
+//	/** Update server about player using item
+//	 * @param value If 1 -> using; If 0 -> normal;
+//	 */
+//
+//	public void updatePlayerUseItem(int value){
+//		playerUseItem.put("Player "+id,value); 
+//		clientOutput.println("useItem_"+id+"_"+value);
+//	}
+//	
+//	/** Update server about player using weapon
+//	 * @param value If 1 -> using; If 0 -> normal;
+//	 */
+//	public void updatePlayerUseWeapon(int value){
+//		playerUseWeapon.put("Player "+id,value);
+//		clientOutput.println("useWeapon_"+id+"_"+value);
+//	}
+	
 	/**
 	 * Update server about change in player's stun status
 	 * 
@@ -438,7 +458,7 @@ public class MMClient {
 		playerIsStun.put("Player " + id, value);
 		clientOutput.println("stun_" + id + "_" + playerID + "_" + value);
 	}
-
+	
 	/**
 	 * Update server about change in player's alive status
 	 * 
@@ -453,6 +473,7 @@ public class MMClient {
 	}
 
 	/**
+<<<<<<< HEAD
 	 * Update server about change in player's use item
 	 * 
 	 * @param playerID
@@ -489,6 +510,8 @@ public class MMClient {
 	}
 
 	/**
+=======
+>>>>>>> Broken_menu
 	 * Update server about change in player's type
 	 * 
 	 * @param playerID
@@ -822,6 +845,12 @@ public class MMClient {
 				gWorld.setMurWin(true);
 			}
 		}
+	}
+	
+	public void endSession() throws IOException{
+			clientListener.interrupt();
+			clientSocket.close();
+			MMClient.instance=null;
 	}
 }
 

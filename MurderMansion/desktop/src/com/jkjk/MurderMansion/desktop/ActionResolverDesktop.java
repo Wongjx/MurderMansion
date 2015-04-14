@@ -1,13 +1,13 @@
 package com.jkjk.MurderMansion.desktop;
 
 import com.jkjk.MMHelpers.ActionResolver;
-import com.jkjk.MMHelpers.MultiplayerSeissonInfo;
+import com.jkjk.MMHelpers.MultiplayerSessionInfo;
 
 public class ActionResolverDesktop implements ActionResolver {	
 	boolean signedInStateGPGS = false;
-	public MultiplayerSeissonInfo mMultiplayerSeisson;
+	public MultiplayerSessionInfo mMultiplayerSeisson;
 	
-	public ActionResolverDesktop(MultiplayerSeissonInfo mMultiplayerSeisson){
+	public ActionResolverDesktop(MultiplayerSessionInfo mMultiplayerSeisson){
 		this.mMultiplayerSeisson=mMultiplayerSeisson;
 	}
 	@Override
@@ -66,5 +66,9 @@ public class ActionResolverDesktop implements ActionResolver {
 		System.out.println("Send out invite");
 		this.mMultiplayerSeisson.mState=mMultiplayerSeisson.ROOM_PLAY;
 		
+	}
+	@Override
+	public void leaveRoom(){
+		System.out.println("Leave room");
 	}
 }

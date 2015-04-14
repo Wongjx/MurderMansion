@@ -31,7 +31,6 @@ import com.jkjk.MMHelpers.MMContactListener;
  * 
  */
 public class GameWorld {
-	private static GameWorld instance;
 
 	private GameCharacterFactory gameCharFac;
 	private GameCharacter player;
@@ -79,7 +78,7 @@ public class GameWorld {
 	 * @param gameHeight
 	 *            Accesses the virtual game height.
 	 */
-	private GameWorld() {
+	public  GameWorld() {
 		world = new World(new Vector2(0, 0), true);
 		cl = MMContactListener.getInstance(this);
 		world.setContactListener(cl);
@@ -119,12 +118,12 @@ public class GameWorld {
 
 	}
 
-	public static GameWorld getInstance() {
-		if (instance == null) {
-			instance = new GameWorld();
-		}
-		return instance;
-	}
+//	public static GameWorld getInstance() {
+//		if (instance == null) {
+//			instance = new GameWorld();
+//		}
+//		return instance;
+//	}
 
 	/**
 	 * Updates the state of Box2D objects, such as the consequence of a player picking up an item, or when a
@@ -434,5 +433,6 @@ public class GameWorld {
 	public void addNumOfWeaponPartsCollected() {
 		this.numOfWeaponPartsCollected++;
 	}
+
 
 }

@@ -19,6 +19,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton.TextButtonStyle;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
+import com.jkjk.Host.MMServer;
 import com.jkjk.MMHelpers.AssetLoader;
 import com.jkjk.MurderMansion.MurderMansion;
 
@@ -55,7 +56,11 @@ public class ScoreScreen implements Screen {
 	 * @param murWin who won the game? murderer or civilian?
 	 */
 	public ScoreScreen(MurderMansion game, float gameWidth, float gameHeight, boolean murWin){
+		this.game=game;
 		this.murWin = murWin;
+		this.gameHeight=gameHeight;
+		this.gameWidth=gameWidth;
+		
 		initAssets(gameWidth, gameHeight);
 		
 		// Create a Stage and add TouchPad
@@ -97,6 +102,21 @@ public class ScoreScreen implements Screen {
         nextButton.addListener(new ClickListener(){
             @Override
             public void clicked(InputEvent event, float x, float y) {
+            	try{
+            		System.out.println("Leave room");
+            		game.actionResolver.leaveRoom();
+            		System.out.println("End client session");
+            		game.mMultiplayerSession.getClient().endSession();
+            		if(game.mMultiplayerSession.isServer){
+                		MMServer.endSession();
+                		System.out.println("Ended server session.");
+                	}
+            		System.out.println("End mMultiplayer session");
+                	game.mMultiplayerSession.endSession();
+            	}catch(Exception e){
+            		System.out.println("Error on button press: "+e.getMessage());
+            	}
+            	
             	((Game)Gdx.app.getApplicationListener()).setScreen(new MenuScreen(game, gameWidth, gameHeight));
             }
         });
