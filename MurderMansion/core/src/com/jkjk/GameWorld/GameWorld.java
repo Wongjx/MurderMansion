@@ -113,7 +113,7 @@ public class GameWorld {
 
 		obstacleList = new HashMap<Vector2, Obstacles>();
 
-		gameOverTimer = new Duration(50000);
+		gameOverTimer = new Duration(5000);
 
 		Box2DMapObjectParser parser = new Box2DMapObjectParser();
 		parser.load(world, AssetLoader.tiledMap);

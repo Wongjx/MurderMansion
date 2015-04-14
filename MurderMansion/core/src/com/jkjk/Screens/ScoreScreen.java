@@ -58,6 +58,9 @@ public class ScoreScreen implements Screen {
 	public ScoreScreen(MurderMansion game, float gameWidth, float gameHeight, boolean murWin){
 		this.game=game;
 		this.murWin = murWin;
+		this.gameHeight=gameHeight;
+		this.gameWidth=gameWidth;
+		
 		initAssets(gameWidth, gameHeight);
 		
 		// Create a Stage and add TouchPad
