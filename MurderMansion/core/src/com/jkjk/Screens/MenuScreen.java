@@ -3,6 +3,7 @@ package com.jkjk.Screens;
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
+import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.Texture.TextureFilter;
@@ -44,6 +45,8 @@ public class MenuScreen implements Screen {
 	private TextButton buttonLogin;
 	private TextButton buttonQuick;
 	private TextButton buttonInvite;
+	
+	private Music menuMusic;
 
 	MurderMansion game;
 
@@ -64,6 +67,8 @@ public class MenuScreen implements Screen {
 		buttonQuick = new TextButton("Quick Game", normal);
 		buttonInvite = new TextButton("Join Game", normal);
 		scale = Gdx.graphics.getWidth() / gameWidth;
+		
+		menuMusic = Gdx.audio.newMusic(Gdx.files.internal("bgm/MenuScreen Music.mp3"));
 	}
 
 	@Override
@@ -71,6 +76,8 @@ public class MenuScreen implements Screen {
 		// The elements are displayed in the order you add them.
 		// The first appear on top, the last at the bottom.
 
+		menuMusic.play();
+		
 		batch = new SpriteBatch();
 		background = AssetLoader.menuBackground;
 		background.setFilter(TextureFilter.Linear, TextureFilter.Linear);
@@ -94,6 +101,7 @@ public class MenuScreen implements Screen {
 
 				((Game) Gdx.app.getApplicationListener()).setScreen(new GameScreen(game, gameWidth,
 						gameHeight, world, renderer));
+				menuMusic.stop();
 			}
 		});
 		buttonLogin.addListener(new ClickListener() {
@@ -209,7 +217,7 @@ public class MenuScreen implements Screen {
 	@Override
 	public void dispose() {
 		stage.dispose();
-
+		menuMusic.dispose();
 	}
 
 }

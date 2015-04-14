@@ -3,6 +3,7 @@ package com.jkjk.Screens;
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
+import com.badlogic.gdx.audio.Music;
 import com.jkjk.GameWorld.GameRenderer;
 import com.jkjk.GameWorld.GameWorld;
 import com.jkjk.GameWorld.HudRenderer;
@@ -23,6 +24,8 @@ public class GameScreen implements Screen {
 
 	private MMServer server;
 	private MMClient client;
+	
+	private Music gameMusic;
 
 	public GameScreen(MurderMansion game, float gameWidth, float gameHeight, GameWorld world,
 			GameRenderer renderer) {
@@ -38,12 +41,13 @@ public class GameScreen implements Screen {
 
 		// client = new MMClient(server, gWorld, renderer);
 		hudRenderer = HudRenderer.getInstance(gWorld, client, gameWidth, gameHeight, game);
+		
+		gameMusic = Gdx.audio.newMusic(Gdx.files.internal("bgm/GameScreen Music.mp3"));
 	}
 
 	@Override
 	public void show() {
-		// TODO Auto-generated method stub
-
+		gameMusic.play();
 	}
 
 	@Override
@@ -63,6 +67,7 @@ public class GameScreen implements Screen {
 				// System.out.println("GAMEWORLD UPDATE: GAMEOVER COMPLETE");
 				// ((Game)Gdx.app.getApplicationListener()).setScreen(new ScoreScreen(game, gameWidth,
 				// gameHeight, gWorld.isMurWin()));
+//				gameMusic.stop();
 			}
 		}
 	}
@@ -94,6 +99,7 @@ public class GameScreen implements Screen {
 	public void dispose() {
 		renderer.rendererDispose();
 		hudRenderer.hudDispose();
+		gameMusic.dispose();
 	}
 }
 

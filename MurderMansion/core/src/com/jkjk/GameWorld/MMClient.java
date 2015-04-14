@@ -281,7 +281,7 @@ public class MMClient {
 				System.out.println("I'M PLAYER NUMBER " + id);
 				// If self
 				if (i == murdererId) {
-					playerType.put("Player " + i, 0);
+					playerType.put("Player " + i, 1);
 				} else {
 					playerType.put("Player " + i, 1);
 				}

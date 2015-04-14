@@ -52,6 +52,7 @@ public class Obstacles {
 		} else {
 			shape.setAsBox(15, 15);
 			fdef.shape = shape;
+			fdef.filter.maskBits = 1;
 			body.createFixture(fdef);
 			body.setUserData(AssetLoader.obstacle);
 		}

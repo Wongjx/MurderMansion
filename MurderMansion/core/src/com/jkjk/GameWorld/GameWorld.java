@@ -322,7 +322,8 @@ public class GameWorld {
 	 *            Vector2 coordinates of the obstacle
 	 */
 	public void removeObstacle(Vector2 location) {
-		world.destroyBody(obstacleList.get(location).getBody());
+		obstacleList.get(location).getBody().setActive(false);
+		obstacleList.get(location).getBody().setTransform(0, 0, 0);
 		obstacleList.remove(location);
 	}
 

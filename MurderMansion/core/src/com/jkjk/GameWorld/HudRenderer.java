@@ -64,7 +64,9 @@ public class HudRenderer {
 
 	private SpriteBatch batch;
 	private OrthographicCamera hudCam;
+	private OrthographicCamera pauseCam;
 	private Stage stage;
+	private Stage pauseStage;
 
 	private Touchpad touchpad;
 	private Drawable touchKnob;
@@ -87,7 +89,7 @@ public class HudRenderer {
 	private TextButton buttonMainMenu;
 	private TextButton buttonContinue;
 	private TextButton buttonSettings;
-	
+
 	private int minutes;
 	private int seconds;
 
@@ -112,8 +114,8 @@ public class HudRenderer {
 		this.gameWidth = gameWidth;
 		this.gameHeight = gameHeight;
 
-		BUTTON_WIDTH = 130;
-		BUTTON_HEIGHT = 100;
+		BUTTON_WIDTH = 110;
+		BUTTON_HEIGHT = 50;
 
 		// countdown
 		playTime = 240.0f;
@@ -133,9 +135,12 @@ public class HudRenderer {
 
 		Gdx.input.setInputProcessor(stage);
 
-		buttonMainMenu = new TextButton("Main Menu", normal);
-		buttonContinue = new TextButton("Continue", normal);
-		buttonSettings = new TextButton("Settings", normal);
+		pauseCam = new OrthographicCamera();
+		pauseCam.setToOrtho(false, gameWidth, gameHeight);
+		pauseStage = new Stage(new ExtendViewport(gameWidth, gameHeight, pauseCam), batch);
+		pauseStage.addActor(getMainMenuButton());
+		pauseStage.addActor(getContinueButton());
+		pauseStage.addActor(getSettingsButton());
 	}
 
 	public static HudRenderer getInstance(GameWorld gWorld, MMClient client, float gameWidth,
@@ -186,7 +191,6 @@ public class HudRenderer {
 		pauseButtonDraw = AssetLoader.pause_button_draw;
 		pause_main = AssetLoader.pause_main;
 		normal = AssetLoader.normal;
-
 	}
 
 	/**
@@ -207,48 +211,8 @@ public class HudRenderer {
 		coolDownAnimationCheck(delta);
 		prohibitButtonsCheck();
 
-		// PAUSE SCREEN IS LOADED
-		if (gameIsPaused == true) {
-			batch.draw(pause_main, 0, 0);
-			stage.clear(); // why got a lonely hexagon HUD left ah??
-
-			buttonMainMenu.addListener(new ClickListener() {
-				@Override
-				public void clicked(InputEvent event, float x, float y) {
-					((Game) Gdx.app.getApplicationListener()).setScreen(new MenuScreen(game, gameWidth,
-							gameHeight));
-				}
-			});
-
-			buttonContinue.addListener(new ClickListener() {
-				@Override
-				public void clicked(InputEvent event, float x, float y) {
-					gameIsPaused = false;
-				}
-			});
-
-			buttonSettings.addListener(new ClickListener() {
-				@Override
-				public void clicked(InputEvent event, float x, float y) {
-					System.out.println("Settings button is pressed");
-				}
-			});
-
-			buttonMainMenu.setSize(this.BUTTON_WIDTH, this.BUTTON_HEIGHT);
-			buttonMainMenu.setPosition(146, 90);
-			stage.addActor(buttonMainMenu);
-
-			buttonContinue.setSize(this.BUTTON_WIDTH, this.BUTTON_HEIGHT);
-			buttonContinue.setPosition(275, 90);
-			stage.addActor(buttonContinue);
-
-			buttonSettings.setSize(this.BUTTON_WIDTH, this.BUTTON_HEIGHT);
-			buttonSettings.setPosition(390, 90);
-			stage.addActor(buttonSettings);
-
-		}
-
 		batch.end();
+
 
 		if (gWorld.getPlayer().getItemChange())
 			itemCheck();
@@ -260,6 +224,13 @@ public class HudRenderer {
 		stage.draw(); // Draw touchpad
 		stage.act(Gdx.graphics.getDeltaTime()); // Acts stage at deltatime
 
+		if (gameIsPaused) {
+			batch.begin();
+			batch.draw(pause_main, 0, 0);
+			batch.end();
+			pauseStage.draw();
+			pauseStage.act(Gdx.graphics.getDeltaTime());
+		}
 	}
 
 	/**
@@ -285,6 +256,53 @@ public class HudRenderer {
 		timebox_actor.setName("timebox actor");
 
 		return timebox_actor;
+	}
+
+	public Actor getMainMenuButton() {
+		buttonMainMenu = new TextButton("Main Menu", normal);
+		buttonMainMenu.setSize(this.BUTTON_WIDTH, this.BUTTON_HEIGHT);
+		buttonMainMenu.setPosition(140, 90);
+
+		buttonMainMenu.addListener(new ClickListener() {
+			@Override
+			public void clicked(InputEvent event, float x, float y) {
+				((Game) Gdx.app.getApplicationListener()).setScreen(new MenuScreen(game, gameWidth,
+						gameHeight));
+			}
+		});
+
+		return buttonMainMenu;
+	}
+
+	public Actor getContinueButton() {
+		buttonContinue = new TextButton("Continue", normal);
+		buttonContinue.setSize(this.BUTTON_WIDTH, this.BUTTON_HEIGHT);
+		buttonContinue.setPosition(270, 90);
+
+		buttonContinue.addListener(new ClickListener() {
+			@Override
+			public void clicked(InputEvent event, float x, float y) {
+				gameIsPaused = false;
+				Gdx.input.setInputProcessor(stage);
+			}
+		});
+
+		return buttonContinue;
+	}
+
+	public Actor getSettingsButton() {
+		buttonSettings = new TextButton("Settings", normal);
+		buttonSettings.setSize(this.BUTTON_WIDTH, this.BUTTON_HEIGHT);
+		buttonSettings.setPosition(400, 90);
+
+		buttonSettings.addListener(new ClickListener() {
+			@Override
+			public void clicked(InputEvent event, float x, float y) {
+				System.out.println("Settings button is pressed");
+			}
+		});
+
+		return buttonSettings;
 	}
 
 	/**
@@ -488,6 +506,7 @@ public class HudRenderer {
 
 				System.out.println("Clicked on pause button");
 				gameIsPaused = true;
+				Gdx.input.setInputProcessor(pauseStage);
 			}
 		});
 

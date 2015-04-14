@@ -36,7 +36,7 @@ public class Haunt extends Ability {
 		body.setActive(false);
 
 		CircleShape shape = new CircleShape();
-		shape.setRadius(30);
+		shape.setRadius(25);
 		fdef.shape = shape;
 		fdef.isSensor = true;
 		fdef.filter.maskBits = 1;

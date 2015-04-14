@@ -5,6 +5,8 @@ import java.util.Random;
 import box2dLight.RayHandler;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.audio.Music;
+import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.physics.box2d.Body;
@@ -223,7 +225,8 @@ public abstract class GameCharacter {
 
 	public void useItem() {
 		if (isPlayer)
-			item.startUse();
+			if (!item.inUse())
+				item.startUse();
 	}
 
 	public boolean getItemChange() {
@@ -317,7 +320,6 @@ public abstract class GameCharacter {
 		touchpadY = touchpad.getKnobPercentY();
 		if (haunt) {
 			hauntTime = System.currentTimeMillis() - startTime;
-
 			if (hauntTime > nextRandomMovement) {
 				if (random.nextBoolean())
 					body.setAngularVelocity(random.nextFloat() * 3);

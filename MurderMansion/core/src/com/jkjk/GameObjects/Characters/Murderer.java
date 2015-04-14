@@ -4,6 +4,7 @@ import box2dLight.Light;
 import box2dLight.PointLight;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
@@ -31,6 +32,8 @@ public class Murderer extends GameCharacter {
 	private Animation civPlantTrapAnimation;
 	private TextureRegion civRest;
 
+	private Music walkSound;
+
 	Murderer(int id, GameWorld gWorld, boolean isPlayer) {
 		super("Murderer", id, gWorld, isPlayer);
 
@@ -50,7 +53,7 @@ public class Murderer extends GameCharacter {
 		body.createFixture(fdef).setUserData("murderer");
 
 		// create light
-		pointLight = new PointLight(rayHandler, 100, null, 100, 0, 0);
+		pointLight = new PointLight(rayHandler, 100, null, 120, 0, 0);
 		pointLight.attachToBody(body);
 		Light.setContactFilter((short) 2, (short) 2, (short) 1);
 		disguised = true;
@@ -95,6 +98,8 @@ public class Murderer extends GameCharacter {
 			System.out.println("MURDERER CLASS ANIMATION ERROR");
 		}
 		body.setUserData(civWalkAnimation);
+
+		walkSound = AssetLoader.walkSound;
 	}
 
 	@Override
@@ -106,10 +111,16 @@ public class Murderer extends GameCharacter {
 
 			if (currentAnimation == AssetLoader.murAnimation || currentAnimation == civWalkAnimation) {
 				if (!body.getLinearVelocity().isZero() && checkMovable()) {
+					if (!walkSound.isPlaying()) {
+						walkSound.play();
+					}
 					batch.draw(currentAnimation.getKeyFrame(runTime * 4, true), body.getPosition().x - 9,
 							body.getPosition().y - 9, 9, 9, 18, 18, 6f, 6f,
 							(float) (body.getAngle() * 180 / Math.PI) - 90);
 				} else {
+					if (walkSound.isPlaying()) {
+						walkSound.stop();
+					}
 					if (isDisguised()) {
 						batch.draw(civRest, body.getPosition().x - 9, body.getPosition().y - 9, 9, 9, 18, 18,
 								6f, 6f, (float) (body.getAngle() * 180 / Math.PI) - 90);
@@ -124,12 +135,10 @@ public class Murderer extends GameCharacter {
 				animationRunTime += Gdx.graphics.getRawDeltaTime();
 				if (currentAnimation.isAnimationFinished(animationRunTime)) { // reset
 					animationRunTime = 0;
-					if (isDisguised()) {
-						body.setUserData(civWalkAnimation);
-					} else {
-						System.out.println("waiting for murderer png yeah?");
-						// body.setUserData(civWalkAnimation);
+					if (!isDisguised()) {
 						body.setUserData(AssetLoader.murAnimation);
+					} else {
+						body.setUserData(civWalkAnimation);
 					}
 				} else {// disable touchpad while special animation occurs.
 					body.setLinearVelocity(0, 0);
@@ -204,8 +213,7 @@ public class Murderer extends GameCharacter {
 	public void stun(boolean stun) {
 		super.stun(true);
 		if (!isDisguised()) {
-			// body.setUserData(AssetLoader.murStunAnimation);
-			body.setUserData(civStunAnimation);
+			body.setUserData(AssetLoader.murStunAnimation);
 		} else {
 			body.setUserData(civStunAnimation);
 		}

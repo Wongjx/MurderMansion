@@ -5,6 +5,7 @@ import box2dLight.Light;
 import box2dLight.PointLight;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
@@ -35,6 +36,9 @@ public class Civilian extends GameCharacter {
 	private Animation civShotgunAnimation;
 	private Animation civDisarmAnimation;
 
+	private Music walkSound;
+	private Music runSound;
+
 	// private Animation civDropDisarmAnimation; //not yet implemented
 
 	Civilian(int id, GameWorld gWorld, boolean isPlayer) {
@@ -56,7 +60,7 @@ public class Civilian extends GameCharacter {
 		body.createFixture(fdef).setUserData("civilian");
 
 		// Create Light for player
-		coneLight = new ConeLight(rayHandler, 100, null, 140, 0, 0, 0, 40);
+		coneLight = new ConeLight(rayHandler, 100, null, 150, 0, 0, 0, 40);
 		coneLight.attachToBody(body, 0, 0);
 		Light.setContactFilter((short) 2, (short) 2, (short) 1);
 		pointLight = new PointLight(rayHandler, 100, null, 30, 0, 0);
@@ -110,6 +114,9 @@ public class Civilian extends GameCharacter {
 		}
 		body.setUserData(civWalkAnimation);
 
+		walkSound = AssetLoader.walkSound;
+		runSound = AssetLoader.runSound;
+
 	}
 
 	@Override
@@ -126,21 +133,39 @@ public class Civilian extends GameCharacter {
 					body.setUserData(civWalkAnimation);
 				}
 				if (!body.getLinearVelocity().isZero() && checkMovable()) {
+					if (walkSound.isPlaying()) {
+						walkSound.stop();
+					}
+					if (!runSound.isPlaying()) {
+						runSound.play();
+					}
 					batch.draw(currentAnimation.getKeyFrame(runTime * 5, true), body.getPosition().x - 9,
 							body.getPosition().y - 9, 9, 9, 18, 18, 6f, 6f,
 							(float) (body.getAngle() * 180 / Math.PI) - 90);
 
 				} else {
+					if (runSound.isPlaying()) {
+						runSound.stop();
+					}
 					batch.draw(civPanicRest, body.getPosition().x - 9, body.getPosition().y - 9, 9, 9, 18,
 							18, 6f, 6f, (float) (body.getAngle() * 180 / Math.PI) - 90);
 				}
 			} else if (currentAnimation == civWalkAnimation) {
 				if (!body.getLinearVelocity().isZero() && checkMovable()) {
+					if (!walkSound.isPlaying()) {
+						walkSound.play();
+					}
+					if (runSound.isPlaying()) {
+						runSound.stop();
+					}
 					batch.draw(currentAnimation.getKeyFrame(runTime * 4, true), body.getPosition().x - 9,
 							body.getPosition().y - 9, 9, 9, 18, 18, 6f, 6f,
 							(float) (body.getAngle() * 180 / Math.PI) - 90);
 
 				} else {
+					if (walkSound.isPlaying()) {
+						walkSound.stop();
+					}
 					batch.draw(civRest, body.getPosition().x - 9, body.getPosition().y - 9, 9, 9, 18, 18, 6f,
 							6f, (float) (body.getAngle() * 180 / Math.PI) - 90);
 				}

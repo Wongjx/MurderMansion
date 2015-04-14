@@ -3,6 +3,8 @@ package com.jkjk.MMHelpers;
 import java.util.Arrays;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.audio.Music;
+import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.Texture.TextureFilter;
 import com.badlogic.gdx.graphics.g2d.Animation;
@@ -20,9 +22,13 @@ import com.badlogic.gdx.scenes.scene2d.ui.Touchpad;
 import com.badlogic.gdx.scenes.scene2d.ui.Touchpad.TouchpadStyle;
 import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
+import com.jkjk.GameObjects.Items.Trap;
 import com.jkjk.MurderMansion.MurderMansion;
 
 public class AssetLoader {
+
+	public static TextureRegion prohibitedButton;
+	private static int gameWidth;
 
 	public static Texture menuBackground;
 
@@ -184,7 +190,7 @@ public class AssetLoader {
 	// public static Texture mur_stun;
 	public static Animation murStunAnimation;
 
-	public static Texture ghost_haunt;
+	public static Texture ghostHauntT;
 	public static Animation ghostHauntAnimation;
 	public static Texture ghost_float;
 	public static Animation ghostFloatAnimation;
@@ -192,24 +198,46 @@ public class AssetLoader {
 	// OBSTACLES
 	public static Texture obstacle;
 	public static Texture main_door;
-
-	public static TextureRegion prohibitedButton;
-
+	
+	// SOUNDS
+	public static Music walkSound;
+	public static Music runSound;
+	public static Sound plantTrapSound;
+	
+	
 	public static void load() {
 
-		int gameWidth = (MurderMansion.V_WIDTH * MurderMansion.SCALE);
-		menuBackground = new Texture(Gdx.files.internal("basic/menu.png"));
-
-		basker32black = new BitmapFont(Gdx.files.internal("Fonts/Basker32.fnt"));
-		basker45black = new BitmapFont(Gdx.files.internal("Fonts/Baskek45.fnt"));
-		basker32blackTime = new BitmapFont(Gdx.files.internal("Fonts/Basker32.fnt"));
-		// basker32blackTime.scale((Gdx.graphics.getWidth() - gameWidth) / gameWidth);
+		gameWidth = (MurderMansion.V_WIDTH * MurderMansion.SCALE);
 
 		logoTexture = new Texture(Gdx.files.internal("basic/logo.png"));
 		logoTexture.setFilter(TextureFilter.Linear, TextureFilter.Linear);
 
 		logo = new TextureRegion(logoTexture);
+		
+		loadFont();
+		loadMenuScreen();
+		loadScoreScreen();
+		loadHUD();
+		loadCharacters();
+		loadMapSprites();
+		loadSfx();
+		
+		// PAUSE SCREEN
+		pause_main = new Texture(Gdx.files.internal("basic/pause_background.png"));
 
+
+
+
+	}
+	
+	private static void loadFont(){
+		basker32black = new BitmapFont(Gdx.files.internal("Fonts/Basker32.fnt"));
+		basker45black = new BitmapFont(Gdx.files.internal("Fonts/Baskek45.fnt"));
+		basker32blackTime = new BitmapFont(Gdx.files.internal("Fonts/Basker32.fnt"));
+	}
+	
+	private static void loadMenuScreen(){
+		menuBackground = new Texture(Gdx.files.internal("basic/menu.png"));
 		// Create new skin for menu screen
 		menuSkin = new Skin();
 		// Set menu font
@@ -229,10 +257,9 @@ public class AssetLoader {
 		title = new LabelStyle();
 		title.font = menuSkin.getFont("basker45");
 		title.font.scale((Gdx.graphics.getWidth() - gameWidth) / gameWidth);
-
-		// PAUSE SCREEN
-		pause_main = new Texture(Gdx.files.internal("basic/pause_background.png"));
-
+	}
+	
+	private static void loadScoreScreen(){
 		// SCORE SCREEN
 		scoreBackground = new Texture(Gdx.files.internal("score_screen/score_background.png"));
 		scoreSkin = new Skin();
@@ -244,7 +271,23 @@ public class AssetLoader {
 		normal1.up = scoreSkin.getDrawable("buttonUp");
 		normal1.down = scoreSkin.getDrawable("buttonDown");
 		normal1.pressedOffsetY = -1;
-
+	}
+	
+	private static void loadHUD(){
+		// HUD COOLDOWN
+		cooldownTexture = new Texture(Gdx.files.internal("animation/cooldown_animation.png"));
+		cooldownTexture.setFilter(TextureFilter.Nearest, TextureFilter.Nearest);
+		TextureRegion[] cooldown = TextureRegion.split(cooldownTexture, 50, 50)[0];
+		prohibitedButton = cooldown[0];
+		DisguiseCoolDownAnimation = new Animation(1.67f, cooldown);
+		DisguiseCoolDownAnimation.setPlayMode(PlayMode.NORMAL);
+		HauntCoolDownAnimation = new Animation(3.33f, cooldown);
+		HauntCoolDownAnimation.setPlayMode(PlayMode.NORMAL);
+		PanicCoolDownAnimation = new Animation(50f, cooldown);
+		PanicCoolDownAnimation.setPlayMode(PlayMode.NORMAL);
+		WeaponsCoolDownAnimation = new Animation(0.83f, cooldown);
+		WeaponsCoolDownAnimation.setPlayMode(PlayMode.NORMAL);
+		
 		// Create a touchpad
 		touchpadSkin = new Skin();
 		touchpadSkin.add("touchBackground", new Texture("HUD/touchBackground.png"));
@@ -289,47 +332,9 @@ public class AssetLoader {
 		time.setFilter(TextureFilter.Linear, TextureFilter.Linear);
 		weapon_parts_counter = new Texture(Gdx.files.internal("HUD/weapon_parts_counter.png"));
 		weapon_parts_counter.setFilter(TextureFilter.Linear, TextureFilter.Linear);
-
-		// MAP
-		tiledMap = new TmxMapLoader().load("map/mansion2.tmx");
-
-		// PICK UP ITEM TEXTURES
-		plantedTrapTexture = new Texture(Gdx.files.internal("gamehelper/planted_trap_animation.png"));
-		plantedTrapTexture.setFilter(TextureFilter.Nearest, TextureFilter.Nearest);
-		TextureRegion[] planted_trap = TextureRegion.split(plantedTrapTexture, 120, 120)[0];
-		plantedTrapAnimation = new Animation(0.4f, planted_trap);
-		plantedTrapAnimation.setPlayMode(Animation.PlayMode.LOOP_PINGPONG);
-
-		restingTrapTexture = new Texture(Gdx.files.internal("gamehelper/resting_trap_animation.png"));
-		restingTrapTexture.setFilter(TextureFilter.Nearest, TextureFilter.Nearest);
-		TextureRegion[] trap_sprite = TextureRegion.split(restingTrapTexture, 120, 120)[0];
-		restingTrapAnimation = new Animation(0.4f, trap_sprite);
-		restingTrapAnimation.setPlayMode(Animation.PlayMode.LOOP_PINGPONG);
-
-		disarmTrapSpriteTexture = new Texture(Gdx.files.internal("gamehelper/disarm_sprite_animation.png"));
-		disarmTrapSpriteTexture.setFilter(TextureFilter.Nearest, TextureFilter.Nearest);
-		TextureRegion[] disarm_trap = TextureRegion.split(disarmTrapSpriteTexture, 120, 120)[0];
-		disarmTrapSpriteAnimation = new Animation(0.4f, disarm_trap);
-		disarmTrapSpriteAnimation.setPlayMode(Animation.PlayMode.LOOP_PINGPONG);
-
-		batSpriteTexture = new Texture(Gdx.files.internal("gamehelper/bat_sprite_animation.png"));
-		batSpriteTexture.setFilter(TextureFilter.Nearest, TextureFilter.Nearest);
-		TextureRegion[] bat_sprite = TextureRegion.split(batSpriteTexture, 120, 120)[0];
-		batSpriteAnimation = new Animation(0.4f, bat_sprite);
-		batSpriteAnimation.setPlayMode(Animation.PlayMode.LOOP_PINGPONG);
-
-		knifeSpriteTexture = new Texture(Gdx.files.internal("gamehelper/knife_sprite_animation.png"));
-		knifeSpriteTexture.setFilter(TextureFilter.Nearest, TextureFilter.Nearest);
-		TextureRegion[] knife_sprite = TextureRegion.split(knifeSpriteTexture, 120, 120)[0];
-		knifeSpriteAnimation = new Animation(0.4f, knife_sprite);
-		knifeSpriteAnimation.setPlayMode(Animation.PlayMode.LOOP_PINGPONG);
-
-		shotgunPartTexture = new Texture(Gdx.files.internal("gamehelper/shotgun_sprite_animation.png"));
-		shotgunPartTexture.setFilter(TextureFilter.Nearest, TextureFilter.Nearest);
-		TextureRegion[] shotgun_sprite = TextureRegion.split(shotgunPartTexture, 120, 120)[0];
-		shotgunPartSpriteAnimation = new Animation(0.4f, shotgun_sprite);
-		shotgunPartSpriteAnimation.setPlayMode(Animation.PlayMode.LOOP_PINGPONG);
-
+	}
+	
+	private static void loadCharacters(){
 		// CIVILIAN ANIMATIONS AND TEXTURE
 		civilianTexture0 = new Texture(Gdx.files.internal("animation/CIV0.png"));
 		civilianTexture0.setFilter(TextureFilter.Nearest, TextureFilter.Nearest);
@@ -528,27 +533,71 @@ public class AssetLoader {
 		murToCivAnimation2 = new Animation(0.2f, murciv2);
 		murToCivAnimation2.setPlayMode(PlayMode.NORMAL);
 		murToCivAnimation3 = new Animation(0.2f, murciv3);
-		murToCivAnimation3.setPlayMode(PlayMode.NORMAL);
-
-		// HUD COOLDOWN
-		cooldownTexture = new Texture(Gdx.files.internal("animation/cooldown_animation.png"));
-		cooldownTexture.setFilter(TextureFilter.Nearest, TextureFilter.Nearest);
-		TextureRegion[] cooldown = TextureRegion.split(cooldownTexture, 50, 50)[0];
-		prohibitedButton = cooldown[0];
-		DisguiseCoolDownAnimation = new Animation(1.67f, cooldown);
-		DisguiseCoolDownAnimation.setPlayMode(PlayMode.NORMAL);
-		HauntCoolDownAnimation = new Animation(3.33f, cooldown);
-		HauntCoolDownAnimation.setPlayMode(PlayMode.NORMAL);
-		PanicCoolDownAnimation = new Animation(50f, cooldown);
-		PanicCoolDownAnimation.setPlayMode(PlayMode.NORMAL);
-		WeaponsCoolDownAnimation = new Animation(0.83f, cooldown);
-		WeaponsCoolDownAnimation.setPlayMode(PlayMode.NORMAL);
+		murToCivAnimation3.setPlayMode(PlayMode.NORMAL);		
+		
 		// ghost
 		ghost_float = new Texture(Gdx.files.internal("animation/ghostSingleFrame.png"));
+		ghostHauntT = new Texture(Gdx.files.internal("animation/ghostHauntAnimation.png"));
+		TextureRegion ghostHauntTR[] = TextureRegion.split(ghostHauntT, 100, 100)[0];
+		ghostHauntAnimation = new Animation(0.2f, ghostHauntTR);
+		ghostHauntAnimation.setPlayMode(PlayMode.NORMAL);
+		
+	}
+	
+	private static void loadMapSprites(){
+		// MAP
+		tiledMap = new TmxMapLoader().load("map/mansion2.tmx");
 
+		// PICK UP ITEM TEXTURES
+		plantedTrapTexture = new Texture(Gdx.files.internal("gamehelper/planted_trap_animation.png"));
+		plantedTrapTexture.setFilter(TextureFilter.Nearest, TextureFilter.Nearest);
+		TextureRegion[] planted_trap = TextureRegion.split(plantedTrapTexture, 120, 120)[0];
+		plantedTrapAnimation = new Animation(0.4f, planted_trap);
+		plantedTrapAnimation.setPlayMode(Animation.PlayMode.LOOP_PINGPONG);
+
+		restingTrapTexture = new Texture(Gdx.files.internal("gamehelper/resting_trap_animation.png"));
+		restingTrapTexture.setFilter(TextureFilter.Nearest, TextureFilter.Nearest);
+		TextureRegion[] trap_sprite = TextureRegion.split(restingTrapTexture, 120, 120)[0];
+		restingTrapAnimation = new Animation(0.4f, trap_sprite);
+		restingTrapAnimation.setPlayMode(Animation.PlayMode.LOOP_PINGPONG);
+
+		disarmTrapSpriteTexture = new Texture(Gdx.files.internal("gamehelper/disarm_sprite_animation.png"));
+		disarmTrapSpriteTexture.setFilter(TextureFilter.Nearest, TextureFilter.Nearest);
+		TextureRegion[] disarm_trap = TextureRegion.split(disarmTrapSpriteTexture, 120, 120)[0];
+		disarmTrapSpriteAnimation = new Animation(0.4f, disarm_trap);
+		disarmTrapSpriteAnimation.setPlayMode(Animation.PlayMode.LOOP_PINGPONG);
+
+		batSpriteTexture = new Texture(Gdx.files.internal("gamehelper/bat_sprite_animation.png"));
+		batSpriteTexture.setFilter(TextureFilter.Nearest, TextureFilter.Nearest);
+		TextureRegion[] bat_sprite = TextureRegion.split(batSpriteTexture, 120, 120)[0];
+		batSpriteAnimation = new Animation(0.4f, bat_sprite);
+		batSpriteAnimation.setPlayMode(Animation.PlayMode.LOOP_PINGPONG);
+
+		knifeSpriteTexture = new Texture(Gdx.files.internal("gamehelper/knife_sprite_animation.png"));
+		knifeSpriteTexture.setFilter(TextureFilter.Nearest, TextureFilter.Nearest);
+		TextureRegion[] knife_sprite = TextureRegion.split(knifeSpriteTexture, 120, 120)[0];
+		knifeSpriteAnimation = new Animation(0.4f, knife_sprite);
+		knifeSpriteAnimation.setPlayMode(Animation.PlayMode.LOOP_PINGPONG);
+
+		shotgunPartTexture = new Texture(Gdx.files.internal("gamehelper/shotgun_sprite_animation.png"));
+		shotgunPartTexture.setFilter(TextureFilter.Nearest, TextureFilter.Nearest);
+		TextureRegion[] shotgun_sprite = TextureRegion.split(shotgunPartTexture, 120, 120)[0];
+		shotgunPartSpriteAnimation = new Animation(0.4f, shotgun_sprite);
+		shotgunPartSpriteAnimation.setPlayMode(Animation.PlayMode.LOOP_PINGPONG);
+		
 		// OBSTACLES
 		obstacle = new Texture(Gdx.files.internal("map/barrels.png"));
 		main_door = new Texture(Gdx.files.internal("map/main-door.png"));
+	}
+	
+	private static void loadSfx(){
+		walkSound = Gdx.audio.newMusic(Gdx.files.internal("sfx/walking.mp3"));
+		walkSound.setVolume(0.8f);
+		
+		runSound = Gdx.audio.newMusic(Gdx.files.internal("sfx/running.mp3"));
+		runSound.setVolume(0.8f);
+		
+		plantTrapSound = Gdx.audio.newSound(Gdx.files.internal("sfx/plantTrap.mp3"));
 	}
 
 	public static void dispose() {
@@ -584,5 +633,10 @@ public class AssetLoader {
 		batSpriteTexture.dispose();
 		knifeSpriteTexture.dispose();
 		shotgunPartTexture.dispose();
+		haunt_tex.dispose();
+		ghostHauntT.dispose();
+		walkSound.dispose();
+		runSound.dispose();
+		plantTrapSound.dispose();
 	}
 }
