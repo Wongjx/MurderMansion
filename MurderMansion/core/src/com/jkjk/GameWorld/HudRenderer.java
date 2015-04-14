@@ -196,6 +196,11 @@ public class HudRenderer {
 	public void render(float delta) {
 
 		batch.begin();
+		batch.draw(timebox, 55, 280);
+		batch.draw(weapon_parts_counter, 440, 235);
+		batch.draw(emptySlot, 480, 22, 120, 120);
+		font.draw(batch, getTime(), 75, 330);
+		WeaponPartsDisplay();
 		
 		if (gameIsPaused==false){
 			batch.draw(timebox, 55, 280);
@@ -300,6 +305,13 @@ public class HudRenderer {
 
 		return counter_actor;
 	}
+	
+	private void WeaponPartsDisplay(){
+		int numParts = gWorld.getNumOfWeaponPartsCollected();
+		font.draw(batch, Integer.toString(numParts), 456,325 );
+		font.draw(batch, "8", 520, 312);
+	}
+	
 	
 	/**
 	 * Handles the cool down animations of the item slots
@@ -637,9 +649,10 @@ public class HudRenderer {
 
 			public void clicked(InputEvent event, float x, float y) {
 				System.out.println("Clicked on knife button");
-				gWorld.getPlayer().useWeapon();
+				if(gWorld.getPlayer().useWeapon()){
 				// start to draw cool down animation
-				WeaponsCD = true;
+					WeaponsCD = true;
+				}
 			}
 		});
 
@@ -672,7 +685,6 @@ public class HudRenderer {
 			public void clicked(InputEvent event, float x, float y) {
 				System.out.println("Clicked on trap button");
 				gWorld.getPlayer().useItem();
-				//start to draw cool down animation
 			}
 		});
 

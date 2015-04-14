@@ -26,6 +26,9 @@ public class Murderer extends GameCharacter {
 	// Animations for disguised
 	private Animation civWalkAnimation;
 	private Animation civStunAnimation;
+	private Animation murToCivAnimation;
+	private Animation civToMurAnimation;
+	private Animation civPlantTrapAnimation;
 	private TextureRegion civRest;
 
 	Murderer(int id, GameWorld gWorld, boolean isPlayer) {
@@ -59,17 +62,34 @@ public class Murderer extends GameCharacter {
 		case 0: 
 			civWalkAnimation = AssetLoader.civAnimation0;
 			civStunAnimation = AssetLoader.civStunAnimation0;
+			murToCivAnimation = AssetLoader.murToCivAnimation0;
+			civToMurAnimation = AssetLoader.civToMurAnimation0;
+			civPlantTrapAnimation = AssetLoader.civDisarmAnimation0;
 			civRest = AssetLoader.civ_rest0;
 			break;				
 		case 1: 
 			civWalkAnimation = AssetLoader.civAnimation1;
 			civStunAnimation = AssetLoader.civStunAnimation1;
+			murToCivAnimation = AssetLoader.murToCivAnimation1;
+			civToMurAnimation = AssetLoader.civToMurAnimation1;
+			civPlantTrapAnimation = AssetLoader.civDisarmAnimation1;
 			civRest = AssetLoader.civ_rest1;
 			break;
 		case 2: 
 			civWalkAnimation = AssetLoader.civAnimation2;
 			civStunAnimation = AssetLoader.civStunAnimation2;
+			murToCivAnimation = AssetLoader.murToCivAnimation2;
+			civToMurAnimation = AssetLoader.civToMurAnimation2;
+			civPlantTrapAnimation = AssetLoader.civDisarmAnimation2;
 			civRest = AssetLoader.civ_rest2;
+			break;
+		case 3: 
+			civWalkAnimation = AssetLoader.civAnimation3;
+			civStunAnimation = AssetLoader.civStunAnimation3;
+			murToCivAnimation = AssetLoader.murToCivAnimation3;
+			civToMurAnimation = AssetLoader.civToMurAnimation3;
+			civPlantTrapAnimation = AssetLoader.civDisarmAnimation3;
+			civRest = AssetLoader.civ_rest3;
 			break;
 		default:
 			System.out.println("MURDERER CLASS ANIMATION ERROR");
@@ -79,6 +99,9 @@ public class Murderer extends GameCharacter {
 
 	@Override
 	public void render(OrthographicCamera cam, SpriteBatch batch) {
+		
+		super.render(cam, batch);
+		
 		if (gWorld.getPlayer().lightContains(body.getPosition().x, body.getPosition().y)) {
 			runTime += Gdx.graphics.getRawDeltaTime();
 			currentAnimation = (Animation) body.getUserData();
@@ -105,11 +128,9 @@ public class Murderer extends GameCharacter {
 				animationRunTime += Gdx.graphics.getRawDeltaTime();
 				if (currentAnimation.isAnimationFinished(animationRunTime)) { // reset
 					animationRunTime = 0;
-					if (isDisguised()) {
+					if (isDisguised()){// once animation ends, if disguised, go back to civ, else go back to mur.
 						body.setUserData(civWalkAnimation);
 					} else {
-						System.out.println("waiting for murderer png yeah?");
-						//body.setUserData(civWalkAnimation);
 						body.setUserData(AssetLoader.murAnimation);
 					}
 				} else {// disable touchpad while special animation occurs.
@@ -125,7 +146,7 @@ public class Murderer extends GameCharacter {
 			batch.end();
 		}
 		
-		super.render(cam, batch);
+		
 
 	}
 	
@@ -140,6 +161,12 @@ public class Murderer extends GameCharacter {
 			ability.use();
 			ability.cooldown();
 			abilityChange = true;
+			if(disguised){
+				body.setUserData(civToMurAnimation);
+			}
+			else{
+				body.setUserData(murToCivAnimation);
+			}
 		}
 	}
 	
@@ -156,19 +183,35 @@ public class Murderer extends GameCharacter {
 	}
 	
 	public boolean useWeapon(){
-		if (!disguised){
-			super.useWeapon();
-			body.setUserData(AssetLoader.murKnifeAnimation);
-			return true;
+		if (currentAnimation == AssetLoader.murAnimation && !disguised){
+			if(super.useWeapon()){
+				AssetLoader.knifeStabSound.play();
+				body.setUserData(AssetLoader.murKnifeAnimation);
+				return true;
+			}
+			else{return false;}
+			
 		} else {
 			System.out.println("You cannot use your weapon while disguised.");
 			return false;
 		}
 	}
+	
+	public void useItem(){
+		if(currentAnimation == AssetLoader.murAnimation || currentAnimation == civWalkAnimation){
+			super.useItem();
+			if(disguised){
+				body.setUserData(civPlantTrapAnimation);
+			}
+			else{
+				body.setUserData(AssetLoader.murPlantTrapAnimation);
+			}
+		}
+	}
 	public void stun(boolean stun){
+		super.stun(stun);
 		if(!isDisguised()){
-			//body.setUserData(AssetLoader.murStunAnimation);
-			body.setUserData(civStunAnimation);
+			body.setUserData(AssetLoader.murStunAnimation);
 		}
 		else{
 			body.setUserData(civStunAnimation);

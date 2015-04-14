@@ -113,7 +113,7 @@ public class GameWorld {
 
 		obstacleList = new HashMap<Vector2, Obstacles>();
 
-		gameOverTimer = new Duration(5000);
+		gameOverTimer = new Duration(50000);
 
 		Box2DMapObjectParser parser = new Box2DMapObjectParser();
 		parser.load(world, AssetLoader.tiledMap);
@@ -153,6 +153,13 @@ public class GameWorld {
 		if (numOfWeaponPartsCollected == 8 && !shotgunCreated) {
 			createShotgun();
 			shotgunCreated = true;
+		}
+		
+		if (!civWin||!murWin){// temporary to get rid of error.
+			gameOverTimer.update();
+			if (!gameOverTimer.isCountingDown()){
+//				System.out.println("GAMEWORLD UPDATE: GAMEOVER COMPLETE");
+			}
 		}
 
 	}

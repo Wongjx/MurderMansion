@@ -3,6 +3,7 @@ package com.jkjk.MMHelpers;
 import java.util.Arrays;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.Texture.TextureFilter;
 import com.badlogic.gdx.graphics.g2d.Animation;
@@ -11,7 +12,6 @@ import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TmxMapLoader;
-import com.badlogic.gdx.scenes.scene2d.ui.Button.ButtonStyle;
 import com.badlogic.gdx.scenes.scene2d.ui.ImageButton.ImageButtonStyle;
 import com.badlogic.gdx.scenes.scene2d.ui.Label.LabelStyle;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
@@ -100,7 +100,7 @@ public class AssetLoader {
 	public static Animation shotgunPartSpriteAnimation;
 
 	// Character Animations and Textures
-	public static final int NUM_CIVILIAN_TEXTURES = 2; //starting from zero.
+	public static final int NUM_CIVILIAN_TEXTURES = 3; //starting from zero.
 	
 	public static Texture cooldownTexture;
 	public static Animation PanicCoolDownAnimation;
@@ -109,6 +109,7 @@ public class AssetLoader {
 	public static Texture civilianTexture0;
 	public static Texture civilianTexture1;
 	public static Texture civilianTexture2;
+	public static Texture civilianTexture3;
 	public static TextureRegion civ_rest0;
 	public static Animation civAnimation0;
 	public static Animation civDisarmAnimation0;
@@ -145,6 +146,18 @@ public class AssetLoader {
 	public static TextureRegion civ_panic_rest2;
 	public static Animation civShotgunAnimation2;
 	
+	public static TextureRegion civ_rest3;
+	public static Animation civAnimation3;
+	public static Animation civDisarmAnimation3;
+	public static Animation civDropDisarmAnimation3;
+	public static Animation civBatAnimation3;
+//	public static Animation civTrapDeathAnimation;
+//	public static Animation civKnifeDeathAnimation;
+	public static Animation civStunAnimation3;
+	public static Animation civPanicAnimation3;
+	public static TextureRegion civ_panic_rest3;
+	public static Animation civShotgunAnimation3;
+	
 	public static Texture murderer;
 	//public static Texture mur_walk;
 	public static Animation murAnimation;
@@ -155,9 +168,14 @@ public class AssetLoader {
 	//public static Texture mur_death;
 	public static Animation murDeathAnimation;
 	//public static Texture mur_civTransformation;
-	public static Animation murToCivAnimation;
-	//public static Texture civ_murTransformation;
-	public static Animation civToMurAnimation;
+	public static Animation murToCivAnimation0;
+	public static Animation civToMurAnimation0;
+	public static Animation murToCivAnimation1;
+	public static Animation civToMurAnimation1;
+	public static Animation murToCivAnimation2;
+	public static Animation civToMurAnimation2;
+	public static Animation murToCivAnimation3;
+	public static Animation civToMurAnimation3;
 	//public static Texture mur_stun;
 	public static Animation murStunAnimation;
 	
@@ -171,6 +189,8 @@ public class AssetLoader {
 	public static Texture main_door;
 
 	public static TextureRegion prohibitedButton;
+	
+	public static Sound knifeStabSound;
 	
 	public static void load() {
 
@@ -321,7 +341,14 @@ public class AssetLoader {
 		civPanicAnimation0.setPlayMode(PlayMode.LOOP);
 		civ_panic_rest0 = civilianTR0[1][0];
 		
-		civStunAnimation0 = new Animation(0.5f, Arrays.copyOfRange(civilianTR0[2],0,3));
+		TextureRegion[] civstun0 = Arrays.copyOfRange(civilianTR0[2],0,3);
+		TextureRegion[] civStun0 = new TextureRegion[21];
+		for(int i=0; i<civStun0.length-2;i++){
+			civStun0[i] = civstun0[0];
+			civStun0[i+1] = civstun0[1];
+			civStun0[i+2] = civstun0[2];
+		}
+		civStunAnimation0 = new Animation(0.2f, civStun0 );
 		civStunAnimation0.setPlayMode(PlayMode.NORMAL);
 		
 		civBatAnimation0 = new Animation(0.1f, Arrays.copyOfRange(civilianTR0[3],0,3));
@@ -344,13 +371,19 @@ public class AssetLoader {
 		civAnimation1.setPlayMode(Animation.PlayMode.LOOP_PINGPONG);
 		
 		civ_rest1 = civilianTR1[0][1];
-		//civ_dead_lines = new Texture(Gdx.files.internal("gamehelper/dead_lines.png"));
 
 		civPanicAnimation1 = new Animation(0.5f, Arrays.copyOfRange(civilianTR1[1],0,3));
 		civPanicAnimation1.setPlayMode(PlayMode.LOOP);
-		civ_panic_rest1 = civilianTR0[1][0];
+		civ_panic_rest1 = civilianTR1[1][0];
 		
-		civStunAnimation1 = new Animation(0.5f, Arrays.copyOfRange(civilianTR1[2],0,3));
+		TextureRegion[] civstun1 = Arrays.copyOfRange(civilianTR1[2],0,3);
+		TextureRegion[] civStun1 = new TextureRegion[21];
+		for(int i=0; i<civStun1.length-2;i++){
+			civStun1[i] = civstun1[0];
+			civStun1[i+1] = civstun1[1];
+			civStun1[i+2] = civstun1[2];
+		}
+		civStunAnimation1 = new Animation(0.5f, civStun1);
 		civStunAnimation1.setPlayMode(PlayMode.NORMAL);
 		
 		civBatAnimation1 = new Animation(0.1f, Arrays.copyOfRange(civilianTR1[3],0,3));
@@ -373,13 +406,19 @@ public class AssetLoader {
 		civAnimation2 = new Animation(0.9f, Arrays.copyOfRange(civilianTR2[0],0,3));
 		civAnimation2.setPlayMode(Animation.PlayMode.LOOP_PINGPONG);
 		
-		civ_rest2 = civilianTR1[0][1];
-		//civ_dead_lines = new Texture(Gdx.files.internal("gamehelper/dead_lines.png"));
+		civ_rest2 = civilianTR2[0][1];
 
 		civPanicAnimation2 = new Animation(0.5f, Arrays.copyOfRange(civilianTR2[1],0,3));
 		civPanicAnimation2.setPlayMode(PlayMode.LOOP);
-		civ_panic_rest1 = civilianTR0[1][0];
+		civ_panic_rest2 = civilianTR2[1][0];
 		
+		TextureRegion[] civstun2 = Arrays.copyOfRange(civilianTR2[2],0,3);
+		TextureRegion[] civStun2 = new TextureRegion[21];
+		for(int i=0; i<civStun2.length-2;i++){
+			civStun2[i] = civstun2[0];
+			civStun2[i+1] = civstun2[1];
+			civStun2[i+2] = civstun2[2];
+		}
 		civStunAnimation2 = new Animation(0.5f, Arrays.copyOfRange(civilianTR2[2],0,3));
 		civStunAnimation2.setPlayMode(PlayMode.NORMAL);
 		
@@ -394,17 +433,137 @@ public class AssetLoader {
 		
 		civDropDisarmAnimation2 = new Animation(0.1f,civilianTR2[5]);
 		civDropDisarmAnimation2.setPlayMode(PlayMode.NORMAL);
+		
+		
+		civilianTexture3 = new Texture(Gdx.files.internal("animation/CIV3.png"));
+		civilianTexture3.setFilter(TextureFilter.Nearest, TextureFilter.Nearest);
+		TextureRegion[][] civilianTR3 = TextureRegion.split(civilianTexture3, 250, 250);
+		
+		civAnimation3 = new Animation(0.9f, Arrays.copyOfRange(civilianTR3[0],0,3));
+		civAnimation3.setPlayMode(Animation.PlayMode.LOOP_PINGPONG);
+		
+		civ_rest3 = civilianTR3[0][1];
 
-		murderer = new Texture(Gdx.files.internal("animation/MUR.png"));
+		civPanicAnimation3 = new Animation(0.5f, Arrays.copyOfRange(civilianTR3[1],0,3));
+		civPanicAnimation3.setPlayMode(PlayMode.LOOP);
+		civ_panic_rest3 = civilianTR3[1][0];
+		
+		TextureRegion[] civstun3 = Arrays.copyOfRange(civilianTR3[2],0,3);
+		TextureRegion[] civStun3 = new TextureRegion[21];
+		for(int i=0; i<civStun3.length-2;i++){
+			civStun3[i] = civstun3[0];
+			civStun3[i+1] = civstun3[1];
+			civStun3[i+2] = civstun3[2];
+		}
+		civStunAnimation3 = new Animation(0.5f, Arrays.copyOfRange(civilianTR3[2],0,3));
+		civStunAnimation3.setPlayMode(PlayMode.NORMAL);
+		
+		civBatAnimation3 = new Animation(0.1f, Arrays.copyOfRange(civilianTR3[3],0,3));
+		civBatAnimation3.setPlayMode(PlayMode.NORMAL);
+		
+		civShotgunAnimation3 = new Animation(0.2f, Arrays.copyOfRange(civilianTR3[4],0,3));
+		civShotgunAnimation3.setPlayMode(PlayMode.NORMAL);
+		
+		civDisarmAnimation3 = new Animation(0.3f, civilianTR3[5]);
+		civDisarmAnimation3.setPlayMode(PlayMode.NORMAL);
+		
+		civDropDisarmAnimation3 = new Animation(0.1f,civilianTR3[5]);
+		civDropDisarmAnimation3.setPlayMode(PlayMode.NORMAL);
+		
+
+		murderer = new Texture(Gdx.files.internal("animation/MUR_CIV0.png"));
 		murderer.setFilter(TextureFilter.Nearest, TextureFilter.Nearest);
 		TextureRegion[][] murTR = TextureRegion.split(murderer, 250, 250);
+		
+		for(int i=0;i<murTR.length;i++){
+			for(int j=0;j<murTR[0].length;j++){
+				murTR[i][j].setRegion(murTR[i][j].getRegionX()-10,murTR[i][j].getRegionY()-10,270,270);
+			}
+		}
 		
 		murAnimation = new Animation(0.9f, Arrays.copyOfRange(murTR[0],0,3));
 		murAnimation.setPlayMode(PlayMode.LOOP_PINGPONG);
 		mur_rest = murTR[0][1];
 		
-		murKnifeAnimation = new Animation(0.2f, Arrays.copyOfRange(murTR[1],0,3));
+		TextureRegion[] murStun = new TextureRegion[21];
+		TextureRegion[] murStunParts = Arrays.copyOfRange(murTR[1],0,3);
+		for(int i=0;i<murStun.length-2;i+=3){
+			murStun[i] = murStunParts[0];
+			murStun[i+1] = murStunParts[1];
+			murStun[i+2] = murStunParts[2];
+		}
+		murStunAnimation = new Animation(0.2f, murStun);
+		murStunAnimation.setPlayMode(PlayMode.NORMAL);
+		
+		murKnifeAnimation = new Animation(0.2f, Arrays.copyOfRange(murTR[2],0,4));
 		murKnifeAnimation.setPlayMode(PlayMode.NORMAL);
+		
+		murPlantTrapAnimation = new Animation(0.2f, murTR[3]);
+		murPlantTrapAnimation.setPlayMode(PlayMode.NORMAL);
+		
+		TextureRegion[] civmur0 = new TextureRegion[6];
+		TextureRegion[] civmur1 = new TextureRegion[6];
+		TextureRegion[] civmur2 = new TextureRegion[6];
+		TextureRegion[] civmur3 = new TextureRegion[6];
+		
+		for(int i=0;i<civmur0.length-1;i+=2){
+			civmur0[i] = mur_rest;
+			civmur0[i+1] = civ_rest0;
+		}
+		for(int i=0;i<civmur1.length-1;i+=2){
+			civmur1[i] = mur_rest;
+			civmur1[i+1] = civ_rest1;
+		}
+		for(int i=0;i<civmur2.length-1;i+=2){
+			civmur2[i] = mur_rest;
+			civmur2[i+1] = civ_rest2;
+		}
+		for(int i=0;i<civmur3.length-1;i+=2){
+			civmur3[i] = mur_rest;
+			civmur3[i+1] = civ_rest3;
+		}
+		
+		civToMurAnimation0 = new Animation(0.2f, civmur0);
+		civToMurAnimation0.setPlayMode(PlayMode.NORMAL);
+		civToMurAnimation1 = new Animation(0.2f, civmur1);
+		civToMurAnimation1.setPlayMode(PlayMode.NORMAL);
+		civToMurAnimation2 = new Animation(0.2f, civmur2);
+		civToMurAnimation2.setPlayMode(PlayMode.NORMAL);
+		civToMurAnimation3 = new Animation(0.2f, civmur3);
+		civToMurAnimation3.setPlayMode(PlayMode.NORMAL);
+		
+		TextureRegion[] murciv0 = new TextureRegion[6];
+		TextureRegion[] murciv1 = new TextureRegion[6];
+		TextureRegion[] murciv2 = new TextureRegion[6];
+		TextureRegion[] murciv3 = new TextureRegion[6];
+		
+		for(int i=0;i<murciv0.length-1;i+=2){
+			murciv0[i] = civ_rest0;
+			murciv0[i+1] = mur_rest;
+		}
+		for(int i=0;i<murciv1.length-1;i+=2){
+			murciv1[i] = civ_rest1;
+			murciv1[i+1] = mur_rest;
+		}
+		for(int i=0;i<murciv2.length-1;i+=2){
+			murciv2[i] = civ_rest2;
+			murciv2[i+1] = mur_rest;
+		}
+		for(int i=0;i<murciv3.length-1;i+=2){
+			murciv3[i] = civ_rest3;
+			murciv3[i+1] = mur_rest;
+		}
+		
+		murToCivAnimation0 = new Animation(0.2f,murciv0);
+		murToCivAnimation0.setPlayMode(PlayMode.NORMAL);
+		murToCivAnimation1 = new Animation(0.2f,murciv1);
+		murToCivAnimation1.setPlayMode(PlayMode.NORMAL);
+		murToCivAnimation2 = new Animation(0.2f,murciv2);
+		murToCivAnimation2.setPlayMode(PlayMode.NORMAL);
+		murToCivAnimation3 = new Animation(0.2f,murciv3);
+		murToCivAnimation3.setPlayMode(PlayMode.NORMAL);
+		
+		knifeStabSound = Gdx.audio.newSound(Gdx.files.internal("sound/Knife Stab.mp3"));
 		
 		
 		// HUD COOLDOWN
