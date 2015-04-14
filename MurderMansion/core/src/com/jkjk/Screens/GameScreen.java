@@ -3,11 +3,13 @@ package com.jkjk.Screens;
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
+import com.badlogic.gdx.audio.Music;
 import com.jkjk.GameWorld.GameRenderer;
 import com.jkjk.GameWorld.GameWorld;
 import com.jkjk.GameWorld.HudRenderer;
 import com.jkjk.GameWorld.MMClient;
 import com.jkjk.Host.MMServer;
+import com.jkjk.MMHelpers.AssetLoader;
 import com.jkjk.MMHelpers.MultiplayerSeissonInfo;
 import com.jkjk.MurderMansion.MurderMansion;
 
@@ -24,25 +26,27 @@ public class GameScreen implements Screen {
 	private MMServer server;
 	private MMClient client;
 
-	public GameScreen(MurderMansion game, float gameWidth, float gameHeight, GameWorld world, GameRenderer renderer) {
+	public GameScreen(MurderMansion game, float gameWidth, float gameHeight, GameWorld world,
+			GameRenderer renderer) {
 		this.game = game;
 		this.gameWidth = gameWidth;
 		this.gameHeight = gameHeight;
-		this.client=game.mMultiplayerSeisson.getClient();
-		this.info=game.mMultiplayerSeisson;
-		this.gWorld=client.getgWorld();
-		this.renderer=client.getRenderer();
-//		this.gWorld=world;		
-//		this.renderer=renderer;
+		this.client = game.mMultiplayerSeisson.getClient();
+		this.info = game.mMultiplayerSeisson;
+		this.gWorld = client.getgWorld();
+		this.renderer = client.getRenderer();
+		// this.gWorld=world;
+		// this.renderer=renderer;
 
-//		client = new MMClient(server, gWorld, renderer);
-		hudRenderer = HudRenderer.getInstance(gWorld, gameWidth, gameHeight,game);
+		// client = new MMClient(server, gWorld, renderer);
+		hudRenderer = HudRenderer.getInstance(gWorld, client, gameWidth, gameHeight, game);
+		
 	}
 
 	@Override
 	public void show() {
-		// TODO Auto-generated method stub
-
+		AssetLoader.menuMusic.stop();
+		AssetLoader.gameMusic.play();
 	}
 
 	@Override
@@ -51,16 +55,18 @@ public class GameScreen implements Screen {
 		gWorld.update(delta, client);
 		renderer.render(delta, runTime, client);
 		hudRenderer.render(delta);
-		//if phone is designated server
-		if(info.isServer){
+		// if phone is designated server
+		if (info.isServer) {
 			info.getServer().update();
 		}
-		
-		if (gWorld.isCivWin() || gWorld.isMurWin()){
+
+		if (gWorld.isCivWin() || gWorld.isMurWin()) {
 			gWorld.getGameOverTimer().update();
-			if (!gWorld.getGameOverTimer().isCountingDown()){
-				System.out.println("GAMEWORLD UPDATE: GAMEOVER COMPLETE");
-                ((Game)Gdx.app.getApplicationListener()).setScreen(new ScoreScreen(game, gameWidth, gameHeight, gWorld.isMurWin()));
+			if (!gWorld.getGameOverTimer().isCountingDown()) {
+				// System.out.println("GAMEWORLD UPDATE: GAMEOVER COMPLETE");
+				// ((Game)Gdx.app.getApplicationListener()).setScreen(new ScoreScreen(game, gameWidth,
+				// gameHeight, gWorld.isMurWin()));
+//				gameMusic.stop();
 			}
 		}
 	}

@@ -1,7 +1,12 @@
 package com.jkjk.GameObjects.Characters;
 
+import java.util.Random;
+
 import box2dLight.RayHandler;
 
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.audio.Music;
+import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.physics.box2d.Body;
@@ -23,10 +28,12 @@ public abstract class GameCharacter {
 	private String type;
 	private boolean isPlayer;
 
-	protected boolean alive;
+	private boolean alive;
 	protected boolean itemChange, weaponChange, abilityChange;
-	protected boolean stun;
+	private boolean stun;
+	private boolean haunt;
 	private Duration stunDuration;
+	private Duration hauntDuration;
 
 	private float maxVelocity;
 	private float touchpadX;
@@ -46,6 +53,9 @@ public abstract class GameCharacter {
 
 	protected int id;
 	private int weaponUses;
+	private Random random;
+	private long hauntTime;
+	private long nextRandomMovement;
 
 	protected float runTime;
 	protected float ambientLightValue;
@@ -59,16 +69,17 @@ public abstract class GameCharacter {
 		weaponUses = 3;
 		touchpad = AssetLoader.touchpad;
 		stunDuration = new Duration(4000);
+		hauntDuration = new Duration(4000);
 
 		this.type = type;
 		this.id = id;
 		AbilityFactory af = new AbilityFactory();
-		ability = af.createAbility(this);
+		ability = af.createAbility(gWorld, this);
 
 		this.deathPositionX = 0;
 		this.deathPositionY = 0;
 
-		if (isPlayer || type == "Ghost"){
+		if (isPlayer || type == "Ghost") {
 			rayHandler = gWorld.getRayHandler();
 		} else {
 			rayHandler = new RayHandler(gWorld.getWorld());
@@ -79,6 +90,9 @@ public abstract class GameCharacter {
 		startTime = System.currentTimeMillis();
 		brightTime = 0;
 		nextBrightTime = 10000;
+		random = new Random();
+		hauntTime = 0;
+		nextRandomMovement = 0;
 
 	}
 
@@ -128,10 +142,16 @@ public abstract class GameCharacter {
 
 	public void stun(boolean stun) {
 		this.stun = stun;
+		stunDuration.startCountdown();
 	}
 
 	public boolean isStun() {
 		return stun;
+	}
+
+	public void haunt(boolean haunt) {
+		this.haunt = haunt;
+		hauntDuration.startCountdown();
 	}
 
 	public int getId() {
@@ -154,11 +174,13 @@ public abstract class GameCharacter {
 		return ability;
 	}
 
-	public void useAbility() {
+	public boolean useAbility() {
 		if (!ability.isOnCoolDown()) {
 			ability.use();
 			ability.cooldown();
+			return true;
 		}
+		return false;
 	}
 
 	public void addWeapon(Weapon weapon) {
@@ -202,7 +224,9 @@ public abstract class GameCharacter {
 	}
 
 	public void useItem() {
-		item.startUse();
+		if (isPlayer)
+			if (!item.inUse())
+				item.startUse();
 	}
 
 	public boolean getItemChange() {
@@ -221,55 +245,60 @@ public abstract class GameCharacter {
 		this.abilityChange = abilityChange;
 	}
 
-	public abstract boolean lightContains(float x, float y);
+	public boolean lightContains(float x, float y) {
+		return rayHandler.pointAtLight(x, y);
+	}
 
 	public void update() {
-		if (isPlayer) {
-			if (weapon != null) {
-				weapon.update();
-				if (weapon.isCompleted() && weaponUses == 0) {
-					weapon = null;
-					weaponChange = true;
-				}
+		if (weapon != null) {
+			weapon.update();
+			if (weapon.isCompleted() && weaponUses == 0) {
+				weapon = null;
+				weaponChange = true;
 			}
-			if (item != null) {
-				item.update();
-				if (!item.inUse() && item.isCompleted()) {
-					item = null;
-					itemChange = true;
-				}
+		}
+		if (item != null) {
+			item.update();
+			if (!item.inUse() && item.isCompleted()) {
+				item = null;
+				itemChange = true;
 			}
-			if (ability != null) {
-				ability.update();
-			}
-			if (stun) {
-				stunDuration.update();
-				if (!stunDuration.isCountingDown())
-					stun = false;
-			}
+		}
+		if (ability != null) {
+			ability.update();
+		}
+		if (stun) {
+			stunDuration.update();
+			if (!stunDuration.isCountingDown())
+				stun = false;
+		}
+		if (haunt) {
+			hauntDuration.update();
+			if (!hauntDuration.isCountingDown())
+				haunt = false;
 		}
 	}
 
 	public void render(OrthographicCamera cam, SpriteBatch batch) {
 		if (isPlayer) {
-				brightTime = System.currentTimeMillis() - startTime;
+			brightTime = System.currentTimeMillis() - startTime;
 
-				if (brightTime > nextBrightTime) {
-					System.out.println("BRIGHTER!");
-					ambientLightValue += 0.009;
-					rayHandler.setAmbientLight(ambientLightValue);
-					nextBrightTime += 10000;
-				}
+			if (brightTime > nextBrightTime) {
+				System.out.println("BRIGHTER!");
+				ambientLightValue += 0.009;
+				rayHandler.setAmbientLight(ambientLightValue);
+				nextBrightTime += 10000;
+			}
 
-				if (checkMovable()) {
-					playerMovement();
-				} else {
-					body.setAngularVelocity(0);
-					body.setLinearVelocity(0, 0);
-				}
+			if (checkMovable()) {
+				playerMovement();
+			} else {
+				body.setAngularVelocity(0);
+				body.setLinearVelocity(0, 0);
+			}
 
-				cam.position.set(body.getPosition(), 0); // Set cam position to be on player
-			
+			cam.position.set(body.getPosition(), 0); // Set cam position to be on player
+
 			rayHandler.setCombinedMatrix(cam.combined);
 			rayHandler.updateAndRender();
 		}
@@ -277,8 +306,9 @@ public abstract class GameCharacter {
 	}
 
 	protected boolean checkMovable() {
-		if (stun)
+		if (stun) {
 			return false;
+		}
 		if (item != null)
 			if (item.inUse())
 				return false;
@@ -288,39 +318,52 @@ public abstract class GameCharacter {
 	protected void playerMovement() {
 		touchpadX = touchpad.getKnobPercentX();
 		touchpadY = touchpad.getKnobPercentY();
-		if (!touchpad.isTouched()) {
-			body.setAngularVelocity(0);
-		} else {
-			angleDiff = (Math.atan2(touchpadY, touchpadX) - (body.getAngle())) % (Math.PI * 2);
-			if (angleDiff > 0) {
-				if (angleDiff >= 3.14) {
-					if (angleDiff > 6.2)
-						body.setAngularVelocity((float) -angleDiff / 7);
-					else
-						body.setAngularVelocity(-5);
-				} else if (angleDiff < 0.4)
-					body.setAngularVelocity((float) angleDiff * 3);
+		if (haunt) {
+			hauntTime = System.currentTimeMillis() - startTime;
+			if (hauntTime > nextRandomMovement) {
+				if (random.nextBoolean())
+					body.setAngularVelocity(random.nextFloat() * 3);
 				else
-					body.setAngularVelocity(5);
-			} else if (angleDiff < 0) {
-				if (angleDiff <= -3.14) {
-					if (angleDiff < -6.2)
-						body.setAngularVelocity((float) -angleDiff / 7);
+					body.setAngularVelocity(-random.nextFloat() * 3);
+				nextRandomMovement += (random.nextInt(1000) + 500);
+			}
+			body.setLinearVelocity(maxVelocity * (float) Math.cos(body.getAngle()), maxVelocity
+					* (float) Math.sin(body.getAngle()));
+		} else {
+			if (!touchpad.isTouched()) {
+				body.setAngularVelocity(0);
+			} else {
+				angleDiff = (Math.atan2(touchpadY, touchpadX) - (body.getAngle())) % (Math.PI * 2);
+				if (angleDiff > 0) {
+					if (angleDiff >= 3.14) {
+						if (angleDiff > 6.2)
+							body.setAngularVelocity((float) -angleDiff / 7);
+						else
+							body.setAngularVelocity(-5);
+					} else if (angleDiff < 0.4)
+						body.setAngularVelocity((float) angleDiff * 3);
 					else
 						body.setAngularVelocity(5);
-				} else if (angleDiff > -0.4)
-					body.setAngularVelocity((float) angleDiff * 3);
-				else
-					body.setAngularVelocity(-5);
-			} else
-				body.setAngularVelocity(0);
+				} else if (angleDiff < 0) {
+					if (angleDiff <= -3.14) {
+						if (angleDiff < -6.2)
+							body.setAngularVelocity((float) -angleDiff / 7);
+						else
+							body.setAngularVelocity(5);
+					} else if (angleDiff > -0.4)
+						body.setAngularVelocity((float) angleDiff * 3);
+					else
+						body.setAngularVelocity(-5);
+				} else
+					body.setAngularVelocity(0);
+			}
+			body.setLinearVelocity(touchpadX * maxVelocity, touchpadY * maxVelocity);
 		}
-		body.setLinearVelocity(touchpadX * maxVelocity, touchpadY * maxVelocity);
 	}
 
 	public void setPosition(float x, float y, float angle, float velocity) {
 		body.setTransform(x, y, angle);
-		if (velocity != 0){
+		if (velocity != 0) {
 			body.setLinearVelocity(0.00001f, 0.000001f);
 		}
 	}

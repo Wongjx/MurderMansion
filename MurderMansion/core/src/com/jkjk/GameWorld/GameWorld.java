@@ -1,7 +1,7 @@
 package com.jkjk.GameWorld;
 
-import java.util.HashMap;
 import java.util.Iterator;
+import java.util.concurrent.ConcurrentHashMap;
 
 import net.dermetfan.gdx.physics.box2d.Box2DMapObjectParser;
 import box2dLight.RayHandler;
@@ -38,22 +38,22 @@ public class GameWorld {
 	private RayHandler rayHandler;
 
 	private ItemFactory itemFac;
-	private HashMap<Vector2, ItemSprite> itemList;
-	private HashMap<Vector2, Trap> trapList;
+	private ConcurrentHashMap<Vector2, ItemSprite> itemList;
+	private ConcurrentHashMap<Vector2, Trap> trapList;
 	private Vector2 trapLocation;
 
 	private WeaponFactory weaponFac;
-	private HashMap<Vector2, WeaponSprite> weaponList;
+	private ConcurrentHashMap<Vector2, WeaponSprite> weaponList;
 
-	private HashMap<Vector2, WeaponPartSprite> weaponPartList;
+	private ConcurrentHashMap<Vector2, WeaponPartSprite> weaponPartList;
 	private int numOfWeaponPartsCollected;
-	private boolean shotgunCreated;
+
 	private boolean inSafeArea;
 	private boolean civWin;
 	private boolean murWin;
 	private Duration gameOverTimer;
 
-	private HashMap<Vector2, Obstacles> obstacleList;
+	private ConcurrentHashMap<Vector2, Obstacles> obstacleList;
 
 	private World world;
 	private MMContactListener cl;
@@ -97,24 +97,22 @@ public class GameWorld {
 		trapRemoveIterator = trapToRemove.iterator();
 		itemsAddIterator = itemsToAdd.iterator();
 		weaponsAddIterator = weaponsToAdd.iterator();
-		
-		
+
 		gameCharFac = new GameCharacterFactory();
 		rayHandler = new RayHandler(world);
 
 		itemFac = new ItemFactory();
-		itemList = new HashMap<Vector2, ItemSprite>();
-		trapList = new HashMap<Vector2, Trap>();
+		itemList = new ConcurrentHashMap<Vector2, ItemSprite>();
+		trapList = new ConcurrentHashMap<Vector2, Trap>();
 
 		weaponFac = new WeaponFactory();
-		weaponList = new HashMap<Vector2, WeaponSprite>();
+		weaponList = new ConcurrentHashMap<Vector2, WeaponSprite>();
 
-		numOfWeaponPartsCollected = 0;
-		weaponPartList = new HashMap<Vector2, WeaponPartSprite>();
+		weaponPartList = new ConcurrentHashMap<Vector2, WeaponPartSprite>();
 
-		obstacleList = new HashMap<Vector2, Obstacles>();
+		obstacleList = new ConcurrentHashMap<Vector2, Obstacles>();
 
-		gameOverTimer = new Duration(50000);
+		gameOverTimer = new Duration(5000);
 
 		Box2DMapObjectParser parser = new Box2DMapObjectParser();
 		parser.load(world, AssetLoader.tiledMap);
@@ -143,6 +141,7 @@ public class GameWorld {
 		if (player.isAlive()) {
 			player.update();
 		} else {
+			client.updatePlayerIsAlive(client.getId(), 0);
 			createGhost();
 		}
 		checkStairs();
@@ -150,18 +149,6 @@ public class GameWorld {
 		checkWeaponSprite(client);
 		checkWeaponPartSprite(client);
 		checkTrap(client);
-
-		if (numOfWeaponPartsCollected == 8 && !shotgunCreated) {
-			createShotgun();
-			shotgunCreated = true;
-		}
-		
-		if (!civWin||!murWin){// temporary to get rid of error.
-			gameOverTimer.update();
-			if (!gameOverTimer.isCountingDown()){
-//				System.out.println("GAMEWORLD UPDATE: GAMEOVER COMPLETE");
-			}
-		}
 
 	}
 
@@ -190,15 +177,6 @@ public class GameWorld {
 	public void createDoor() {
 		if (player.getType() == "Murderer") {
 			new Obstacles(this, new Vector2(915.2f, 511.8f), 0);
-		}
-	}
-
-	/**
-	 * If the player is a civilian, his weapon will be replaced with a shotgun
-	 */
-	private void createShotgun() {
-		if (player.getType().equals("Civilian")) {
-			player.addWeapon(weaponFac.createWeapon("Shotgun", this));
 		}
 	}
 
@@ -237,9 +215,9 @@ public class GameWorld {
 			itemList.remove(bodyToRemove.getPosition());
 			world.destroyBody(bodyToRemove);
 			if (player.getType().equals("Murderer"))
-				player.addItem(itemFac.createItem("Trap", this, client));
+				player.addItem(itemFac.createItem("Trap", this, client, player));
 			else
-				player.addItem(itemFac.createItem("Disarm Trap", this, client));
+				player.addItem(itemFac.createItem("Disarm Trap", this, client, player));
 		}
 
 		while (itemsAddIterator.hasNext()) {
@@ -260,9 +238,9 @@ public class GameWorld {
 			weaponList.remove(bodyToRemove.getPosition());
 			world.destroyBody(bodyToRemove);
 			if (player.getType().equals("Murderer"))
-				player.addWeapon(weaponFac.createWeapon("Knife", this));
+				player.addWeapon(weaponFac.createWeapon("Knife", this, player));
 			else
-				player.addWeapon(weaponFac.createWeapon("Bat", this));
+				player.addWeapon(weaponFac.createWeapon("Bat", this, player));
 		}
 		while (weaponsAddIterator.hasNext()) {
 			client.produceWeaponLocation(weaponsAddIterator.next());
@@ -282,7 +260,7 @@ public class GameWorld {
 			weaponPartList.remove(bodyToRemove.getPosition());
 			world.destroyBody(bodyToRemove);
 			if (player.getType().equals("Civilian")) {
-				numOfWeaponPartsCollected++;
+				client.addWeaponPartCollected();
 			}
 		}
 	}
@@ -297,6 +275,7 @@ public class GameWorld {
 			trapRemoveIterator.remove();
 			trapList.remove(bodyToRemove.getPosition());
 			world.destroyBody(bodyToRemove);
+			client.removeTrapLocation(bodyToRemove.getPosition().x, bodyToRemove.getPosition().y);
 		}
 
 		while (client.getTrapList().keySet().iterator().hasNext()) {
@@ -343,7 +322,8 @@ public class GameWorld {
 	 *            Vector2 coordinates of the obstacle
 	 */
 	public void removeObstacle(Vector2 location) {
-		world.destroyBody(obstacleList.get(location).getBody());
+		obstacleList.get(location).getBody().setActive(false);
+		obstacleList.get(location).getBody().setTransform(0, 0, 0);
 		obstacleList.remove(location);
 	}
 
@@ -362,20 +342,6 @@ public class GameWorld {
 	}
 
 	/**
-	 * @return Number of Weapon Parts Collected
-	 */
-	public int getNumOfWeaponPartsCollected() {
-		return numOfWeaponPartsCollected;
-	}
-
-	/**
-	 * Adds 1 to number of weapon parts collected.
-	 */
-	public void weaponPartsCollected() {
-		this.numOfWeaponPartsCollected++;
-	}
-
-	/**
 	 * @return GameCharacter Factory to create game characters.
 	 */
 	public GameCharacterFactory getGameCharFac() {
@@ -385,29 +351,29 @@ public class GameWorld {
 	/**
 	 * @return List of items on the map.
 	 */
-	public HashMap<Vector2, ItemSprite> getItemList() {
+	public ConcurrentHashMap<Vector2, ItemSprite> getItemList() {
 		return itemList;
 	}
 
 	/**
 	 * @return List of weapons on the map.
 	 */
-	public HashMap<Vector2, WeaponSprite> getWeaponList() {
+	public ConcurrentHashMap<Vector2, WeaponSprite> getWeaponList() {
 		return weaponList;
 	}
 
 	/**
 	 * @return List of weapon parts on the map.
 	 */
-	public HashMap<Vector2, WeaponPartSprite> getWeaponPartList() {
+	public ConcurrentHashMap<Vector2, WeaponPartSprite> getWeaponPartList() {
 		return weaponPartList;
 	}
 
-	public HashMap<Vector2, Trap> getTrapList() {
+	public ConcurrentHashMap<Vector2, Trap> getTrapList() {
 		return trapList;
 	}
 
-	public HashMap<Vector2, Obstacles> getObstacleList() {
+	public ConcurrentHashMap<Vector2, Obstacles> getObstacleList() {
 		return obstacleList;
 	}
 
@@ -455,6 +421,18 @@ public class GameWorld {
 
 	public Duration getGameOverTimer() {
 		return gameOverTimer;
+	}
+
+	public void setTrapToRemove(Body value) {
+		this.trapToRemove.add(value);
+	}
+	
+	public int getNumOfWeaponPartsCollected() {
+		return numOfWeaponPartsCollected;
+	}
+
+	public void addNumOfWeaponPartsCollected() {
+		this.numOfWeaponPartsCollected++;
 	}
 
 }

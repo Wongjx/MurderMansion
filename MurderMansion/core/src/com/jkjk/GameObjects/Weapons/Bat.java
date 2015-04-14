@@ -5,6 +5,7 @@ import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
 import com.badlogic.gdx.physics.box2d.FixtureDef;
+import com.jkjk.GameObjects.Characters.GameCharacter;
 import com.jkjk.GameWorld.GameWorld;
 import com.jkjk.MMHelpers.AssetLoader;
 
@@ -14,37 +15,43 @@ public class Bat extends Weapon {
 	private FixtureDef fdef;
 	private Vector2 playerPosition;
 	private float playerAngle;
+	private GameCharacter character;
 
-	Bat(GameWorld gWorld) {
-		super(gWorld);
+	Bat(GameWorld gWorld, GameCharacter character) {
+		super(gWorld, character);
+		this.character = character;
 		bdef = new BodyDef();
 		fdef = new FixtureDef();
 		name = "Bat";
-		
-	}
-
-	@Override
-	public void use() {
-		super.use();
-		System.out.println("Used bat");
-		playerPosition = gWorld.getPlayer().getBody().getPosition();
-		playerAngle = gWorld.getPlayer().getBody().getAngle();
 		bdef.type = BodyType.DynamicBody;
-		bdef.position.set(playerPosition.x, playerPosition.y);
-		bdef.angle = playerAngle;
+		bdef.position.set(0, 0);
 		body = gWorld.getWorld().createBody(bdef);
+		body.setActive(false);
 
-		Vector2[] vertices = { new Vector2(15, 0), new Vector2(27.7f, 16), new Vector2(30, 10.9f), new Vector2(31.5f, 5.6f),
-				new Vector2(32, 0), new Vector2(31.5f,-5.6f), new Vector2(30, -10.9f), new Vector2(27.7f,-16) };
+		Vector2[] vertices = { new Vector2(15, 0), new Vector2(27.7f, 16), new Vector2(30, 10.9f),
+				new Vector2(31.5f, 5.6f), new Vector2(32, 0), new Vector2(31.5f, -5.6f),
+				new Vector2(30, -10.9f), new Vector2(27.7f, -16) };
 		PolygonShape shape = new PolygonShape();
 		shape.set(vertices);
 		fdef.shape = shape;
 		fdef.isSensor = true;
 		fdef.filter.maskBits = 1;
 		body.createFixture(fdef).setUserData("bat");
-		
-		hitBoxExposure.startCountdown();
+
 	}
-	
+
+	@Override
+	public void use() {
+		super.use();
+		System.out.println("Used bat");
+		playerPosition = character.getBody().getPosition();
+		playerAngle = character.getBody().getAngle();
+
+		body.setActive(true);
+		body.setTransform(playerPosition.x, playerPosition.y, playerAngle);
+
+		hitBoxExposure.startCountdown();
+		AssetLoader.batSwingSound.play();
+	}
 
 }

@@ -3,6 +3,7 @@ package com.jkjk.MMHelpers;
 import java.util.Arrays;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.Texture.TextureFilter;
@@ -24,6 +25,9 @@ import com.jkjk.MurderMansion.MurderMansion;
 
 public class AssetLoader {
 
+	public static TextureRegion prohibitedButton;
+	private static int gameWidth;
+
 	public static Texture menuBackground;
 
 	public static Touchpad touchpad;
@@ -33,11 +37,11 @@ public class AssetLoader {
 	public static Texture emptySlot;
 	public static Texture pause_button_tex;
 	public static TextureRegionDrawable pause_button_draw;
-	
-	//PAUSE SCREEN
+
+	// PAUSE SCREEN
 	public static Texture pause_main;
-	
-	//SCORE SCREEN
+
+	// SCORE SCREEN
 	public static Texture scoreBackground;
 	public static Skin scoreSkin;
 	public static ImageButtonStyle normal1;
@@ -62,6 +66,10 @@ public class AssetLoader {
 	public static Texture mur_swap_M_tex;
 	public static TextureRegionDrawable mur_swap_M_draw;
 
+	// GHOST
+	public static Texture haunt_tex;
+	public static TextureRegionDrawable haunt_draw;
+
 	public static Texture logoTexture;
 	public static TextureRegion logo;
 	public static TextButtonStyle normal;
@@ -82,7 +90,7 @@ public class AssetLoader {
 	public static Texture weapon_parts_counter;
 
 	public static TextureRegion mur_rest;
-	
+
 	public static Texture civ_dead_lines;
 
 	// GENERAL ITEMS
@@ -100,11 +108,12 @@ public class AssetLoader {
 	public static Animation shotgunPartSpriteAnimation;
 
 	// Character Animations and Textures
-	public static final int NUM_CIVILIAN_TEXTURES = 3; //starting from zero.
-	
+	public static final int NUM_CIVILIAN_TEXTURES = 3; // starting from zero.
+
 	public static Texture cooldownTexture;
 	public static Animation PanicCoolDownAnimation;
 	public static Animation DisguiseCoolDownAnimation;
+	public static Animation HauntCoolDownAnimation;
 	public static Animation WeaponsCoolDownAnimation;
 	public static Texture civilianTexture0;
 	public static Texture civilianTexture1;
@@ -115,59 +124,59 @@ public class AssetLoader {
 	public static Animation civDisarmAnimation0;
 	public static Animation civDropDisarmAnimation0;
 	public static Animation civBatAnimation0;
-//	public static Animation civTrapDeathAnimation;
-//	public static Animation civKnifeDeathAnimation;
+	// public static Animation civTrapDeathAnimation;
+	// public static Animation civKnifeDeathAnimation;
 	public static Animation civStunAnimation0;
 	public static Animation civPanicAnimation0;
 	public static TextureRegion civ_panic_rest0;
 	public static Animation civShotgunAnimation0;
-	
+
 	public static TextureRegion civ_rest1;
 	public static Animation civAnimation1;
 	public static Animation civDisarmAnimation1;
 	public static Animation civDropDisarmAnimation1;
 	public static Animation civBatAnimation1;
-//	public static Animation civTrapDeathAnimation;
-//	public static Animation civKnifeDeathAnimation;
+	// public static Animation civTrapDeathAnimation;
+	// public static Animation civKnifeDeathAnimation;
 	public static Animation civStunAnimation1;
 	public static Animation civPanicAnimation1;
 	public static TextureRegion civ_panic_rest1;
 	public static Animation civShotgunAnimation1;
-	
+
 	public static TextureRegion civ_rest2;
 	public static Animation civAnimation2;
 	public static Animation civDisarmAnimation2;
 	public static Animation civDropDisarmAnimation2;
 	public static Animation civBatAnimation2;
-//	public static Animation civTrapDeathAnimation;
-//	public static Animation civKnifeDeathAnimation;
+	// public static Animation civTrapDeathAnimation;
+	// public static Animation civKnifeDeathAnimation;
 	public static Animation civStunAnimation2;
 	public static Animation civPanicAnimation2;
 	public static TextureRegion civ_panic_rest2;
 	public static Animation civShotgunAnimation2;
-	
+
 	public static TextureRegion civ_rest3;
 	public static Animation civAnimation3;
 	public static Animation civDisarmAnimation3;
 	public static Animation civDropDisarmAnimation3;
 	public static Animation civBatAnimation3;
-//	public static Animation civTrapDeathAnimation;
-//	public static Animation civKnifeDeathAnimation;
+	// public static Animation civTrapDeathAnimation;
+	// public static Animation civKnifeDeathAnimation;
 	public static Animation civStunAnimation3;
 	public static Animation civPanicAnimation3;
 	public static TextureRegion civ_panic_rest3;
 	public static Animation civShotgunAnimation3;
-	
+
 	public static Texture murderer;
-	//public static Texture mur_walk;
+	// public static Texture mur_walk;
 	public static Animation murAnimation;
-	//public static Texture mur_knife;
+	// public static Texture mur_knife;
 	public static Animation murKnifeAnimation;
-	//public static Texture mur_plantTrap;
+	// public static Texture mur_plantTrap;
 	public static Animation murPlantTrapAnimation;
-	//public static Texture mur_death;
+	// public static Texture mur_death;
 	public static Animation murDeathAnimation;
-	//public static Texture mur_civTransformation;
+	// public static Texture mur_civTransformation;
 	public static Animation murToCivAnimation0;
 	public static Animation civToMurAnimation0;
 	public static Animation murToCivAnimation1;
@@ -176,38 +185,65 @@ public class AssetLoader {
 	public static Animation civToMurAnimation2;
 	public static Animation murToCivAnimation3;
 	public static Animation civToMurAnimation3;
-	//public static Texture mur_stun;
+	// public static Texture mur_stun;
 	public static Animation murStunAnimation;
-	
-	public static Texture ghost_haunt;
+
+	public static Texture ghostHauntT;
 	public static Animation ghostHauntAnimation;
 	public static Texture ghost_float;
 	public static Animation ghostFloatAnimation;
-	
+
 	// OBSTACLES
 	public static Texture obstacle;
 	public static Texture main_door;
 
-	public static TextureRegion prohibitedButton;
-	
+	// SOUNDS
+	public static Music menuMusic;
+	public static Music gameMusic;
+	public static Music walkSound;
+	public static Music runSound;
+	public static Sound plantTrapSound;
 	public static Sound knifeStabSound;
-	
+	public static Sound batSwingSound;
+	public static Sound disarmTrapSound;
+	public static Sound pickUpItemSound;
+	public static Sound shotgunBlastSound;
+	public static Sound batHitSound;
+	public static Sound trappedSound;
+	public static Sound trapDisarmedSound;
+	public static Sound knifeThrustSound;
+
 	public static void load() {
 
-		int gameWidth = (MurderMansion.V_WIDTH * MurderMansion.SCALE);
+		gameWidth = (MurderMansion.V_WIDTH * MurderMansion.SCALE);
 
-		menuBackground = new Texture(Gdx.files.internal("basic/menu.png"));
+		loadLogo();
+		loadFont();
+		loadMenuScreen();
+		loadScoreScreen();
+		loadHUD();
+		loadCharacters();
+		loadMapSprites();
+		loadSfx();
 
-		basker32black = new BitmapFont(Gdx.files.internal("Fonts/Basker32.fnt"));
-		basker45black = new BitmapFont(Gdx.files.internal("Fonts/Baskek45.fnt"));
-		basker32blackTime = new BitmapFont(Gdx.files.internal("Fonts/Basker32.fnt"));
-		basker32blackTime.scale((Gdx.graphics.getWidth() - gameWidth) / gameWidth / 3);
+	}
 
+	private static void loadLogo() {
 		logoTexture = new Texture(Gdx.files.internal("basic/logo.png"));
 		logoTexture.setFilter(TextureFilter.Linear, TextureFilter.Linear);
 
 		logo = new TextureRegion(logoTexture);
 
+	}
+
+	private static void loadFont() {
+		basker32black = new BitmapFont(Gdx.files.internal("Fonts/Basker32.fnt"));
+		basker45black = new BitmapFont(Gdx.files.internal("Fonts/Baskek45.fnt"));
+		basker32blackTime = new BitmapFont(Gdx.files.internal("Fonts/Basker32.fnt"));
+	}
+
+	private static void loadMenuScreen() {
+		menuBackground = new Texture(Gdx.files.internal("basic/menu.png"));
 		// Create new skin for menu screen
 		menuSkin = new Skin();
 		// Set menu font
@@ -227,10 +263,9 @@ public class AssetLoader {
 		title = new LabelStyle();
 		title.font = menuSkin.getFont("basker45");
 		title.font.scale((Gdx.graphics.getWidth() - gameWidth) / gameWidth);
+	}
 
-		// PAUSE SCREEN
-		pause_main = new Texture(Gdx.files.internal("basic/pause_background.png"));
-		
+	private static void loadScoreScreen() {
 		// SCORE SCREEN
 		scoreBackground = new Texture(Gdx.files.internal("score_screen/score_background.png"));
 		scoreSkin = new Skin();
@@ -242,8 +277,23 @@ public class AssetLoader {
 		normal1.up = scoreSkin.getDrawable("buttonUp");
 		normal1.down = scoreSkin.getDrawable("buttonDown");
 		normal1.pressedOffsetY = -1;
-		
-		
+	}
+
+	private static void loadHUD() {
+		// HUD COOLDOWN
+		cooldownTexture = new Texture(Gdx.files.internal("animation/cooldown_animation.png"));
+		cooldownTexture.setFilter(TextureFilter.Nearest, TextureFilter.Nearest);
+		TextureRegion[] cooldown = TextureRegion.split(cooldownTexture, 50, 50)[0];
+		prohibitedButton = cooldown[0];
+		DisguiseCoolDownAnimation = new Animation(1.67f, cooldown);
+		DisguiseCoolDownAnimation.setPlayMode(PlayMode.NORMAL);
+		HauntCoolDownAnimation = new Animation(3.33f, cooldown);
+		HauntCoolDownAnimation.setPlayMode(PlayMode.NORMAL);
+		PanicCoolDownAnimation = new Animation(50f, cooldown);
+		PanicCoolDownAnimation.setPlayMode(PlayMode.NORMAL);
+		WeaponsCoolDownAnimation = new Animation(0.83f, cooldown);
+		WeaponsCoolDownAnimation.setPlayMode(PlayMode.NORMAL);
+
 		// Create a touchpad
 		touchpadSkin = new Skin();
 		touchpadSkin.add("touchBackground", new Texture("HUD/touchBackground.png"));
@@ -258,7 +308,6 @@ public class AssetLoader {
 		emptySlot = new Texture(Gdx.files.internal("HUD/slots.png"));
 		pause_button_tex = new Texture(Gdx.files.internal("HUD/pause_button.png"));
 		pause_button_draw = new TextureRegionDrawable(new TextureRegion(pause_button_tex));
-		
 
 		// CIVILIANS HUD
 		civ_weapon_bat_tex = new Texture(Gdx.files.internal("HUD/civ_weapon_bat.png"));
@@ -280,12 +329,265 @@ public class AssetLoader {
 		mur_swap_M_tex = new Texture(Gdx.files.internal("HUD/mur_swap_M.png"));
 		mur_swap_M_draw = new TextureRegionDrawable(new TextureRegion(mur_swap_M_tex));
 
+		// GHOST HUD
+		haunt_tex = new Texture(Gdx.files.internal("HUD/haunt.png"));
+		haunt_draw = new TextureRegionDrawable(new TextureRegion(haunt_tex));
+
 		// TIMER
 		time = new Texture(Gdx.files.internal("HUD/countdown.png"));
 		time.setFilter(TextureFilter.Linear, TextureFilter.Linear);
 		weapon_parts_counter = new Texture(Gdx.files.internal("HUD/weapon_parts_counter.png"));
 		weapon_parts_counter.setFilter(TextureFilter.Linear, TextureFilter.Linear);
 
+		// PAUSE SCREEN
+		pause_main = new Texture(Gdx.files.internal("basic/pause_background.png"));
+	}
+
+	private static void loadCharacters() {
+		// CIVILIAN ANIMATIONS AND TEXTURE
+		civilianTexture0 = new Texture(Gdx.files.internal("animation/CIV0.png"));
+		civilianTexture0.setFilter(TextureFilter.Nearest, TextureFilter.Nearest);
+		TextureRegion[][] civilianTR0 = TextureRegion.split(civilianTexture0, 250, 250);
+
+		civAnimation0 = new Animation(0.9f, Arrays.copyOfRange(civilianTR0[0], 0, 3));
+		civAnimation0.setPlayMode(Animation.PlayMode.LOOP_PINGPONG);
+
+		civ_rest0 = civilianTR0[0][1];
+		civ_dead_lines = new Texture(Gdx.files.internal("gamehelper/dead_lines.png"));
+
+		civPanicAnimation0 = new Animation(0.5f, Arrays.copyOfRange(civilianTR0[1], 0, 3));
+		civPanicAnimation0.setPlayMode(PlayMode.LOOP);
+		civ_panic_rest0 = civilianTR0[1][0];
+
+		TextureRegion[] civstun0 = Arrays.copyOfRange(civilianTR0[2], 0, 3);
+		TextureRegion[] civStun0 = new TextureRegion[21];
+		for (int i = 0; i < civStun0.length - 2; i++) {
+			civStun0[i] = civstun0[0];
+			civStun0[i + 1] = civstun0[1];
+			civStun0[i + 2] = civstun0[2];
+		}
+		civStunAnimation0 = new Animation(0.2f, civStun0);
+		civStunAnimation0.setPlayMode(PlayMode.NORMAL);
+
+		civBatAnimation0 = new Animation(0.1f, Arrays.copyOfRange(civilianTR0[3], 0, 3));
+		civBatAnimation0.setPlayMode(PlayMode.NORMAL);
+
+		civShotgunAnimation0 = new Animation(0.2f, Arrays.copyOfRange(civilianTR0[4], 0, 3));
+		civShotgunAnimation0.setPlayMode(PlayMode.NORMAL);
+
+		civDisarmAnimation0 = new Animation(0.3f, civilianTR0[5]);
+		civDisarmAnimation0.setPlayMode(PlayMode.NORMAL);
+
+		civDropDisarmAnimation0 = new Animation(0.1f, civilianTR0[5]);
+		civDropDisarmAnimation0.setPlayMode(PlayMode.NORMAL);
+
+		civilianTexture1 = new Texture(Gdx.files.internal("animation/CIV1.png"));
+		civilianTexture1.setFilter(TextureFilter.Nearest, TextureFilter.Nearest);
+		TextureRegion[][] civilianTR1 = TextureRegion.split(civilianTexture1, 250, 250);
+
+		civAnimation1 = new Animation(0.9f, Arrays.copyOfRange(civilianTR1[0], 0, 3));
+		civAnimation1.setPlayMode(Animation.PlayMode.LOOP_PINGPONG);
+
+		civ_rest1 = civilianTR1[0][1];
+
+		civPanicAnimation1 = new Animation(0.5f, Arrays.copyOfRange(civilianTR1[1], 0, 3));
+		civPanicAnimation1.setPlayMode(PlayMode.LOOP);
+		civ_panic_rest1 = civilianTR1[1][0];
+
+		TextureRegion[] civstun1 = Arrays.copyOfRange(civilianTR1[2], 0, 3);
+		TextureRegion[] civStun1 = new TextureRegion[21];
+		for (int i = 0; i < civStun1.length - 2; i++) {
+			civStun1[i] = civstun1[0];
+			civStun1[i + 1] = civstun1[1];
+			civStun1[i + 2] = civstun1[2];
+		}
+		civStunAnimation1 = new Animation(0.5f, civStun1);
+		civStunAnimation1.setPlayMode(PlayMode.NORMAL);
+
+		civBatAnimation1 = new Animation(0.1f, Arrays.copyOfRange(civilianTR1[3], 0, 3));
+		civBatAnimation1.setPlayMode(PlayMode.NORMAL);
+
+		civShotgunAnimation1 = new Animation(0.2f, Arrays.copyOfRange(civilianTR1[4], 0, 3));
+		civShotgunAnimation1.setPlayMode(PlayMode.NORMAL);
+
+		civDisarmAnimation1 = new Animation(0.3f, civilianTR1[5]);
+		civDisarmAnimation1.setPlayMode(PlayMode.NORMAL);
+
+		civDropDisarmAnimation1 = new Animation(0.1f, civilianTR1[5]);
+		civDropDisarmAnimation1.setPlayMode(PlayMode.NORMAL);
+
+		civilianTexture2 = new Texture(Gdx.files.internal("animation/CIV2.png"));
+		civilianTexture2.setFilter(TextureFilter.Nearest, TextureFilter.Nearest);
+		TextureRegion[][] civilianTR2 = TextureRegion.split(civilianTexture2, 250, 250);
+
+		civAnimation2 = new Animation(0.9f, Arrays.copyOfRange(civilianTR2[0], 0, 3));
+		civAnimation2.setPlayMode(Animation.PlayMode.LOOP_PINGPONG);
+
+		civ_rest2 = civilianTR2[0][1];
+
+		civPanicAnimation2 = new Animation(0.5f, Arrays.copyOfRange(civilianTR2[1], 0, 3));
+		civPanicAnimation2.setPlayMode(PlayMode.LOOP);
+		civ_panic_rest2 = civilianTR2[1][0];
+
+		TextureRegion[] civstun2 = Arrays.copyOfRange(civilianTR2[2], 0, 3);
+		TextureRegion[] civStun2 = new TextureRegion[21];
+		for (int i = 0; i < civStun2.length - 2; i++) {
+			civStun2[i] = civstun2[0];
+			civStun2[i + 1] = civstun2[1];
+			civStun2[i + 2] = civstun2[2];
+		}
+		civStunAnimation2 = new Animation(0.5f, Arrays.copyOfRange(civilianTR2[2], 0, 3));
+		civStunAnimation2.setPlayMode(PlayMode.NORMAL);
+
+		civBatAnimation2 = new Animation(0.1f, Arrays.copyOfRange(civilianTR2[3], 0, 3));
+		civBatAnimation2.setPlayMode(PlayMode.NORMAL);
+
+		civShotgunAnimation2 = new Animation(0.2f, Arrays.copyOfRange(civilianTR2[4], 0, 3));
+		civShotgunAnimation2.setPlayMode(PlayMode.NORMAL);
+
+		civDisarmAnimation2 = new Animation(0.3f, civilianTR2[5]);
+		civDisarmAnimation2.setPlayMode(PlayMode.NORMAL);
+
+		civDropDisarmAnimation2 = new Animation(0.1f, civilianTR2[5]);
+		civDropDisarmAnimation2.setPlayMode(PlayMode.NORMAL);
+
+		civilianTexture3 = new Texture(Gdx.files.internal("animation/CIV3.png"));
+		civilianTexture3.setFilter(TextureFilter.Nearest, TextureFilter.Nearest);
+		TextureRegion[][] civilianTR3 = TextureRegion.split(civilianTexture3, 250, 250);
+
+		civAnimation3 = new Animation(0.9f, Arrays.copyOfRange(civilianTR3[0], 0, 3));
+		civAnimation3.setPlayMode(Animation.PlayMode.LOOP_PINGPONG);
+
+		civ_rest3 = civilianTR3[0][1];
+
+		civPanicAnimation3 = new Animation(0.5f, Arrays.copyOfRange(civilianTR3[1], 0, 3));
+		civPanicAnimation3.setPlayMode(PlayMode.LOOP);
+		civ_panic_rest3 = civilianTR3[1][0];
+
+		TextureRegion[] civstun3 = Arrays.copyOfRange(civilianTR3[2], 0, 3);
+		TextureRegion[] civStun3 = new TextureRegion[21];
+		for (int i = 0; i < civStun3.length - 2; i++) {
+			civStun3[i] = civstun3[0];
+			civStun3[i + 1] = civstun3[1];
+			civStun3[i + 2] = civstun3[2];
+		}
+		civStunAnimation3 = new Animation(0.5f, Arrays.copyOfRange(civilianTR3[2], 0, 3));
+		civStunAnimation3.setPlayMode(PlayMode.NORMAL);
+
+		civBatAnimation3 = new Animation(0.1f, Arrays.copyOfRange(civilianTR3[3], 0, 3));
+		civBatAnimation3.setPlayMode(PlayMode.NORMAL);
+
+		civShotgunAnimation3 = new Animation(0.2f, Arrays.copyOfRange(civilianTR3[4], 0, 3));
+		civShotgunAnimation3.setPlayMode(PlayMode.NORMAL);
+
+		civDisarmAnimation3 = new Animation(0.3f, civilianTR3[5]);
+		civDisarmAnimation3.setPlayMode(PlayMode.NORMAL);
+
+		civDropDisarmAnimation3 = new Animation(0.1f, civilianTR3[5]);
+		civDropDisarmAnimation3.setPlayMode(PlayMode.NORMAL);
+
+		murderer = new Texture(Gdx.files.internal("animation/MUR_CIV0.png"));
+		murderer.setFilter(TextureFilter.Nearest, TextureFilter.Nearest);
+		TextureRegion[][] murTR = TextureRegion.split(murderer, 250, 250);
+
+		for (int i = 0; i < murTR.length; i++) {
+			for (int j = 0; j < murTR[0].length; j++) {
+				murTR[i][j].setRegion(murTR[i][j].getRegionX() - 10, murTR[i][j].getRegionY() - 10, 270, 270);
+			}
+		}
+
+		murAnimation = new Animation(0.9f, Arrays.copyOfRange(murTR[0], 0, 3));
+		murAnimation.setPlayMode(PlayMode.LOOP_PINGPONG);
+		mur_rest = murTR[0][1];
+
+		TextureRegion[] murStun = new TextureRegion[21];
+		TextureRegion[] murStunParts = Arrays.copyOfRange(murTR[1], 0, 3);
+		for (int i = 0; i < murStun.length - 2; i += 3) {
+			murStun[i] = murStunParts[0];
+			murStun[i + 1] = murStunParts[1];
+			murStun[i + 2] = murStunParts[2];
+		}
+		murStunAnimation = new Animation(0.2f, murStun);
+		murStunAnimation.setPlayMode(PlayMode.NORMAL);
+
+		murKnifeAnimation = new Animation(0.1f, Arrays.copyOfRange(murTR[2], 0, 4));
+		murKnifeAnimation.setPlayMode(PlayMode.NORMAL);
+
+		murPlantTrapAnimation = new Animation(0.2f, murTR[3]);
+		murPlantTrapAnimation.setPlayMode(PlayMode.NORMAL);
+
+		TextureRegion[] civmur0 = new TextureRegion[6];
+		TextureRegion[] civmur1 = new TextureRegion[6];
+		TextureRegion[] civmur2 = new TextureRegion[6];
+		TextureRegion[] civmur3 = new TextureRegion[6];
+
+		for (int i = 0; i < civmur0.length - 1; i += 2) {
+			civmur0[i] = mur_rest;
+			civmur0[i + 1] = civ_rest0;
+		}
+		for (int i = 0; i < civmur1.length - 1; i += 2) {
+			civmur1[i] = mur_rest;
+			civmur1[i + 1] = civ_rest1;
+		}
+		for (int i = 0; i < civmur2.length - 1; i += 2) {
+			civmur2[i] = mur_rest;
+			civmur2[i + 1] = civ_rest2;
+		}
+		for (int i = 0; i < civmur3.length - 1; i += 2) {
+			civmur3[i] = mur_rest;
+			civmur3[i + 1] = civ_rest3;
+		}
+
+		civToMurAnimation0 = new Animation(0.2f, civmur0);
+		civToMurAnimation0.setPlayMode(PlayMode.NORMAL);
+		civToMurAnimation1 = new Animation(0.2f, civmur1);
+		civToMurAnimation1.setPlayMode(PlayMode.NORMAL);
+		civToMurAnimation2 = new Animation(0.2f, civmur2);
+		civToMurAnimation2.setPlayMode(PlayMode.NORMAL);
+		civToMurAnimation3 = new Animation(0.2f, civmur3);
+		civToMurAnimation3.setPlayMode(PlayMode.NORMAL);
+
+		TextureRegion[] murciv0 = new TextureRegion[6];
+		TextureRegion[] murciv1 = new TextureRegion[6];
+		TextureRegion[] murciv2 = new TextureRegion[6];
+		TextureRegion[] murciv3 = new TextureRegion[6];
+
+		for (int i = 0; i < murciv0.length - 1; i += 2) {
+			murciv0[i] = civ_rest0;
+			murciv0[i + 1] = mur_rest;
+		}
+		for (int i = 0; i < murciv1.length - 1; i += 2) {
+			murciv1[i] = civ_rest1;
+			murciv1[i + 1] = mur_rest;
+		}
+		for (int i = 0; i < murciv2.length - 1; i += 2) {
+			murciv2[i] = civ_rest2;
+			murciv2[i + 1] = mur_rest;
+		}
+		for (int i = 0; i < murciv3.length - 1; i += 2) {
+			murciv3[i] = civ_rest3;
+			murciv3[i + 1] = mur_rest;
+		}
+
+		murToCivAnimation0 = new Animation(0.2f, murciv0);
+		murToCivAnimation0.setPlayMode(PlayMode.NORMAL);
+		murToCivAnimation1 = new Animation(0.2f, murciv1);
+		murToCivAnimation1.setPlayMode(PlayMode.NORMAL);
+		murToCivAnimation2 = new Animation(0.2f, murciv2);
+		murToCivAnimation2.setPlayMode(PlayMode.NORMAL);
+		murToCivAnimation3 = new Animation(0.2f, murciv3);
+		murToCivAnimation3.setPlayMode(PlayMode.NORMAL);
+
+		// ghost
+		ghost_float = new Texture(Gdx.files.internal("animation/ghostSingleFrame.png"));
+		ghostHauntT = new Texture(Gdx.files.internal("animation/ghostHauntAnimation.png"));
+		TextureRegion ghostHauntTR[] = TextureRegion.split(ghostHauntT, 100, 100)[0];
+		ghostHauntAnimation = new Animation(0.2f, ghostHauntTR);
+		ghostHauntAnimation.setPlayMode(PlayMode.NORMAL);
+
+	}
+
+	private static void loadMapSprites() {
 		// MAP
 		tiledMap = new TmxMapLoader().load("map/mansion2.tmx");
 
@@ -295,294 +597,65 @@ public class AssetLoader {
 		TextureRegion[] planted_trap = TextureRegion.split(plantedTrapTexture, 120, 120)[0];
 		plantedTrapAnimation = new Animation(0.4f, planted_trap);
 		plantedTrapAnimation.setPlayMode(Animation.PlayMode.LOOP_PINGPONG);
-		
+
 		restingTrapTexture = new Texture(Gdx.files.internal("gamehelper/resting_trap_animation.png"));
 		restingTrapTexture.setFilter(TextureFilter.Nearest, TextureFilter.Nearest);
 		TextureRegion[] trap_sprite = TextureRegion.split(restingTrapTexture, 120, 120)[0];
 		restingTrapAnimation = new Animation(0.4f, trap_sprite);
 		restingTrapAnimation.setPlayMode(Animation.PlayMode.LOOP_PINGPONG);
-		
+
 		disarmTrapSpriteTexture = new Texture(Gdx.files.internal("gamehelper/disarm_sprite_animation.png"));
 		disarmTrapSpriteTexture.setFilter(TextureFilter.Nearest, TextureFilter.Nearest);
 		TextureRegion[] disarm_trap = TextureRegion.split(disarmTrapSpriteTexture, 120, 120)[0];
 		disarmTrapSpriteAnimation = new Animation(0.4f, disarm_trap);
 		disarmTrapSpriteAnimation.setPlayMode(Animation.PlayMode.LOOP_PINGPONG);
-		
+
 		batSpriteTexture = new Texture(Gdx.files.internal("gamehelper/bat_sprite_animation.png"));
 		batSpriteTexture.setFilter(TextureFilter.Nearest, TextureFilter.Nearest);
 		TextureRegion[] bat_sprite = TextureRegion.split(batSpriteTexture, 120, 120)[0];
 		batSpriteAnimation = new Animation(0.4f, bat_sprite);
 		batSpriteAnimation.setPlayMode(Animation.PlayMode.LOOP_PINGPONG);
-		
+
 		knifeSpriteTexture = new Texture(Gdx.files.internal("gamehelper/knife_sprite_animation.png"));
 		knifeSpriteTexture.setFilter(TextureFilter.Nearest, TextureFilter.Nearest);
 		TextureRegion[] knife_sprite = TextureRegion.split(knifeSpriteTexture, 120, 120)[0];
 		knifeSpriteAnimation = new Animation(0.4f, knife_sprite);
 		knifeSpriteAnimation.setPlayMode(Animation.PlayMode.LOOP_PINGPONG);
-		
+
 		shotgunPartTexture = new Texture(Gdx.files.internal("gamehelper/shotgun_sprite_animation.png"));
 		shotgunPartTexture.setFilter(TextureFilter.Nearest, TextureFilter.Nearest);
 		TextureRegion[] shotgun_sprite = TextureRegion.split(shotgunPartTexture, 120, 120)[0];
 		shotgunPartSpriteAnimation = new Animation(0.4f, shotgun_sprite);
 		shotgunPartSpriteAnimation.setPlayMode(Animation.PlayMode.LOOP_PINGPONG);
 
-		// CIVILIAN ANIMATIONS AND TEXTURE
-		civilianTexture0 = new Texture(Gdx.files.internal("animation/CIV0.png"));
-		civilianTexture0.setFilter(TextureFilter.Nearest, TextureFilter.Nearest);
-		TextureRegion[][] civilianTR0 = TextureRegion.split(civilianTexture0, 250, 250);
-		
-		civAnimation0 = new Animation(0.9f, Arrays.copyOfRange(civilianTR0[0],0,3));
-		civAnimation0.setPlayMode(Animation.PlayMode.LOOP_PINGPONG);
-		
-		civ_rest0 = civilianTR0[0][1];
-		civ_dead_lines = new Texture(Gdx.files.internal("gamehelper/dead_lines.png"));
-
-		civPanicAnimation0 = new Animation(0.5f, Arrays.copyOfRange(civilianTR0[1],0,3));
-		civPanicAnimation0.setPlayMode(PlayMode.LOOP);
-		civ_panic_rest0 = civilianTR0[1][0];
-		
-		TextureRegion[] civstun0 = Arrays.copyOfRange(civilianTR0[2],0,3);
-		TextureRegion[] civStun0 = new TextureRegion[21];
-		for(int i=0; i<civStun0.length-2;i++){
-			civStun0[i] = civstun0[0];
-			civStun0[i+1] = civstun0[1];
-			civStun0[i+2] = civstun0[2];
-		}
-		civStunAnimation0 = new Animation(0.2f, civStun0 );
-		civStunAnimation0.setPlayMode(PlayMode.NORMAL);
-		
-		civBatAnimation0 = new Animation(0.1f, Arrays.copyOfRange(civilianTR0[3],0,3));
-		civBatAnimation0.setPlayMode(PlayMode.NORMAL);
-		
-		civShotgunAnimation0 = new Animation(0.2f, Arrays.copyOfRange(civilianTR0[4],0,3));
-		civShotgunAnimation0.setPlayMode(PlayMode.NORMAL);
-		
-		civDisarmAnimation0 = new Animation(0.3f, civilianTR0[5]);
-		civDisarmAnimation0.setPlayMode(PlayMode.NORMAL);
-		
-		civDropDisarmAnimation0 = new Animation(0.1f,civilianTR0[5]);
-		civDropDisarmAnimation0.setPlayMode(PlayMode.NORMAL);
-		
-		civilianTexture1 = new Texture(Gdx.files.internal("animation/CIV1.png"));
-		civilianTexture1.setFilter(TextureFilter.Nearest, TextureFilter.Nearest);
-		TextureRegion[][] civilianTR1 = TextureRegion.split(civilianTexture1, 250, 250);
-		
-		civAnimation1 = new Animation(0.9f, Arrays.copyOfRange(civilianTR1[0],0,3));
-		civAnimation1.setPlayMode(Animation.PlayMode.LOOP_PINGPONG);
-		
-		civ_rest1 = civilianTR1[0][1];
-
-		civPanicAnimation1 = new Animation(0.5f, Arrays.copyOfRange(civilianTR1[1],0,3));
-		civPanicAnimation1.setPlayMode(PlayMode.LOOP);
-		civ_panic_rest1 = civilianTR1[1][0];
-		
-		TextureRegion[] civstun1 = Arrays.copyOfRange(civilianTR1[2],0,3);
-		TextureRegion[] civStun1 = new TextureRegion[21];
-		for(int i=0; i<civStun1.length-2;i++){
-			civStun1[i] = civstun1[0];
-			civStun1[i+1] = civstun1[1];
-			civStun1[i+2] = civstun1[2];
-		}
-		civStunAnimation1 = new Animation(0.5f, civStun1);
-		civStunAnimation1.setPlayMode(PlayMode.NORMAL);
-		
-		civBatAnimation1 = new Animation(0.1f, Arrays.copyOfRange(civilianTR1[3],0,3));
-		civBatAnimation1.setPlayMode(PlayMode.NORMAL);
-		
-		civShotgunAnimation1 = new Animation(0.2f, Arrays.copyOfRange(civilianTR1[4],0,3));
-		civShotgunAnimation1.setPlayMode(PlayMode.NORMAL);
-		
-		civDisarmAnimation1 = new Animation(0.3f, civilianTR1[5]);
-		civDisarmAnimation1.setPlayMode(PlayMode.NORMAL);
-		
-		civDropDisarmAnimation1 = new Animation(0.1f,civilianTR1[5]);
-		civDropDisarmAnimation1.setPlayMode(PlayMode.NORMAL);
-		
-		
-		civilianTexture2 = new Texture(Gdx.files.internal("animation/CIV2.png"));
-		civilianTexture2.setFilter(TextureFilter.Nearest, TextureFilter.Nearest);
-		TextureRegion[][] civilianTR2 = TextureRegion.split(civilianTexture2, 250, 250);
-		
-		civAnimation2 = new Animation(0.9f, Arrays.copyOfRange(civilianTR2[0],0,3));
-		civAnimation2.setPlayMode(Animation.PlayMode.LOOP_PINGPONG);
-		
-		civ_rest2 = civilianTR2[0][1];
-
-		civPanicAnimation2 = new Animation(0.5f, Arrays.copyOfRange(civilianTR2[1],0,3));
-		civPanicAnimation2.setPlayMode(PlayMode.LOOP);
-		civ_panic_rest2 = civilianTR2[1][0];
-		
-		TextureRegion[] civstun2 = Arrays.copyOfRange(civilianTR2[2],0,3);
-		TextureRegion[] civStun2 = new TextureRegion[21];
-		for(int i=0; i<civStun2.length-2;i++){
-			civStun2[i] = civstun2[0];
-			civStun2[i+1] = civstun2[1];
-			civStun2[i+2] = civstun2[2];
-		}
-		civStunAnimation2 = new Animation(0.5f, Arrays.copyOfRange(civilianTR2[2],0,3));
-		civStunAnimation2.setPlayMode(PlayMode.NORMAL);
-		
-		civBatAnimation2 = new Animation(0.1f, Arrays.copyOfRange(civilianTR2[3],0,3));
-		civBatAnimation2.setPlayMode(PlayMode.NORMAL);
-		
-		civShotgunAnimation2 = new Animation(0.2f, Arrays.copyOfRange(civilianTR2[4],0,3));
-		civShotgunAnimation2.setPlayMode(PlayMode.NORMAL);
-		
-		civDisarmAnimation2 = new Animation(0.3f, civilianTR2[5]);
-		civDisarmAnimation2.setPlayMode(PlayMode.NORMAL);
-		
-		civDropDisarmAnimation2 = new Animation(0.1f,civilianTR2[5]);
-		civDropDisarmAnimation2.setPlayMode(PlayMode.NORMAL);
-		
-		
-		civilianTexture3 = new Texture(Gdx.files.internal("animation/CIV3.png"));
-		civilianTexture3.setFilter(TextureFilter.Nearest, TextureFilter.Nearest);
-		TextureRegion[][] civilianTR3 = TextureRegion.split(civilianTexture3, 250, 250);
-		
-		civAnimation3 = new Animation(0.9f, Arrays.copyOfRange(civilianTR3[0],0,3));
-		civAnimation3.setPlayMode(Animation.PlayMode.LOOP_PINGPONG);
-		
-		civ_rest3 = civilianTR3[0][1];
-
-		civPanicAnimation3 = new Animation(0.5f, Arrays.copyOfRange(civilianTR3[1],0,3));
-		civPanicAnimation3.setPlayMode(PlayMode.LOOP);
-		civ_panic_rest3 = civilianTR3[1][0];
-		
-		TextureRegion[] civstun3 = Arrays.copyOfRange(civilianTR3[2],0,3);
-		TextureRegion[] civStun3 = new TextureRegion[21];
-		for(int i=0; i<civStun3.length-2;i++){
-			civStun3[i] = civstun3[0];
-			civStun3[i+1] = civstun3[1];
-			civStun3[i+2] = civstun3[2];
-		}
-		civStunAnimation3 = new Animation(0.5f, Arrays.copyOfRange(civilianTR3[2],0,3));
-		civStunAnimation3.setPlayMode(PlayMode.NORMAL);
-		
-		civBatAnimation3 = new Animation(0.1f, Arrays.copyOfRange(civilianTR3[3],0,3));
-		civBatAnimation3.setPlayMode(PlayMode.NORMAL);
-		
-		civShotgunAnimation3 = new Animation(0.2f, Arrays.copyOfRange(civilianTR3[4],0,3));
-		civShotgunAnimation3.setPlayMode(PlayMode.NORMAL);
-		
-		civDisarmAnimation3 = new Animation(0.3f, civilianTR3[5]);
-		civDisarmAnimation3.setPlayMode(PlayMode.NORMAL);
-		
-		civDropDisarmAnimation3 = new Animation(0.1f,civilianTR3[5]);
-		civDropDisarmAnimation3.setPlayMode(PlayMode.NORMAL);
-		
-
-		murderer = new Texture(Gdx.files.internal("animation/MUR_CIV0.png"));
-		murderer.setFilter(TextureFilter.Nearest, TextureFilter.Nearest);
-		TextureRegion[][] murTR = TextureRegion.split(murderer, 250, 250);
-		
-		for(int i=0;i<murTR.length;i++){
-			for(int j=0;j<murTR[0].length;j++){
-				murTR[i][j].setRegion(murTR[i][j].getRegionX()-10,murTR[i][j].getRegionY()-10,270,270);
-			}
-		}
-		
-		murAnimation = new Animation(0.9f, Arrays.copyOfRange(murTR[0],0,3));
-		murAnimation.setPlayMode(PlayMode.LOOP_PINGPONG);
-		mur_rest = murTR[0][1];
-		
-		TextureRegion[] murStun = new TextureRegion[21];
-		TextureRegion[] murStunParts = Arrays.copyOfRange(murTR[1],0,3);
-		for(int i=0;i<murStun.length-2;i+=3){
-			murStun[i] = murStunParts[0];
-			murStun[i+1] = murStunParts[1];
-			murStun[i+2] = murStunParts[2];
-		}
-		murStunAnimation = new Animation(0.2f, murStun);
-		murStunAnimation.setPlayMode(PlayMode.NORMAL);
-		
-		murKnifeAnimation = new Animation(0.2f, Arrays.copyOfRange(murTR[2],0,4));
-		murKnifeAnimation.setPlayMode(PlayMode.NORMAL);
-		
-		murPlantTrapAnimation = new Animation(0.2f, murTR[3]);
-		murPlantTrapAnimation.setPlayMode(PlayMode.NORMAL);
-		
-		TextureRegion[] civmur0 = new TextureRegion[6];
-		TextureRegion[] civmur1 = new TextureRegion[6];
-		TextureRegion[] civmur2 = new TextureRegion[6];
-		TextureRegion[] civmur3 = new TextureRegion[6];
-		
-		for(int i=0;i<civmur0.length-1;i+=2){
-			civmur0[i] = mur_rest;
-			civmur0[i+1] = civ_rest0;
-		}
-		for(int i=0;i<civmur1.length-1;i+=2){
-			civmur1[i] = mur_rest;
-			civmur1[i+1] = civ_rest1;
-		}
-		for(int i=0;i<civmur2.length-1;i+=2){
-			civmur2[i] = mur_rest;
-			civmur2[i+1] = civ_rest2;
-		}
-		for(int i=0;i<civmur3.length-1;i+=2){
-			civmur3[i] = mur_rest;
-			civmur3[i+1] = civ_rest3;
-		}
-		
-		civToMurAnimation0 = new Animation(0.2f, civmur0);
-		civToMurAnimation0.setPlayMode(PlayMode.NORMAL);
-		civToMurAnimation1 = new Animation(0.2f, civmur1);
-		civToMurAnimation1.setPlayMode(PlayMode.NORMAL);
-		civToMurAnimation2 = new Animation(0.2f, civmur2);
-		civToMurAnimation2.setPlayMode(PlayMode.NORMAL);
-		civToMurAnimation3 = new Animation(0.2f, civmur3);
-		civToMurAnimation3.setPlayMode(PlayMode.NORMAL);
-		
-		TextureRegion[] murciv0 = new TextureRegion[6];
-		TextureRegion[] murciv1 = new TextureRegion[6];
-		TextureRegion[] murciv2 = new TextureRegion[6];
-		TextureRegion[] murciv3 = new TextureRegion[6];
-		
-		for(int i=0;i<murciv0.length-1;i+=2){
-			murciv0[i] = civ_rest0;
-			murciv0[i+1] = mur_rest;
-		}
-		for(int i=0;i<murciv1.length-1;i+=2){
-			murciv1[i] = civ_rest1;
-			murciv1[i+1] = mur_rest;
-		}
-		for(int i=0;i<murciv2.length-1;i+=2){
-			murciv2[i] = civ_rest2;
-			murciv2[i+1] = mur_rest;
-		}
-		for(int i=0;i<murciv3.length-1;i+=2){
-			murciv3[i] = civ_rest3;
-			murciv3[i+1] = mur_rest;
-		}
-		
-		murToCivAnimation0 = new Animation(0.2f,murciv0);
-		murToCivAnimation0.setPlayMode(PlayMode.NORMAL);
-		murToCivAnimation1 = new Animation(0.2f,murciv1);
-		murToCivAnimation1.setPlayMode(PlayMode.NORMAL);
-		murToCivAnimation2 = new Animation(0.2f,murciv2);
-		murToCivAnimation2.setPlayMode(PlayMode.NORMAL);
-		murToCivAnimation3 = new Animation(0.2f,murciv3);
-		murToCivAnimation3.setPlayMode(PlayMode.NORMAL);
-		
-		knifeStabSound = Gdx.audio.newSound(Gdx.files.internal("sound/Knife Stab.mp3"));
-		
-		
-		// HUD COOLDOWN
-		cooldownTexture = new Texture(Gdx.files.internal("animation/cooldown_animation.png"));
-		cooldownTexture.setFilter(TextureFilter.Nearest, TextureFilter.Nearest);
-		TextureRegion[] cooldown = TextureRegion.split(cooldownTexture, 50, 50)[0];
-		prohibitedButton = cooldown[0];
-		DisguiseCoolDownAnimation = new Animation(8.3f, cooldown);
-		DisguiseCoolDownAnimation.setPlayMode(PlayMode.NORMAL);
-		PanicCoolDownAnimation = new Animation(50f, cooldown);
-		PanicCoolDownAnimation.setPlayMode(PlayMode.NORMAL);
-		WeaponsCoolDownAnimation = new Animation(0.83f, cooldown);
-		WeaponsCoolDownAnimation.setPlayMode(PlayMode.NORMAL);
-		// ghost 
-		ghost_float = new Texture(Gdx.files.internal("animation/ghostSingleFrame.png"));
-		
 		// OBSTACLES
 		obstacle = new Texture(Gdx.files.internal("map/barrels.png"));
 		main_door = new Texture(Gdx.files.internal("map/main-door.png"));
+	}
+
+	private static void loadSfx() {
+
+		menuMusic = Gdx.audio.newMusic(Gdx.files.internal("bgm/MenuScreen Music.mp3"));
+		gameMusic = Gdx.audio.newMusic(Gdx.files.internal("bgm/GameScreen Music.mp3"));
+
+		walkSound = Gdx.audio.newMusic(Gdx.files.internal("sfx/walking.mp3"));
+		walkSound.setVolume(0.8f);
+
+		runSound = Gdx.audio.newMusic(Gdx.files.internal("sfx/running.mp3"));
+		runSound.setVolume(0.8f);
+
+		plantTrapSound = Gdx.audio.newSound(Gdx.files.internal("sfx/plantTrap.mp3"));
+		knifeStabSound = Gdx.audio.newSound(Gdx.files.internal("sfx/Knife Stab.mp3"));
+
+		batSwingSound = Gdx.audio.newSound(Gdx.files.internal("sfx/bat swing.mp3"));
+		disarmTrapSound = Gdx.audio.newSound(Gdx.files.internal("sfx/disarm trap.mp3"));
+		pickUpItemSound = Gdx.audio.newSound(Gdx.files.internal("sfx/pick up disarm trap.mp3"));
+
+		shotgunBlastSound = Gdx.audio.newSound(Gdx.files.internal("sfx/shotgun blast.mp3"));
+		knifeThrustSound = Gdx.audio.newSound(Gdx.files.internal("sfx/knifeMiss.mp3"));
+		trapDisarmedSound = Gdx.audio.newSound(Gdx.files.internal("sfx/trap disarmed.mp3"));
+		trappedSound = Gdx.audio.newSound(Gdx.files.internal("sfx/trapped sound.mp3"));
+		batHitSound = Gdx.audio.newSound(Gdx.files.internal("sfx/bat hit.mp3"));
 	}
 
 	public static void dispose() {
@@ -618,5 +691,21 @@ public class AssetLoader {
 		batSpriteTexture.dispose();
 		knifeSpriteTexture.dispose();
 		shotgunPartTexture.dispose();
+		haunt_tex.dispose();
+		ghostHauntT.dispose();
+		walkSound.dispose();
+		runSound.dispose();
+		plantTrapSound.dispose();
+		knifeStabSound.dispose();
+		batSwingSound.dispose();
+		disarmTrapSound.dispose();
+		pickUpItemSound.dispose();
+		menuMusic.dispose();
+		gameMusic.dispose();
+		shotgunBlastSound.dispose();
+		knifeThrustSound.dispose();
+		trapDisarmedSound.dispose();
+		trappedSound.dispose();
+		batHitSound.dispose();
 	}
 }

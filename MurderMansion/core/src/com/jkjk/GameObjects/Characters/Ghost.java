@@ -23,6 +23,9 @@ public class Ghost extends GameCharacter {
 	private Animation currentAnimation;
 	private Vector2 spawnLocation;
 
+	private Animation ghostHauntAnimation;
+	private float animationRunTime;
+
 	Ghost(int id, GameWorld gWorld, boolean isPlayer) {
 		super("Ghost", id, gWorld, isPlayer);
 
@@ -49,6 +52,9 @@ public class Ghost extends GameCharacter {
 
 		body.setUserData(AssetLoader.ghostFloatAnimation);
 		setVelocity(getVelocity() / 4 * 3);
+
+		ghostHauntAnimation = AssetLoader.ghostHauntAnimation;
+		animationRunTime = 0;
 	}
 
 	@Override
@@ -56,19 +62,37 @@ public class Ghost extends GameCharacter {
 		runTime += Gdx.graphics.getRawDeltaTime();
 		currentAnimation = (Animation) body.getUserData();
 		batch.begin();
+		if (currentAnimation == ghostHauntAnimation) {
+			animationRunTime += Gdx.graphics.getRawDeltaTime();
+			batch.draw(currentAnimation.getKeyFrame(runTime, true), body.getPosition().x - 9,
+					body.getPosition().y - 9, 9, 9, 18, 18, 2.4f, 2.4f,
+					(float) (body.getAngle() * 180 / Math.PI) - 90);
+			if (currentAnimation.isAnimationFinished(animationRunTime)) {
+				animationRunTime = 0;
+				body.setUserData(AssetLoader.ghostFloatAnimation);
+			}
+		} else {
+			batch.draw(AssetLoader.ghost_float, body.getPosition().x - 9, body.getPosition().y - 9, 9, 9, 18,
+					18, 1, 1, (float) (body.getAngle() * 180 / Math.PI) - 90, 0, 0, 44, 44, false, false);
+			// (float) (body.getAngle()*180/Math.PI)-90);
+		}
 		batch.draw(AssetLoader.civ_dead_lines, this.get_deathPositionX() - 18,
 				this.get_deathPositionY() - 18, 36, 36);
-		batch.draw(AssetLoader.ghost_float, body.getPosition().x - 9, body.getPosition().y - 9, 9, 9, 18, 18,
-				1, 1, (float) (body.getAngle() * 180 / Math.PI) - 90, 0, 0, 44, 44, false, false);
-		// (float) (body.getAngle()*180/Math.PI)-90);
 		batch.end();
 
 		super.render(cam, batch);
 
 	}
 
-	public boolean lightContains(float x, float y) {
-		return pointLight.contains(x, y);
+	@Override
+	public boolean useAbility() {
+		if (!ability.isOnCoolDown()) {
+			super.useAbility();
+			body.setUserData(ghostHauntAnimation);
+			return true;
+		}
+		return false;
+
 	}
 
 	@Override

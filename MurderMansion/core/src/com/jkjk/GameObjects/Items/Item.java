@@ -2,18 +2,18 @@ package com.jkjk.GameObjects.Items;
 
 import com.badlogic.gdx.physics.box2d.Body;
 import com.jkjk.GameObjects.Duration;
+import com.jkjk.GameObjects.Characters.GameCharacter;
 import com.jkjk.GameWorld.GameWorld;
 
 public abstract class Item {
 
 	protected GameWorld gWorld;
-	protected Body body;
 	protected boolean isCompleted;
 	private Duration executionTime;
 	private boolean wasInUse;
 	protected boolean isInterrupted;
 
-	Item(GameWorld gWorld) {
+	Item(GameWorld gWorld, GameCharacter character) {
 		this.gWorld = gWorld;
 		executionTime = new Duration(2000);
 	}
@@ -32,10 +32,6 @@ public abstract class Item {
 	public void interrupt() {
 		isInterrupted = true;
 		wasInUse = false;
-	}
-	
-	public void foundTrap(){
-		
 	}
 
 	public boolean inUse() {
