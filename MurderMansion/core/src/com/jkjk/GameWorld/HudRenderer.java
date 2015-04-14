@@ -7,13 +7,10 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
-import com.badlogic.gdx.scenes.scene2d.ui.Button.ButtonStyle;
 import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
-import com.badlogic.gdx.scenes.scene2d.ui.ImageButton.ImageButtonStyle;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton.TextButtonStyle;
 import com.badlogic.gdx.scenes.scene2d.ui.Touchpad;
@@ -21,12 +18,11 @@ import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.viewport.ExtendViewport;
+import com.jkjk.GameObjects.Duration;
 import com.jkjk.GameObjects.Characters.GameCharacter;
 import com.jkjk.GameObjects.Characters.Murderer;
-import com.jkjk.Host.MMServer;
 import com.jkjk.MMHelpers.AssetLoader;
 import com.jkjk.MurderMansion.MurderMansion;
-import com.jkjk.Screens.GameScreen;
 import com.jkjk.Screens.MenuScreen;
 
 /**
@@ -57,6 +53,7 @@ public class HudRenderer {
 	private Texture weapon_parts_counter;
 	private Actor counter_actor;
 	private BitmapFont font;
+	private BitmapFont smallFont;
 	private String time;
 	private Float playTime;
 	
@@ -68,7 +65,6 @@ public class HudRenderer {
 
 	private float x, y;
 	private ImageButton weaponButton, itemButton, dashButton, disguiseToCiv, disguiseToMur, hauntButton;
-	private boolean clickable;
 
 	private SpriteBatch batch;
 	private OrthographicCamera hudCam;
@@ -77,6 +73,7 @@ public class HudRenderer {
 	private Touchpad touchpad;
 	private Drawable touchKnob;
 
+	
 	private boolean PanicCD;
 	private boolean DisguiseCD;
 	//private boolean ItemsCD;
@@ -118,7 +115,7 @@ public class HudRenderer {
 
 		// countdown
 		playTime = 240.0f;
-
+		
 		hudCam = new OrthographicCamera();
 		hudCam.setToOrtho(false, gameWidth, gameHeight);
 		batch = new SpriteBatch();
@@ -202,6 +199,7 @@ public class HudRenderer {
 		font.draw(batch, getTime(), 75, 330);
 		WeaponPartsDisplay();
 		
+
 		if (gameIsPaused==false){
 			batch.draw(timebox, 55, 280);
 			batch.draw(weapon_parts_counter, 440, 235);
@@ -730,13 +728,6 @@ public class HudRenderer {
 		x = 522;
 		y = 92;
 
-		// disguiseToMur = new ImageButton(mur_CtM);
-		// disguiseToMur.setX(x);
-		// disguiseToMur.setY(y);
-		// disguiseToMur.setWidth(33);
-		// disguiseToMur.setHeight(33);
-		// disguiseToMur.setName("Disguise to murderer");
-
 		disguiseToMur = new ImageButton(mur_MtC);
 		disguiseToMur.setX(x);
 		disguiseToMur.setY(y);
@@ -784,6 +775,22 @@ public class HudRenderer {
 		});
 
 		return hauntButton;
+	}
+	
+	/**
+	 * Displays a given text message on game play screen for a specified amount of time.
+	 */
+	public void displayMessage(String msg, Duration d){
+		if(d.isCountingDown()){
+			d.update();
+			smallFont.draw(batch,  msg,  250,  300);
+		}
+//		if(!d.isCountingDown()){
+//			d.startCountdown();
+//		}
+//		else{
+//			font.draw(batch, msg, 250 , 400);
+//		}
 	}
 
 	/**
