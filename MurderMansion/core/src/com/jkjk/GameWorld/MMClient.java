@@ -449,7 +449,8 @@ public class MMClient {
 	}
 
 	/**
-	 * Update server about change in player's use item
+	 * <<<<<<< HEAD ======= <<<<<<< HEAD >>>>>>> 093da5221d56ff4aaead1b053aa98e22d2be4d11 Update server about
+	 * change in player's use item
 	 * 
 	 * @param playerID
 	 *            ID of player status to change
@@ -485,6 +486,7 @@ public class MMClient {
 	}
 
 	/**
+	 * <<<<<<< HEAD ======= ======= >>>>>>> Broken_menu >>>>>>> 093da5221d56ff4aaead1b053aa98e22d2be4d11
 	 * Update server about change in player's type
 	 * 
 	 * @param playerID
@@ -582,7 +584,7 @@ public class MMClient {
 		if (playerType.get("Player " + id) == 0) {
 			playerList.get(id).addWeapon(weaponFac.createWeapon("Knife", gWorld, playerList.get(id)));
 		} else if (playerType.get("Player " + id) == 1) {
-			if (playerList.get(id).getWeapon() == null){
+			if (playerList.get(id).getWeapon() == null) {
 				playerList.get(id).addWeapon(weaponFac.createWeapon("Bat", gWorld, playerList.get(id)));
 			}
 		}

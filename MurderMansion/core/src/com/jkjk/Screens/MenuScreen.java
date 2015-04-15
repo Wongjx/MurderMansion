@@ -31,6 +31,7 @@ public class MenuScreen implements Screen {
 	private float BUTTON_WIDTH;
 	private float BUTTON_HEIGHT;
 	private float scale;
+	
 
 	private SpriteBatch batch;
 	private Texture background;
@@ -83,8 +84,8 @@ public class MenuScreen implements Screen {
 		buttonPlay.addListener(new ClickListener() {
 			@Override
 			public void clicked(InputEvent event, float x, float y) {
-				GameWorld world = GameWorld.getInstance();
-				GameRenderer renderer = GameRenderer.getInstance(world, gameWidth, gameHeight);
+				GameWorld world = new GameWorld();
+				GameRenderer renderer = new GameRenderer(world, gameWidth, gameHeight);
 
 				try {
 					game.mMultiplayerSeisson.isServer = true;
@@ -143,6 +144,7 @@ public class MenuScreen implements Screen {
 				((Game) Gdx.app.getApplicationListener()).setScreen(new WaitScreen(game, gameWidth,
 						gameHeight));
 			}
+			
 		});
 
 		buttonPlay.setSize(this.BUTTON_WIDTH * scale, this.BUTTON_HEIGHT * scale);

@@ -40,7 +40,6 @@ public class GameScreen implements Screen {
 
 		// client = new MMClient(server, gWorld, renderer);
 		hudRenderer = HudRenderer.getInstance(gWorld, client, gameWidth, gameHeight, game);
-
 	}
 
 	@Override

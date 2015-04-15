@@ -143,8 +143,7 @@ public class HudRenderer {
 		pauseStage.addActor(getSettingsButton());
 	}
 
-	public static HudRenderer getInstance(GameWorld gWorld, MMClient client, float gameWidth,
-			float gameHeight, MurderMansion game) {
+	public static HudRenderer getInstance(GameWorld gWorld, MMClient client, float gameWidth,float gameHeight, MurderMansion game) {
 		if (instance == null) {
 			instance = new HudRenderer(gWorld, client, gameWidth, gameHeight, game);
 		}

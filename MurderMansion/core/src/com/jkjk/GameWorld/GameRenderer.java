@@ -50,7 +50,7 @@ public class GameRenderer {
 	 * @param gameHeight
 	 *            Accesses the virtual game height.
 	 */
-	private GameRenderer(GameWorld gWorld, float gameWidth, float gameHeight) {
+	public GameRenderer(GameWorld gWorld, float gameWidth, float gameHeight) {
 		this.gWorld = gWorld;
 		b2dr = new Box2DDebugRenderer();
 
@@ -63,13 +63,6 @@ public class GameRenderer {
 
 		batch = new SpriteBatch();
 
-	}
-
-	public static GameRenderer getInstance(GameWorld gWorld, float gameWidth, float gameHeight) {
-		if (instance == null) {
-			instance = new GameRenderer(gWorld, gameWidth, gameHeight);
-		}
-		return instance;
 	}
 
 	/**
