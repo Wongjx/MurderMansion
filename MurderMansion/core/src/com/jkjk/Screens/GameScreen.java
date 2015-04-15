@@ -9,10 +9,8 @@ import com.jkjk.GameWorld.GameWorld;
 import com.jkjk.GameWorld.HudRenderer;
 import com.jkjk.GameWorld.MMClient;
 import com.jkjk.Host.MMServer;
-
 import com.jkjk.MMHelpers.AssetLoader;
 import com.jkjk.MMHelpers.MultiplayerSessionInfo;
-
 import com.jkjk.MurderMansion.MurderMansion;
 
 public class GameScreen implements Screen {
@@ -39,16 +37,15 @@ public class GameScreen implements Screen {
 		this.game = game;
 		this.gameWidth = gameWidth;
 		this.gameHeight = gameHeight;
-		this.client=game.mMultiplayerSession.getClient();
-		this.info=game.mMultiplayerSession;
-		this.gWorld=client.getgWorld();
-		this.renderer=client.getRenderer();
-//		this.gWorld=world;		
-//		this.renderer=renderer;
+		this.client = game.mMultiplayerSession.getClient();
+		this.info = game.mMultiplayerSession;
+		this.gWorld = client.getgWorld();
+		this.renderer = client.getRenderer();
+		// this.gWorld=world;
+		// this.renderer=renderer;
 
-//		client = new MMClient(server, gWorld, renderer);
-		hudRenderer = HudRenderer.getInstance(gWorld, client,gameWidth, gameHeight,game);
-
+		// client = new MMClient(server, gWorld, renderer);
+		hudRenderer = HudRenderer.getInstance(gWorld, client, gameWidth, gameHeight, game);
 	}
 
 	@Override
@@ -65,21 +62,26 @@ public class GameScreen implements Screen {
 		hudRenderer.render(delta);
 		// if phone is designated server
 		if (info.isServer) {
-			info.getServer().update();
+			try {
+				info.getServer().update();
+			} catch (NullPointerException e) {
+				e.printStackTrace();
+				System.out.println("Error in GameScreen. info.getServer() NULL!");
+			}
 		}
 
 		if (gWorld.isCivWin() || gWorld.isMurWin()) {
 			gWorld.getGameOverTimer().update();
 			if (!gWorld.getGameOverTimer().isCountingDown()){
+//				if (client.getNumOfPlayers() > 1) {
 				System.out.println("GAMEWORLD UPDATE: GAMEOVER COMPLETE");
                 ((Game)Gdx.app.getApplicationListener()).setScreen(new ScoreScreen(game, gameWidth, gameHeight, gWorld.isMurWin()));
-				AssetLoader.gameMusic.stop();
 //                dispose();
                 System.out.println("Game renderer and HUD renderer disposed");
-
 			}
 		}
 	}
+
 
 	@Override
 	public void resize(int width, int height) {

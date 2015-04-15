@@ -68,7 +68,8 @@ public class ActionResolverDesktop implements ActionResolver {
 		
 	}
 	@Override
-	public void leaveRoom(){
-		System.out.println("Leave room");
+	public void leaveRoom() {
+		 System.out.println("Send out invite");
+		
 	}
 }

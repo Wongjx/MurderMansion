@@ -44,15 +44,15 @@ public class GPSListeners implements RoomStatusUpdateListener, RoomUpdateListene
         // We got an invitation to play a game! So, store it in
         // mIncomingInvitationId
         // and show the popup on the screen.
-    	activity.mMultiplayerSession.mIncomingInvitationId=invitation.getInvitationId();
+    	activity.mMultiplayerSeisson.mIncomingInvitationId=invitation.getInvitationId();
     	Toast.makeText(activity.getApplicationContext(), invitation.getInviter().getDisplayName() + " is inviting you.", Toast.LENGTH_SHORT).show();
         //Create a text pop-up for invitations
     }
 
     @Override
     public void onInvitationRemoved(String invitationId) {
-        if (activity.mMultiplayerSession.mIncomingInvitationId.equals(invitationId)) {
-        	activity.mMultiplayerSession.mIncomingInvitationId=null;
+        if (activity.mMultiplayerSeisson.mIncomingInvitationId.equals(invitationId)) {
+        	activity.mMultiplayerSeisson.mIncomingInvitationId=null;
             //Hide invitation pop up
         }
     }
@@ -77,14 +77,14 @@ public class GPSListeners implements RoomStatusUpdateListener, RoomUpdateListene
     public void onLeftRoom(int statusCode, String roomId) {
         // we have left the room; return to main screen.
     	Log.d(TAG, "onLeftRoom, code " + statusCode);
-    	activity.mMultiplayerSession.setClient(null);
-    	activity.mMultiplayerSession.setServer(null);
-    	activity.mMultiplayerSession.mId=null;
-    	activity.mMultiplayerSession.mRoomId=null;
-    	activity.mMultiplayerSession.mParticipants=null;
-    	activity.mMultiplayerSession.serverAddress=null;
-    	activity.mMultiplayerSession.serverPort=0;
-    	activity.mMultiplayerSession.mState=activity.mMultiplayerSession.ROOM_MENU;
+    	activity.mMultiplayerSeisson.setClient(null);
+    	activity.mMultiplayerSeisson.setServer(null);
+    	activity.mMultiplayerSeisson.mId=null;
+    	activity.mMultiplayerSeisson.mRoomId=null;
+    	activity.mMultiplayerSeisson.mParticipants=null;
+    	activity.mMultiplayerSeisson.serverAddress=null;
+    	activity.mMultiplayerSeisson.serverPort=0;
+    	activity.mMultiplayerSeisson.mState=activity.mMultiplayerSeisson.ROOM_MENU;
     }
 
     // Called when room is fully connected.
@@ -101,13 +101,16 @@ public class GPSListeners implements RoomStatusUpdateListener, RoomUpdateListene
         
         Log.d(TAG, "Number of participants "+room.getParticipants().size());
         
-    	if(activity.mMultiplayerSession.isServer){
+    	if(activity.mMultiplayerSeisson.isServer){
     		try{
         		//Create MMServer with current number of players and broadcast server details
-    			MMServer server = MMServer.getInstance(room.getParticipants().size(),activity.mMultiplayerSession);
-        		activity.mMultiplayerSession.setServer(server);		
-        		activity.mRealTimeCom.broadcastAddress(activity.mMultiplayerSession.getServer());
-        		activity.mRealTimeCom.broadcastPort(activity.mMultiplayerSession.getServer());
+    			MMServer server = MMServer.getInstance(room.getParticipants().size(),activity.mMultiplayerSeisson);
+        		activity.mMultiplayerSeisson.setServer(server);
+        		Log.d(TAG,"Server created.");
+        		
+        		activity.mRealTimeCom.broadcastAddress(activity.mMultiplayerSeisson.getServer());
+        		activity.mRealTimeCom.broadcastPort(activity.mMultiplayerSeisson.getServer());
+
     		}catch(Exception e){
     			Log.d(TAG,"Error creating server "+e.getMessage());
     		}
@@ -137,12 +140,12 @@ public class GPSListeners implements RoomStatusUpdateListener, RoomUpdateListene
         Log.d(TAG,"Room status: "+room.getStatus());
 
         // get room ID, participants and my ID:
-        activity.mMultiplayerSession.mRoomId=room.getRoomId();
-        activity.mMultiplayerSession.mParticipants=room.getParticipants();
-        activity.mMultiplayerSession.mId=room.getParticipantId(Games.Players.getCurrentPlayerId(mGoogleApiClient));
+        activity.mMultiplayerSeisson.mRoomId=room.getRoomId();
+        activity.mMultiplayerSeisson.mParticipants=room.getParticipants();
+        activity.mMultiplayerSeisson.mId=room.getParticipantId(Games.Players.getCurrentPlayerId(mGoogleApiClient));
 
         // print out the list of participants (for debug purposes)
-        Log.d(TAG, "Room ID: " +activity.mMultiplayerSession.mRoomId);
+        Log.d(TAG, "Room ID: " +activity.mMultiplayerSeisson.mRoomId);
         Log.d(TAG, "<< CONNECTED TO ROOM>>");
     }
 
@@ -150,13 +153,13 @@ public class GPSListeners implements RoomStatusUpdateListener, RoomUpdateListene
     // Called when we get disconnected from the room. We return to the main screen.
     @Override
     public void onDisconnectedFromRoom(Room room) {
-    	activity.mMultiplayerSession.setClient(null);
-    	activity.mMultiplayerSession.setServer(null);
-    	activity.mMultiplayerSession.mRoomId=null;
-    	activity.mMultiplayerSession.mParticipants=null;
-    	activity.mMultiplayerSession.serverAddress=null;
-    	activity.mMultiplayerSession.serverPort=0;
-    	activity.mMultiplayerSession.mState=activity.mMultiplayerSession.ROOM_MENU;
+    	activity.mMultiplayerSeisson.setClient(null);
+    	activity.mMultiplayerSeisson.setServer(null);
+    	activity.mMultiplayerSeisson.mRoomId=null;
+    	activity.mMultiplayerSeisson.mParticipants=null;
+    	activity.mMultiplayerSeisson.serverAddress=null;
+    	activity.mMultiplayerSeisson.serverPort=0;
+    	activity.mMultiplayerSeisson.mState=activity.mMultiplayerSeisson.ROOM_MENU;
 //        showGameError();
     }
     // Show error message about game being cancelled and return to main screen.
@@ -221,11 +224,11 @@ public class GPSListeners implements RoomStatusUpdateListener, RoomUpdateListene
 
     void updateRoom(Room room) {
         if (room.getParticipants() != null) {
-        	this.activity.mMultiplayerSession.mParticipants=room.getParticipants();
+        	this.activity.mMultiplayerSeisson.mParticipants=room.getParticipants();
         	
         	
         }
-        if (this.activity.mMultiplayerSession.mParticipants!= null) {
+        if (this.activity.mMultiplayerSeisson.mParticipants!= null) {
         }
     }
     

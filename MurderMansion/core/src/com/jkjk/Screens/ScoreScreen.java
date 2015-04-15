@@ -19,7 +19,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton.TextButtonStyle;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
-import com.jkjk.Host.MMServer;
+import com.jkjk.GameWorld.MMClient;
 import com.jkjk.MMHelpers.AssetLoader;
 import com.jkjk.MurderMansion.MurderMansion;
 
@@ -56,10 +56,10 @@ public class ScoreScreen implements Screen {
 	 * @param murWin who won the game? murderer or civilian?
 	 */
 	public ScoreScreen(MurderMansion game, float gameWidth, float gameHeight, boolean murWin){
-		this.game=game;
 		this.murWin = murWin;
 		this.gameHeight=gameHeight;
 		this.gameWidth=gameWidth;
+		this.game=game;
 		
 		initAssets(gameWidth, gameHeight);
 		
@@ -108,7 +108,7 @@ public class ScoreScreen implements Screen {
             		System.out.println("End client session");
             		game.mMultiplayerSession.getClient().endSession();
             		if(game.mMultiplayerSession.isServer){
-                		MMServer.endSession();
+                		game.mMultiplayerSession.getServer().endSession();
                 		System.out.println("Ended server session.");
                 	}
             		System.out.println("End mMultiplayer session");

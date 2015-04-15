@@ -31,7 +31,6 @@ import com.jkjk.MMHelpers.MMContactListener;
  * 
  */
 public class GameWorld {
-
 	private GameCharacterFactory gameCharFac;
 	private GameCharacter player;
 	private RayHandler rayHandler;
@@ -63,11 +62,14 @@ public class GameWorld {
 	private Array<Vector2> itemsToAdd, weaponsToAdd;
 	private Iterator<Vector2> itemsAddIterator, weaponsAddIterator;
 	private Body bodyToRemove;
+	private Trap trapToCreate;
 
 	private float currentPositionX;
 	private float currentPositionY;
 	private float currentAngle;
 	private float ambientLightValue;
+	private float storeLightValue;
+	private Duration lightningDuration;
 
 	/**
 	 * Constructs the Box2D world, adding Box2D objects such as players, items and weapons. Attaches the
@@ -78,7 +80,7 @@ public class GameWorld {
 	 * @param gameHeight
 	 *            Accesses the virtual game height.
 	 */
-	public  GameWorld() {
+	public GameWorld() {
 		world = new World(new Vector2(0, 0), true);
 		cl = MMContactListener.getInstance(this);
 		world.setContactListener(cl);
@@ -112,18 +114,12 @@ public class GameWorld {
 		obstacleList = new ConcurrentHashMap<Vector2, Obstacles>();
 
 		gameOverTimer = new Duration(5000);
+		lightningDuration = new Duration(500);
 
 		Box2DMapObjectParser parser = new Box2DMapObjectParser();
 		parser.load(world, AssetLoader.tiledMap);
 
 	}
-
-//	public static GameWorld getInstance() {
-//		if (instance == null) {
-//			instance = new GameWorld();
-//		}
-//		return instance;
-//	}
 
 	/**
 	 * Updates the state of Box2D objects, such as the consequence of a player picking up an item, or when a
@@ -148,6 +144,13 @@ public class GameWorld {
 		checkWeaponSprite(client);
 		checkWeaponPartSprite(client);
 		checkTrap(client);
+
+		if (lightningDuration.isCountingDown()) {
+			lightningDuration.update();
+			if (!lightningDuration.isCountingDown()) {
+				player.setAmbientLightValue(storeLightValue);
+			}
+		}
 
 	}
 
@@ -212,7 +215,8 @@ public class GameWorld {
 			client.removeItemLocation(bodyToRemove.getPosition());
 			System.out.println("Item removed from client.");
 			itemList.remove(bodyToRemove.getPosition());
-			world.destroyBody(bodyToRemove);
+			bodyToRemove.setActive(false);
+			bodyToRemove.setTransform(0, 0, 0);
 			if (player.getType().equals("Murderer"))
 				player.addItem(itemFac.createItem("Trap", this, client, player));
 			else
@@ -235,7 +239,8 @@ public class GameWorld {
 			// Call MMclient to remove weapon
 			client.removeWeaponLocation(bodyToRemove.getPosition());
 			weaponList.remove(bodyToRemove.getPosition());
-			world.destroyBody(bodyToRemove);
+			bodyToRemove.setActive(false);
+			bodyToRemove.setTransform(0, 0, 0);
 			if (player.getType().equals("Murderer"))
 				player.addWeapon(weaponFac.createWeapon("Knife", this, player));
 			else
@@ -257,7 +262,8 @@ public class GameWorld {
 			// Call MMclient to remove weapon part
 			client.removeWeaponPartLocation(bodyToRemove.getPosition());
 			weaponPartList.remove(bodyToRemove.getPosition());
-			world.destroyBody(bodyToRemove);
+			bodyToRemove.setActive(false);
+			bodyToRemove.setTransform(0, 0, 0);
 			if (player.getType().equals("Civilian")) {
 				client.addWeaponPartCollected();
 			}
@@ -274,11 +280,6 @@ public class GameWorld {
 			trapList.remove(bodyToRemove.getPosition());
 			world.destroyBody(bodyToRemove);
 			client.removeTrapLocation(bodyToRemove.getPosition().x, bodyToRemove.getPosition().y);
-		}
-
-		while (client.getTrapList().keySet().iterator().hasNext()) {
-			trapLocation = client.getTrapList().keySet().iterator().next();
-			client.getTrapList().remove(trapLocation).spawn(trapLocation.x, trapLocation.y, 0);
 		}
 	}
 
@@ -323,6 +324,19 @@ public class GameWorld {
 		obstacleList.get(location).getBody().setActive(false);
 		obstacleList.get(location).getBody().setTransform(0, 0, 0);
 		obstacleList.remove(location);
+	}
+
+	public void lightningStrike() {
+		lightningDuration.startCountdown();
+		storeLightValue = player.getAmbientLightValue();
+		player.setAmbientLightValue(0.8f);
+		AssetLoader.lightningSound.play();
+	}
+
+	public void createTrap(float x, float y) {
+		trapToCreate = (Trap) itemFac.createItem("Trap", this, null, null);
+		trapList.put(new Vector2(x, y), trapToCreate);
+		trapToCreate.spawn(x, y, 0);
 	}
 
 	/**
@@ -424,7 +438,7 @@ public class GameWorld {
 	public void setTrapToRemove(Body value) {
 		this.trapToRemove.add(value);
 	}
-	
+
 	public int getNumOfWeaponPartsCollected() {
 		return numOfWeaponPartsCollected;
 	}
@@ -432,6 +446,5 @@ public class GameWorld {
 	public void addNumOfWeaponPartsCollected() {
 		this.numOfWeaponPartsCollected++;
 	}
-
 
 }

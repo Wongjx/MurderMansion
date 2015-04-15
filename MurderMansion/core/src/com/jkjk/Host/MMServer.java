@@ -27,10 +27,10 @@ public class MMServer {
 	private String serverAddress;
 	private int serverPort;
 
-	private static ArrayList<Socket> clients;
+	private ArrayList<Socket> clients;
 	private ArrayList<PrintWriter> serverOutput;
 	private ArrayList<BufferedReader> serverInput;
-	public static  ArrayList<Thread> serverListeners;
+	private ArrayList<Thread> serverListeners;
 
 	private final int numOfPlayers;
 	private final int murdererId;
@@ -39,6 +39,7 @@ public class MMServer {
 	private long runTime;
 	private long nextItemSpawnTime;
 	private long nextObstacleRemoveTime;
+	private long nextLightningTime;
 
 	private final PlayerStatuses playerStats;
 
@@ -57,7 +58,7 @@ public class MMServer {
 	private MMServer(int numOfPlayers, MultiplayerSessionInfo info) throws InterruptedException {
 		this.numOfPlayers = numOfPlayers;
 		this.info = info;
-		
+
 		// System.out.println("Initialize Client list and listeners");
 		clients = new ArrayList<Socket>();
 		serverOutput = new ArrayList<PrintWriter>();
@@ -69,16 +70,18 @@ public class MMServer {
 		playerStats = new PlayerStatuses(numOfPlayers);
 		objectLocations = new ObjectLocations(numOfPlayers, this);
 
-		// System.out.println("Assigning murderer");
-		murdererId = new Random().nextInt(numOfPlayers);
 
 		obstaclesHandler = ObstaclesHandler.getInstance();
 		nextItemSpawnTime = 10000;
 		nextObstacleRemoveTime = 30000;
+		nextLightningTime = 30000;
 
 		gameStatus = new GameStatus();
 		random = new Random();
 
+		// System.out.println("Assigning murderer");
+		murdererId = random.nextInt(numOfPlayers);
+		
 		initPlayers();
 
 		// Attempt to connect to clients (numOfPlayers)
@@ -86,23 +89,28 @@ public class MMServer {
 		initServerSocket(info);
 		acceptServerConnections();
 	}
-	
-	public static MMServer getInstance(int numOfPlayers, MultiplayerSessionInfo info ) throws InterruptedException{
-		if (instance==null){
-			instance=new MMServer(numOfPlayers,info);
-			System.out.println("New MMServer created.");
+
+	public static MMServer getInstance(int numOfPlayers, MultiplayerSessionInfo info)
+			throws InterruptedException {
+		if (instance == null) {
+			instance = new MMServer(numOfPlayers, info);
+			System.out.println("new instance of MMServer made");
 		}
 		return instance;
 	}
-
 
 	/**
 	 * Start updating only when all clients have successfully synchronized.
 	 */
 	public void update() {
 		runTime = System.currentTimeMillis() - startTime;
-
-		// Item/Weapon/WeaponPart Spawn *NEEDS TO BE BALANCED TO FIT GAMEPLAY
+		handleSpawn();
+		checkWin();
+		lightningStrike();
+	}
+	
+	private void handleSpawn(){
+		// Item/Weapon/WeaponPart Spawn
 		if (runTime > nextItemSpawnTime) {
 			System.out.println("SPAWN!");
 			if (!objectLocations.getItemLocations().isFull())
@@ -123,7 +131,9 @@ public class MMServer {
 					+ Float.toString(obstacleDestroyed[1]));
 			nextObstacleRemoveTime += 30000;
 		}
-
+	}
+	
+	private void checkWin(){
 		// Civilian Win condition when murderer is dead
 		if (!win) {
 			if (playerStats.getPlayerIsAliveValue("Player " + murdererId) == 0) {
@@ -153,7 +163,13 @@ public class MMServer {
 				win = true;
 			}
 		}
-
+	}
+	
+	private void lightningStrike(){
+		if (runTime > nextLightningTime) {
+			sendToClients("lightning");
+			nextLightningTime += (random.nextInt(15000) + 20000);
+		}
 	}
 
 	private void initPlayers() {
@@ -245,6 +261,19 @@ public class MMServer {
 		}
 	}
 
+	public void setServerListeners(ArrayList<Thread> serverListeners) {
+		synchronized (serverListeners) {
+			this.serverListeners = new ArrayList<Thread>(serverListeners);
+		}
+	}
+	
+	public ArrayList<Thread> getServerListeners() {
+		synchronized (serverListeners) {
+			ArrayList<Thread> ret = new ArrayList<Thread>(serverListeners);
+			return ret;
+		}
+	}
+
 	public void setServerInput(ArrayList<BufferedReader> serverInput) {
 		synchronized (serverInput) {
 			this.serverInput = new ArrayList<BufferedReader>(serverInput);
@@ -297,25 +326,6 @@ public class MMServer {
 		}
 	}
 
-	/**
-	 * Send a string message out to all other clients
-	 * 
-	 * @param Message
-	 *            Message to send out
-	 * @param id
-	 *            Client to skip
-	 */
-	public void updateClients(String Message, int id) {
-		PrintWriter writer = null;
-		for (int i = 0; i < serverOutput.size(); i++) {
-			if (i == id) {
-				continue;
-			}
-			writer = serverOutput.get(i);
-			writer.println(Message);
-			writer.flush();
-		}
-	}
 
 	/**
 	 * Get local ip address in IPV4 format
@@ -436,22 +446,18 @@ public class MMServer {
 		}
 	}
 	
-	public static void endSession() throws IOException{
-		//Stop all listener threads
+	public void endSession() throws IOException{
+		MMServer.instance= null;
 		for(Thread t:serverListeners){
 			t.interrupt();
 		}
-//		serverListeners.clear();
-//		//Stop all input and output channels
-//		serverOutput.clear();
-//		serverInput.clear();
-//		//Close sockets and clear arraylist
-		for(Socket s:clients){
+		for(Socket s: clients){
+			s.getOutputStream().flush();
 			s.close();
 		}
-//		clients.clear();
-//	}
-		instance=null;
+		System.out.println("MMServer seisson ended.");
+	}
+
 }
 
 /**
@@ -593,7 +599,7 @@ class serverAcceptThread extends Thread {
 		// Start a listener thread for each client socket connected
 		for (BufferedReader read : server.getServerInput()) {
 			Thread thread = new serverListener(read, server);
-			server.serverListeners.add(thread);
+			server.getServerListeners().add(thread);
 			thread.start();
 		}
 	}
@@ -615,12 +621,15 @@ class serverListener extends Thread {
 			try {
 				if ((msg = input.readLine()) != null) {
 					// System.out.println("MMServer Message received: "+msg);
+					// String message = new String(msg);
+					// Do something with message
 					server.handleMessage(msg);
 				}
 			} catch (Exception e) {
+				e.printStackTrace();
 				System.out.println("Error while reading: " + e.getMessage());
 			}
+
 		}
 	}
-}
 }

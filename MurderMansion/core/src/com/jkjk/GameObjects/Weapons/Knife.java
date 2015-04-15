@@ -50,7 +50,6 @@ public class Knife extends Weapon {
 		body.setTransform(playerPosition.x, playerPosition.y, playerAngle);
 
 		hitBoxExposure.startCountdown();
-		AssetLoader.knifeStabSound.play();
 	}
 
 }

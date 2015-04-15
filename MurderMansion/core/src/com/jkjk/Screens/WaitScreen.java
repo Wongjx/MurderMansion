@@ -1,6 +1,5 @@
 package com.jkjk.Screens;
 
-
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
@@ -22,7 +21,7 @@ public class WaitScreen implements Screen {
 	private SpriteBatch batcher;
 	private Sprite sprite;
 	private MurderMansion game;
-	
+
 	private float gameWidth;
 	private float gameHeight;
 
@@ -44,37 +43,40 @@ public class WaitScreen implements Screen {
 		sprite.setPosition((gameWidth / 2) - (sprite.getWidth() / 2), (gameHeight / 2)
 				- (sprite.getHeight() / 2));
 		Image logo = new Image(new SpriteDrawable(sprite));
-		logo.setPosition((Gdx.graphics.getWidth()/2-sprite.getWidth()/2), (Gdx.graphics.getHeight()/2-sprite.getHeight()/2));
+		logo.setPosition((Gdx.graphics.getWidth() / 2 - sprite.getWidth() / 2),
+				(Gdx.graphics.getHeight() / 2 - sprite.getHeight() / 2));
 		stage.addActor(logo);
 	}
 
 	@Override
 	public void render(float delta) {
-        Gdx.gl.glClearColor(0, 0, 0, 1);
-        Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
-        stage.act();
-        stage.draw();
-        if ((game.mMultiplayerSession.mState==game.mMultiplayerSession.ROOM_PLAY) && 
-        		(game.mMultiplayerSession.serverAddress!=null) &&
-        		(game.mMultiplayerSession.serverPort!=0)){
-        	
-            //Create MMClient and connect to server
-    		GameWorld gWorld =new GameWorld();
-    		GameRenderer renderer= new GameRenderer(gWorld, gameWidth, gameHeight);
-        	
-            try {
-				game.mMultiplayerSession.setClient(MMClient.getInstance(gWorld, renderer, game.mMultiplayerSession.serverAddress,game.mMultiplayerSession.serverPort));
+		Gdx.gl.glClearColor(0, 0, 0, 1);
+		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+		stage.act();
+		stage.draw();
+		if ((game.mMultiplayerSession.mState == game.mMultiplayerSession.ROOM_PLAY)
+				&& (game.mMultiplayerSession.serverAddress != null)
+				&& (game.mMultiplayerSession.serverPort != 0)) {
+
+			// Create MMClient and connect to server
+			GameWorld gWorld = new GameWorld();
+			GameRenderer renderer = new GameRenderer(gWorld, gameWidth, gameHeight);
+
+			try {
+				game.mMultiplayerSession.setClient(MMClient.getInstance(gWorld, renderer,
+						game.mMultiplayerSession.serverAddress, game.mMultiplayerSession.serverPort));
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
-        	dispose();
-        	((Game)Gdx.app.getApplicationListener()).setScreen(new GameScreen(game,gameWidth, gameHeight,gWorld,renderer));
-        	
-        } else if (game.mMultiplayerSession.mState==game.mMultiplayerSession.ROOM_MENU){
-        	game.mMultiplayerSession.mState=game.mMultiplayerSession.ROOM_NULL;
-        	((Game)Gdx.app.getApplicationListener()).setScreen(new MenuScreen(game,gameWidth, gameHeight));
-        	
-        }
+
+			((Game) Gdx.app.getApplicationListener()).setScreen(new GameScreen(game, gameWidth, gameHeight,
+					gWorld, renderer));
+
+		} else if (game.mMultiplayerSession.mState == game.mMultiplayerSession.ROOM_MENU) {
+			game.mMultiplayerSession.mState = game.mMultiplayerSession.ROOM_NULL;
+			((Game) Gdx.app.getApplicationListener()).setScreen(new MenuScreen(game, gameWidth, gameHeight));
+
+		}
 	}
 
 	@Override
@@ -90,16 +92,19 @@ public class WaitScreen implements Screen {
 
 	@Override
 	public void pause() {
+		// TODO Auto-generated method stub
 
 	}
 
 	@Override
 	public void resume() {
+		// TODO Auto-generated method stub
 
 	}
 
 	@Override
 	public void dispose() {
+		// TODO Auto-generated method stub
 		stage.dispose();
 	}
 

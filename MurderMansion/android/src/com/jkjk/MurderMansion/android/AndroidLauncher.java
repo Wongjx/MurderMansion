@@ -36,7 +36,7 @@ public class AndroidLauncher extends AndroidApplication implements GameHelperLis
 	public GoogleApiClient mGoogleApiClient;
 	public RealTimeCommunication mRealTimeCom;
 	private GPSListeners mGooglePlayListeners;
-	public MultiplayerSessionInfo mMultiplayerSession;
+	public MultiplayerSessionInfo mMultiplayerSeisson;
 	
 	
 	@Override
@@ -56,19 +56,19 @@ public class AndroidLauncher extends AndroidApplication implements GameHelperLis
 		mGoogleApiClient=gameHelper.getApiClient();
 		
 		//Initalize helper class that stores all additional needed information for multiplayer games
-		mMultiplayerSession =new MultiplayerSessionInfo();
+		mMultiplayerSeisson = new MultiplayerSessionInfo();
 		
 		//Initialize listener helper class
 		if (mGooglePlayListeners == null) {
 			mGooglePlayListeners = new GPSListeners(mGoogleApiClient,this);
 		}		
 		if (mRealTimeCom == null) {
-			mRealTimeCom = new RealTimeCommunication(mGoogleApiClient,this.mMultiplayerSession);
+			mRealTimeCom = new RealTimeCommunication(mGoogleApiClient,this.mMultiplayerSeisson);
 		}
 		
 		AndroidApplicationConfiguration config = new AndroidApplicationConfiguration();
 		
-		initialize(new MurderMansion(this,mMultiplayerSession), config);
+		initialize(new MurderMansion(this,mMultiplayerSeisson), config);
 
 
 	}
@@ -104,16 +104,16 @@ public class AndroidLauncher extends AndroidApplication implements GameHelperLis
              if (responseCode == Activity.RESULT_OK) {
                  Log.d(TAG, "GPS room returned OK");
                  //Change screen to game screen
-                 mMultiplayerSession.mState=mMultiplayerSession.ROOM_PLAY;
+                 mMultiplayerSeisson.mState=mMultiplayerSeisson.ROOM_PLAY;
 
                  
 //                 startGame(true);
              } else if (responseCode == GamesActivityResultCodes.RESULT_LEFT_ROOM) {
                  // player indicated that they want to leave the room
-            	 mMultiplayerSession.mState=mMultiplayerSession.ROOM_MENU;
+            	 mMultiplayerSeisson.mState=mMultiplayerSeisson.ROOM_MENU;
                  leaveRoom();
              } else if (responseCode == Activity.RESULT_CANCELED) {
-            	 mMultiplayerSession.mState=mMultiplayerSession.ROOM_MENU;
+            	 mMultiplayerSeisson.mState=mMultiplayerSeisson.ROOM_MENU;
                  // Dialog was cancelled (user pressed back key, for instance). In our game,
                  // this means leaving the room too. In more elaborate games, this could mean
                  // something else (like minimizing the waiting room UI).
@@ -225,7 +225,7 @@ public class AndroidLauncher extends AndroidApplication implements GameHelperLis
 	@Override
 	public void seeInvitations(){
 		if (gameHelper.isSignedIn()) {
-			mMultiplayerSession.isServer=false;
+			mMultiplayerSeisson.isServer=false;
 			Intent intent = Games.Invitations.getInvitationInboxIntent(mGoogleApiClient);
 			startActivityForResult(intent, RC_INVITATION_INBOX);
 			// show list of pending invitations
@@ -241,7 +241,7 @@ public class AndroidLauncher extends AndroidApplication implements GameHelperLis
 	public void sendInvitations(){
 		if (gameHelper.isSignedIn()) {
 			//Assign device as server and setup a socket to accept connections
-			mMultiplayerSession.isServer=true;
+			mMultiplayerSeisson.isServer=true;
 			// show list of inevitable players
 			//Choose from between 1 to 3 other opponents (APIclient,minOpponents, maxOpponents, boolean Automatch)
 			Intent intent = Games.RealTimeMultiplayer.getSelectOpponentsIntent(mGoogleApiClient, 1, 6);
@@ -255,17 +255,13 @@ public class AndroidLauncher extends AndroidApplication implements GameHelperLis
 	@Override
     // Leave the room.
     public void leaveRoom() {
-        System.out.println("Leaving room.");
-        if (mMultiplayerSession.mRoomId != null) {
-        	System.out.println("If condition");
-            Games.RealTimeMultiplayer.leave(this.mGoogleApiClient, this.mGooglePlayListeners, mMultiplayerSession.mRoomId);
-            System.out.println("Real time multiplayer leave");
-            mMultiplayerSession.mRoomId=null;
-            System.out.println("room id null");
-            mMultiplayerSession.isServer=false;
-            System.out.println("isServer is false");
+        Log.d(TAG, "Leaving room.");
+        if (mMultiplayerSeisson.mRoomId != null) {
+            Games.RealTimeMultiplayer.leave(this.mGoogleApiClient, this.mGooglePlayListeners, mMultiplayerSeisson.mRoomId);  
+            mMultiplayerSeisson.mRoomId=null;
+            mMultiplayerSeisson.isServer=false;
         } else {
-        	mMultiplayerSession.mState=mMultiplayerSession.ROOM_MENU;
+        	mMultiplayerSeisson.mState=mMultiplayerSeisson.ROOM_MENU;
         }
     }
     
@@ -274,7 +270,7 @@ public class AndroidLauncher extends AndroidApplication implements GameHelperLis
     private void handleSelectPlayersResult(int response, Intent data) {
         if (response != Activity.RESULT_OK) {
             Log.w(TAG, "*** select players UI cancelled, " + response);
-            mMultiplayerSession.mState=mMultiplayerSession.ROOM_MENU;
+            mMultiplayerSeisson.mState=mMultiplayerSeisson.ROOM_MENU;
             return;
         }
 
@@ -314,7 +310,7 @@ public class AndroidLauncher extends AndroidApplication implements GameHelperLis
     private void handleInvitationInboxResult(int response, Intent data) {
         if (response != Activity.RESULT_OK) {
             Log.w(TAG, "*** invitation inbox UI cancelled, " + response);
-            mMultiplayerSession.mState=mMultiplayerSession.ROOM_MENU;
+            mMultiplayerSeisson.mState=mMultiplayerSeisson.ROOM_MENU;
             return;
         }
 

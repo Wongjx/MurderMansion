@@ -25,7 +25,6 @@ import com.jkjk.GameObjects.Items.Trap;
 import com.jkjk.GameObjects.Weapons.WeaponFactory;
 import com.jkjk.GameObjects.Weapons.WeaponPartSprite;
 import com.jkjk.GameObjects.Weapons.WeaponSprite;
-import com.jkjk.Host.MMServer;
 import com.jkjk.Host.Helpers.Location;
 import com.jkjk.Host.Helpers.ObstaclesHandler;
 import com.jkjk.Host.Helpers.SpawnBuffer;
@@ -45,6 +44,7 @@ import com.jkjk.Host.Helpers.SpawnBuffer;
  */
 public class MMClient {
 	private static MMClient instance;
+	private final String TAG = "MMClient";
 	// private final MultiplayerSeissonInfo info;
 
 	private GameWorld gWorld;
@@ -57,10 +57,9 @@ public class MMClient {
 	private int serverPort;
 
 	public Socket clientSocket;
-	public Thread clientListener;
 	private BufferedReader clientInput;
 	private PrintWriter clientOutput;
-	
+	private Thread clientListenerThread;
 
 	private float currentPositionX;
 	private float currentPositionY;
@@ -88,8 +87,6 @@ public class MMClient {
 	private final SpawnBuffer weaponPartLocations;
 
 	private ObstaclesHandler obstaclesHandler;
-
-	private HashMap<Vector2, Trap> trapList;
 
 	/**
 	 * Constructs the multiplayer world, including creation of opponents.
@@ -212,10 +209,8 @@ public class MMClient {
 
 		// Create and start extra thread that reads any incoming messages
 		Thread thread = new clientListener(clientInput, this);
-		clientListener=thread;
+		this.clientListenerThread=thread;
 		thread.start();
-
-		trapList = new HashMap<Vector2, Trap>();
 
 		// CREATE SPRITES FOR TESTING
 		ItemSprite temporaryItem = new ItemSprite(gWorld);
@@ -240,14 +235,15 @@ public class MMClient {
 		gWorld.getWeaponList().put(location2, ws);
 		ws.spawn(location2.x, location2.y, 0);
 
-		createTraps(700f, 540);
+		gWorld.createTrap(700f, 540);
 
 	}
-	
-	public static MMClient getInstance(GameWorld gWorld, GameRenderer renderer, String serverAddress, int serverPort) throws Exception{
-		if(instance==null){
-			instance= new MMClient(gWorld, renderer,serverAddress,serverPort);
-			System.out.println("New MMClient created.");
+
+	public static MMClient getInstance(GameWorld gWorld, GameRenderer renderer, String serverAddress,
+			int serverPort) throws Exception {
+		if (instance == null) {
+			System.out.println("new instance of MMClient made");
+			instance = new MMClient(gWorld, renderer, serverAddress, serverPort);
 		}
 		return instance;
 	}
@@ -269,7 +265,7 @@ public class MMClient {
 			setClientOutput(new PrintWriter(clientSocket.getOutputStream(), true));
 
 		} else {
-			System.out.println("Server Address/Port is null");
+			Gdx.app.log(TAG, "Server Address/Port is null");
 			// TODO Request information from server again
 		}
 	}
@@ -284,7 +280,7 @@ public class MMClient {
 				System.out.println("I'M PLAYER NUMBER " + id);
 				// If self
 				if (i == murdererId) {
-					playerType.put("Player " + i, 1);
+					playerType.put("Player " + i, 0);
 				} else {
 					playerType.put("Player " + i, 1);
 				}
@@ -429,23 +425,6 @@ public class MMClient {
 		}
 	}
 
-//	/** Update server about player using item
-//	 * @param value If 1 -> using; If 0 -> normal;
-//	 */
-//
-//	public void updatePlayerUseItem(int value){
-//		playerUseItem.put("Player "+id,value); 
-//		clientOutput.println("useItem_"+id+"_"+value);
-//	}
-//	
-//	/** Update server about player using weapon
-//	 * @param value If 1 -> using; If 0 -> normal;
-//	 */
-//	public void updatePlayerUseWeapon(int value){
-//		playerUseWeapon.put("Player "+id,value);
-//		clientOutput.println("useWeapon_"+id+"_"+value);
-//	}
-	
 	/**
 	 * Update server about change in player's stun status
 	 * 
@@ -458,7 +437,7 @@ public class MMClient {
 		playerIsStun.put("Player " + id, value);
 		clientOutput.println("stun_" + id + "_" + playerID + "_" + value);
 	}
-	
+
 	/**
 	 * Update server about change in player's alive status
 	 * 
@@ -473,8 +452,8 @@ public class MMClient {
 	}
 
 	/**
-<<<<<<< HEAD
-	 * Update server about change in player's use item
+	 * <<<<<<< HEAD ======= <<<<<<< HEAD >>>>>>> 093da5221d56ff4aaead1b053aa98e22d2be4d11 Update server about
+	 * change in player's use item
 	 * 
 	 * @param playerID
 	 *            ID of player status to change
@@ -510,8 +489,7 @@ public class MMClient {
 	}
 
 	/**
-=======
->>>>>>> Broken_menu
+	 * <<<<<<< HEAD ======= ======= >>>>>>> Broken_menu >>>>>>> 093da5221d56ff4aaead1b053aa98e22d2be4d11
 	 * Update server about change in player's type
 	 * 
 	 * @param playerID
@@ -577,18 +555,6 @@ public class MMClient {
 	}
 
 	/**
-	 * Create trap sprites on the map.
-	 * 
-	 * @param x
-	 *            X coordinate on the map.
-	 * @param y
-	 *            Y coordinate on the map.
-	 */
-	private void createTraps(float x, float y) {
-		trapList.put(new Vector2(x, y), new Trap(gWorld, this, null));
-	}
-
-	/**
 	 * @return Number of players playing the game.
 	 */
 	public int getNumOfPlayers() {
@@ -621,8 +587,9 @@ public class MMClient {
 		if (playerType.get("Player " + id) == 0) {
 			playerList.get(id).addWeapon(weaponFac.createWeapon("Knife", gWorld, playerList.get(id)));
 		} else if (playerType.get("Player " + id) == 1) {
-			if (playerList.get(id).getWeapon().getName() != "Shotgun")
+			if (playerList.get(id).getWeapon() == null) {
 				playerList.get(id).addWeapon(weaponFac.createWeapon("Bat", gWorld, playerList.get(id)));
+			}
 		}
 		playerList.get(id).useWeapon();
 	}
@@ -688,14 +655,6 @@ public class MMClient {
 
 	public int getId() {
 		return id;
-	}
-
-	public HashMap<Vector2, Trap> getTrapList() {
-		return trapList;
-	}
-
-	public void setTrapList(HashMap<Vector2, Trap> trapList) {
-		this.trapList = trapList;
 	}
 
 	public void sendToServer(String message) {
@@ -823,11 +782,13 @@ public class MMClient {
 			if (msg[2].equals("con")) {
 				System.out.println("Consume trap");
 				Vector2 position = new Vector2(Float.parseFloat(msg[3]), Float.parseFloat(msg[4]));
-				gWorld.setTrapToRemove(gWorld.getTrapList().get(position).getBody());
+				if (gWorld.getTrapList().contains(position)) {
+					gWorld.setTrapToRemove(gWorld.getTrapList().get(position).getBody());
+				}
 			} else if (msg[2].equals("pro")) {
 				System.out.println("Produce trap");
 				if (Integer.parseInt(msg[1]) != id) {
-					createTraps(Float.parseFloat(msg[3]), Float.parseFloat(msg[4]));
+					gWorld.createTrap(Float.parseFloat(msg[3]), Float.parseFloat(msg[4]));
 				}
 			}
 		}
@@ -836,6 +797,10 @@ public class MMClient {
 			System.out.println("Remove obstacle @ x:" + msg[1] + " y: " + msg[2]);
 			Vector2 location = new Vector2(Float.parseFloat(msg[1]), Float.parseFloat(msg[2]));
 			gWorld.removeObstacle(location);
+		}
+
+		else if (msg[0].equals("lightning")) {
+			gWorld.lightningStrike();
 		}
 
 		else if (msg[0].equals("win")) {
@@ -848,9 +813,12 @@ public class MMClient {
 	}
 	
 	public void endSession() throws IOException{
-			clientListener.interrupt();
-			clientSocket.close();
-			MMClient.instance=null;
+		this.clientListenerThread.interrupt();
+		this.clientSocket.close();
+		instance=null;
+		System.out.println("MMClient seisson ended.");
+		
+		
 	}
 }
 
@@ -875,6 +843,7 @@ class clientListener extends Thread {
 					client.handleMessage(msg);
 				}
 			} catch (Exception e) {
+				e.printStackTrace();
 				System.out.println("Client error while reading: " + e.getMessage());
 			}
 		}

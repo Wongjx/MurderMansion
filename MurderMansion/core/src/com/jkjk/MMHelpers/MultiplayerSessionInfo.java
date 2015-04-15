@@ -55,16 +55,19 @@ public class MultiplayerSessionInfo {
 	}
 	
 	public void endSession(){
-		this.mId=null;
-		this.mParticipants=null;
-		this.mRoomId=null;
-		this.mState=1000;
-		this.server=null;
-		this.client=null;
-		this.isServer=false;
-		this.serverAddress=null;
-		this.serverPort=-1;
+		mId=null;
+		mIncomingInvitationId=null;
+		mRoomId=null;
+		mParticipants=null;
+		mState=1000;
+
+		isServer=false;
+		serverAddress=null;
+		serverPort=0;
 		
+		server=null;
+		client=null;
+
 	}
 
 

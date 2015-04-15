@@ -24,6 +24,7 @@ import com.jkjk.MMHelpers.AssetLoader;
  * 
  */
 public class GameRenderer {
+	private static GameRenderer instance;
 
 	private GameWorld gWorld; // Box2D world. This will hold all objects (players, items, walls)
 	private OrthographicCamera cam; // Game camera. Views what is happening in the game.
@@ -63,7 +64,6 @@ public class GameRenderer {
 		batch = new SpriteBatch();
 
 	}
-
 
 	/**
 	 * Renders all images and actions on the player's screen.
@@ -120,8 +120,9 @@ public class GameRenderer {
 	 * Releases the resources held by objects or images loaded.
 	 */
 	public void rendererDispose() {
-		b2dr.dispose();
+		instance=null;
 		gWorld.getWorld().dispose();
+		b2dr.dispose();
 	}
 
 }
