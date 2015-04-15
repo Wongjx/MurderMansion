@@ -42,8 +42,7 @@ import com.jkjk.MMHelpers.AssetLoader;
  * 
  */
 public class MMClient {
-	private static MMClient instance;
-	private final String TAG = "MMClient";
+//	private static MMClient instance;
 	// private final MultiplayerSeissonInfo info;
 
 	private GameWorld gWorld;
@@ -96,7 +95,7 @@ public class MMClient {
 	 *            GameRenderer instance
 	 * @throws Exception
 	 */
-	private MMClient(GameWorld gWorld, GameRenderer renderer, String serverAddress, int serverPort)
+	public MMClient(GameWorld gWorld, GameRenderer renderer, String serverAddress, int serverPort)
 			throws Exception {
 
 		this.gWorld = gWorld;
@@ -239,14 +238,14 @@ public class MMClient {
 
 	}
 
-	public static MMClient getInstance(GameWorld gWorld, GameRenderer renderer, String serverAddress,
-			int serverPort) throws Exception {
-		if (instance == null) {
-			System.out.println("new instance of MMClient made");
-			instance = new MMClient(gWorld, renderer, serverAddress, serverPort);
-		}
-		return instance;
-	}
+//	public static MMClient getInstance(GameWorld gWorld, GameRenderer renderer, String serverAddress,
+//			int serverPort) throws Exception {
+//		if (instance == null) {
+//			System.out.println("New instance of MMClient made!");
+//			instance = new MMClient(gWorld, renderer, serverAddress, serverPort);
+//		}
+//		return instance;
+//	}
 
 	/**
 	 * Initialize client socket
@@ -265,7 +264,6 @@ public class MMClient {
 			setClientOutput(new PrintWriter(clientSocket.getOutputStream(), true));
 
 		} else {
-			Gdx.app.log(TAG, "Server Address/Port is null");
 			// TODO Request information from server again
 		}
 	}
@@ -836,9 +834,11 @@ public class MMClient {
 	}
 	
 	public void endSession() throws IOException{
+//		instance=null;
+//		System.out.println("Interrupt everythang");
 		this.clientListenerThread.interrupt();
+//		System.out.println("Closing all lose holes");
 		this.clientSocket.close();
-		instance=null;
 		System.out.println("MMClient seisson ended.");
 		
 		
@@ -868,6 +868,7 @@ class clientListener extends Thread {
 			} catch (Exception e) {
 				e.printStackTrace();
 				System.out.println("Client error while reading: " + e.getMessage());
+				break;
 			}
 		}
 	}

@@ -20,7 +20,6 @@ import com.jkjk.Host.Helpers.ObstaclesHandler;
 import com.jkjk.MMHelpers.MultiplayerSessionInfo;
 
 public class MMServer {
-	private static MMServer instance;
 
 	private MultiplayerSessionInfo info;
 	public ServerSocket serverSocket;
@@ -56,7 +55,7 @@ public class MMServer {
 	private boolean win;
 	private Random random;
 
-	private MMServer(int numOfPlayers, MultiplayerSessionInfo info) throws InterruptedException {
+	public MMServer(int numOfPlayers, MultiplayerSessionInfo info) throws InterruptedException {
 		this.numOfPlayers = numOfPlayers;
 		this.info = info;
 
@@ -91,14 +90,14 @@ public class MMServer {
 		acceptServerConnections();
 	}
 
-	public static MMServer getInstance(int numOfPlayers, MultiplayerSessionInfo info)
-			throws InterruptedException {
-		if (instance == null) {
-			instance = new MMServer(numOfPlayers, info);
-			System.out.println("new instance of MMServer made");
-		}
-		return instance;
-	}
+//	public static MMServer getInstance(int numOfPlayers, MultiplayerSessionInfo info)
+//			throws InterruptedException {
+//		if (instance == null) {
+//			instance = new MMServer(numOfPlayers, info);
+//			System.out.println("new instance of MMServer made");
+//		}
+//		return instance;
+//	}
 
 	/**
 	 * Start updating only when all clients have successfully synchronized.
@@ -147,8 +146,8 @@ public class MMServer {
 			// (Murderer) 2) all civilians are dead
 			numStillAlive = 0;
 			numInSafeRegion = 0;
-			System.out.println("ALIVE: " + numStillAlive);
-			System.out.println("SAFE REGION: " + numInSafeRegion);
+//			System.out.println("ALIVE: " + numStillAlive);
+//			System.out.println("SAFE REGION: " + numInSafeRegion);
 			for (int i = 0; i < numOfPlayers; i++) {
 				if (i == murdererId)
 					continue;
@@ -461,7 +460,7 @@ public class MMServer {
 	}
 	
 	public void endSession() throws IOException{
-		MMServer.instance= null;
+//		instance= null;
 		for(Thread t:serverListeners){
 			t.interrupt();
 		}
@@ -642,6 +641,7 @@ class serverListener extends Thread {
 			} catch (Exception e) {
 				e.printStackTrace();
 				System.out.println("Error while reading: " + e.getMessage());
+				break;
 			}
 
 		}

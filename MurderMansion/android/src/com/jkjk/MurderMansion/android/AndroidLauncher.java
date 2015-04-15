@@ -102,7 +102,7 @@ public class AndroidLauncher extends AndroidApplication implements GameHelperLis
          case RC_WAITING_ROOM:
              // we got the result from the "waiting room" UI.
              if (responseCode == Activity.RESULT_OK) {
-                 Log.d(TAG, "GPS room returned OK");
+                 System.out.println("GPS room returned OK");
                  //Change screen to game screen
                  mMultiplayerSeisson.mState=mMultiplayerSeisson.ROOM_PLAY;
              } else if (responseCode == GamesActivityResultCodes.RESULT_LEFT_ROOM) {

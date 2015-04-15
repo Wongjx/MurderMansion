@@ -49,7 +49,7 @@ public class MenuScreen implements Screen {
 	private TextButton buttonQuick;
 	private TextButton buttonInvite;
 
-	MurderMansion game;
+	private MurderMansion game;
 
 	public MenuScreen(MurderMansion game, float gameWidth, float gameHeight) {
 		this.gameWidth = gameWidth;
@@ -91,8 +91,8 @@ public class MenuScreen implements Screen {
 				
 				try {
 					game.mMultiplayerSession.isServer = true;
-					game.mMultiplayerSession.setServer(MMServer.getInstance(1, game.mMultiplayerSession));
-					game.mMultiplayerSession.setClient(MMClient.getInstance(world, renderer,
+					game.mMultiplayerSession.setServer(new MMServer(1, game.mMultiplayerSession));
+					game.mMultiplayerSession.setClient(new MMClient(world, renderer,
 							game.mMultiplayerSession.serverAddress, game.mMultiplayerSession.serverPort));
 				} catch (Exception e) {
 					e.printStackTrace();
