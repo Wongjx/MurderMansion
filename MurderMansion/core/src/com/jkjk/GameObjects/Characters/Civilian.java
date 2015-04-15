@@ -203,8 +203,8 @@ public class Civilian extends GameCharacter {
 		return false;
 	}
 
-	public void stun(boolean stun) {// stun
-		super.stun(stun);
+	public void stun() {// stun
+		super.stun();
 		body.setUserData(civStunAnimation);
 
 	}

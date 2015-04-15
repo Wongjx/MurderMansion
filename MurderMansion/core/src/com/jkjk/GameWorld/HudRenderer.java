@@ -135,10 +135,8 @@ public class HudRenderer {
 		abilityCheck();
 
 		Gdx.input.setInputProcessor(stage);
-
-		pauseCam = new OrthographicCamera();
-		pauseCam.setToOrtho(false, gameWidth, gameHeight);
-		pauseStage = new Stage(new ExtendViewport(gameWidth, gameHeight, pauseCam), batch);
+		
+		pauseStage = new Stage(new ExtendViewport(gameWidth, gameHeight), batch);
 		pauseStage.addActor(getMainMenuButton());
 		pauseStage.addActor(getContinueButton());
 		pauseStage.addActor(getSettingsButton());
@@ -266,6 +264,7 @@ public class HudRenderer {
 		buttonMainMenu.addListener(new ClickListener() {
 			@Override
 			public void clicked(InputEvent event, float x, float y) {
+				gWorld.dispose();
 				((Game) Gdx.app.getApplicationListener()).setScreen(new MenuScreen(game, gameWidth,
 						gameHeight));
 			}

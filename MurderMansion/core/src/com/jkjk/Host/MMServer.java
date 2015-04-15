@@ -48,7 +48,7 @@ public class MMServer {
 
 	private final ObstaclesHandler obstaclesHandler;
 	private float[] obstacleDestroyed; // To transmit position of obstacle destroyed to clients
-	
+
 	private int weaponPartsCollected;
 	private GameStatus gameStatus;
 	private int numInSafeRegion;
@@ -71,7 +71,6 @@ public class MMServer {
 		playerStats = new PlayerStatuses(numOfPlayers);
 		objectLocations = new ObjectLocations(numOfPlayers, this);
 
-
 		obstaclesHandler = ObstaclesHandler.getInstance();
 		nextItemSpawnTime = 10000;
 		nextObstacleRemoveTime = 30000;
@@ -82,10 +81,8 @@ public class MMServer {
 
 		// System.out.println("Assigning murderer");
 		murdererId = random.nextInt(numOfPlayers);
-		
 		//Set number of players who have loaded and ready to play=0
 		readyCount=0;
-		
 		initPlayers();
 
 		// Attempt to connect to clients (numOfPlayers)
@@ -112,8 +109,8 @@ public class MMServer {
 		checkWin();
 		lightningStrike();
 	}
-	
-	private void handleSpawn(){
+
+	private void handleSpawn() {
 		// Item/Weapon/WeaponPart Spawn
 		if (runTime > nextItemSpawnTime) {
 			System.out.println("SPAWN!");
@@ -136,8 +133,8 @@ public class MMServer {
 			nextObstacleRemoveTime += 30000;
 		}
 	}
-	
-	private void checkWin(){
+
+	private void checkWin() {
 		// Civilian Win condition when murderer is dead
 		if (!win) {
 			if (playerStats.getPlayerIsAliveValue("Player " + murdererId) == 0) {
@@ -150,16 +147,22 @@ public class MMServer {
 			// (Murderer) 2) all civilians are dead
 			numStillAlive = 0;
 			numInSafeRegion = 0;
+			System.out.println("ALIVE: " + numStillAlive);
+			System.out.println("SAFE REGION: " + numInSafeRegion);
 			for (int i = 0; i < numOfPlayers; i++) {
 				if (i == murdererId)
 					continue;
 				if (playerStats.getPlayerIsAliveValue("Player " + i) == 1) {
+					System.out.println("ALIVE HERE");
 					numStillAlive++;
-					if (playerStats.getPlayerIsInSafeRegion("Player " + 1) == 1)
+					if (playerStats.getPlayerIsInSafeRegion("Player " + 1) == 1) {
+						System.out.println("SAFE HERE");
 						numInSafeRegion++;
+					}
 				}
 			}
 			if (numStillAlive > 0 && numStillAlive == numInSafeRegion) {
+				System.out.println("WHATTTT");
 				gameStatus.win(1);
 				win = true;
 			} else if (numStillAlive == 0) {
@@ -168,8 +171,8 @@ public class MMServer {
 			}
 		}
 	}
-	
-	private void lightningStrike(){
+
+	private void lightningStrike() {
 		if (runTime > nextLightningTime) {
 			sendToClients("lightning");
 			nextLightningTime += (random.nextInt(15000) + 20000);
@@ -187,7 +190,7 @@ public class MMServer {
 				playerStats.getPlayerType().put("Player " + i, 1);
 			}
 
-			playerStats.getPlayerPosition().put("Player " + i, new float[] { 880, 580 - ((i + 1) * 30)});
+			playerStats.getPlayerPosition().put("Player " + i, new float[] { 880, 580 - ((i + 1) * 30) });
 			playerStats.getPlayerAngle().put("Player " + i, 3.1427f);
 
 		}
@@ -384,7 +387,7 @@ public class MMServer {
 		} else if (msg[0].equals("ang")) {
 			float angle = Float.parseFloat(msg[2]);
 			playerStats.updateAngle(Integer.parseInt(msg[1]), angle);
-		} else if (msg[0].equals("vel")){
+		} else if (msg[0].equals("vel")) {
 			float velocity = Float.parseFloat(msg[2]);
 			playerStats.updateVelocity(Integer.parseInt(msg[1]), velocity);
 		} else if (msg[0].equals("type")) {
@@ -412,7 +415,7 @@ public class MMServer {
 			System.out.println("Add weapon part");
 			weaponPartsCollected++;
 			playerStats.updateWeaponPartsCollected();
-			if (weaponPartsCollected == numOfPlayers*2){
+			if (weaponPartsCollected == numOfPlayers * 2) {
 				playerStats.updateShotgunCreated();
 			}
 		}

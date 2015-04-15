@@ -68,6 +68,7 @@ public class GameScreen implements Screen {
 			} catch (NullPointerException e) {
 				e.printStackTrace();
 				System.out.println("Error in GameScreen. info.getServer() NULL!");
+				System.out.println("Disconnected?");
 			}
 		}
 

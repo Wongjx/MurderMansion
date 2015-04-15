@@ -211,8 +211,8 @@ public class Murderer extends GameCharacter {
 		}
 	}
 	
-	public void stun(boolean stun) {
-		super.stun(stun);
+	public void stun() {
+		super.stun();
 		if (!isDisguised()) {
 			body.setUserData(AssetLoader.murStunAnimation);
 		} else {

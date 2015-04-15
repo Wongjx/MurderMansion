@@ -26,6 +26,7 @@ import com.jkjk.GameObjects.Weapons.WeaponSprite;
 import com.jkjk.Host.Helpers.Location;
 import com.jkjk.Host.Helpers.ObstaclesHandler;
 import com.jkjk.Host.Helpers.SpawnBuffer;
+import com.jkjk.MMHelpers.AssetLoader;
 
 /**
  * MMClient listens to input from the Server by the host. Inputs include sharable data such as player
@@ -72,7 +73,6 @@ public class MMClient {
 	private long lastUpdated;
 
 	private final ConcurrentHashMap<String, Integer> playerIsAlive; // If 1 ->true; If 0 -> false;
-	private final ConcurrentHashMap<String, Integer> playerIsStun; // If 1 -> true; If 0 -> false;
 	private final ConcurrentHashMap<String, Integer> playerType; // If 0 -> murderer;If 1 -> civilian; If 2 ->
 																	// Ghost
 	private final ConcurrentHashMap<String, float[]> playerPosition;
@@ -174,7 +174,6 @@ public class MMClient {
 		// System.out.println("Creating concurrent hashmaps for player condition.");
 		playerType = new ConcurrentHashMap<String, Integer>(numOfPlayers);
 		playerIsAlive = new ConcurrentHashMap<String, Integer>(numOfPlayers);
-		playerIsStun = new ConcurrentHashMap<String, Integer>(numOfPlayers);
 		playerPosition = new ConcurrentHashMap<String, float[]>(numOfPlayers);
 		playerAngle = new ConcurrentHashMap<String, Float>(numOfPlayers);
 		playerVelocity = new ConcurrentHashMap<String, Float>(numOfPlayers);
@@ -276,7 +275,6 @@ public class MMClient {
 		System.out.println("Player list size " + playerList.size());
 		for (int i = 0; i < numOfPlayers; i++) {
 			playerIsAlive.put("Player " + i, 1);
-			playerIsStun.put("Player " + i, 0);
 			if (i == id) {
 				System.out.println("I'M PLAYER NUMBER " + id);
 				// If self
@@ -428,7 +426,10 @@ public class MMClient {
 	private void updatePlayerIsinSafeArea() {
 		if (gWorld.isInSafeArea() != playerIsInSafeArea) {
 			playerIsInSafeArea = gWorld.isInSafeArea();
-			clientOutput.println("safe_" + id + "_" + gWorld.isInSafeArea());
+			if (gWorld.isInSafeArea())
+				clientOutput.println("safe_" + id + "_" + 1);
+			else
+				clientOutput.println("safe_" + id + "_" + 0);
 			clientOutput.flush();
 		}
 	}
@@ -442,7 +443,6 @@ public class MMClient {
 	 *            If 1 -> true; If 0 -> false;
 	 */
 	public void updatePlayerIsStun(int playerID, int value) {
-		playerIsStun.put("Player " + id, value);
 		clientOutput.println("stun_" + id + "_" + playerID + "_" + value);
 	}
 
@@ -739,8 +739,7 @@ public class MMClient {
 			killPlayer(Integer.parseInt(msg[2]));
 
 		} else if (msg[0].equals("stun")) {
-			playerIsStun.put("Player " + Integer.parseInt(msg[2]), Integer.parseInt(msg[3]));
-			playerList.get(Integer.parseInt(msg[2])).stun(true);
+			playerList.get(Integer.parseInt(msg[2])).stun();
 		} else if (msg[0].equals("useItem")) {
 			itemUsed(Integer.parseInt(msg[1]));
 		} else if (msg[0].equals("useWeapon")) {
@@ -768,6 +767,7 @@ public class MMClient {
 				itemLocations.produce(new Location(new float[] { Float.parseFloat(msg[3]),
 						Float.parseFloat(msg[4]) }));
 				createItems(Float.parseFloat(msg[3]), Float.parseFloat(msg[4]));
+				gWorld.getPlayer().stun();
 			}
 		} else if (msg[0].equals("weapon")) {
 			if (msg[2].equals("con")) {
@@ -801,7 +801,7 @@ public class MMClient {
 			if (msg[2].equals("con")) {
 				System.out.println("Consume trap");
 				Vector2 position = new Vector2(Float.parseFloat(msg[3]), Float.parseFloat(msg[4]));
-				if (gWorld.getTrapList().contains(position)) {
+				if (gWorld.getTrapList().containsKey(position)) {
 					gWorld.setTrapToRemove(gWorld.getTrapList().get(position).getBody());
 				}
 			} else if (msg[2].equals("pro")) {
@@ -816,6 +816,10 @@ public class MMClient {
 			System.out.println("Remove obstacle @ x:" + msg[1] + " y: " + msg[2]);
 			Vector2 location = new Vector2(Float.parseFloat(msg[1]), Float.parseFloat(msg[2]));
 			gWorld.removeObstacle(location);
+			if (gWorld.getObstacleList().isEmpty())
+				AssetLoader.obstacleSoundmd.play();
+			else
+				AssetLoader.obstacleSFX();
 		}
 
 		else if (msg[0].equals("lightning")) {
