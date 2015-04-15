@@ -23,7 +23,6 @@ public class WaitScreen implements Screen {
 	private SpriteBatch batcher;
 	private Sprite sprite;
 	private MurderMansion game;
-	private CountDownLatch latch;
 
 	private float gameWidth;
 	private float gameHeight;
@@ -32,7 +31,6 @@ public class WaitScreen implements Screen {
 		this.game = game;
 		this.gameWidth = gameWidth;
 		this.gameHeight = gameHeight;
-		this.latch=new CountDownLatch(2);
 	}
 
 	@Override
@@ -68,9 +66,8 @@ public class WaitScreen implements Screen {
 
 			try {
 				game.mMultiplayerSession.setClient(MMClient.getInstance(gWorld, renderer,
-						game.mMultiplayerSession.serverAddress, game.mMultiplayerSession.serverPort,latch));
-				latch.countDown();
-				latch.await();
+						game.mMultiplayerSession.serverAddress, game.mMultiplayerSession.serverPort));
+
 			} catch (Exception e) {
 				e.printStackTrace();
 			}

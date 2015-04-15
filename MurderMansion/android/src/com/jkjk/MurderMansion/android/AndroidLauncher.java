@@ -105,9 +105,6 @@ public class AndroidLauncher extends AndroidApplication implements GameHelperLis
                  Log.d(TAG, "GPS room returned OK");
                  //Change screen to game screen
                  mMultiplayerSeisson.mState=mMultiplayerSeisson.ROOM_PLAY;
-
-                 
-//                 startGame(true);
              } else if (responseCode == GamesActivityResultCodes.RESULT_LEFT_ROOM) {
                  // player indicated that they want to leave the room
             	 mMultiplayerSeisson.mState=mMultiplayerSeisson.ROOM_MENU;

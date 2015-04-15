@@ -77,14 +77,8 @@ public class GPSListeners implements RoomStatusUpdateListener, RoomUpdateListene
     public void onLeftRoom(int statusCode, String roomId) {
         // we have left the room; return to main screen.
     	Log.d(TAG, "onLeftRoom, code " + statusCode);
-    	activity.mMultiplayerSeisson.setClient(null);
-    	activity.mMultiplayerSeisson.setServer(null);
-    	activity.mMultiplayerSeisson.mId=null;
-    	activity.mMultiplayerSeisson.mRoomId=null;
-    	activity.mMultiplayerSeisson.mParticipants=null;
-    	activity.mMultiplayerSeisson.serverAddress=null;
-    	activity.mMultiplayerSeisson.serverPort=0;
     	activity.mMultiplayerSeisson.mState=activity.mMultiplayerSeisson.ROOM_MENU;
+    	activity.mMultiplayerSeisson.endSession();
     }
 
     // Called when room is fully connected.
@@ -153,22 +147,12 @@ public class GPSListeners implements RoomStatusUpdateListener, RoomUpdateListene
     // Called when we get disconnected from the room. We return to the main screen.
     @Override
     public void onDisconnectedFromRoom(Room room) {
-    	activity.mMultiplayerSeisson.setClient(null);
-    	activity.mMultiplayerSeisson.setServer(null);
-    	activity.mMultiplayerSeisson.mRoomId=null;
-    	activity.mMultiplayerSeisson.mParticipants=null;
-    	activity.mMultiplayerSeisson.serverAddress=null;
-    	activity.mMultiplayerSeisson.serverPort=0;
+    	activity.mMultiplayerSeisson.endSession();
     	activity.mMultiplayerSeisson.mState=activity.mMultiplayerSeisson.ROOM_MENU;
 //        showGameError();
     }
-    // Show error message about game being cancelled and return to main screen.
-//    void showGameError() {
-//        BaseGameUtils.makeSimpleDialog(this, getString(R.string.game_problem));
-//        switchToMainScreen();
-//    }
 
-    
+
     // We treat most of the room update callbacks in the same way: we update our list of
     // participants and update the display. In a real game we would also have to check if that
     // change requires some action like removing the corresponding player avatar from the screen,

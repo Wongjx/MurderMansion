@@ -50,6 +50,7 @@ public class GameScreen implements Screen {
 	public void show() {
 		AssetLoader.menuMusic.stop();
 		AssetLoader.gameMusic.play();
+		client.updatePlayerIsReady();
 	}
 
 	@Override
@@ -57,7 +58,9 @@ public class GameScreen implements Screen {
 		runTime += delta;
 		gWorld.update(delta, client);
 		renderer.render(delta, runTime, client);
-		hudRenderer.render(delta);
+		if(game.mMultiplayerSession.getClient().getIsGameStart()){
+			hudRenderer.render(delta);
+		}
 		// if phone is designated server
 		if (info.isServer) {
 			try {

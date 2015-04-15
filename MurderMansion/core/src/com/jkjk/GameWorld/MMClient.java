@@ -8,9 +8,7 @@ import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.CountDownLatch;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.OrthographicCamera;
@@ -22,7 +20,6 @@ import com.jkjk.GameObjects.Characters.GameCharacter;
 import com.jkjk.GameObjects.Characters.GameCharacterFactory;
 import com.jkjk.GameObjects.Items.ItemFactory;
 import com.jkjk.GameObjects.Items.ItemSprite;
-import com.jkjk.GameObjects.Items.Trap;
 import com.jkjk.GameObjects.Weapons.WeaponFactory;
 import com.jkjk.GameObjects.Weapons.WeaponPartSprite;
 import com.jkjk.GameObjects.Weapons.WeaponSprite;
@@ -56,7 +53,7 @@ public class MMClient {
 
 	private String serverAddress;
 	private int serverPort;
-	private CountDownLatch latch;
+	private boolean isGameStart;
 	
 	public Socket clientSocket;
 	private BufferedReader clientInput;
@@ -99,7 +96,7 @@ public class MMClient {
 	 *            GameRenderer instance
 	 * @throws Exception
 	 */
-	private MMClient(GameWorld gWorld, GameRenderer renderer, String serverAddress, int serverPort, CountDownLatch latch)
+	private MMClient(GameWorld gWorld, GameRenderer renderer, String serverAddress, int serverPort)
 			throws Exception {
 
 		this.gWorld = gWorld;
@@ -110,7 +107,7 @@ public class MMClient {
 
 		this.serverAddress = serverAddress;
 		this.serverPort = serverPort;
-		this.latch=latch;
+		this.isGameStart=false;
 		
 		// Connect to server
 		initClientSocket(this.serverAddress, this.serverPort);
@@ -215,9 +212,6 @@ public class MMClient {
 		this.clientListenerThread=thread;
 		thread.start();
 		
-		//Send ready message to server
-		clientOutput.println("ready_"+id);
-		
 
 		// CREATE SPRITES FOR TESTING
 		ItemSprite temporaryItem = new ItemSprite(gWorld);
@@ -247,10 +241,10 @@ public class MMClient {
 	}
 
 	public static MMClient getInstance(GameWorld gWorld, GameRenderer renderer, String serverAddress,
-			int serverPort,CountDownLatch latch) throws Exception {
+			int serverPort) throws Exception {
 		if (instance == null) {
 			System.out.println("new instance of MMClient made");
-			instance = new MMClient(gWorld, renderer, serverAddress, serverPort,latch);
+			instance = new MMClient(gWorld, renderer, serverAddress, serverPort);
 		}
 		return instance;
 	}
@@ -394,6 +388,13 @@ public class MMClient {
 		weaponPartLocations.consume(new Location(new float[] { position.x, position.y }));
 		clientOutput.println("weaponpart_" + id + "_con_" + Float.toString(position.x) + "_"
 				+ Float.toString(position.y));
+	}
+	
+	/** Update MMServer that player is at game screen and ready to start game
+	 * 
+	 */
+	public void updatePlayerIsReady(){
+		clientOutput.println("ready_"+id);
 	}
 
 	/**
@@ -619,6 +620,10 @@ public class MMClient {
 		System.out.println("WHO USED ABILITY? PLAYER " + id + " DID!");
 		playerList.get(id).useAbility();
 	}
+	
+	public boolean getIsGameStart(){
+		return isGameStart;
+	}
 
 	public BufferedReader getClientInput() {
 		synchronized (clientInput) {
@@ -697,7 +702,7 @@ public class MMClient {
 		
 		//if start game message
 		if(msg[0].equals("startgame")){
-			this.latch.countDown();
+			this.isGameStart=true;
 			System.out.println("All players ready. Start GAME!!");
 		}
 		
