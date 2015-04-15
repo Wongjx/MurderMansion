@@ -37,6 +37,7 @@ public class MMServer {
 	private long runTime;
 	private long nextItemSpawnTime;
 	private long nextObstacleRemoveTime;
+	private long nextLightningTime;
 
 	private final PlayerStatuses playerStats;
 
@@ -66,16 +67,18 @@ public class MMServer {
 		playerStats = new PlayerStatuses(numOfPlayers);
 		objectLocations = new ObjectLocations(numOfPlayers, this);
 
-		// System.out.println("Assigning murderer");
-		murdererId = new Random().nextInt(numOfPlayers);
 
 		obstaclesHandler = ObstaclesHandler.getInstance();
 		nextItemSpawnTime = 10000;
 		nextObstacleRemoveTime = 30000;
+		nextLightningTime = 30000;
 
 		gameStatus = new GameStatus();
 		random = new Random();
 
+		// System.out.println("Assigning murderer");
+		murdererId = random.nextInt(numOfPlayers);
+		
 		initPlayers();
 
 		// Attempt to connect to clients (numOfPlayers)
@@ -97,8 +100,13 @@ public class MMServer {
 	 */
 	public void update() {
 		runTime = System.currentTimeMillis() - startTime;
-
-		// Item/Weapon/WeaponPart Spawn *NEEDS TO BE BALANCED TO FIT GAMEPLAY
+		handleSpawn();
+		checkWin();
+		lightningStrike();
+	}
+	
+	private void handleSpawn(){
+		// Item/Weapon/WeaponPart Spawn
 		if (runTime > nextItemSpawnTime) {
 			System.out.println("SPAWN!");
 			if (!objectLocations.getItemLocations().isFull())
@@ -119,7 +127,9 @@ public class MMServer {
 					+ Float.toString(obstacleDestroyed[1]));
 			nextObstacleRemoveTime += 30000;
 		}
-
+	}
+	
+	private void checkWin(){
 		// Civilian Win condition when murderer is dead
 		if (!win) {
 			if (playerStats.getPlayerIsAliveValue("Player " + murdererId) == 0) {
@@ -149,7 +159,13 @@ public class MMServer {
 				win = true;
 			}
 		}
-
+	}
+	
+	private void lightningStrike(){
+		if (runTime > nextLightningTime) {
+			sendToClients("lightning");
+			nextLightningTime += (random.nextInt(15000) + 20000);
+		}
 	}
 
 	private void initPlayers() {
@@ -599,6 +615,7 @@ class serverListener extends Thread {
 					server.handleMessage(msg);
 				}
 			} catch (Exception e) {
+				e.printStackTrace();
 				System.out.println("Error while reading: " + e.getMessage());
 			}
 

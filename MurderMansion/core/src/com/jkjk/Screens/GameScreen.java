@@ -40,7 +40,7 @@ public class GameScreen implements Screen {
 
 		// client = new MMClient(server, gWorld, renderer);
 		hudRenderer = HudRenderer.getInstance(gWorld, client, gameWidth, gameHeight, game);
-		
+
 	}
 
 	@Override
@@ -57,16 +57,23 @@ public class GameScreen implements Screen {
 		hudRenderer.render(delta);
 		// if phone is designated server
 		if (info.isServer) {
-			info.getServer().update();
+			try {
+				info.getServer().update();
+			} catch (NullPointerException e) {
+				e.printStackTrace();
+				System.out.println("Error in GameScreen. info.getServer() NULL!");
+			}
 		}
 
 		if (gWorld.isCivWin() || gWorld.isMurWin()) {
 			gWorld.getGameOverTimer().update();
 			if (!gWorld.getGameOverTimer().isCountingDown()) {
-				// System.out.println("GAMEWORLD UPDATE: GAMEOVER COMPLETE");
-				// ((Game)Gdx.app.getApplicationListener()).setScreen(new ScoreScreen(game, gameWidth,
-				// gameHeight, gWorld.isMurWin()));
-//				gameMusic.stop();
+				if (client.getNumOfPlayers() > 1) {
+					System.out.println("GAMEWORLD UPDATE: GAMEOVER COMPLETE");
+					gWorld.getWorld().dispose();
+					((Game) Gdx.app.getApplicationListener()).setScreen(new ScoreScreen(game, gameWidth,
+							gameHeight, gWorld.isMurWin()));
+				}
 			}
 		}
 	}

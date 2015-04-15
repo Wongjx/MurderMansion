@@ -59,11 +59,11 @@ public class MenuScreen implements Screen {
 		normal = AssetLoader.normal;
 
 		buttonPlay = new TextButton("Enter", normal);
-		buttonJoin = new TextButton("Connect", normal);
+		buttonJoin = new TextButton("Join Game", normal);
 		buttonLogout = new TextButton("Logout", normal);
 		buttonLogin = new TextButton("Login", normal);
 		buttonQuick = new TextButton("Quick Game", normal);
-		buttonInvite = new TextButton("Join Game", normal);
+		buttonInvite = new TextButton("Invite", normal);
 		scale = Gdx.graphics.getWidth() / gameWidth;
 	}
 

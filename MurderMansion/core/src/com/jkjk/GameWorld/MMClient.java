@@ -87,8 +87,6 @@ public class MMClient {
 
 	private ObstaclesHandler obstaclesHandler;
 
-	private HashMap<Vector2, Trap> trapList;
-
 	/**
 	 * Constructs the multiplayer world, including creation of opponents.
 	 * 
@@ -212,8 +210,6 @@ public class MMClient {
 		Thread thread = new clientListener(clientInput, this);
 		thread.start();
 
-		trapList = new HashMap<Vector2, Trap>();
-
 		// CREATE SPRITES FOR TESTING
 		ItemSprite temporaryItem = new ItemSprite(gWorld);
 		gWorld.getItemList().put(new Vector2(800f, 490), temporaryItem);
@@ -237,7 +233,7 @@ public class MMClient {
 		gWorld.getWeaponList().put(location2, ws);
 		ws.spawn(location2.x, location2.y, 0);
 
-		createTraps(700f, 540);
+		gWorld.createTrap(700f, 540);
 
 	}
 
@@ -281,7 +277,7 @@ public class MMClient {
 				System.out.println("I'M PLAYER NUMBER " + id);
 				// If self
 				if (i == murdererId) {
-					playerType.put("Player " + i, 1);
+					playerType.put("Player " + i, 0);
 				} else {
 					playerType.put("Player " + i, 1);
 				}
@@ -554,18 +550,6 @@ public class MMClient {
 	}
 
 	/**
-	 * Create trap sprites on the map.
-	 * 
-	 * @param x
-	 *            X coordinate on the map.
-	 * @param y
-	 *            Y coordinate on the map.
-	 */
-	private void createTraps(float x, float y) {
-		trapList.put(new Vector2(x, y), new Trap(gWorld, this, null));
-	}
-
-	/**
 	 * @return Number of players playing the game.
 	 */
 	public int getNumOfPlayers() {
@@ -598,8 +582,9 @@ public class MMClient {
 		if (playerType.get("Player " + id) == 0) {
 			playerList.get(id).addWeapon(weaponFac.createWeapon("Knife", gWorld, playerList.get(id)));
 		} else if (playerType.get("Player " + id) == 1) {
-			if (playerList.get(id).getWeapon().getName() != "Shotgun")
+			if (playerList.get(id).getWeapon() == null){
 				playerList.get(id).addWeapon(weaponFac.createWeapon("Bat", gWorld, playerList.get(id)));
+			}
 		}
 		playerList.get(id).useWeapon();
 	}
@@ -665,14 +650,6 @@ public class MMClient {
 
 	public int getId() {
 		return id;
-	}
-
-	public HashMap<Vector2, Trap> getTrapList() {
-		return trapList;
-	}
-
-	public void setTrapList(HashMap<Vector2, Trap> trapList) {
-		this.trapList = trapList;
 	}
 
 	public void sendToServer(String message) {
@@ -800,11 +777,13 @@ public class MMClient {
 			if (msg[2].equals("con")) {
 				System.out.println("Consume trap");
 				Vector2 position = new Vector2(Float.parseFloat(msg[3]), Float.parseFloat(msg[4]));
-				gWorld.setTrapToRemove(gWorld.getTrapList().get(position).getBody());
+				if (gWorld.getTrapList().contains(position)) {
+					gWorld.setTrapToRemove(gWorld.getTrapList().get(position).getBody());
+				}
 			} else if (msg[2].equals("pro")) {
 				System.out.println("Produce trap");
 				if (Integer.parseInt(msg[1]) != id) {
-					createTraps(Float.parseFloat(msg[3]), Float.parseFloat(msg[4]));
+					gWorld.createTrap(Float.parseFloat(msg[3]), Float.parseFloat(msg[4]));
 				}
 			}
 		}
@@ -813,6 +792,10 @@ public class MMClient {
 			System.out.println("Remove obstacle @ x:" + msg[1] + " y: " + msg[2]);
 			Vector2 location = new Vector2(Float.parseFloat(msg[1]), Float.parseFloat(msg[2]));
 			gWorld.removeObstacle(location);
+		}
+
+		else if (msg[0].equals("lightning")) {
+			gWorld.lightningStrike();
 		}
 
 		else if (msg[0].equals("win")) {
@@ -846,6 +829,7 @@ class clientListener extends Thread {
 					client.handleMessage(msg);
 				}
 			} catch (Exception e) {
+				e.printStackTrace();
 				System.out.println("Client error while reading: " + e.getMessage());
 			}
 		}

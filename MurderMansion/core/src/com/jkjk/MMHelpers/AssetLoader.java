@@ -212,6 +212,7 @@ public class AssetLoader {
 	public static Sound trappedSound;
 	public static Sound trapDisarmedSound;
 	public static Sound knifeThrustSound;
+	public static Sound lightningSound;
 
 	public static void load() {
 
@@ -656,6 +657,8 @@ public class AssetLoader {
 		trapDisarmedSound = Gdx.audio.newSound(Gdx.files.internal("sfx/trap disarmed.mp3"));
 		trappedSound = Gdx.audio.newSound(Gdx.files.internal("sfx/trapped sound.mp3"));
 		batHitSound = Gdx.audio.newSound(Gdx.files.internal("sfx/bat hit.mp3"));
+		
+		lightningSound = Gdx.audio.newSound(Gdx.files.internal("sfx/lightning.mp3"));
 	}
 
 	public static void dispose() {
@@ -683,7 +686,6 @@ public class AssetLoader {
 		civilianTexture1.dispose();
 		civilianTexture2.dispose();
 		civ_dead_lines.dispose();
-		// ghost_haunt.dispose();
 		ghost_float.dispose();
 		plantedTrapTexture.dispose();
 		restingTrapTexture.dispose();
@@ -695,6 +697,8 @@ public class AssetLoader {
 		ghostHauntT.dispose();
 		walkSound.dispose();
 		runSound.dispose();
+		
+		// Dispose Sound
 		plantTrapSound.dispose();
 		knifeStabSound.dispose();
 		batSwingSound.dispose();
@@ -707,5 +711,6 @@ public class AssetLoader {
 		trapDisarmedSound.dispose();
 		trappedSound.dispose();
 		batHitSound.dispose();
+		lightningSound.dispose();
 	}
 }

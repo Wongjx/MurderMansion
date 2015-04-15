@@ -28,7 +28,7 @@ public class Trap extends Item  {
 	private float animationRunTime;
 	private GameCharacter character;
 
-	public Trap(GameWorld gWorld, MMClient client, GameCharacter character) {
+	Trap(GameWorld gWorld, MMClient client, GameCharacter character) {
 		super(gWorld, character);
 		this.character = character;
 		this.client = client;
