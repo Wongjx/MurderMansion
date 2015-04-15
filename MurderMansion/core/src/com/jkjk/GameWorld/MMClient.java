@@ -10,6 +10,7 @@ import java.net.Socket;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.CountDownLatch;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.OrthographicCamera;
@@ -55,7 +56,8 @@ public class MMClient {
 
 	private String serverAddress;
 	private int serverPort;
-
+	private CountDownLatch latch;
+	
 	public Socket clientSocket;
 	private BufferedReader clientInput;
 	private PrintWriter clientOutput;
@@ -97,7 +99,7 @@ public class MMClient {
 	 *            GameRenderer instance
 	 * @throws Exception
 	 */
-	private MMClient(GameWorld gWorld, GameRenderer renderer, String serverAddress, int serverPort)
+	private MMClient(GameWorld gWorld, GameRenderer renderer, String serverAddress, int serverPort, CountDownLatch latch)
 			throws Exception {
 
 		this.gWorld = gWorld;
@@ -108,7 +110,8 @@ public class MMClient {
 
 		this.serverAddress = serverAddress;
 		this.serverPort = serverPort;
-
+		this.latch=latch;
+		
 		// Connect to server
 		initClientSocket(this.serverAddress, this.serverPort);
 
@@ -211,6 +214,10 @@ public class MMClient {
 		Thread thread = new clientListener(clientInput, this);
 		this.clientListenerThread=thread;
 		thread.start();
+		
+		//Send ready message to server
+		clientOutput.println("ready_"+id);
+		
 
 		// CREATE SPRITES FOR TESTING
 		ItemSprite temporaryItem = new ItemSprite(gWorld);
@@ -240,10 +247,10 @@ public class MMClient {
 	}
 
 	public static MMClient getInstance(GameWorld gWorld, GameRenderer renderer, String serverAddress,
-			int serverPort) throws Exception {
+			int serverPort,CountDownLatch latch) throws Exception {
 		if (instance == null) {
 			System.out.println("new instance of MMClient made");
-			instance = new MMClient(gWorld, renderer, serverAddress, serverPort);
+			instance = new MMClient(gWorld, renderer, serverAddress, serverPort,latch);
 		}
 		return instance;
 	}
@@ -687,8 +694,15 @@ public class MMClient {
 
 	public void handleMessage(String message) {
 		String[] msg = message.split("_");
+		
+		//if start game message
+		if(msg[0].equals("startgame")){
+			this.latch.countDown();
+			System.out.println("All players ready. Start GAME!!");
+		}
+		
 		// if player position update message
-		if (msg[0].equals("loc")) {
+		else if (msg[0].equals("loc")) {
 			float[] position = { Float.parseFloat(msg[2]), Float.parseFloat(msg[3]) };
 			float angle = Float.parseFloat(msg[4]);
 			float velocity = Float.parseFloat(msg[5]);

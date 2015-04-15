@@ -34,6 +34,7 @@ public class MMServer {
 
 	private final int numOfPlayers;
 	private final int murdererId;
+	private int readyCount;
 
 	private long startTime;
 	private long runTime;
@@ -81,6 +82,9 @@ public class MMServer {
 
 		// System.out.println("Assigning murderer");
 		murdererId = random.nextInt(numOfPlayers);
+		
+		//Set number of players who have loaded and ready to play=0
+		readyCount=0;
 		
 		initPlayers();
 
@@ -360,9 +364,16 @@ public class MMServer {
 	 */
 	public void handleMessage(String message) throws NumberFormatException, InterruptedException {
 		String[] msg = message.split("_");
+		//If client ready message
+		if(msg[0].equals("ready")){
+			readyCount++;
+			if(readyCount>=numOfPlayers){
+				sendToClients("startgame");
+			}
+		}
 
 		// If player position update message
-		if (msg[0].equals("loc")) {
+		else if (msg[0].equals("loc")) {
 			float[] position = { Float.parseFloat(msg[2]), Float.parseFloat(msg[3]) };
 			float angle = Float.parseFloat(msg[4]);
 			float velocity = Float.parseFloat(msg[5]);

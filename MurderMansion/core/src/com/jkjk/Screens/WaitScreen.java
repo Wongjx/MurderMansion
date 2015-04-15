@@ -1,5 +1,7 @@
 package com.jkjk.Screens;
 
+import java.util.concurrent.CountDownLatch;
+
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
@@ -16,11 +18,12 @@ import com.jkjk.MMHelpers.AssetLoader;
 import com.jkjk.MurderMansion.MurderMansion;
 
 public class WaitScreen implements Screen {
-
+	
 	private Stage stage = new Stage();
 	private SpriteBatch batcher;
 	private Sprite sprite;
 	private MurderMansion game;
+	private CountDownLatch latch;
 
 	private float gameWidth;
 	private float gameHeight;
@@ -29,6 +32,7 @@ public class WaitScreen implements Screen {
 		this.game = game;
 		this.gameWidth = gameWidth;
 		this.gameHeight = gameHeight;
+		this.latch=new CountDownLatch(2);
 	}
 
 	@Override
@@ -64,11 +68,13 @@ public class WaitScreen implements Screen {
 
 			try {
 				game.mMultiplayerSession.setClient(MMClient.getInstance(gWorld, renderer,
-						game.mMultiplayerSession.serverAddress, game.mMultiplayerSession.serverPort));
+						game.mMultiplayerSession.serverAddress, game.mMultiplayerSession.serverPort,latch));
+				latch.countDown();
+				latch.await();
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
-
+			
 			((Game) Gdx.app.getApplicationListener()).setScreen(new GameScreen(game, gameWidth, gameHeight,
 					gWorld, renderer));
 

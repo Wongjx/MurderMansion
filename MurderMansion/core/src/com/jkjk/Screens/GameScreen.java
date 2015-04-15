@@ -30,10 +30,8 @@ public class GameScreen implements Screen {
 			GameRenderer renderer) {
 		
 		
-		AssetLoader.loadMapSprites();
-		AssetLoader.loadCharacters();
-		
-		
+//		AssetLoader.loadMapSprites();
+//		AssetLoader.loadCharacters();
 		this.game = game;
 		this.gameWidth = gameWidth;
 		this.gameHeight = gameHeight;
