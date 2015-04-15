@@ -106,7 +106,7 @@ public class MMContactListener implements ContactListener {
 					stairsName = "LbS1";
 				} else if (faUD.equals("bat") || fbUD.equals("bat")) {
 					if (!gWorld.getPlayer().getType().equals("Ghost")) {
-						gWorld.getPlayer().stun(true);
+						gWorld.getPlayer().stun();
 						AssetLoader.batHitSound.play();
 					}
 				} else if (faUD.equals("trap")) {

@@ -1,6 +1,7 @@
 package com.jkjk.GameWorld;
 
 import java.util.Iterator;
+import java.util.Random;
 import java.util.concurrent.ConcurrentHashMap;
 
 import net.dermetfan.gdx.physics.box2d.Box2DMapObjectParser;
@@ -70,6 +71,8 @@ public class GameWorld {
 	private float ambientLightValue;
 	private float storeLightValue;
 	private Duration lightningDuration;
+	
+	private Random random;
 
 	/**
 	 * Constructs the Box2D world, adding Box2D objects such as players, items and weapons. Attaches the
@@ -118,6 +121,8 @@ public class GameWorld {
 
 		Box2DMapObjectParser parser = new Box2DMapObjectParser();
 		parser.load(world, AssetLoader.tiledMap);
+		
+		random = new Random();
 
 	}
 
@@ -144,6 +149,7 @@ public class GameWorld {
 		checkWeaponSprite(client);
 		checkWeaponPartSprite(client);
 		checkTrap(client);
+		checkStun(client);
 
 		if (lightningDuration.isCountingDown()) {
 			lightningDuration.update();
@@ -283,6 +289,12 @@ public class GameWorld {
 			client.removeTrapLocation(bodyToRemove.getPosition().x, bodyToRemove.getPosition().y);
 		}
 	}
+	
+	private void checkStun(MMClient client){
+		if (player.isStun()){
+			client.updatePlayerIsStun(client.getId(), 1);
+		}
+	}
 
 	/**
 	 * Teleports users between level 1 and 2 of the map when player comes in contact with the hitbox at stairs
@@ -328,6 +340,7 @@ public class GameWorld {
 	}
 
 	public void lightningStrike() {
+		lightningDuration = new Duration(300 + random.nextInt(500));
 		lightningDuration.startCountdown();
 		storeLightValue = player.getAmbientLightValue();
 		player.setAmbientLightValue(0.8f);
@@ -446,6 +459,47 @@ public class GameWorld {
 
 	public void addNumOfWeaponPartsCollected() {
 		this.numOfWeaponPartsCollected++;
+	}
+	
+	public void dispose(){
+		world.dispose();
+		cl = null;
+		world = new World(new Vector2(0, 0), true);
+		cl = MMContactListener.getInstance(this);
+		world.setContactListener(cl);
+
+		itemsToRemove = null;
+		weaponsToRemove = null;
+		weaponPartsToRemove = null;
+		trapToRemove = null;
+		itemsToAdd = null;
+		weaponsToAdd = null;
+
+		itemsRemoveIterator = null;
+		weaponsRemoveIterator = null;
+		weaponPartsRemoveIterator = null;
+		trapRemoveIterator = null;
+		itemsAddIterator = null;
+		weaponsAddIterator = null;
+
+		gameCharFac = null;
+		rayHandler = null;
+
+		itemFac = null;
+		itemList = null;
+		trapList = null;
+
+		weaponFac = null;
+		weaponList = null;
+
+		weaponPartList = null;
+
+		obstacleList = null;
+
+		gameOverTimer = null;
+		lightningDuration = null;
+
+		Box2DMapObjectParser parser = null;
 	}
 
 }

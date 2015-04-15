@@ -17,6 +17,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton.TextButtonStyle;
 import com.badlogic.gdx.scenes.scene2d.utils.Align;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
+import com.badlogic.gdx.utils.viewport.ExtendViewport;
 import com.jkjk.GameWorld.GameRenderer;
 import com.jkjk.GameWorld.GameWorld;
 import com.jkjk.GameWorld.MMClient;
@@ -30,7 +31,6 @@ public class MenuScreen implements Screen {
 	private float gameHeight;
 	private float BUTTON_WIDTH;
 	private float BUTTON_HEIGHT;
-	private float scale;
 	
 
 	private SpriteBatch batch;
@@ -39,7 +39,7 @@ public class MenuScreen implements Screen {
 
 	private TextButtonStyle normal;
 
-	private Stage stage = new Stage();
+	private Stage stage;
 	private TextButton buttonPlay;
 	private TextButton buttonJoin;
 	private TextButton buttonLogout;
@@ -58,14 +58,14 @@ public class MenuScreen implements Screen {
 		BUTTON_HEIGHT = 40;
 
 		normal = AssetLoader.normal;
-
+		
+		stage = new Stage(new ExtendViewport(gameWidth, gameHeight));
 		buttonPlay = new TextButton("Enter", normal);
 		buttonJoin = new TextButton("Join Game", normal);
 		buttonLogout = new TextButton("Logout", normal);
 		buttonLogin = new TextButton("Login", normal);
 		buttonQuick = new TextButton("Quick Game", normal);
 		buttonInvite = new TextButton("Invite", normal);
-		scale = Gdx.graphics.getWidth() / gameWidth;
 	}
 
 	@Override
@@ -147,28 +147,28 @@ public class MenuScreen implements Screen {
 			
 		});
 
-		buttonPlay.setSize(this.BUTTON_WIDTH * scale, this.BUTTON_HEIGHT * scale);
-		buttonPlay.setPosition(345 * scale, 220 * scale);
+		buttonPlay.setSize(this.BUTTON_WIDTH, this.BUTTON_HEIGHT);
+		buttonPlay.setPosition(345, 220);
 		stage.addActor(buttonPlay);
 
-		buttonQuick.setSize(this.BUTTON_WIDTH * scale, this.BUTTON_HEIGHT * scale);
-		buttonQuick.setPosition(475 * scale, 220 * scale);
+		buttonQuick.setSize(this.BUTTON_WIDTH, this.BUTTON_HEIGHT);
+		buttonQuick.setPosition(475, 220);
 		stage.addActor(buttonQuick);
 
-		buttonLogin.setSize(this.BUTTON_WIDTH * scale, this.BUTTON_HEIGHT * scale);
-		buttonLogin.setPosition(345 * scale, 160 * scale);
+		buttonLogin.setSize(this.BUTTON_WIDTH, this.BUTTON_HEIGHT);
+		buttonLogin.setPosition(345, 160);
 		stage.addActor(buttonLogin);
 
-		buttonLogout.setSize(this.BUTTON_WIDTH * scale, this.BUTTON_HEIGHT * scale);
-		buttonLogout.setPosition(475 * scale, 160 * scale);
+		buttonLogout.setSize(this.BUTTON_WIDTH, this.BUTTON_HEIGHT);
+		buttonLogout.setPosition(475, 160);
 		stage.addActor(buttonLogout);
 
-		buttonInvite.setSize(this.BUTTON_WIDTH * scale, this.BUTTON_HEIGHT * scale);
-		buttonInvite.setPosition(345 * scale, 100 * scale);
+		buttonInvite.setSize(this.BUTTON_WIDTH, this.BUTTON_HEIGHT);
+		buttonInvite.setPosition(345, 100);
 		stage.addActor(buttonInvite);
 
-		buttonJoin.setSize(this.BUTTON_WIDTH * scale, this.BUTTON_HEIGHT * scale);
-		buttonJoin.setPosition(475 * scale, 100 * scale);
+		buttonJoin.setSize(this.BUTTON_WIDTH, this.BUTTON_HEIGHT);
+		buttonJoin.setPosition(475, 100);
 		stage.addActor(buttonJoin);
 
 		System.out.println("height: " + BUTTON_HEIGHT);

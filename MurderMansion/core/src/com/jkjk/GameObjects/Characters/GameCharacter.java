@@ -68,7 +68,7 @@ public abstract class GameCharacter {
 		maxVelocity = 56;
 		weaponUses = 3;
 		touchpad = AssetLoader.touchpad;
-		stunDuration = new Duration(4000);
+		stunDuration = new Duration(2500);
 		hauntDuration = new Duration(4000);
 
 		this.type = type;
@@ -140,8 +140,8 @@ public abstract class GameCharacter {
 		maxVelocity = velocity;
 	}
 
-	public void stun(boolean stun) {
-		this.stun = stun;
+	public void stun() {
+		stun = true;
 		stunDuration.startCountdown();
 	}
 
