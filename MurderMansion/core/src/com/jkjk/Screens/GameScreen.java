@@ -30,6 +30,12 @@ public class GameScreen implements Screen {
 
 	public GameScreen(MurderMansion game, float gameWidth, float gameHeight, GameWorld world,
 			GameRenderer renderer) {
+		
+		
+		AssetLoader.loadMapSprites();
+		AssetLoader.loadCharacters();
+		
+		
 		this.game = game;
 		this.gameWidth = gameWidth;
 		this.gameHeight = gameHeight;
@@ -67,8 +73,8 @@ public class GameScreen implements Screen {
 			if (!gWorld.getGameOverTimer().isCountingDown()){
 				System.out.println("GAMEWORLD UPDATE: GAMEOVER COMPLETE");
                 ((Game)Gdx.app.getApplicationListener()).setScreen(new ScoreScreen(game, gameWidth, gameHeight, gWorld.isMurWin()));
-//				gameMusic.stop();
-                dispose();
+				AssetLoader.gameMusic.stop();
+//                dispose();
                 System.out.println("Game renderer and HUD renderer disposed");
 
 			}
@@ -95,6 +101,7 @@ public class GameScreen implements Screen {
 	@Override
 	public void hide() {
 		// TODO Auto-generated method stub
+		dispose();
 
 	}
 

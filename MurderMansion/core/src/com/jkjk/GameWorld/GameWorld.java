@@ -266,7 +266,6 @@ public class GameWorld {
 
 	/**
 	 * Checks to remove traps sprites that have been contacted by the player. Also checks to add trap added by
-	 * other players
 	 */
 	private void checkTrap(MMClient client) {
 		while (trapRemoveIterator.hasNext()) {

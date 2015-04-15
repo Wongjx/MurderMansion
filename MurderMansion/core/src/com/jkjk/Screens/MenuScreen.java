@@ -95,7 +95,6 @@ public class MenuScreen implements Screen {
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
-
 				((Game) Gdx.app.getApplicationListener()).setScreen(new GameScreen(game, gameWidth,
 						gameHeight, world, renderer));
 			}
@@ -208,7 +207,7 @@ public class MenuScreen implements Screen {
 
 	@Override
 	public void hide() {
-
+		dispose();
 	}
 
 	@Override

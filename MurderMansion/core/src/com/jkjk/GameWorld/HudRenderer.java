@@ -108,6 +108,7 @@ public class HudRenderer {
 	private HudRenderer(GameWorld gWorld, MMClient client, float gameWidth, float gameHeight,
 			MurderMansion game) {
 		initAssets(gameWidth, gameHeight);
+		
 		this.gWorld = gWorld;
 		this.client = client;
 		this.game = game;
@@ -829,9 +830,9 @@ public class HudRenderer {
 	 * Releases the resources held by objects or images loaded.
 	 */
 	public void hudDispose() {
-		
-		stage.dispose();
-		pauseStage.dispose();
+		instance=null;
+//		stage.dispose();
+//		pauseStage.dispose();
 	}
 
 }

@@ -116,7 +116,6 @@ public class ScoreScreen implements Screen {
             	}catch(Exception e){
             		System.out.println("Error on button press: "+e.getMessage());
             	}
-            	
             	((Game)Gdx.app.getApplicationListener()).setScreen(new MenuScreen(game, gameWidth, gameHeight));
             }
         });
