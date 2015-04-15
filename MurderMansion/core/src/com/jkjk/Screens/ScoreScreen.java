@@ -20,6 +20,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton.TextButtonStyle;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.viewport.ExtendViewport;
+import com.jkjk.GameWorld.MMClient;
 import com.jkjk.MMHelpers.AssetLoader;
 import com.jkjk.MurderMansion.MurderMansion;
 
@@ -58,9 +59,9 @@ public class ScoreScreen implements Screen {
 	 */
 	public ScoreScreen(MurderMansion game, float gameWidth, float gameHeight, boolean murWin) {
 		this.murWin = murWin;
-		this.gameHeight = gameHeight;
-		this.gameWidth = gameWidth;
-
+		this.gameHeight=gameHeight;
+		this.gameWidth=gameWidth;
+		this.game=game;
 		initAssets(gameWidth, gameHeight);
 
 		// Create a Stage and add TouchPad
@@ -92,33 +93,47 @@ public class ScoreScreen implements Screen {
 	 * @see com.badlogic.gdx.Screen#show()
 	 */
 	@Override
-	public void show() {
+	public void show() {    	
+    	batch = new SpriteBatch();
+    	background = AssetLoader.scoreBackground;
+    	background.setFilter(TextureFilter.Linear, TextureFilter.Linear);
+    	sprite = new Sprite(background);
+    	sprite.setSize(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+    	
+        
+        nextButton.addListener(new ClickListener(){
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+            	try{
+            		System.out.println("Leave room");
+            		game.actionResolver.leaveRoom();
+            		System.out.println("End client session");
+            		game.mMultiplayerSession.getClient().endSession();
+            		if(game.mMultiplayerSession.isServer){
+                		game.mMultiplayerSession.getServer().endSession();
+                		System.out.println("Ended server session.");
+                	}
+            		System.out.println("End mMultiplayer session");
+                	game.mMultiplayerSession.endSession();
+            	}catch(Exception e){
+            		System.out.println("Error on button press: "+e.getMessage());
+            	}
+            	((Game)Gdx.app.getApplicationListener()).setScreen(new MenuScreen(game, gameWidth, gameHeight));
+            }
+        });
+        
+        nextButton.setSize(this.BUTTON_WIDTH,this.BUTTON_HEIGHT);
+        nextButton.setPosition(560, 20);
+	    stage.addActor(nextButton);
+	    
+	    
+//        table.add(nextButton).size(this.BUTTON_WIDTH,this.BUTTON_HEIGHT);
 
-		batch = new SpriteBatch();
-		background = AssetLoader.scoreBackground;
-		background.setFilter(TextureFilter.Linear, TextureFilter.Linear);
-		sprite = new Sprite(background);
-		sprite.setSize(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+        table.setFillParent(true);
+        stage.addActor(table);
+        table.debug();
 
-		nextButton.addListener(new ClickListener() {
-			@Override
-			public void clicked(InputEvent event, float x, float y) {
-				((Game) Gdx.app.getApplicationListener()).setScreen(new MenuScreen(game, gameWidth,
-						gameHeight));
-			}
-		});
-
-		nextButton.setSize(this.BUTTON_WIDTH, this.BUTTON_HEIGHT);
-		nextButton.setPosition(560, 20);
-		stage.addActor(nextButton);
-
-		// table.add(nextButton).size(this.BUTTON_WIDTH,this.BUTTON_HEIGHT);
-
-		table.setFillParent(true);
-		stage.addActor(table);
-		table.debug();
-
-		Gdx.input.setInputProcessor(stage);
+        Gdx.input.setInputProcessor(stage);
 	}
 
 	/*

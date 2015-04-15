@@ -19,7 +19,7 @@ import com.google.android.gms.games.multiplayer.realtime.RoomConfig;
 import com.google.example.games.basegameutils.GameHelper;
 import com.google.example.games.basegameutils.GameHelper.GameHelperListener;
 import com.jkjk.MMHelpers.ActionResolver;
-import com.jkjk.MMHelpers.MultiplayerSeissonInfo;
+import com.jkjk.MMHelpers.MultiplayerSessionInfo;
 import com.jkjk.MurderMansion.MurderMansion;
 
 
@@ -36,7 +36,7 @@ public class AndroidLauncher extends AndroidApplication implements GameHelperLis
 	public GoogleApiClient mGoogleApiClient;
 	public RealTimeCommunication mRealTimeCom;
 	private GPSListeners mGooglePlayListeners;
-	public MultiplayerSeissonInfo mMultiplayerSeisson;
+	public MultiplayerSessionInfo mMultiplayerSeisson;
 	
 	
 	@Override
@@ -56,7 +56,7 @@ public class AndroidLauncher extends AndroidApplication implements GameHelperLis
 		mGoogleApiClient=gameHelper.getApiClient();
 		
 		//Initalize helper class that stores all additional needed information for multiplayer games
-		mMultiplayerSeisson = new MultiplayerSeissonInfo();
+		mMultiplayerSeisson = new MultiplayerSessionInfo();
 		
 		//Initialize listener helper class
 		if (mGooglePlayListeners == null) {
@@ -252,8 +252,9 @@ public class AndroidLauncher extends AndroidApplication implements GameHelperLis
 		}
 	}
 	
+	@Override
     // Leave the room.
-    void leaveRoom() {
+    public void leaveRoom() {
         Log.d(TAG, "Leaving room.");
         if (mMultiplayerSeisson.mRoomId != null) {
             Games.RealTimeMultiplayer.leave(this.mGoogleApiClient, this.mGooglePlayListeners, mMultiplayerSeisson.mRoomId);  

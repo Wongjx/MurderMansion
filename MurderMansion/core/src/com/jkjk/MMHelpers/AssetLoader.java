@@ -240,7 +240,7 @@ public class AssetLoader {
 
 	}
 
-	private static void loadLogo() {
+	public static void loadLogo() {
 		logoTexture = new Texture(Gdx.files.internal("basic/logo.png"));
 		logoTexture.setFilter(TextureFilter.Linear, TextureFilter.Linear);
 
@@ -248,13 +248,13 @@ public class AssetLoader {
 
 	}
 
-	private static void loadFont() {
+	public static void loadFont() {
 		basker32black = new BitmapFont(Gdx.files.internal("Fonts/Basker32.fnt"));
 		basker45black = new BitmapFont(Gdx.files.internal("Fonts/Baskek45.fnt"));
 		basker32blackTime = new BitmapFont(Gdx.files.internal("Fonts/Basker32.fnt"));
 	}
 
-	private static void loadMenuScreen() {
+	public static void loadMenuScreen() {
 		menuBackground = new Texture(Gdx.files.internal("basic/menu.png"));
 		// Create new skin for menu screen
 		menuSkin = new Skin();
@@ -277,7 +277,7 @@ public class AssetLoader {
 		title.font.scale((Gdx.graphics.getWidth() - gameWidth) / gameWidth);
 	}
 
-	private static void loadScoreScreen() {
+	public static void loadScoreScreen() {
 		// SCORE SCREEN
 		scoreBackground = new Texture(Gdx.files.internal("score_screen/score_background.png"));
 		scoreSkin = new Skin();
@@ -291,7 +291,7 @@ public class AssetLoader {
 		normal1.pressedOffsetY = -1;
 	}
 
-	private static void loadHUD() {
+	public static void loadHUD() {
 		// HUD COOLDOWN
 		cooldownTexture = new Texture(Gdx.files.internal("animation/cooldown_animation.png"));
 		cooldownTexture.setFilter(TextureFilter.Nearest, TextureFilter.Nearest);
@@ -355,7 +355,7 @@ public class AssetLoader {
 		pause_main = new Texture(Gdx.files.internal("basic/pause_background.png"));
 	}
 
-	private static void loadCharacters() {
+	public static void loadCharacters() {
 		// CIVILIAN ANIMATIONS AND TEXTURE
 		civilianTexture0 = new Texture(Gdx.files.internal("animation/CIV0.png"));
 		civilianTexture0.setFilter(TextureFilter.Nearest, TextureFilter.Nearest);
@@ -599,7 +599,7 @@ public class AssetLoader {
 
 	}
 
-	private static void loadMapSprites() {
+	public static void loadMapSprites() {
 		// MAP
 		tiledMap = new TmxMapLoader().load("map/mansion2.tmx");
 
@@ -645,7 +645,7 @@ public class AssetLoader {
 		main_door = new Texture(Gdx.files.internal("map/main-door.png"));
 	}
 
-	private static void loadSfx() {
+	public static void loadSfx() {
 
 		menuMusic = Gdx.audio.newMusic(Gdx.files.internal("bgm/MenuScreen Music.mp3"));
 		menuMusic.setLooping(true);

@@ -120,8 +120,8 @@ public class GameRenderer {
 	 * Releases the resources held by objects or images loaded.
 	 */
 	public void rendererDispose() {
+		instance=null;
 		gWorld.getWorld().dispose();
-		player.dispose();
 		b2dr.dispose();
 	}
 

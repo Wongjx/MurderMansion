@@ -14,7 +14,7 @@ import com.jkjk.Host.MMServer;
  * @author Wong
  *
  */
-public class MultiplayerSeissonInfo {
+public class MultiplayerSessionInfo {
 	
 	public String mId;
 	public String mIncomingInvitationId;
@@ -35,7 +35,7 @@ public class MultiplayerSeissonInfo {
 	public final int ROOM_PLAY=1002;
 	public final int ROOM_MENU=1003;
 	
-	public MultiplayerSeissonInfo(){
+	public MultiplayerSessionInfo(){
 	}
 
 	public MMServer getServer() {
@@ -52,6 +52,22 @@ public class MultiplayerSeissonInfo {
 
 	public void setClient(MMClient client) {
 		this.client = client;
+	}
+	
+	public void endSession(){
+		mId=null;
+		mIncomingInvitationId=null;
+		mRoomId=null;
+		mParticipants=null;
+		mState=1000;
+
+		isServer=false;
+		serverAddress=null;
+		serverPort=0;
+		
+		server=null;
+		client=null;
+
 	}
 
 

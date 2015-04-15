@@ -19,7 +19,7 @@ import com.google.android.gms.games.multiplayer.realtime.Room;
 import com.google.android.gms.games.multiplayer.realtime.RoomStatusUpdateListener;
 import com.google.android.gms.games.multiplayer.realtime.RoomUpdateListener;
 import com.jkjk.Host.MMServer;
-import com.jkjk.MMHelpers.MultiplayerSeissonInfo;
+import com.jkjk.MMHelpers.MultiplayerSessionInfo;
 
 public class GPSListeners implements RoomStatusUpdateListener, RoomUpdateListener, OnInvitationReceivedListener{
 	

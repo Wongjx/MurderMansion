@@ -10,11 +10,11 @@ import com.jkjk.GameWorld.HudRenderer;
 import com.jkjk.GameWorld.MMClient;
 import com.jkjk.Host.MMServer;
 import com.jkjk.MMHelpers.AssetLoader;
-import com.jkjk.MMHelpers.MultiplayerSeissonInfo;
+import com.jkjk.MMHelpers.MultiplayerSessionInfo;
 import com.jkjk.MurderMansion.MurderMansion;
 
 public class GameScreen implements Screen {
-	private MultiplayerSeissonInfo info;
+	private MultiplayerSessionInfo info;
 	private GameWorld gWorld;
 	private GameRenderer renderer;
 	private HudRenderer hudRenderer;
@@ -28,11 +28,15 @@ public class GameScreen implements Screen {
 
 	public GameScreen(MurderMansion game, float gameWidth, float gameHeight, GameWorld world,
 			GameRenderer renderer) {
+		
+		
+//		AssetLoader.loadMapSprites();
+//		AssetLoader.loadCharacters();
 		this.game = game;
 		this.gameWidth = gameWidth;
 		this.gameHeight = gameHeight;
-		this.client = game.mMultiplayerSeisson.getClient();
-		this.info = game.mMultiplayerSeisson;
+		this.client = game.mMultiplayerSession.getClient();
+		this.info = game.mMultiplayerSession;
 		this.gWorld = client.getgWorld();
 		this.renderer = client.getRenderer();
 		// this.gWorld=world;
@@ -67,16 +71,16 @@ public class GameScreen implements Screen {
 
 		if (gWorld.isCivWin() || gWorld.isMurWin()) {
 			gWorld.getGameOverTimer().update();
-			if (!gWorld.getGameOverTimer().isCountingDown()) {
-				if (client.getNumOfPlayers() > 1) {
-					System.out.println("GAMEWORLD UPDATE: GAMEOVER COMPLETE");
-					gWorld.getWorld().dispose();
-					((Game) Gdx.app.getApplicationListener()).setScreen(new ScoreScreen(game, gameWidth,
-							gameHeight, gWorld.isMurWin()));
-				}
+			if (!gWorld.getGameOverTimer().isCountingDown()){
+//				if (client.getNumOfPlayers() > 1) {
+				System.out.println("GAMEWORLD UPDATE: GAMEOVER COMPLETE");
+                ((Game)Gdx.app.getApplicationListener()).setScreen(new ScoreScreen(game, gameWidth, gameHeight, gWorld.isMurWin()));
+//                dispose();
+                System.out.println("Game renderer and HUD renderer disposed");
 			}
 		}
 	}
+
 
 	@Override
 	public void resize(int width, int height) {
@@ -98,6 +102,7 @@ public class GameScreen implements Screen {
 	@Override
 	public void hide() {
 		// TODO Auto-generated method stub
+		dispose();
 
 	}
 
