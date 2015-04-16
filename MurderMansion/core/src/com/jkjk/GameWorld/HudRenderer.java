@@ -267,9 +267,28 @@ public class HudRenderer {
 		buttonMainMenu.addListener(new ClickListener() {
 			@Override
 			public void clicked(InputEvent event, float x, float y) {
-				gWorld.dispose();
-				((Game) Gdx.app.getApplicationListener()).setScreen(new MenuScreen(game, gameWidth,
-						gameHeight));
+            	try{
+            		if(game.mMultiplayerSession.isServer){
+                		game.mMultiplayerSession.getServer().endSession();
+//                		System.out.println("Ended server session.");
+                	}
+
+            		if (game.mMultiplayerSession.getClient()!=null){
+            			game.mMultiplayerSession.getClient().endSession();
+            		}else{
+            			//TODO HALP HALP HALP CLIENT NOT SUPPOSED TO BE NULL
+            			System.out.println("CLIENT IS NULL?!!!?");
+            		}
+            		
+//            		System.out.println("Leave room");
+            		game.actionResolver.leaveRoom();
+            		
+//            		System.out.println("End mMultiplayer session");
+                	game.mMultiplayerSession.endSession();
+            	}catch(Exception e){
+            		System.out.println("Error on button press: "+e.getMessage());
+            	}
+            	((Game)Gdx.app.getApplicationListener()).setScreen(new MenuScreen(game, gameWidth, gameHeight));
 			}
 		});
 

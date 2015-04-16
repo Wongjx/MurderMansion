@@ -242,6 +242,7 @@ public class AssetLoader {
 
 		gameWidth = (MurderMansion.V_WIDTH * MurderMansion.SCALE);
 		random = new Random();
+		VOLUME = 1;
 
 		loadLogo();
 		loadFont();
