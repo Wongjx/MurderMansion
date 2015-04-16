@@ -1,6 +1,8 @@
 package com.jkjk.MMHelpers;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Random;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.audio.Music;
@@ -36,11 +38,18 @@ public class AssetLoader {
 	public static Drawable touchBackground;
 	public static Drawable touchKnob;
 	public static Texture emptySlot;
-	public static Texture pause_button_tex;
-	public static TextureRegionDrawable pause_button_draw;
+	public static Texture settings_button_tex;
+	public static TextureRegionDrawable settings_button_draw;
+	public static Texture settings_cancel_tex;
+	public static TextureRegionDrawable settings_cancel_draw;
+	public static Texture soundoff_tex;
+	public static TextureRegionDrawable soundoff_draw;
+	public static Texture soundon_tex;
+	public static TextureRegionDrawable soundon_draw;
 
 	// PAUSE SCREEN
 	public static Texture pause_main;
+	public static TextButtonStyle normalSettings;
 
 	// SCORE SCREEN
 	public static Texture scoreBackground;
@@ -77,7 +86,11 @@ public class AssetLoader {
 	public static BitmapFont basker32black;
 	public static BitmapFont basker45black;
 	public static BitmapFont basker32blackTime;
+<<<<<<< HEAD
 	public static BitmapFont basker32blackSmall;
+=======
+	public static BitmapFont basker32blackSettings;
+>>>>>>> 2ab11144cb5d318d1766f61de6ef53f48c34a88c
 	public static Drawable buttonUp;
 	public static Drawable buttonDown;
 
@@ -215,10 +228,28 @@ public class AssetLoader {
 	public static Sound trappedSound;
 	public static Sound trapDisarmedSound;
 	public static Sound knifeThrustSound;
+	public static Sound lightningSound;
+	public static Sound obstacleSound1;
+	public static Sound obstacleSound2;
+	public static Sound obstacleSound3;
+	public static Music obstacleSoundmd;
+	public static Sound hauntSound1;
+	public static Sound hauntSound2;
+	public static Sound hauntSound3;
+	public static Sound characterDeathSound;
+	public static Sound clickSound;
+
+	private static ArrayList<Music> musicBox;
+	private static ArrayList<Sound> soundBox;
+	public static float VOLUME;
+
+	private static Random random;
 
 	public static void load() {
 
 		gameWidth = (MurderMansion.V_WIDTH * MurderMansion.SCALE);
+		random = new Random();
+		VOLUME = 1;
 
 		loadLogo();
 		loadFont();
@@ -231,7 +262,7 @@ public class AssetLoader {
 
 	}
 
-	private static void loadLogo() {
+	public static void loadLogo() {
 		logoTexture = new Texture(Gdx.files.internal("basic/logo.png"));
 		logoTexture.setFilter(TextureFilter.Linear, TextureFilter.Linear);
 
@@ -239,14 +270,18 @@ public class AssetLoader {
 
 	}
 
-	private static void loadFont() {
+	public static void loadFont() {
 		basker32black = new BitmapFont(Gdx.files.internal("Fonts/Basker32.fnt"));
 		basker45black = new BitmapFont(Gdx.files.internal("Fonts/Baskek45.fnt"));
 		basker32blackTime = new BitmapFont(Gdx.files.internal("Fonts/Basker32.fnt"));
+<<<<<<< HEAD
 		basker32blackSmall = new BitmapFont(Gdx.files.internal("Fonts/Basker32.fnt"));
+=======
+		basker32blackSettings = new BitmapFont(Gdx.files.internal("Fonts/Basker32.fnt"));
+>>>>>>> 2ab11144cb5d318d1766f61de6ef53f48c34a88c
 	}
 
-	private static void loadMenuScreen() {
+	public static void loadMenuScreen() {
 		menuBackground = new Texture(Gdx.files.internal("basic/menu.png"));
 		// Create new skin for menu screen
 		menuSkin = new Skin();
@@ -259,7 +294,7 @@ public class AssetLoader {
 		// Create Text button Style
 		normal = new TextButtonStyle();
 		normal.font = menuSkin.getFont("basker32");
-		normal.font.scale((Gdx.graphics.getWidth() - gameWidth) / gameWidth);
+		normal.font.setScale(0.65f, 0.65f);
 		normal.up = menuSkin.getDrawable("buttonUp");
 		normal.down = menuSkin.getDrawable("buttonDown");
 		normal.pressedOffsetY = -1;
@@ -269,7 +304,7 @@ public class AssetLoader {
 		title.font.scale((Gdx.graphics.getWidth() - gameWidth) / gameWidth);
 	}
 
-	private static void loadScoreScreen() {
+	public static void loadScoreScreen() {
 		// SCORE SCREEN
 		scoreBackground = new Texture(Gdx.files.internal("score_screen/score_background.png"));
 		scoreSkin = new Skin();
@@ -283,7 +318,7 @@ public class AssetLoader {
 		normal1.pressedOffsetY = -1;
 	}
 
-	private static void loadHUD() {
+	public static void loadHUD() {
 		// HUD COOLDOWN
 		cooldownTexture = new Texture(Gdx.files.internal("animation/cooldown_animation.png"));
 		cooldownTexture.setFilter(TextureFilter.Nearest, TextureFilter.Nearest);
@@ -310,8 +345,23 @@ public class AssetLoader {
 		touchpad = new Touchpad(5, touchpadStyle);
 
 		emptySlot = new Texture(Gdx.files.internal("HUD/slots.png"));
-		pause_button_tex = new Texture(Gdx.files.internal("HUD/pause_button.png"));
-		pause_button_draw = new TextureRegionDrawable(new TextureRegion(pause_button_tex));
+
+		// PAUSE SCREEN
+		normalSettings = new TextButtonStyle();
+		normalSettings.font = basker32blackSettings;
+		normalSettings.font.setScale(0.4f, 0.6f);
+		normalSettings.up = menuSkin.getDrawable("buttonUp");
+		normalSettings.down = menuSkin.getDrawable("buttonDown");
+		normalSettings.pressedOffsetY = -1;
+
+		settings_button_tex = new Texture(Gdx.files.internal("HUD/settings_button.png"));
+		settings_button_draw = new TextureRegionDrawable(new TextureRegion(settings_button_tex));
+		settings_cancel_tex = new Texture(Gdx.files.internal("basic/cancel.png"));
+		settings_cancel_draw = new TextureRegionDrawable(new TextureRegion(settings_cancel_tex));
+		soundoff_tex = new Texture(Gdx.files.internal("HUD/sound_off.png"));
+		soundoff_draw = new TextureRegionDrawable(new TextureRegion(soundoff_tex));
+		soundon_tex = new Texture(Gdx.files.internal("HUD/sound_on.png"));
+		soundon_draw = new TextureRegionDrawable(new TextureRegion(soundon_tex));
 
 		// CIVILIANS HUD
 		civ_weapon_bat_tex = new Texture(Gdx.files.internal("HUD/civ_weapon_bat.png"));
@@ -354,7 +404,7 @@ public class AssetLoader {
 		
 	}
 
-	private static void loadCharacters() {
+	public static void loadCharacters() {
 		// CIVILIAN ANIMATIONS AND TEXTURE
 		civilianTexture0 = new Texture(Gdx.files.internal("animation/CIV0.png"));
 		civilianTexture0.setFilter(TextureFilter.Nearest, TextureFilter.Nearest);
@@ -370,14 +420,23 @@ public class AssetLoader {
 		civPanicAnimation0.setPlayMode(PlayMode.LOOP);
 		civ_panic_rest0 = civilianTR0[1][0];
 
+<<<<<<< HEAD
 		TextureRegion[] civStunParts0 = Arrays.copyOfRange(civilianTR0[2], 0, 3);
 		TextureRegion[] civStun0 = new TextureRegion[21];
 		for (int i = 0; i < civStun0.length - 2; i+=3) {
 			civStun0[i] = civStunParts0[0];
 			civStun0[i + 1] = civStunParts0[1];
 			civStun0[i + 2] = civStunParts0[2];
+=======
+		TextureRegion[] civstun0 = Arrays.copyOfRange(civilianTR0[2], 0, 3);
+		TextureRegion[] civStun0 = new TextureRegion[15];
+		for (int i = 0; i < civStun0.length - 2; i += 3) {
+			civStun0[i] = civstun0[0];
+			civStun0[i + 1] = civstun0[1];
+			civStun0[i + 2] = civstun0[2];
+>>>>>>> 2ab11144cb5d318d1766f61de6ef53f48c34a88c
 		}
-		civStunAnimation0 = new Animation(0.2f, civStun0);
+		civStunAnimation0 = new Animation(0.208f, civStun0);
 		civStunAnimation0.setPlayMode(PlayMode.NORMAL);
 
 		civBatAnimation0 = new Animation(0.1f, Arrays.copyOfRange(civilianTR0[3], 0, 3));
@@ -405,6 +464,7 @@ public class AssetLoader {
 		civPanicAnimation1.setPlayMode(PlayMode.LOOP);
 		civ_panic_rest1 = civilianTR1[1][0];
 
+<<<<<<< HEAD
 		TextureRegion[] civStunParts1 = Arrays.copyOfRange(civilianTR1[2], 0, 3);
 		TextureRegion[] civStun1 = new TextureRegion[21];
 		for (int i = 0; i < civStun1.length - 2; i+=3) {
@@ -413,6 +473,16 @@ public class AssetLoader {
 			civStun1[i + 2] = civStunParts1[2];
 		}
 		civStunAnimation1 = new Animation(0.2f, civStun1);
+=======
+		TextureRegion[] civstun1 = Arrays.copyOfRange(civilianTR1[2], 0, 3);
+		TextureRegion[] civStun1 = new TextureRegion[15];
+		for (int i = 0; i < civStun1.length - 2; i += 3) {
+			civStun1[i] = civstun1[0];
+			civStun1[i + 1] = civstun1[1];
+			civStun1[i + 2] = civstun1[2];
+		}
+		civStunAnimation1 = new Animation(0.208f, civStun1);
+>>>>>>> 2ab11144cb5d318d1766f61de6ef53f48c34a88c
 		civStunAnimation1.setPlayMode(PlayMode.NORMAL);
 
 		civBatAnimation1 = new Animation(0.1f, Arrays.copyOfRange(civilianTR1[3], 0, 3));
@@ -440,6 +510,7 @@ public class AssetLoader {
 		civPanicAnimation2.setPlayMode(PlayMode.LOOP);
 		civ_panic_rest2 = civilianTR2[1][0];
 
+<<<<<<< HEAD
 		TextureRegion[] civStunParts2 = Arrays.copyOfRange(civilianTR2[2], 0, 3);
 		TextureRegion[] civStun2 = new TextureRegion[21];
 		for (int i = 0; i < civStun2.length - 2; i+=3) {
@@ -448,6 +519,16 @@ public class AssetLoader {
 			civStun2[i + 2] = civStunParts2[2];
 		}
 		civStunAnimation2 = new Animation(0.2f, civStun2);
+=======
+		TextureRegion[] civstun2 = Arrays.copyOfRange(civilianTR2[2], 0, 3);
+		TextureRegion[] civStun2 = new TextureRegion[15];
+		for (int i = 0; i < civStun2.length - 2; i += 3) {
+			civStun2[i] = civstun2[0];
+			civStun2[i + 1] = civstun2[1];
+			civStun2[i + 2] = civstun2[2];
+		}
+		civStunAnimation2 = new Animation(0.208f, civStun2);
+>>>>>>> 2ab11144cb5d318d1766f61de6ef53f48c34a88c
 		civStunAnimation2.setPlayMode(PlayMode.NORMAL);
 
 		civBatAnimation2 = new Animation(0.1f, Arrays.copyOfRange(civilianTR2[3], 0, 3));
@@ -475,6 +556,7 @@ public class AssetLoader {
 		civPanicAnimation3.setPlayMode(PlayMode.LOOP);
 		civ_panic_rest3 = civilianTR3[1][0];
 
+<<<<<<< HEAD
 		TextureRegion[] civStunParts3 = Arrays.copyOfRange(civilianTR3[2], 0, 3);
 		TextureRegion[] civStun3 = new TextureRegion[21];
 		for (int i = 0; i < civStun3.length - 2; i+=3) {
@@ -483,6 +565,16 @@ public class AssetLoader {
 			civStun3[i + 2] = civStunParts3[2];
 		}
 		civStunAnimation3 = new Animation(0.2f, civStun3);
+=======
+		TextureRegion[] civstun3 = Arrays.copyOfRange(civilianTR3[2], 0, 3);
+		TextureRegion[] civStun3 = new TextureRegion[15];
+		for (int i = 0; i < civStun3.length - 2; i += 3) {
+			civStun3[i] = civstun3[0];
+			civStun3[i + 1] = civstun3[1];
+			civStun3[i + 2] = civstun3[2];
+		}
+		civStunAnimation3 = new Animation(0.208f, civStun3);
+>>>>>>> 2ab11144cb5d318d1766f61de6ef53f48c34a88c
 		civStunAnimation3.setPlayMode(PlayMode.NORMAL);
 
 		civBatAnimation3 = new Animation(0.1f, Arrays.copyOfRange(civilianTR3[3], 0, 3));
@@ -501,9 +593,13 @@ public class AssetLoader {
 		murderer.setFilter(TextureFilter.Nearest, TextureFilter.Nearest);
 		TextureRegion[][] murTR = TextureRegion.split(murderer, 250, 250);
 
-		for (int i = 0; i < murTR.length; i++) {
+		for (int i = 0; i < murTR.length; i += 3) {
 			for (int j = 0; j < murTR[0].length; j++) {
+<<<<<<< HEAD
 				murTR[i][j].setRegion(murTR[i][j].getRegionX() - 25, murTR[i][j].getRegionY() - 25, 300, 300);
+=======
+				murTR[i][j].setRegion(murTR[i][j].getRegionX() - 24, murTR[i][j].getRegionY() - 24, 300, 300);
+>>>>>>> 2ab11144cb5d318d1766f61de6ef53f48c34a88c
 			}
 		}
 
@@ -511,14 +607,14 @@ public class AssetLoader {
 		murAnimation.setPlayMode(PlayMode.LOOP_PINGPONG);
 		mur_rest = murTR[0][1];
 
-		TextureRegion[] murStun = new TextureRegion[21];
+		TextureRegion[] murStun = new TextureRegion[15];
 		TextureRegion[] murStunParts = Arrays.copyOfRange(murTR[1], 0, 3);
 		for (int i = 0; i < murStun.length - 2; i += 3) {
 			murStun[i] = murStunParts[0];
 			murStun[i + 1] = murStunParts[1];
 			murStun[i + 2] = murStunParts[2];
 		}
-		murStunAnimation = new Animation(0.2f, murStun);
+		murStunAnimation = new Animation(0.208f, murStun);
 		murStunAnimation.setPlayMode(PlayMode.NORMAL);
 
 		murKnifeAnimation = new Animation(0.1f, Arrays.copyOfRange(murTR[2], 0, 4));
@@ -598,7 +694,7 @@ public class AssetLoader {
 
 	}
 
-	private static void loadMapSprites() {
+	public static void loadMapSprites() {
 		// MAP
 		tiledMap = new TmxMapLoader().load("map/mansion2.tmx");
 
@@ -644,29 +740,89 @@ public class AssetLoader {
 		main_door = new Texture(Gdx.files.internal("map/main-door.png"));
 	}
 
-	private static void loadSfx() {
+	public static void loadSfx() {
+		musicBox = new ArrayList<Music>();
+		soundBox = new ArrayList<Sound>();
 
-		menuMusic = Gdx.audio.newMusic(Gdx.files.internal("bgm/MenuScreen Music.mp3"));
-		gameMusic = Gdx.audio.newMusic(Gdx.files.internal("bgm/GameScreen Music.mp3"));
+		musicBox.add(menuMusic = Gdx.audio.newMusic(Gdx.files.internal("bgm/MenuScreen Music.mp3")));
+		menuMusic.setLooping(true);
+		musicBox.add(gameMusic = Gdx.audio.newMusic(Gdx.files.internal("bgm/GameScreen Music.mp3")));
+		gameMusic.setLooping(true);
 
-		walkSound = Gdx.audio.newMusic(Gdx.files.internal("sfx/walking.mp3"));
+		musicBox.add(walkSound = Gdx.audio.newMusic(Gdx.files.internal("sfx/walking.mp3")));
 		walkSound.setVolume(0.8f);
 
-		runSound = Gdx.audio.newMusic(Gdx.files.internal("sfx/running.mp3"));
+		musicBox.add(runSound = Gdx.audio.newMusic(Gdx.files.internal("sfx/running.mp3")));
 		runSound.setVolume(0.8f);
 
-		plantTrapSound = Gdx.audio.newSound(Gdx.files.internal("sfx/plantTrap.mp3"));
-		knifeStabSound = Gdx.audio.newSound(Gdx.files.internal("sfx/Knife Stab.mp3"));
+		soundBox.add(plantTrapSound = Gdx.audio.newSound(Gdx.files.internal("sfx/plantTrap.mp3")));
+		soundBox.add(knifeStabSound = Gdx.audio.newSound(Gdx.files.internal("sfx/Knife Stab.mp3")));
 
-		batSwingSound = Gdx.audio.newSound(Gdx.files.internal("sfx/bat swing.mp3"));
-		disarmTrapSound = Gdx.audio.newSound(Gdx.files.internal("sfx/disarm trap.mp3"));
-		pickUpItemSound = Gdx.audio.newSound(Gdx.files.internal("sfx/pick up disarm trap.mp3"));
+		soundBox.add(batSwingSound = Gdx.audio.newSound(Gdx.files.internal("sfx/bat swing.mp3")));
+		soundBox.add(disarmTrapSound = Gdx.audio.newSound(Gdx.files.internal("sfx/disarm trap.mp3")));
+		soundBox.add(pickUpItemSound = Gdx.audio.newSound(Gdx.files.internal("sfx/pick up disarm trap.mp3")));
 
-		shotgunBlastSound = Gdx.audio.newSound(Gdx.files.internal("sfx/shotgun blast.mp3"));
-		knifeThrustSound = Gdx.audio.newSound(Gdx.files.internal("sfx/knifeMiss.mp3"));
-		trapDisarmedSound = Gdx.audio.newSound(Gdx.files.internal("sfx/trap disarmed.mp3"));
-		trappedSound = Gdx.audio.newSound(Gdx.files.internal("sfx/trapped sound.mp3"));
-		batHitSound = Gdx.audio.newSound(Gdx.files.internal("sfx/bat hit.mp3"));
+		soundBox.add(shotgunBlastSound = Gdx.audio.newSound(Gdx.files.internal("sfx/shotgun blast.mp3")));
+		soundBox.add(knifeThrustSound = Gdx.audio.newSound(Gdx.files.internal("sfx/knifeMiss.mp3")));
+		soundBox.add(trapDisarmedSound = Gdx.audio.newSound(Gdx.files.internal("sfx/trap disarmed.mp3")));
+		soundBox.add(trappedSound = Gdx.audio.newSound(Gdx.files.internal("sfx/trapped sound.mp3")));
+		soundBox.add(batHitSound = Gdx.audio.newSound(Gdx.files.internal("sfx/bat hit.mp3")));
+
+		soundBox.add(characterDeathSound = Gdx.audio.newSound(Gdx.files.internal("sfx/character death.mp3")));
+		soundBox.add(lightningSound = Gdx.audio.newSound(Gdx.files.internal("sfx/lightning.mp3")));
+
+		soundBox.add(obstacleSound1 = Gdx.audio.newSound(Gdx.files.internal("sfx/obstacle1.mp3")));
+		soundBox.add(obstacleSound2 = Gdx.audio.newSound(Gdx.files.internal("sfx/obstacle2.mp3")));
+		soundBox.add(obstacleSound3 = Gdx.audio.newSound(Gdx.files.internal("sfx/obstacle3.wav")));
+		musicBox.add(obstacleSoundmd = Gdx.audio.newMusic(Gdx.files.internal("sfx/obstacle main door.mp3")));
+
+		soundBox.add(hauntSound1 = Gdx.audio.newSound(Gdx.files.internal("sfx/haunt1.mp3")));
+		soundBox.add(hauntSound2 = Gdx.audio.newSound(Gdx.files.internal("sfx/haunt2.mp3")));
+		soundBox.add(hauntSound3 = Gdx.audio.newSound(Gdx.files.internal("sfx/haunt3.mp3")));
+
+		soundBox.add(clickSound = Gdx.audio.newSound(Gdx.files.internal("sfx/click.mp3")));
+	}
+
+	public static void obstacleSFX() {
+		int randomInt = random.nextInt(3);
+		if (randomInt == 0) {
+			obstacleSound1.play(AssetLoader.VOLUME);
+		} else if (randomInt == 1) {
+			obstacleSound2.play(AssetLoader.VOLUME);
+		} else if (randomInt == 2) {
+			obstacleSound3.play(AssetLoader.VOLUME);
+		}
+	}
+
+	public static void hauntSFX() {
+		int randomInt = random.nextInt(3);
+		if (randomInt == 0) {
+			hauntSound1.play(AssetLoader.VOLUME);
+		} else if (randomInt == 1) {
+			hauntSound2.play(AssetLoader.VOLUME);
+		} else if (randomInt == 2) {
+			hauntSound3.play(AssetLoader.VOLUME);
+		}
+	}
+
+	public static void muteSFX() {
+		for (Sound s : soundBox) {
+			s.setVolume(0, 0f);
+		}
+		for (Music m : musicBox) {
+			m.setVolume(0f);
+		}
+		VOLUME = 0f;
+	}
+
+	public static void unmuteSFX() {
+		for (Sound s : soundBox) {
+			s.setVolume(0, 1f);
+		}
+		for (Music m : musicBox) {
+			m.setVolume(1f);
+		}
+		VOLUME = 1f;
 	}
 
 	public static void dispose() {
@@ -682,7 +838,7 @@ public class AssetLoader {
 		weapon_parts_counter.dispose();
 		tiledMap.dispose();
 		emptySlot.dispose();
-		pause_button_tex.dispose();
+		settings_button_tex.dispose();
 		civ_weapon_bat_tex.dispose();
 		civ_item_tex.dispose();
 		civ_dash_tex.dispose();
@@ -694,7 +850,6 @@ public class AssetLoader {
 		civilianTexture1.dispose();
 		civilianTexture2.dispose();
 		civ_dead_lines.dispose();
-		// ghost_haunt.dispose();
 		ghost_float.dispose();
 		plantedTrapTexture.dispose();
 		restingTrapTexture.dispose();
@@ -706,6 +861,8 @@ public class AssetLoader {
 		ghostHauntT.dispose();
 		walkSound.dispose();
 		runSound.dispose();
+
+		// Dispose Sound
 		plantTrapSound.dispose();
 		knifeStabSound.dispose();
 		batSwingSound.dispose();
@@ -718,5 +875,14 @@ public class AssetLoader {
 		trapDisarmedSound.dispose();
 		trappedSound.dispose();
 		batHitSound.dispose();
+		lightningSound.dispose();
+		obstacleSound1.dispose();
+		obstacleSound2.dispose();
+		obstacleSound3.dispose();
+		obstacleSoundmd.dispose();
+		hauntSound1.dispose();
+		hauntSound2.dispose();
+		hauntSound3.dispose();
+		characterDeathSound.dispose();
 	}
 }

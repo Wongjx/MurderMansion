@@ -29,7 +29,7 @@ public class MMContactListener implements ContactListener {
 	private boolean atStairs;
 	private String stairsName;
 
-	private MMContactListener(GameWorld gWorld) {
+	public MMContactListener(GameWorld gWorld) {
 		itemsToRemove = new Array<Body>();
 		weaponsToRemove = new Array<Body>();
 		weaponPartsToRemove = new Array<Body>();
@@ -39,12 +39,12 @@ public class MMContactListener implements ContactListener {
 		stairsName = null;
 	}
 
-	public static MMContactListener getInstance(GameWorld gWorld) {
-		if (instance == null) {
-			instance = new MMContactListener(gWorld);
-		}
-		return instance;
-	}
+//	public static MMContactListener getInstance(GameWorld gWorld) {
+//		if (instance == null) {
+//			instance = new MMContactListener(gWorld);
+//		}
+//		return instance;
+//	}
 
 	// called when two fixtures start to collide
 	public void beginContact(Contact c) {
@@ -67,12 +67,12 @@ public class MMContactListener implements ContactListener {
 				} else if (faUD.equals("weapon part")) {
 					if (!gWorld.getPlayer().getType().equals("Ghost")) {
 						weaponPartsToRemove.add(fa.getBody());
-						AssetLoader.pickUpItemSound.play();
+						AssetLoader.pickUpItemSound.play(AssetLoader.VOLUME);
 					}
 				} else if (fbUD.equals("weapon part")) {
 					if (!gWorld.getPlayer().getType().equals("Ghost")) {
 						weaponPartsToRemove.add(fb.getBody());
-						AssetLoader.pickUpItemSound.play();
+						AssetLoader.pickUpItemSound.play(AssetLoader.VOLUME);
 					}
 				} else if (faUD.equals("L1S1") || fbUD.equals("L1S1")) {
 					atStairs = true;
@@ -106,30 +106,30 @@ public class MMContactListener implements ContactListener {
 					stairsName = "LbS1";
 				} else if (faUD.equals("bat") || fbUD.equals("bat")) {
 					if (!gWorld.getPlayer().getType().equals("Ghost")) {
-						gWorld.getPlayer().stun(true);
-						AssetLoader.batHitSound.play();
+						gWorld.getPlayer().stun();
+						AssetLoader.batHitSound.play(AssetLoader.VOLUME);
 					}
 				} else if (faUD.equals("trap")) {
 					if (gWorld.getPlayer().getType().equals("Civilian")) {
 						gWorld.getPlayer().die();
 						trapToRemove.add(fa.getBody());
-						AssetLoader.trappedSound.play();
+						AssetLoader.trappedSound.play(AssetLoader.VOLUME);
 					}
 				} else if (fbUD.equals("trap")) {
 					if (gWorld.getPlayer().getType().equals("Civilian")) {
 						gWorld.getPlayer().die();
 						trapToRemove.add(fb.getBody());
-						AssetLoader.trappedSound.play();
+						AssetLoader.trappedSound.play(AssetLoader.VOLUME);
 					}
 				} else if (faUD.equals("knife") || fbUD.equals("knife")) {
 					if (!gWorld.getPlayer().getType().equals("Ghost")) {
 						gWorld.getPlayer().die();
-						AssetLoader.knifeStabSound.play();
+						AssetLoader.knifeStabSound.play(AssetLoader.VOLUME);
 					}
 				} else if (faUD.equals("shotgun") || fbUD.equals("shotgun")) {
 					if (!gWorld.getPlayer().getType().equals("Ghost")) {
 						gWorld.getPlayer().die();
-						AssetLoader.shotgunBlastSound.play();
+						AssetLoader.shotgunBlastSound.play(AssetLoader.VOLUME);
 					}
 				} else if (faUD.equals("haunt") || fbUD.equals("haunt")) {
 					if (!gWorld.getPlayer().getType().equals("Ghost")) {
@@ -141,14 +141,14 @@ public class MMContactListener implements ContactListener {
 			} else {
 
 				if (faUD.equals("pre disarm trap") || fbUD.equals("pre disarm trap")) {
-					AssetLoader.disarmTrapSound.play();
+					AssetLoader.disarmTrapSound.play(AssetLoader.VOLUME);
 					if (faUD.equals("trap") || fbUD.equals("trap")) {
 						((DisarmTrap) gWorld.getPlayer().getItem()).foundTrap();
 					}
 				}
 
 				if (faUD.equals("post disarm trap") || fbUD.equals("post disarm trap")) {
-					AssetLoader.trapDisarmedSound.play();
+					AssetLoader.trapDisarmedSound.play(AssetLoader.VOLUME);
 					if (faUD.equals("trap")) {
 						trapToRemove.add(fa.getBody());
 					} else if (fbUD.equals("trap")) {
@@ -223,5 +223,4 @@ public class MMContactListener implements ContactListener {
 
 	public void postSolve(Contact c, ContactImpulse ci) {
 	}
-
 }

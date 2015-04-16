@@ -50,7 +50,7 @@ public class GameRenderer {
 	 * @param gameHeight
 	 *            Accesses the virtual game height.
 	 */
-	private GameRenderer(GameWorld gWorld, float gameWidth, float gameHeight) {
+	public GameRenderer(GameWorld gWorld, float gameWidth, float gameHeight) {
 		this.gWorld = gWorld;
 		b2dr = new Box2DDebugRenderer();
 
@@ -63,13 +63,6 @@ public class GameRenderer {
 
 		batch = new SpriteBatch();
 
-	}
-
-	public static GameRenderer getInstance(GameWorld gWorld, float gameWidth, float gameHeight) {
-		if (instance == null) {
-			instance = new GameRenderer(gWorld, gameWidth, gameHeight);
-		}
-		return instance;
 	}
 
 	/**
@@ -119,7 +112,7 @@ public class GameRenderer {
 
 		cam.update(); // Update cam
 
-		b2dr.render(gWorld.getWorld(), cam.combined); // Renders box2d world
+//		b2dr.render(gWorld.getWorld(), cam.combined); // Renders box2d world
 
 	}
 
@@ -127,8 +120,8 @@ public class GameRenderer {
 	 * Releases the resources held by objects or images loaded.
 	 */
 	public void rendererDispose() {
+		instance=null;
 		gWorld.getWorld().dispose();
-		player.dispose();
 		b2dr.dispose();
 	}
 

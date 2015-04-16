@@ -19,53 +19,59 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton.TextButtonStyle;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
+import com.badlogic.gdx.utils.viewport.ExtendViewport;
+import com.jkjk.GameWorld.MMClient;
 import com.jkjk.MMHelpers.AssetLoader;
 import com.jkjk.MurderMansion.MurderMansion;
 
 /**
  * @author LeeJunXiang
- *
+ * 
  */
 public class ScoreScreen implements Screen {
-	
+
 	private MurderMansion game;
-	
+
 	private Stage stage;
 	private Table table;
-	
-	private float gameWidth;
-    private float gameHeight;
-    private float TITLE_PAD;
-    private float BUTTON_WIDTH;
-    private float BUTTON_HEIGHT;
-    private float BUTTON_PAD;
-    
-    private SpriteBatch batch;
-    private Texture background;
-    private Sprite sprite;
 
-    private ImageButtonStyle normal1;
-    private ImageButton nextButton;
-	
+	private float gameWidth;
+	private float gameHeight;
+	private float TITLE_PAD;
+	private float BUTTON_WIDTH;
+	private float BUTTON_HEIGHT;
+	private float BUTTON_PAD;
+
+	private SpriteBatch batch;
+	private Texture background;
+	private Sprite sprite;
+
+	private ImageButtonStyle normal1;
+	private ImageButton nextButton;
+
 	private boolean murWin;
-	
+
 	/**
 	 * Score screen shows score board
 	 * 
-	 * @param murWin who won the game? murderer or civilian?
+	 * @param murWin
+	 *            who won the game? murderer or civilian?
 	 */
-	public ScoreScreen(MurderMansion game, float gameWidth, float gameHeight, boolean murWin){
+	public ScoreScreen(MurderMansion game, float gameWidth, float gameHeight, boolean murWin) {
 		this.murWin = murWin;
+		this.gameHeight=gameHeight;
+		this.gameWidth=gameWidth;
+		this.game=game;
 		initAssets(gameWidth, gameHeight);
-		
+
 		// Create a Stage and add TouchPad
-		stage = new Stage();
+		stage = new Stage(new ExtendViewport(gameWidth, gameHeight));
 		table = new Table();
-		
-		BUTTON_WIDTH=60;
-    	BUTTON_HEIGHT=60;
-    	
-    	nextButton = new ImageButton(normal1);
+
+		BUTTON_WIDTH = 60;
+		BUTTON_HEIGHT = 60;
+
+		nextButton = new ImageButton(normal1);
 	}
 
 	/**
@@ -80,13 +86,14 @@ public class ScoreScreen implements Screen {
 		normal1 = AssetLoader.normal1;
 
 	}
-	
-	/* (non-Javadoc)
+
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see com.badlogic.gdx.Screen#show()
 	 */
 	@Override
-	public void show() {
-    	
+	public void show() {    	
     	batch = new SpriteBatch();
     	background = AssetLoader.scoreBackground;
     	background.setFilter(TextureFilter.Linear, TextureFilter.Linear);
@@ -97,6 +104,28 @@ public class ScoreScreen implements Screen {
         nextButton.addListener(new ClickListener(){
             @Override
             public void clicked(InputEvent event, float x, float y) {
+				AssetLoader.clickSound.play(AssetLoader.VOLUME);
+            	try{
+            		if(game.mMultiplayerSession.isServer){
+                		game.mMultiplayerSession.getServer().endSession();
+//                		System.out.println("Ended server session.");
+                	}
+
+            		if (game.mMultiplayerSession.getClient()!=null){
+            			game.mMultiplayerSession.getClient().endSession();
+            		}else{
+            			//TODO HALP HALP HALP CLIENT NOT SUPPOSED TO BE NULL
+            			System.out.println("CLIENT IS NULL?!!!?");
+            		}
+            		
+//            		System.out.println("Leave room");
+            		game.actionResolver.leaveRoom();
+            		
+//            		System.out.println("End mMultiplayer session");
+                	game.mMultiplayerSession.endSession();
+            	}catch(Exception e){
+            		System.out.println("Error on button press: "+e.getMessage());
+            	}
             	((Game)Gdx.app.getApplicationListener()).setScreen(new MenuScreen(game, gameWidth, gameHeight));
             }
         });
@@ -115,61 +144,69 @@ public class ScoreScreen implements Screen {
         Gdx.input.setInputProcessor(stage);
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see com.badlogic.gdx.Screen#render(float)
 	 */
 	@Override
 	public void render(float delta) {
-        Gdx.gl.glClearColor(0, 0, 0, 1);
-        Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
-        
+		Gdx.gl.glClearColor(0, 0, 0, 1);
+		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+
 		stage.draw();
 		stage.act(Gdx.graphics.getDeltaTime()); // Acts stage at deltatime
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see com.badlogic.gdx.Screen#resize(int, int)
 	 */
 	@Override
 	public void resize(int width, int height) {
-		// TODO Auto-generated method stub
-		
+
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see com.badlogic.gdx.Screen#pause()
 	 */
 	@Override
 	public void pause() {
-		// TODO Auto-generated method stub
-		
+
+
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see com.badlogic.gdx.Screen#resume()
 	 */
 	@Override
 	public void resume() {
-		// TODO Auto-generated method stub
-		
+
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see com.badlogic.gdx.Screen#hide()
 	 */
 	@Override
 	public void hide() {
-		// TODO Auto-generated method stub
-		
+		dispose();
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see com.badlogic.gdx.Screen#dispose()
 	 */
 	@Override
 	public void dispose() {
-		// TODO Auto-generated method stub
-		
+		stage.dispose();
 	}
 
 }

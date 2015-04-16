@@ -9,6 +9,7 @@ import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.jkjk.GameObjects.Duration;
 import com.jkjk.GameObjects.Characters.GameCharacter;
 import com.jkjk.GameWorld.GameWorld;
+import com.jkjk.MMHelpers.AssetLoader;
 
 public class Haunt extends Ability {
 
@@ -53,6 +54,7 @@ public class Haunt extends Ability {
 		body.setTransform(playerPosition.x, playerPosition.y, playerAngle);
 
 		hitBoxExposure.startCountdown();
+		AssetLoader.hauntSFX();
 	}
 
 	@Override

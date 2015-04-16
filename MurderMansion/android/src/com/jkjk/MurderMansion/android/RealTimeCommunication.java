@@ -12,15 +12,15 @@ import com.google.android.gms.games.multiplayer.Participant;
 import com.google.android.gms.games.multiplayer.realtime.RealTimeMessage;
 import com.google.android.gms.games.multiplayer.realtime.RealTimeMessageReceivedListener;
 import com.jkjk.Host.MMServer;
-import com.jkjk.MMHelpers.MultiplayerSeissonInfo;
+import com.jkjk.MMHelpers.MultiplayerSessionInfo;
 
 public class RealTimeCommunication implements RealTimeMessageReceivedListener{
 	private String TAG = "MurderMansion RealTime Communications";
 	private GoogleApiClient mGoogleApiClient;
-	private MultiplayerSeissonInfo info;
+	private MultiplayerSessionInfo info;
 
     
-    public RealTimeCommunication(GoogleApiClient api, MultiplayerSeissonInfo info){
+    public RealTimeCommunication(GoogleApiClient api, MultiplayerSessionInfo info){
 //    	this.activity=activity;
     	this.mGoogleApiClient=api;
     	this.info=info;

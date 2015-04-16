@@ -1,6 +1,7 @@
 package com.jkjk.Host;
 
 import java.io.BufferedReader;
+import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Inet4Address;
@@ -13,15 +14,17 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Enumeration;
 import java.util.Random;
+import java.util.concurrent.atomic.AtomicInteger;
+
 import com.badlogic.gdx.Gdx;
+import com.jkjk.GameObjects.Duration;
 import com.jkjk.Host.Helpers.Location;
 import com.jkjk.Host.Helpers.ObstaclesHandler;
-import com.jkjk.MMHelpers.MultiplayerSeissonInfo;
+import com.jkjk.MMHelpers.MultiplayerSessionInfo;
 
 public class MMServer {
-	private static MMServer instance;
 
-	private MultiplayerSeissonInfo info;
+	private MultiplayerSessionInfo info;
 	public ServerSocket serverSocket;
 	private String serverAddress;
 	private int serverPort;
@@ -29,14 +32,18 @@ public class MMServer {
 	private ArrayList<Socket> clients;
 	private ArrayList<PrintWriter> serverOutput;
 	private ArrayList<BufferedReader> serverInput;
+	private ArrayList<Thread> serverListeners;
 
 	private final int numOfPlayers;
 	private final int murdererId;
+	private AtomicInteger readyCount;
+	private Duration gameStartPause;
 
 	private long startTime;
 	private long runTime;
 	private long nextItemSpawnTime;
 	private long nextObstacleRemoveTime;
+	private long nextLightningTime;
 
 	private final PlayerStatuses playerStats;
 
@@ -44,7 +51,7 @@ public class MMServer {
 
 	private final ObstaclesHandler obstaclesHandler;
 	private float[] obstacleDestroyed; // To transmit position of obstacle destroyed to clients
-	
+
 	private int weaponPartsCollected;
 	private GameStatus gameStatus;
 	private int numInSafeRegion;
@@ -52,30 +59,35 @@ public class MMServer {
 	private boolean win;
 	private Random random;
 
-	private MMServer(int numOfPlayers, MultiplayerSeissonInfo info) throws InterruptedException {
+	public MMServer(int numOfPlayers, MultiplayerSessionInfo info) throws InterruptedException {
 		this.numOfPlayers = numOfPlayers;
 		this.info = info;
+		int gameStartPauseDuration = 3000;
 
 		// System.out.println("Initialize Client list and listeners");
 		clients = new ArrayList<Socket>();
 		serverOutput = new ArrayList<PrintWriter>();
 		serverInput = new ArrayList<BufferedReader>();
+		serverListeners = new ArrayList<Thread>();
 
 		// System.out.println("Initialize fields");
 		startTime = System.currentTimeMillis();
 		playerStats = new PlayerStatuses(numOfPlayers);
 		objectLocations = new ObjectLocations(numOfPlayers, this);
 
-		// System.out.println("Assigning murderer");
-		murdererId = new Random().nextInt(numOfPlayers);
-
 		obstaclesHandler = ObstaclesHandler.getInstance();
-		nextItemSpawnTime = 10000;
-		nextObstacleRemoveTime = 30000;
+		nextItemSpawnTime = 10000 + gameStartPauseDuration;
+		nextObstacleRemoveTime = 30000 + gameStartPauseDuration;
+		nextLightningTime = 20000 + gameStartPauseDuration;
 
+		gameStartPause = new Duration(gameStartPauseDuration);
 		gameStatus = new GameStatus();
 		random = new Random();
 
+		// System.out.println("Assigning murderer");
+		murdererId = random.nextInt(numOfPlayers);
+		// Set number of players who have loaded and ready to play=0
+		readyCount = new AtomicInteger(0);
 		initPlayers();
 
 		// Attempt to connect to clients (numOfPlayers)
@@ -84,21 +96,32 @@ public class MMServer {
 		acceptServerConnections();
 	}
 
-	public static MMServer getInstance(int numOfPlayers, MultiplayerSeissonInfo info)
-			throws InterruptedException {
-		if (instance == null) {
-			instance = new MMServer(numOfPlayers, info);
-		}
-		return instance;
-	}
+	// public static MMServer getInstance(int numOfPlayers, MultiplayerSessionInfo info)
+	// throws InterruptedException {
+	// if (instance == null) {
+	// instance = new MMServer(numOfPlayers, info);
+	// System.out.println("new instance of MMServer made");
+	// }
+	// return instance;
+	// }
 
 	/**
 	 * Start updating only when all clients have successfully synchronized.
 	 */
 	public void update() {
 		runTime = System.currentTimeMillis() - startTime;
+		handleSpawn();
+		checkWin();
+		lightningStrike();
+		if (gameStartPause.isCountingDown()) {
+			gameStartPause.update();
+			if (!gameStartPause.isCountingDown())
+				sendToClients("startgame");
+		}
+	}
 
-		// Item/Weapon/WeaponPart Spawn *NEEDS TO BE BALANCED TO FIT GAMEPLAY
+	private void handleSpawn() {
+		// Item/Weapon/WeaponPart Spawn
 		if (runTime > nextItemSpawnTime) {
 			System.out.println("SPAWN!");
 			if (!objectLocations.getItemLocations().isFull())
@@ -119,7 +142,9 @@ public class MMServer {
 					+ Float.toString(obstacleDestroyed[1]));
 			nextObstacleRemoveTime += 30000;
 		}
+	}
 
+	private void checkWin() {
 		// Civilian Win condition when murderer is dead
 		if (!win) {
 			if (playerStats.getPlayerIsAliveValue("Player " + murdererId) == 0) {
@@ -137,11 +162,13 @@ public class MMServer {
 					continue;
 				if (playerStats.getPlayerIsAliveValue("Player " + i) == 1) {
 					numStillAlive++;
-					if (playerStats.getPlayerIsInSafeRegion("Player " + 1) == 1)
+					if (playerStats.getPlayerIsInSafeRegion("Player " + 1) == 1) {
 						numInSafeRegion++;
+					}
 				}
 			}
 			if (numStillAlive > 0 && numStillAlive == numInSafeRegion) {
+				System.out.println("WHATTTT");
 				gameStatus.win(1);
 				win = true;
 			} else if (numStillAlive == 0) {
@@ -149,7 +176,13 @@ public class MMServer {
 				win = true;
 			}
 		}
+	}
 
+	private void lightningStrike() {
+		if (runTime > nextLightningTime) {
+			sendToClients("lightning");
+			nextLightningTime += (random.nextInt(15000) + 20000);
+		}
 	}
 
 	private void initPlayers() {
@@ -163,7 +196,7 @@ public class MMServer {
 				playerStats.getPlayerType().put("Player " + i, 1);
 			}
 
-			playerStats.getPlayerPosition().put("Player " + i, new float[] { 880, 580 - ((i + 1) * 30)});
+			playerStats.getPlayerPosition().put("Player " + i, new float[] { 880, 580 - ((i + 1) * 30) });
 			playerStats.getPlayerAngle().put("Player " + i, 3.1427f);
 
 		}
@@ -241,6 +274,19 @@ public class MMServer {
 		}
 	}
 
+	public void setServerListeners(ArrayList<Thread> serverListeners) {
+		synchronized (serverListeners) {
+			this.serverListeners = new ArrayList<Thread>(serverListeners);
+		}
+	}
+
+	public ArrayList<Thread> getServerListeners() {
+		synchronized (serverListeners) {
+			ArrayList<Thread> ret = new ArrayList<Thread>(serverListeners);
+			return ret;
+		}
+	}
+
 	public void setServerInput(ArrayList<BufferedReader> serverInput) {
 		synchronized (serverInput) {
 			this.serverInput = new ArrayList<BufferedReader>(serverInput);
@@ -248,7 +294,7 @@ public class MMServer {
 	}
 
 	// Initialize server socket
-	public void initServerSocket(MultiplayerSeissonInfo info) {
+	public void initServerSocket(MultiplayerSessionInfo info) {
 		try {
 			// Randomly assign server to an open port
 			ServerSocket sock = new ServerSocket(0);
@@ -294,26 +340,6 @@ public class MMServer {
 	}
 
 	/**
-	 * Send a string message out to all other clients
-	 * 
-	 * @param Message
-	 *            Message to send out
-	 * @param id
-	 *            Client to skip
-	 */
-	public void updateClients(String Message, int id) {
-		PrintWriter writer = null;
-		for (int i = 0; i < serverOutput.size(); i++) {
-			if (i == id) {
-				continue;
-			}
-			writer = serverOutput.get(i);
-			writer.println(Message);
-			writer.flush();
-		}
-	}
-
-	/**
 	 * Get local ip address in IPV4 format
 	 * 
 	 * @return IPV4 of device in string
@@ -346,9 +372,16 @@ public class MMServer {
 	 */
 	public void handleMessage(String message) throws NumberFormatException, InterruptedException {
 		String[] msg = message.split("_");
+		// If client ready message
+		if (msg[0].equals("ready")) {
+			readyCount.getAndIncrement();
+			if (readyCount.get() >= numOfPlayers) {
+				gameStartPause.startCountdown();
+			}
+		}
 
 		// If player position update message
-		if (msg[0].equals("loc")) {
+		else if (msg[0].equals("loc")) {
 			float[] position = { Float.parseFloat(msg[2]), Float.parseFloat(msg[3]) };
 			float angle = Float.parseFloat(msg[4]);
 			float velocity = Float.parseFloat(msg[5]);
@@ -359,7 +392,7 @@ public class MMServer {
 		} else if (msg[0].equals("ang")) {
 			float angle = Float.parseFloat(msg[2]);
 			playerStats.updateAngle(Integer.parseInt(msg[1]), angle);
-		} else if (msg[0].equals("vel")){
+		} else if (msg[0].equals("vel")) {
 			float velocity = Float.parseFloat(msg[2]);
 			playerStats.updateVelocity(Integer.parseInt(msg[1]), velocity);
 		} else if (msg[0].equals("type")) {
@@ -387,7 +420,7 @@ public class MMServer {
 			System.out.println("Add weapon part");
 			weaponPartsCollected++;
 			playerStats.updateWeaponPartsCollected();
-			if (weaponPartsCollected == numOfPlayers*2){
+			if (weaponPartsCollected == numOfPlayers * 2) {
 				playerStats.updateShotgunCreated();
 			}
 		}
@@ -430,6 +463,18 @@ public class MMServer {
 						Integer.parseInt(msg[1]));
 			}
 		}
+	}
+
+	public void endSession() throws IOException {
+		// instance= null;
+		for (Thread t : serverListeners) {
+			t.interrupt();
+		}
+		for (Socket s : clients) {
+			s.getOutputStream().flush();
+			s.close();
+		}
+		System.out.println("MMServer seisson ended.");
 	}
 
 }
@@ -573,6 +618,7 @@ class serverAcceptThread extends Thread {
 		// Start a listener thread for each client socket connected
 		for (BufferedReader read : server.getServerInput()) {
 			Thread thread = new serverListener(read, server);
+			server.getServerListeners().add(thread);
 			thread.start();
 		}
 	}
@@ -599,7 +645,9 @@ class serverListener extends Thread {
 					server.handleMessage(msg);
 				}
 			} catch (Exception e) {
+				e.printStackTrace();
 				System.out.println("Error while reading: " + e.getMessage());
+				// break;
 			}
 
 		}

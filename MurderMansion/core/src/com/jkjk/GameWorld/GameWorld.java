@@ -1,6 +1,7 @@
 package com.jkjk.GameWorld;
 
 import java.util.Iterator;
+import java.util.Random;
 import java.util.concurrent.ConcurrentHashMap;
 
 import net.dermetfan.gdx.physics.box2d.Box2DMapObjectParser;
@@ -31,8 +32,6 @@ import com.jkjk.MMHelpers.MMContactListener;
  * 
  */
 public class GameWorld {
-	private static GameWorld instance;
-
 	private GameCharacterFactory gameCharFac;
 	private GameCharacter player;
 	private RayHandler rayHandler;
@@ -64,11 +63,16 @@ public class GameWorld {
 	private Array<Vector2> itemsToAdd, weaponsToAdd;
 	private Iterator<Vector2> itemsAddIterator, weaponsAddIterator;
 	private Body bodyToRemove;
+	private Trap trapToCreate;
 
 	private float currentPositionX;
 	private float currentPositionY;
 	private float currentAngle;
 	private float ambientLightValue;
+	private float storeLightValue;
+	private Duration lightningDuration;
+	
+	private Random random;
 
 	/**
 	 * Constructs the Box2D world, adding Box2D objects such as players, items and weapons. Attaches the
@@ -79,9 +83,10 @@ public class GameWorld {
 	 * @param gameHeight
 	 *            Accesses the virtual game height.
 	 */
-	private GameWorld() {
+	public GameWorld() {
 		world = new World(new Vector2(0, 0), true);
-		cl = MMContactListener.getInstance(this);
+//		cl = MMContactListener.getInstance(this);
+		cl = new MMContactListener(this);
 		world.setContactListener(cl);
 
 		itemsToRemove = cl.getItemsToRemove();
@@ -113,17 +118,13 @@ public class GameWorld {
 		obstacleList = new ConcurrentHashMap<Vector2, Obstacles>();
 
 		gameOverTimer = new Duration(5000);
+		lightningDuration = new Duration(500);
 
 		Box2DMapObjectParser parser = new Box2DMapObjectParser();
 		parser.load(world, AssetLoader.tiledMap);
+		
+		random = new Random();
 
-	}
-
-	public static GameWorld getInstance() {
-		if (instance == null) {
-			instance = new GameWorld();
-		}
-		return instance;
 	}
 
 	/**
@@ -149,6 +150,14 @@ public class GameWorld {
 		checkWeaponSprite(client);
 		checkWeaponPartSprite(client);
 		checkTrap(client);
+		checkStun(client);
+
+		if (lightningDuration.isCountingDown()) {
+			lightningDuration.update();
+			if (!lightningDuration.isCountingDown()) {
+				player.setAmbientLightValue(storeLightValue);
+			}
+		}
 
 	}
 
@@ -213,7 +222,8 @@ public class GameWorld {
 			client.removeItemLocation(bodyToRemove.getPosition());
 			System.out.println("Item removed from client.");
 			itemList.remove(bodyToRemove.getPosition());
-			world.destroyBody(bodyToRemove);
+			bodyToRemove.setActive(false);
+			bodyToRemove.setTransform(0, 0, 0);
 			if (player.getType().equals("Murderer"))
 				player.addItem(itemFac.createItem("Trap", this, client, player));
 			else
@@ -236,7 +246,8 @@ public class GameWorld {
 			// Call MMclient to remove weapon
 			client.removeWeaponLocation(bodyToRemove.getPosition());
 			weaponList.remove(bodyToRemove.getPosition());
-			world.destroyBody(bodyToRemove);
+			bodyToRemove.setActive(false);
+			bodyToRemove.setTransform(0, 0, 0);
 			if (player.getType().equals("Murderer"))
 				player.addWeapon(weaponFac.createWeapon("Knife", this, player));
 			else
@@ -258,7 +269,8 @@ public class GameWorld {
 			// Call MMclient to remove weapon part
 			client.removeWeaponPartLocation(bodyToRemove.getPosition());
 			weaponPartList.remove(bodyToRemove.getPosition());
-			world.destroyBody(bodyToRemove);
+			bodyToRemove.setActive(false);
+			bodyToRemove.setTransform(0, 0, 0);
 			if (player.getType().equals("Civilian")) {
 				client.addWeaponPartCollected();
 			}
@@ -267,7 +279,6 @@ public class GameWorld {
 
 	/**
 	 * Checks to remove traps sprites that have been contacted by the player. Also checks to add trap added by
-	 * other players
 	 */
 	private void checkTrap(MMClient client) {
 		while (trapRemoveIterator.hasNext()) {
@@ -277,10 +288,11 @@ public class GameWorld {
 			world.destroyBody(bodyToRemove);
 			client.removeTrapLocation(bodyToRemove.getPosition().x, bodyToRemove.getPosition().y);
 		}
-
-		while (client.getTrapList().keySet().iterator().hasNext()) {
-			trapLocation = client.getTrapList().keySet().iterator().next();
-			client.getTrapList().remove(trapLocation).spawn(trapLocation.x, trapLocation.y, 0);
+	}
+	
+	private void checkStun(MMClient client){
+		if (player.isStun()){
+			client.updatePlayerIsStun(client.getId(), 1);
 		}
 	}
 
@@ -325,6 +337,20 @@ public class GameWorld {
 		obstacleList.get(location).getBody().setActive(false);
 		obstacleList.get(location).getBody().setTransform(0, 0, 0);
 		obstacleList.remove(location);
+	}
+
+	public void lightningStrike() {
+		lightningDuration = new Duration(300 + random.nextInt(500));
+		lightningDuration.startCountdown();
+		storeLightValue = player.getAmbientLightValue();
+		player.setAmbientLightValue(0.8f);
+		AssetLoader.lightningSound.play(AssetLoader.VOLUME);
+	}
+
+	public void createTrap(float x, float y) {
+		trapToCreate = (Trap) itemFac.createItem("Trap", this, null, null);
+		trapList.put(new Vector2(x, y), trapToCreate);
+		trapToCreate.spawn(x, y, 0);
 	}
 
 	/**
@@ -426,13 +452,55 @@ public class GameWorld {
 	public void setTrapToRemove(Body value) {
 		this.trapToRemove.add(value);
 	}
-	
+
 	public int getNumOfWeaponPartsCollected() {
 		return numOfWeaponPartsCollected;
 	}
 
 	public void addNumOfWeaponPartsCollected() {
 		this.numOfWeaponPartsCollected++;
+	}
+	
+	public void dispose(){
+		world.dispose();
+		cl = null;
+		
+//		world = new World(new Vector2(0, 0), true);
+//		cl = MMContactListener.getInstance(this);
+//		world.setContactListener(cl);
+
+		itemsToRemove = null;
+		weaponsToRemove = null;
+		weaponPartsToRemove = null;
+		trapToRemove = null;
+		itemsToAdd = null;
+		weaponsToAdd = null;
+
+		itemsRemoveIterator = null;
+		weaponsRemoveIterator = null;
+		weaponPartsRemoveIterator = null;
+		trapRemoveIterator = null;
+		itemsAddIterator = null;
+		weaponsAddIterator = null;
+
+		gameCharFac = null;
+		rayHandler = null;
+
+		itemFac = null;
+		itemList = null;
+		trapList = null;
+
+		weaponFac = null;
+		weaponList = null;
+
+		weaponPartList = null;
+
+		obstacleList = null;
+
+		gameOverTimer = null;
+		lightningDuration = null;
+
+		Box2DMapObjectParser parser = null;
 	}
 
 }

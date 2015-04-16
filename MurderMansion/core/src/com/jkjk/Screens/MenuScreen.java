@@ -1,5 +1,7 @@
 package com.jkjk.Screens;
 
+import java.util.concurrent.CountDownLatch;
+
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
@@ -17,6 +19,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton.TextButtonStyle;
 import com.badlogic.gdx.scenes.scene2d.utils.Align;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
+import com.badlogic.gdx.utils.viewport.ExtendViewport;
 import com.jkjk.GameWorld.GameRenderer;
 import com.jkjk.GameWorld.GameWorld;
 import com.jkjk.GameWorld.MMClient;
@@ -30,7 +33,7 @@ public class MenuScreen implements Screen {
 	private float gameHeight;
 	private float BUTTON_WIDTH;
 	private float BUTTON_HEIGHT;
-	private float scale;
+	
 
 	private SpriteBatch batch;
 	private Texture background;
@@ -38,7 +41,7 @@ public class MenuScreen implements Screen {
 
 	private TextButtonStyle normal;
 
-	private Stage stage = new Stage();
+	private Stage stage;
 	private TextButton buttonPlay;
 	private TextButton buttonJoin;
 	private TextButton buttonLogout;
@@ -46,7 +49,7 @@ public class MenuScreen implements Screen {
 	private TextButton buttonQuick;
 	private TextButton buttonInvite;
 
-	MurderMansion game;
+	private MurderMansion game;
 
 	public MenuScreen(MurderMansion game, float gameWidth, float gameHeight) {
 		this.gameWidth = gameWidth;
@@ -57,14 +60,14 @@ public class MenuScreen implements Screen {
 		BUTTON_HEIGHT = 40;
 
 		normal = AssetLoader.normal;
-
+		
+		stage = new Stage(new ExtendViewport(gameWidth, gameHeight));
 		buttonPlay = new TextButton("Enter", normal);
-		buttonJoin = new TextButton("Connect", normal);
+		buttonJoin = new TextButton("Join Game", normal);
 		buttonLogout = new TextButton("Logout", normal);
 		buttonLogin = new TextButton("Login", normal);
 		buttonQuick = new TextButton("Quick Game", normal);
-		buttonInvite = new TextButton("Join Game", normal);
-		scale = Gdx.graphics.getWidth() / gameWidth;
+		buttonInvite = new TextButton("Invite", normal);
 	}
 
 	@Override
@@ -83,18 +86,18 @@ public class MenuScreen implements Screen {
 		buttonPlay.addListener(new ClickListener() {
 			@Override
 			public void clicked(InputEvent event, float x, float y) {
-				GameWorld world = GameWorld.getInstance();
-				GameRenderer renderer = GameRenderer.getInstance(world, gameWidth, gameHeight);
-
+				AssetLoader.clickSound.play(AssetLoader.VOLUME);
+				GameWorld world = new GameWorld();
+				GameRenderer renderer = new GameRenderer(world, gameWidth, gameHeight);
+				
 				try {
-					game.mMultiplayerSeisson.isServer = true;
-					game.mMultiplayerSeisson.setServer(MMServer.getInstance(1, game.mMultiplayerSeisson));
-					game.mMultiplayerSeisson.setClient(MMClient.getInstance(world, renderer,
-							game.mMultiplayerSeisson.serverAddress, game.mMultiplayerSeisson.serverPort));
+					game.mMultiplayerSession.isServer = true;
+					game.mMultiplayerSession.setServer(new MMServer(1, game.mMultiplayerSession));
+					game.mMultiplayerSession.setClient(new MMClient(world, renderer,
+							game.mMultiplayerSession.serverAddress, game.mMultiplayerSession.serverPort));
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
-
 				((Game) Gdx.app.getApplicationListener()).setScreen(new GameScreen(game, gameWidth,
 						gameHeight, world, renderer));
 			}
@@ -102,6 +105,7 @@ public class MenuScreen implements Screen {
 		buttonLogin.addListener(new ClickListener() {
 			@Override
 			public void clicked(InputEvent event, float x, float y) {
+				AssetLoader.clickSound.play(AssetLoader.VOLUME);
 				game.actionResolver.loginGPGS();
 
 			}
@@ -110,6 +114,7 @@ public class MenuScreen implements Screen {
 		buttonLogout.addListener(new ClickListener() {
 			@Override
 			public void clicked(InputEvent event, float x, float y) {
+				AssetLoader.clickSound.play(AssetLoader.VOLUME);
 				game.actionResolver.logoutGPGS();
 			}
 		});
@@ -117,9 +122,10 @@ public class MenuScreen implements Screen {
 		buttonQuick.addListener(new ClickListener() {
 			@Override
 			public void clicked(InputEvent event, float x, float y) {
+				AssetLoader.clickSound.play(AssetLoader.VOLUME);
 				// Host multiplayer game
 				game.actionResolver.startQuickGame();
-				game.mMultiplayerSeisson.mState = game.mMultiplayerSeisson.ROOM_WAIT;
+				game.mMultiplayerSession.mState = game.mMultiplayerSession.ROOM_WAIT;
 				((Game) Gdx.app.getApplicationListener()).setScreen(new WaitScreen(game, gameWidth,
 						gameHeight));
 			}
@@ -128,8 +134,9 @@ public class MenuScreen implements Screen {
 		buttonInvite.addListener(new ClickListener() {
 			@Override
 			public void clicked(InputEvent event, float x, float y) {
+				AssetLoader.clickSound.play(AssetLoader.VOLUME);
 				game.actionResolver.sendInvitations();
-				game.mMultiplayerSeisson.mState = game.mMultiplayerSeisson.ROOM_WAIT;
+				game.mMultiplayerSession.mState = game.mMultiplayerSession.ROOM_WAIT;
 				((Game) Gdx.app.getApplicationListener()).setScreen(new WaitScreen(game, gameWidth,
 						gameHeight));
 			}
@@ -138,35 +145,37 @@ public class MenuScreen implements Screen {
 		buttonJoin.addListener(new ClickListener() {
 			@Override
 			public void clicked(InputEvent event, float x, float y) {
+				AssetLoader.clickSound.play(AssetLoader.VOLUME);
 				game.actionResolver.seeInvitations();
-				game.mMultiplayerSeisson.mState = game.mMultiplayerSeisson.ROOM_WAIT;
+				game.mMultiplayerSession.mState = game.mMultiplayerSession.ROOM_WAIT;
 				((Game) Gdx.app.getApplicationListener()).setScreen(new WaitScreen(game, gameWidth,
 						gameHeight));
 			}
+			
 		});
 
-		buttonPlay.setSize(this.BUTTON_WIDTH * scale, this.BUTTON_HEIGHT * scale);
-		buttonPlay.setPosition(345 * scale, 220 * scale);
+		buttonPlay.setSize(this.BUTTON_WIDTH, this.BUTTON_HEIGHT);
+		buttonPlay.setPosition(345, 220);
 		stage.addActor(buttonPlay);
 
-		buttonQuick.setSize(this.BUTTON_WIDTH * scale, this.BUTTON_HEIGHT * scale);
-		buttonQuick.setPosition(475 * scale, 220 * scale);
+		buttonQuick.setSize(this.BUTTON_WIDTH, this.BUTTON_HEIGHT);
+		buttonQuick.setPosition(475, 220);
 		stage.addActor(buttonQuick);
 
-		buttonLogin.setSize(this.BUTTON_WIDTH * scale, this.BUTTON_HEIGHT * scale);
-		buttonLogin.setPosition(345 * scale, 160 * scale);
+		buttonLogin.setSize(this.BUTTON_WIDTH, this.BUTTON_HEIGHT);
+		buttonLogin.setPosition(345, 160);
 		stage.addActor(buttonLogin);
 
-		buttonLogout.setSize(this.BUTTON_WIDTH * scale, this.BUTTON_HEIGHT * scale);
-		buttonLogout.setPosition(475 * scale, 160 * scale);
+		buttonLogout.setSize(this.BUTTON_WIDTH, this.BUTTON_HEIGHT);
+		buttonLogout.setPosition(475, 160);
 		stage.addActor(buttonLogout);
 
-		buttonInvite.setSize(this.BUTTON_WIDTH * scale, this.BUTTON_HEIGHT * scale);
-		buttonInvite.setPosition(345 * scale, 100 * scale);
+		buttonInvite.setSize(this.BUTTON_WIDTH, this.BUTTON_HEIGHT);
+		buttonInvite.setPosition(345, 100);
 		stage.addActor(buttonInvite);
 
-		buttonJoin.setSize(this.BUTTON_WIDTH * scale, this.BUTTON_HEIGHT * scale);
-		buttonJoin.setPosition(475 * scale, 100 * scale);
+		buttonJoin.setSize(this.BUTTON_WIDTH, this.BUTTON_HEIGHT);
+		buttonJoin.setPosition(475, 100);
 		stage.addActor(buttonJoin);
 
 		System.out.println("height: " + BUTTON_HEIGHT);
@@ -206,7 +215,7 @@ public class MenuScreen implements Screen {
 
 	@Override
 	public void hide() {
-
+		dispose();
 	}
 
 	@Override
