@@ -67,7 +67,7 @@ public class AndroidLauncher extends AndroidApplication implements GameHelperLis
 		}
 		
 		AndroidApplicationConfiguration config = new AndroidApplicationConfiguration();
-		
+		config.useImmersiveMode = true;
 		initialize(new MurderMansion(this,mMultiplayerSeisson), config);
 
 

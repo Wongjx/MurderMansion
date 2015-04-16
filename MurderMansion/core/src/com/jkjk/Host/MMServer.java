@@ -62,6 +62,7 @@ public class MMServer {
 	public MMServer(int numOfPlayers, MultiplayerSessionInfo info) throws InterruptedException {
 		this.numOfPlayers = numOfPlayers;
 		this.info = info;
+		int gameStartPauseDuration = 3000;
 
 		// System.out.println("Initialize Client list and listeners");
 		clients = new ArrayList<Socket>();
@@ -75,11 +76,11 @@ public class MMServer {
 		objectLocations = new ObjectLocations(numOfPlayers, this);
 
 		obstaclesHandler = ObstaclesHandler.getInstance();
-		nextItemSpawnTime = 10000;
-		nextObstacleRemoveTime = 30000;
-		nextLightningTime = 25000;
+		nextItemSpawnTime = 10000 + gameStartPauseDuration;
+		nextObstacleRemoveTime = 30000 + gameStartPauseDuration;
+		nextLightningTime = 20000 + gameStartPauseDuration;
 
-		gameStartPause = new Duration(3000);
+		gameStartPause = new Duration(gameStartPauseDuration);
 		gameStatus = new GameStatus();
 		random = new Random();
 
@@ -108,12 +109,11 @@ public class MMServer {
 	 * Start updating only when all clients have successfully synchronized.
 	 */
 	public void update() {
-		if (!gameStartPause.isCountingDown()) {
-			runTime = System.currentTimeMillis() - startTime;
-			handleSpawn();
-			checkWin();
-			lightningStrike();
-		} else {
+		runTime = System.currentTimeMillis() - startTime;
+		handleSpawn();
+		checkWin();
+		lightningStrike();
+		if (gameStartPause.isCountingDown()) {
 			gameStartPause.update();
 			if (!gameStartPause.isCountingDown())
 				sendToClients("startgame");
