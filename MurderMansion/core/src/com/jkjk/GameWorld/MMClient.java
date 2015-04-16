@@ -58,7 +58,7 @@ public class MMClient {
 	private String serverAddress;
 	private int serverPort;
 	private CountDownLatch latch;
-	
+
 	public Socket clientSocket;
 	private BufferedReader clientInput;
 	private PrintWriter clientOutput;
@@ -99,8 +99,8 @@ public class MMClient {
 	 *            GameRenderer instance
 	 * @throws Exception
 	 */
-	private MMClient(GameWorld gWorld, GameRenderer renderer, String serverAddress, int serverPort, CountDownLatch latch)
-			throws Exception {
+	private MMClient(GameWorld gWorld, GameRenderer renderer, String serverAddress, int serverPort,
+			CountDownLatch latch) throws Exception {
 
 		this.gWorld = gWorld;
 		this.renderer = renderer;
@@ -110,8 +110,8 @@ public class MMClient {
 
 		this.serverAddress = serverAddress;
 		this.serverPort = serverPort;
-		this.latch=latch;
-		
+		this.latch = latch;
+
 		// Connect to server
 		initClientSocket(this.serverAddress, this.serverPort);
 
@@ -211,45 +211,44 @@ public class MMClient {
 
 		// Create and start extra thread that reads any incoming messages
 		Thread thread = new clientListener(clientInput, this);
-		this.clientListenerThread=thread;
+		this.clientListenerThread = thread;
 		thread.start();
-		
-		//Send ready message to server
-		clientOutput.println("ready_"+id);
-		
 
-		// CREATE SPRITES FOR TESTING
-		ItemSprite temporaryItem = new ItemSprite(gWorld);
-		gWorld.getItemList().put(new Vector2(800f, 490), temporaryItem);
-		temporaryItem.spawn(800f, 490, 0);
-		WeaponSprite tempWeap = new WeaponSprite(gWorld);
-		gWorld.getWeaponList().put(new Vector2(750f, 490), tempWeap);
-		tempWeap.spawn(750f, 490, 0);
+		// Send ready message to server
+		clientOutput.println("ready_" + id);
 
-		for (int i = 0; i < 8; i++) {
-			createWeaponParts(750 + (20 * i), 460);
-		}
+		// // CREATE SPRITES FOR TESTING
+		// ItemSprite temporaryItem = new ItemSprite(gWorld);
+		// gWorld.getItemList().put(new Vector2(800f, 490), temporaryItem);
+		// temporaryItem.spawn(800f, 490, 0);
+		// WeaponSprite tempWeap = new WeaponSprite(gWorld);
+		// gWorld.getWeaponList().put(new Vector2(750f, 490), tempWeap);
+		// tempWeap.spawn(750f, 490, 0);
+		//
+		// for (int i = 0; i < 8; i++) {
+		// createWeaponParts(750 + (20 * i), 460);
+		// }
 
-		// CREATING ITEMSPRITE FOR DEBUG PURPOSE
-		ItemSprite is = new ItemSprite(gWorld);
-		Vector2 location = new Vector2(800f, 540);
-		gWorld.getItemList().put(location, is);
-		is.spawn(location.x, location.y, 0);
-		// CREATING WEAPONSPRITE FOR DEBUG PURPOSE
-		WeaponSprite ws = new WeaponSprite(gWorld);
-		Vector2 location2 = new Vector2(750f, 540);
-		gWorld.getWeaponList().put(location2, ws);
-		ws.spawn(location2.x, location2.y, 0);
-
-		gWorld.createTrap(700f, 540);
+		// // CREATING ITEMSPRITE FOR DEBUG PURPOSE
+		// ItemSprite is = new ItemSprite(gWorld);
+		// Vector2 location = new Vector2(800f, 540);
+		// gWorld.getItemList().put(location, is);
+		// is.spawn(location.x, location.y, 0);
+		// // CREATING WEAPONSPRITE FOR DEBUG PURPOSE
+		// WeaponSprite ws = new WeaponSprite(gWorld);
+		// Vector2 location2 = new Vector2(750f, 540);
+		// gWorld.getWeaponList().put(location2, ws);
+		// ws.spawn(location2.x, location2.y, 0);
+		//
+		// gWorld.createTrap(700f, 540);
 
 	}
 
 	public static MMClient getInstance(GameWorld gWorld, GameRenderer renderer, String serverAddress,
-			int serverPort,CountDownLatch latch) throws Exception {
+			int serverPort, CountDownLatch latch) throws Exception {
 		if (instance == null) {
 			System.out.println("new instance of MMClient made");
-			instance = new MMClient(gWorld, renderer, serverAddress, serverPort,latch);
+			instance = new MMClient(gWorld, renderer, serverAddress, serverPort, latch);
 		}
 		return instance;
 	}
@@ -694,13 +693,13 @@ public class MMClient {
 
 	public void handleMessage(String message) {
 		String[] msg = message.split("_");
-		
-		//if start game message
-		if(msg[0].equals("startgame")){
+
+		// if start game message
+		if (msg[0].equals("startgame")) {
 			this.latch.countDown();
 			System.out.println("All players ready. Start GAME!!");
 		}
-		
+
 		// if player position update message
 		else if (msg[0].equals("loc")) {
 			float[] position = { Float.parseFloat(msg[2]), Float.parseFloat(msg[3]) };
@@ -732,7 +731,7 @@ public class MMClient {
 		} else if (msg[0].equals("alive")) {
 			playerIsAlive.put("Player " + Integer.parseInt(msg[2]), Integer.parseInt(msg[3]));
 			killPlayer(Integer.parseInt(msg[2]));
-
+			AssetLoader.characterDeathSound.play(AssetLoader.VOLUME);
 		} else if (msg[0].equals("stun")) {
 			playerList.get(Integer.parseInt(msg[2])).stun();
 		} else if (msg[0].equals("useItem")) {
@@ -762,7 +761,6 @@ public class MMClient {
 				itemLocations.produce(new Location(new float[] { Float.parseFloat(msg[3]),
 						Float.parseFloat(msg[4]) }));
 				createItems(Float.parseFloat(msg[3]), Float.parseFloat(msg[4]));
-				gWorld.getPlayer().stun();
 			}
 		} else if (msg[0].equals("weapon")) {
 			if (msg[2].equals("con")) {
@@ -829,14 +827,13 @@ public class MMClient {
 			}
 		}
 	}
-	
-	public void endSession() throws IOException{
+
+	public void endSession() throws IOException {
 		this.clientListenerThread.interrupt();
 		this.clientSocket.close();
-		instance=null;
+		instance = null;
 		System.out.println("MMClient seisson ended.");
-		
-		
+
 	}
 }
 

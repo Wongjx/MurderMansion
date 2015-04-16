@@ -1,5 +1,6 @@
 package com.jkjk.MMHelpers;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Random;
 
@@ -36,11 +37,18 @@ public class AssetLoader {
 	public static Drawable touchBackground;
 	public static Drawable touchKnob;
 	public static Texture emptySlot;
-	public static Texture pause_button_tex;
-	public static TextureRegionDrawable pause_button_draw;
+	public static Texture settings_button_tex;
+	public static TextureRegionDrawable settings_button_draw;
+	public static Texture settings_cancel_tex;
+	public static TextureRegionDrawable settings_cancel_draw;
+	public static Texture soundoff_tex;
+	public static TextureRegionDrawable soundoff_draw;
+	public static Texture soundon_tex;
+	public static TextureRegionDrawable soundon_draw;
 
 	// PAUSE SCREEN
 	public static Texture pause_main;
+	public static TextButtonStyle normalSettings;
 
 	// SCORE SCREEN
 	public static Texture scoreBackground;
@@ -77,6 +85,7 @@ public class AssetLoader {
 	public static BitmapFont basker32black;
 	public static BitmapFont basker45black;
 	public static BitmapFont basker32blackTime;
+	public static BitmapFont basker32blackSettings;
 	public static Drawable buttonUp;
 	public static Drawable buttonDown;
 
@@ -221,6 +230,11 @@ public class AssetLoader {
 	public static Sound hauntSound1;
 	public static Sound hauntSound2;
 	public static Sound hauntSound3;
+	public static Sound characterDeathSound;
+
+	private static ArrayList<Music> musicBox;
+	private static ArrayList<Sound> soundBox;
+	public static float VOLUME;
 
 	private static Random random;
 
@@ -252,6 +266,7 @@ public class AssetLoader {
 		basker32black = new BitmapFont(Gdx.files.internal("Fonts/Basker32.fnt"));
 		basker45black = new BitmapFont(Gdx.files.internal("Fonts/Baskek45.fnt"));
 		basker32blackTime = new BitmapFont(Gdx.files.internal("Fonts/Basker32.fnt"));
+		basker32blackSettings = new BitmapFont(Gdx.files.internal("Fonts/Basker32.fnt"));
 	}
 
 	public static void loadMenuScreen() {
@@ -318,8 +333,23 @@ public class AssetLoader {
 		touchpad = new Touchpad(5, touchpadStyle);
 
 		emptySlot = new Texture(Gdx.files.internal("HUD/slots.png"));
-		pause_button_tex = new Texture(Gdx.files.internal("HUD/pause_button.png"));
-		pause_button_draw = new TextureRegionDrawable(new TextureRegion(pause_button_tex));
+
+		// PAUSE SCREEN
+		normalSettings = new TextButtonStyle();
+		normalSettings.font = basker32blackSettings;
+		normalSettings.font.setScale(0.4f, 0.6f);
+		normalSettings.up = menuSkin.getDrawable("buttonUp");
+		normalSettings.down = menuSkin.getDrawable("buttonDown");
+		normalSettings.pressedOffsetY = -1;
+
+		settings_button_tex = new Texture(Gdx.files.internal("HUD/settings_button.png"));
+		settings_button_draw = new TextureRegionDrawable(new TextureRegion(settings_button_tex));
+		settings_cancel_tex = new Texture(Gdx.files.internal("basic/cancel.png"));
+		settings_cancel_draw = new TextureRegionDrawable(new TextureRegion(settings_cancel_tex));
+		soundoff_tex = new Texture(Gdx.files.internal("HUD/sound_off.png"));
+		soundoff_draw = new TextureRegionDrawable(new TextureRegion(soundoff_tex));
+		soundon_tex = new Texture(Gdx.files.internal("HUD/sound_on.png"));
+		soundon_draw = new TextureRegionDrawable(new TextureRegion(soundon_tex));
 
 		// CIVILIANS HUD
 		civ_weapon_bat_tex = new Texture(Gdx.files.internal("HUD/civ_weapon_bat.png"));
@@ -646,63 +676,86 @@ public class AssetLoader {
 	}
 
 	public static void loadSfx() {
+		musicBox = new ArrayList<Music>();
+		soundBox = new ArrayList<Sound>();
 
-		menuMusic = Gdx.audio.newMusic(Gdx.files.internal("bgm/MenuScreen Music.mp3"));
+		musicBox.add(menuMusic = Gdx.audio.newMusic(Gdx.files.internal("bgm/MenuScreen Music.mp3")));
 		menuMusic.setLooping(true);
-		gameMusic = Gdx.audio.newMusic(Gdx.files.internal("bgm/GameScreen Music.mp3"));
+		musicBox.add(gameMusic = Gdx.audio.newMusic(Gdx.files.internal("bgm/GameScreen Music.mp3")));
 		gameMusic.setLooping(true);
 
-		walkSound = Gdx.audio.newMusic(Gdx.files.internal("sfx/walking.mp3"));
+		musicBox.add(walkSound = Gdx.audio.newMusic(Gdx.files.internal("sfx/walking.mp3")));
 		walkSound.setVolume(0.8f);
 
-		runSound = Gdx.audio.newMusic(Gdx.files.internal("sfx/running.mp3"));
+		musicBox.add(runSound = Gdx.audio.newMusic(Gdx.files.internal("sfx/running.mp3")));
 		runSound.setVolume(0.8f);
 
-		plantTrapSound = Gdx.audio.newSound(Gdx.files.internal("sfx/plantTrap.mp3"));
-		knifeStabSound = Gdx.audio.newSound(Gdx.files.internal("sfx/Knife Stab.mp3"));
+		soundBox.add(plantTrapSound = Gdx.audio.newSound(Gdx.files.internal("sfx/plantTrap.mp3")));
+		soundBox.add(knifeStabSound = Gdx.audio.newSound(Gdx.files.internal("sfx/Knife Stab.mp3")));
 
-		batSwingSound = Gdx.audio.newSound(Gdx.files.internal("sfx/bat swing.mp3"));
-		disarmTrapSound = Gdx.audio.newSound(Gdx.files.internal("sfx/disarm trap.mp3"));
-		pickUpItemSound = Gdx.audio.newSound(Gdx.files.internal("sfx/pick up disarm trap.mp3"));
+		soundBox.add(batSwingSound = Gdx.audio.newSound(Gdx.files.internal("sfx/bat swing.mp3")));
+		soundBox.add(disarmTrapSound = Gdx.audio.newSound(Gdx.files.internal("sfx/disarm trap.mp3")));
+		soundBox.add(pickUpItemSound = Gdx.audio.newSound(Gdx.files.internal("sfx/pick up disarm trap.mp3")));
 
-		shotgunBlastSound = Gdx.audio.newSound(Gdx.files.internal("sfx/shotgun blast.mp3"));
-		knifeThrustSound = Gdx.audio.newSound(Gdx.files.internal("sfx/knifeMiss.mp3"));
-		trapDisarmedSound = Gdx.audio.newSound(Gdx.files.internal("sfx/trap disarmed.mp3"));
-		trappedSound = Gdx.audio.newSound(Gdx.files.internal("sfx/trapped sound.mp3"));
-		batHitSound = Gdx.audio.newSound(Gdx.files.internal("sfx/bat hit.mp3"));
+		soundBox.add(shotgunBlastSound = Gdx.audio.newSound(Gdx.files.internal("sfx/shotgun blast.mp3")));
+		soundBox.add(knifeThrustSound = Gdx.audio.newSound(Gdx.files.internal("sfx/knifeMiss.mp3")));
+		soundBox.add(trapDisarmedSound = Gdx.audio.newSound(Gdx.files.internal("sfx/trap disarmed.mp3")));
+		soundBox.add(trappedSound = Gdx.audio.newSound(Gdx.files.internal("sfx/trapped sound.mp3")));
+		soundBox.add(batHitSound = Gdx.audio.newSound(Gdx.files.internal("sfx/bat hit.mp3")));
 
-		lightningSound = Gdx.audio.newSound(Gdx.files.internal("sfx/lightning.mp3"));
+		soundBox.add(characterDeathSound = Gdx.audio.newSound(Gdx.files.internal("sfx/character death.mp3")));
+		soundBox.add(lightningSound = Gdx.audio.newSound(Gdx.files.internal("sfx/lightning.mp3")));
 
-		obstacleSound1 = Gdx.audio.newSound(Gdx.files.internal("sfx/obstacle1.mp3"));
-		obstacleSound2 = Gdx.audio.newSound(Gdx.files.internal("sfx/obstacle2.mp3"));
-		obstacleSound3 = Gdx.audio.newSound(Gdx.files.internal("sfx/obstacle3.wav"));
-		obstacleSoundmd = Gdx.audio.newMusic(Gdx.files.internal("sfx/obstacle main door.mp3"));
+		soundBox.add(obstacleSound1 = Gdx.audio.newSound(Gdx.files.internal("sfx/obstacle1.mp3")));
+		soundBox.add(obstacleSound2 = Gdx.audio.newSound(Gdx.files.internal("sfx/obstacle2.mp3")));
+		soundBox.add(obstacleSound3 = Gdx.audio.newSound(Gdx.files.internal("sfx/obstacle3.wav")));
+		musicBox.add(obstacleSoundmd = Gdx.audio.newMusic(Gdx.files.internal("sfx/obstacle main door.mp3")));
 
-		hauntSound1 = Gdx.audio.newSound(Gdx.files.internal("sfx/haunt1.mp3"));
-		hauntSound2 = Gdx.audio.newSound(Gdx.files.internal("sfx/haunt2.mp3"));
-		hauntSound3 = Gdx.audio.newSound(Gdx.files.internal("sfx/haunt3.mp3"));
+		soundBox.add(hauntSound1 = Gdx.audio.newSound(Gdx.files.internal("sfx/haunt1.mp3")));
+		soundBox.add(hauntSound2 = Gdx.audio.newSound(Gdx.files.internal("sfx/haunt2.mp3")));
+		soundBox.add(hauntSound3 = Gdx.audio.newSound(Gdx.files.internal("sfx/haunt3.mp3")));
 	}
 
 	public static void obstacleSFX() {
 		int randomInt = random.nextInt(3);
 		if (randomInt == 0) {
-			obstacleSound1.play();
+			obstacleSound1.play(AssetLoader.VOLUME);
 		} else if (randomInt == 1) {
-			obstacleSound2.play();
+			obstacleSound2.play(AssetLoader.VOLUME);
 		} else if (randomInt == 2) {
-			obstacleSound3.play();
+			obstacleSound3.play(AssetLoader.VOLUME);
 		}
 	}
 
 	public static void hauntSFX() {
 		int randomInt = random.nextInt(3);
 		if (randomInt == 0) {
-			hauntSound1.play();
+			hauntSound1.play(AssetLoader.VOLUME);
 		} else if (randomInt == 1) {
-			hauntSound2.play();
+			hauntSound2.play(AssetLoader.VOLUME);
 		} else if (randomInt == 2) {
-			hauntSound3.play();
+			hauntSound3.play(AssetLoader.VOLUME);
 		}
+	}
+
+	public static void muteSFX() {
+		for (Sound s : soundBox) {
+			s.setVolume(0, 0f);
+		}
+		for (Music m : musicBox) {
+			m.setVolume(0f);
+		}
+		VOLUME = 0f;
+	}
+
+	public static void unmuteSFX() {
+		for (Sound s : soundBox) {
+			s.setVolume(0, 1f);
+		}
+		for (Music m : musicBox) {
+			m.setVolume(1f);
+		}
+		VOLUME = 1f;
 	}
 
 	public static void dispose() {
@@ -718,7 +771,7 @@ public class AssetLoader {
 		weapon_parts_counter.dispose();
 		tiledMap.dispose();
 		emptySlot.dispose();
-		pause_button_tex.dispose();
+		settings_button_tex.dispose();
 		civ_weapon_bat_tex.dispose();
 		civ_item_tex.dispose();
 		civ_dash_tex.dispose();
@@ -763,5 +816,6 @@ public class AssetLoader {
 		hauntSound1.dispose();
 		hauntSound2.dispose();
 		hauntSound3.dispose();
+		characterDeathSound.dispose();
 	}
 }

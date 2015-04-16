@@ -147,16 +147,12 @@ public class MMServer {
 			// (Murderer) 2) all civilians are dead
 			numStillAlive = 0;
 			numInSafeRegion = 0;
-			System.out.println("ALIVE: " + numStillAlive);
-			System.out.println("SAFE REGION: " + numInSafeRegion);
 			for (int i = 0; i < numOfPlayers; i++) {
 				if (i == murdererId)
 					continue;
 				if (playerStats.getPlayerIsAliveValue("Player " + i) == 1) {
-					System.out.println("ALIVE HERE");
 					numStillAlive++;
 					if (playerStats.getPlayerIsInSafeRegion("Player " + 1) == 1) {
-						System.out.println("SAFE HERE");
 						numInSafeRegion++;
 					}
 				}

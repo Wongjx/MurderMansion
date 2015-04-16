@@ -343,7 +343,7 @@ public class GameWorld {
 		lightningDuration.startCountdown();
 		storeLightValue = player.getAmbientLightValue();
 		player.setAmbientLightValue(0.8f);
-		AssetLoader.lightningSound.play();
+		AssetLoader.lightningSound.play(AssetLoader.VOLUME);
 	}
 
 	public void createTrap(float x, float y) {

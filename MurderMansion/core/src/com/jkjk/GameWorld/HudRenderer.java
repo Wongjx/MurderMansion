@@ -2,7 +2,6 @@ package com.jkjk.GameWorld;
 
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
@@ -10,6 +9,7 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.Touchable;
 import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton.TextButtonStyle;
@@ -53,20 +53,18 @@ public class HudRenderer {
 	private Float playTime;
 
 	// PAUSE SCREEN
-	private TextureRegionDrawable pauseButtonDraw;
-	private ImageButton pauseButton;
-	private boolean gameIsPaused = false;
+	private TextureRegionDrawable settingsButtonDraw;
+	private TextureRegionDrawable settingsCloseDraw;
+	private ImageButton settingsButton;
+	private boolean inSettings = false;
 	private Texture pause_main;
 
 	private float x, y;
 	private ImageButton weaponButton, itemButton, dashButton, disguiseToCiv, disguiseToMur, hauntButton;
-	private boolean clickable;
 
 	private SpriteBatch batch;
-	private OrthographicCamera hudCam;
-	private OrthographicCamera pauseCam;
 	private Stage stage;
-	private Stage pauseStage;
+	private Stage settingsStage;
 
 	private Touchpad touchpad;
 	private Drawable touchKnob;
@@ -85,13 +83,15 @@ public class HudRenderer {
 	private float WeaponsAnimationRunTime;
 	private float HauntAnimationRunTime;
 
-	private TextButtonStyle normal;
+	private TextButtonStyle normalSettings;
 	private TextButton buttonMainMenu;
-	private TextButton buttonContinue;
-	private TextButton buttonSettings;
+	private ImageButton settingsCloseButton;
+	private TextButton unmuteButton;
+	private TextButton muteButton;
 
 	private int minutes;
 	private int seconds;
+	private boolean mute;
 
 	/**
 	 * Constructs the link from the Box2D world created in GameWorld to HudRenderer. Allows rendering of the
@@ -108,41 +108,40 @@ public class HudRenderer {
 	private HudRenderer(GameWorld gWorld, MMClient client, float gameWidth, float gameHeight,
 			MurderMansion game) {
 		initAssets(gameWidth, gameHeight);
-		
+
 		this.gWorld = gWorld;
 		this.client = client;
 		this.game = game;
 		this.gameWidth = gameWidth;
 		this.gameHeight = gameHeight;
 
-		BUTTON_WIDTH = 110;
-		BUTTON_HEIGHT = 50;
+		BUTTON_WIDTH = 70;
+		BUTTON_HEIGHT = 30;
 
 		// countdown
 		playTime = 240.0f;
-
-		hudCam = new OrthographicCamera();
-		hudCam.setToOrtho(false, gameWidth, gameHeight);
+		
 		batch = new SpriteBatch();
 
 		// Create a Stage and add TouchPad
-		stage = new Stage(new ExtendViewport(gameWidth, gameHeight, hudCam), batch);
+		stage = new Stage(new ExtendViewport(gameWidth, gameHeight), batch);
 		stage.addActor(touchpad);
 		stage.addActor(getTimebox());
 		stage.addActor(getWeaponPartsCounter());
 		stage.addActor(getEmptySlot());
-		stage.addActor(getPauseButton());
+		stage.addActor(getSettingsButton());
 		abilityCheck();
 
 		Gdx.input.setInputProcessor(stage);
-		
-		pauseStage = new Stage(new ExtendViewport(gameWidth, gameHeight), batch);
-		pauseStage.addActor(getMainMenuButton());
-		pauseStage.addActor(getContinueButton());
-		pauseStage.addActor(getSettingsButton());
+
+		settingsStage = new Stage(new ExtendViewport(gameWidth, gameHeight), batch);
+		settingsStage.addActor(getMainMenuButton());
+		settingsStage.addActor(getMuteButton());
+		settingsStage.addActor(getSettingsCloseButton());
 	}
 
-	public static HudRenderer getInstance(GameWorld gWorld, MMClient client, float gameWidth,float gameHeight, MurderMansion game) {
+	public static HudRenderer getInstance(GameWorld gWorld, MMClient client, float gameWidth,
+			float gameHeight, MurderMansion game) {
 		if (instance == null) {
 			instance = new HudRenderer(gWorld, client, gameWidth, gameHeight, game);
 		}
@@ -186,9 +185,10 @@ public class HudRenderer {
 		timebox = AssetLoader.time;
 		weapon_parts_counter = AssetLoader.weapon_parts_counter;
 		font = AssetLoader.basker32blackTime;
-		pauseButtonDraw = AssetLoader.pause_button_draw;
+		settingsButtonDraw = AssetLoader.settings_button_draw;
 		pause_main = AssetLoader.pause_main;
-		normal = AssetLoader.normal;
+		normalSettings = AssetLoader.normalSettings;
+		settingsCloseDraw = AssetLoader.settings_cancel_draw;
 	}
 
 	/**
@@ -211,7 +211,6 @@ public class HudRenderer {
 
 		batch.end();
 
-
 		if (gWorld.getPlayer().getItemChange())
 			itemCheck();
 		if (gWorld.getPlayer().getWeaponChange())
@@ -222,12 +221,16 @@ public class HudRenderer {
 		stage.draw(); // Draw touchpad
 		stage.act(Gdx.graphics.getDeltaTime()); // Acts stage at deltatime
 
-		if (gameIsPaused) {
+		if (inSettings) {
 			batch.begin();
 			batch.draw(pause_main, 0, 0);
+			if (mute)
+				batch.draw(AssetLoader.soundoff_tex, 390, 180);
+			else
+				batch.draw(AssetLoader.soundon_tex, 390, 180);
 			batch.end();
-			pauseStage.draw();
-			pauseStage.act(Gdx.graphics.getDeltaTime());
+			settingsStage.draw();
+			settingsStage.act(Gdx.graphics.getDeltaTime());
 		}
 	}
 
@@ -257,9 +260,9 @@ public class HudRenderer {
 	}
 
 	public Actor getMainMenuButton() {
-		buttonMainMenu = new TextButton("Main Menu", normal);
+		buttonMainMenu = new TextButton("Main Menu", normalSettings);
 		buttonMainMenu.setSize(this.BUTTON_WIDTH, this.BUTTON_HEIGHT);
-		buttonMainMenu.setPosition(140, 90);
+		buttonMainMenu.setPosition(225, 130);
 
 		buttonMainMenu.addListener(new ClickListener() {
 			@Override
@@ -272,36 +275,59 @@ public class HudRenderer {
 
 		return buttonMainMenu;
 	}
+	
+	public Actor getSettingsCloseButton() {
+		settingsCloseButton = new ImageButton(settingsCloseDraw);
+		settingsCloseButton.setSize(this.BUTTON_WIDTH, this.BUTTON_HEIGHT);
+		settingsCloseButton.setPosition(485, 260);
 
-	public Actor getContinueButton() {
-		buttonContinue = new TextButton("Continue", normal);
-		buttonContinue.setSize(this.BUTTON_WIDTH, this.BUTTON_HEIGHT);
-		buttonContinue.setPosition(270, 90);
-
-		buttonContinue.addListener(new ClickListener() {
+		settingsCloseButton.addListener(new ClickListener() {
 			@Override
 			public void clicked(InputEvent event, float x, float y) {
-				gameIsPaused = false;
+				inSettings = false;
 				Gdx.input.setInputProcessor(stage);
 			}
 		});
-
-		return buttonContinue;
+		return settingsCloseButton;
 	}
+		
 
-	public Actor getSettingsButton() {
-		buttonSettings = new TextButton("Settings", normal);
-		buttonSettings.setSize(this.BUTTON_WIDTH, this.BUTTON_HEIGHT);
-		buttonSettings.setPosition(400, 90);
+	public Actor getUnmuteButton() {
+		unmuteButton = new TextButton("Sound off", normalSettings);
+		unmuteButton.setSize(this.BUTTON_WIDTH, this.BUTTON_HEIGHT);
+		unmuteButton.setPosition(348, 130);
 
-		buttonSettings.addListener(new ClickListener() {
+		unmuteButton.addListener(new ClickListener() {
 			@Override
 			public void clicked(InputEvent event, float x, float y) {
-				System.out.println("Settings button is pressed");
+				System.out.println("Unmute is pressed");
+				mute = false;
+				unmuteButton.remove();
+				settingsStage.addActor(getMuteButton());
+				AssetLoader.unmuteSFX();
 			}
 		});
 
-		return buttonSettings;
+		return unmuteButton;
+	}
+	
+	public Actor getMuteButton() {
+		muteButton = new TextButton("Sound on", normalSettings);
+		muteButton.setSize(this.BUTTON_WIDTH, this.BUTTON_HEIGHT);
+		muteButton.setPosition(348, 130);
+
+		muteButton.addListener(new ClickListener() {
+			@Override
+			public void clicked(InputEvent event, float x, float y) {
+				System.out.println("Mute is pressed");
+				mute = true;
+				muteButton.remove();
+				settingsStage.addActor(getUnmuteButton());
+				AssetLoader.muteSFX();
+			}
+		});
+
+		return muteButton;
 	}
 
 	/**
@@ -488,28 +514,28 @@ public class HudRenderer {
 	 * 
 	 * @return Actor for Bat slot
 	 */
-	public ImageButton getPauseButton() {
+	public ImageButton getSettingsButton() {
 
 		x = 565;
 		y = 280;
 
-		pauseButton = new ImageButton(pauseButtonDraw);
-		pauseButton.setX(x);
-		pauseButton.setY(y);
-		pauseButton.setWidth(50);
-		pauseButton.setHeight(50);
-		pauseButton.setName("Pause Button");
+		settingsButton = new ImageButton(settingsButtonDraw);
+		settingsButton.setX(x);
+		settingsButton.setY(y);
+		settingsButton.setWidth(50);
+		settingsButton.setHeight(50);
+		settingsButton.setName("Pause Button");
 
-		pauseButton.addListener(new ClickListener() {
+		settingsButton.addListener(new ClickListener() {
 			public void clicked(InputEvent event, float x, float y) {
 
-				System.out.println("Clicked on pause button");
-				gameIsPaused = true;
-				Gdx.input.setInputProcessor(pauseStage);
+				System.out.println("Clicked on settings button");
+				inSettings = true;
+				Gdx.input.setInputProcessor(settingsStage);
 			}
 		});
 
-		return pauseButton;
+		return settingsButton;
 	}
 
 	/**
@@ -526,7 +552,7 @@ public class HudRenderer {
 		weaponButton.setX(x);
 		weaponButton.setY(y);
 		weaponButton.setName("Weapon Button");
-		AssetLoader.pickUpItemSound.play();
+		AssetLoader.pickUpItemSound.play(AssetLoader.VOLUME);
 
 		weaponButton.addListener(new ClickListener() {
 			@Override
@@ -542,7 +568,10 @@ public class HudRenderer {
 				if (gWorld.getPlayer().useWeapon()) {
 					// start drawing cool down animation.
 					WeaponsCD = true;
-					AssetLoader.batSwingSound.play();
+					if (gWorld.getPlayer().getType() == "Ghost")
+						AssetLoader.pickUpItemSound.play(AssetLoader.VOLUME);
+					else
+						AssetLoader.batSwingSound.play(AssetLoader.VOLUME);
 					client.updatePlayerUseWeapon();
 				}
 			}
@@ -565,7 +594,7 @@ public class HudRenderer {
 		weaponButton.setX(x);
 		weaponButton.setY(y);
 		weaponButton.setName("Weapon Button");
-		AssetLoader.pickUpItemSound.play();
+		AssetLoader.pickUpItemSound.play(AssetLoader.VOLUME);
 
 		weaponButton.addListener(new ClickListener() {
 			@Override
@@ -580,7 +609,7 @@ public class HudRenderer {
 					// start drawing cool down animation
 					WeaponsCD = true;
 					client.updatePlayerUseWeapon();
-					AssetLoader.shotgunBlastSound.play();
+					AssetLoader.shotgunBlastSound.play(AssetLoader.VOLUME);
 				}
 			}
 		});
@@ -602,7 +631,7 @@ public class HudRenderer {
 		itemButton.setX(x);
 		itemButton.setY(y);
 		itemButton.setName("Item Button");
-		AssetLoader.pickUpItemSound.play();
+		AssetLoader.pickUpItemSound.play(AssetLoader.VOLUME);
 
 		itemButton.addListener(new ClickListener() {
 			@Override
@@ -615,6 +644,8 @@ public class HudRenderer {
 				System.out.println("Clicked on disarm trap button");
 				gWorld.getPlayer().useItem();
 				client.updatePlayerUseItem();
+				if (gWorld.getPlayer().getType() == "Ghost")
+					AssetLoader.pickUpItemSound.play(AssetLoader.VOLUME);
 			}
 		});
 
@@ -666,7 +697,7 @@ public class HudRenderer {
 		weaponButton.setX(x);
 		weaponButton.setY(y);
 		weaponButton.setName("Weapon Button");
-		AssetLoader.pickUpItemSound.play();
+		AssetLoader.pickUpItemSound.play(AssetLoader.VOLUME);
 
 		weaponButton.addListener(new ClickListener() {
 			@Override
@@ -681,7 +712,7 @@ public class HudRenderer {
 					// start to draw cool down animation
 					WeaponsCD = true;
 					client.updatePlayerUseWeapon();
-					AssetLoader.knifeThrustSound.play();
+					AssetLoader.knifeThrustSound.play(AssetLoader.VOLUME);
 				}
 			}
 		});
@@ -704,7 +735,7 @@ public class HudRenderer {
 		itemButton.setY(y);
 		itemButton.setName("Item Button");
 		itemButton.setSize(40, 40);
-		AssetLoader.pickUpItemSound.play();
+		AssetLoader.pickUpItemSound.play(AssetLoader.VOLUME);
 
 		itemButton.addListener(new ClickListener() {
 			@Override
@@ -717,7 +748,7 @@ public class HudRenderer {
 				System.out.println("Clicked on trap button");
 				gWorld.getPlayer().useItem();
 				client.updatePlayerUseItem();
-				AssetLoader.disarmTrapSound.play();
+				AssetLoader.disarmTrapSound.play(AssetLoader.VOLUME);
 			}
 		});
 
@@ -829,9 +860,9 @@ public class HudRenderer {
 	 * Releases the resources held by objects or images loaded.
 	 */
 	public void hudDispose() {
-		instance=null;
-//		stage.dispose();
-//		pauseStage.dispose();
+		instance = null;
+		// stage.dispose();
+		// pauseStage.dispose();
 	}
 
 }
