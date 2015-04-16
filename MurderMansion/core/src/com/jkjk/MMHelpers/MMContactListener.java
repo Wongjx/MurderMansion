@@ -29,7 +29,7 @@ public class MMContactListener implements ContactListener {
 	private boolean atStairs;
 	private String stairsName;
 
-	private MMContactListener(GameWorld gWorld) {
+	public MMContactListener(GameWorld gWorld) {
 		itemsToRemove = new Array<Body>();
 		weaponsToRemove = new Array<Body>();
 		weaponPartsToRemove = new Array<Body>();
@@ -39,12 +39,12 @@ public class MMContactListener implements ContactListener {
 		stairsName = null;
 	}
 
-	public static MMContactListener getInstance(GameWorld gWorld) {
-		if (instance == null) {
-			instance = new MMContactListener(gWorld);
-		}
-		return instance;
-	}
+//	public static MMContactListener getInstance(GameWorld gWorld) {
+//		if (instance == null) {
+//			instance = new MMContactListener(gWorld);
+//		}
+//		return instance;
+//	}
 
 	// called when two fixtures start to collide
 	public void beginContact(Contact c) {
@@ -223,5 +223,4 @@ public class MMContactListener implements ContactListener {
 
 	public void postSolve(Contact c, ContactImpulse ci) {
 	}
-
 }
