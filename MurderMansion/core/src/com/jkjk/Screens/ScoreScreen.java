@@ -105,15 +105,22 @@ public class ScoreScreen implements Screen {
             @Override
             public void clicked(InputEvent event, float x, float y) {
             	try{
-            		System.out.println("Leave room");
-            		game.actionResolver.leaveRoom();
-            		System.out.println("End client session");
-            		game.mMultiplayerSession.getClient().endSession();
             		if(game.mMultiplayerSession.isServer){
                 		game.mMultiplayerSession.getServer().endSession();
-                		System.out.println("Ended server session.");
+//                		System.out.println("Ended server session.");
                 	}
-            		System.out.println("End mMultiplayer session");
+
+            		if (game.mMultiplayerSession.getClient()!=null){
+            			game.mMultiplayerSession.getClient().endSession();
+            		}else{
+            			//TODO HALP HALP HALP CLIENT NOT SUPPOSED TO BE NULL
+            			System.out.println("CLIENT IS NULL?!!!?");
+            		}
+            		
+//            		System.out.println("Leave room");
+            		game.actionResolver.leaveRoom();
+            		
+//            		System.out.println("End mMultiplayer session");
                 	game.mMultiplayerSession.endSession();
             	}catch(Exception e){
             		System.out.println("Error on button press: "+e.getMessage());
@@ -157,7 +164,6 @@ public class ScoreScreen implements Screen {
 	 */
 	@Override
 	public void resize(int width, int height) {
-		// TODO Auto-generated method stub
 
 	}
 
@@ -168,7 +174,7 @@ public class ScoreScreen implements Screen {
 	 */
 	@Override
 	public void pause() {
-		// TODO Auto-generated method stub
+
 
 	}
 
@@ -179,7 +185,6 @@ public class ScoreScreen implements Screen {
 	 */
 	@Override
 	public void resume() {
-		// TODO Auto-generated method stub
 
 	}
 
@@ -190,8 +195,7 @@ public class ScoreScreen implements Screen {
 	 */
 	@Override
 	public void hide() {
-		// TODO Auto-generated method stub
-
+		dispose();
 	}
 
 	/*
@@ -201,8 +205,7 @@ public class ScoreScreen implements Screen {
 	 */
 	@Override
 	public void dispose() {
-		// TODO Auto-generated method stub
-
+		stage.dispose();
 	}
 
 }

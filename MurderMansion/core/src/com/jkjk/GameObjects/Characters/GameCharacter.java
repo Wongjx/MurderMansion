@@ -126,6 +126,7 @@ public abstract class GameCharacter {
 
 	public void die() {
 		alive = false;
+		AssetLoader.characterDeathSound.play(AssetLoader.VOLUME);
 	}
 
 	public boolean isAlive() {

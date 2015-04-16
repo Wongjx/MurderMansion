@@ -23,7 +23,6 @@ public class WaitScreen implements Screen {
 	private SpriteBatch batcher;
 	private Sprite sprite;
 	private MurderMansion game;
-	private CountDownLatch latch;
 
 	private float gameWidth;
 	private float gameHeight;
@@ -32,7 +31,6 @@ public class WaitScreen implements Screen {
 		this.game = game;
 		this.gameWidth = gameWidth;
 		this.gameHeight = gameHeight;
-		this.latch=new CountDownLatch(2);
 	}
 
 	@Override
@@ -58,23 +56,28 @@ public class WaitScreen implements Screen {
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 		stage.act();
 		stage.draw();
+//		System.out.println("Room state: "+game.mMultiplayerSession.mState);
+//		System.out.println("Server adddress: "+game.mMultiplayerSession.serverAddress+" Server Port: "+game.mMultiplayerSession.serverPort);
 		if ((game.mMultiplayerSession.mState == game.mMultiplayerSession.ROOM_PLAY)
 				&& (game.mMultiplayerSession.serverAddress != null)
 				&& (game.mMultiplayerSession.serverPort != 0)) {
-
+			System.out.println("Condition fufilled!");
 			// Create MMClient and connect to server
 			GameWorld gWorld = new GameWorld();
+			System.out.println("New world made");
 			GameRenderer renderer = new GameRenderer(gWorld, gameWidth, gameHeight);
+			System.out.println("New Renderer made");
 
 			try {
-				game.mMultiplayerSession.setClient(MMClient.getInstance(gWorld, renderer,
-						game.mMultiplayerSession.serverAddress, game.mMultiplayerSession.serverPort,latch));
-				latch.countDown();
-				latch.await();
+				game.mMultiplayerSession.setClient(new MMClient(gWorld, renderer,
+						game.mMultiplayerSession.serverAddress, game.mMultiplayerSession.serverPort));
+				System.out.println("Set new client.");
+
 			} catch (Exception e) {
+				System.out.println("Error @ HERE!");
 				e.printStackTrace();
 			}
-			
+			System.out.println("Setting screen to new game screen.");
 			((Game) Gdx.app.getApplicationListener()).setScreen(new GameScreen(game, gameWidth, gameHeight,
 					gWorld, renderer));
 

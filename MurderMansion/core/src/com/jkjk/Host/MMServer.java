@@ -14,13 +14,14 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Enumeration;
 import java.util.Random;
+import java.util.concurrent.atomic.AtomicInteger;
+
 import com.badlogic.gdx.Gdx;
 import com.jkjk.Host.Helpers.Location;
 import com.jkjk.Host.Helpers.ObstaclesHandler;
 import com.jkjk.MMHelpers.MultiplayerSessionInfo;
 
 public class MMServer {
-	private static MMServer instance;
 
 	private MultiplayerSessionInfo info;
 	public ServerSocket serverSocket;
@@ -34,7 +35,7 @@ public class MMServer {
 
 	private final int numOfPlayers;
 	private final int murdererId;
-	private int readyCount;
+	private AtomicInteger readyCount;
 
 	private long startTime;
 	private long runTime;
@@ -56,7 +57,7 @@ public class MMServer {
 	private boolean win;
 	private Random random;
 
-	private MMServer(int numOfPlayers, MultiplayerSessionInfo info) throws InterruptedException {
+	public MMServer(int numOfPlayers, MultiplayerSessionInfo info) throws InterruptedException {
 		this.numOfPlayers = numOfPlayers;
 		this.info = info;
 
@@ -82,7 +83,7 @@ public class MMServer {
 		// System.out.println("Assigning murderer");
 		murdererId = random.nextInt(numOfPlayers);
 		//Set number of players who have loaded and ready to play=0
-		readyCount=0;
+		readyCount= new AtomicInteger(0);
 		initPlayers();
 
 		// Attempt to connect to clients (numOfPlayers)
@@ -91,14 +92,14 @@ public class MMServer {
 		acceptServerConnections();
 	}
 
-	public static MMServer getInstance(int numOfPlayers, MultiplayerSessionInfo info)
-			throws InterruptedException {
-		if (instance == null) {
-			instance = new MMServer(numOfPlayers, info);
-			System.out.println("new instance of MMServer made");
-		}
-		return instance;
-	}
+//	public static MMServer getInstance(int numOfPlayers, MultiplayerSessionInfo info)
+//			throws InterruptedException {
+//		if (instance == null) {
+//			instance = new MMServer(numOfPlayers, info);
+//			System.out.println("new instance of MMServer made");
+//		}
+//		return instance;
+//	}
 
 	/**
 	 * Start updating only when all clients have successfully synchronized.
@@ -365,8 +366,8 @@ public class MMServer {
 		String[] msg = message.split("_");
 		//If client ready message
 		if(msg[0].equals("ready")){
-			readyCount++;
-			if(readyCount>=numOfPlayers){
+			readyCount.getAndIncrement();
+			if(readyCount.get()>=numOfPlayers){
 				sendToClients("startgame");
 			}
 		}
@@ -457,7 +458,7 @@ public class MMServer {
 	}
 	
 	public void endSession() throws IOException{
-		MMServer.instance= null;
+//		instance= null;
 		for(Thread t:serverListeners){
 			t.interrupt();
 		}
@@ -638,6 +639,7 @@ class serverListener extends Thread {
 			} catch (Exception e) {
 				e.printStackTrace();
 				System.out.println("Error while reading: " + e.getMessage());
+				break;
 			}
 
 		}

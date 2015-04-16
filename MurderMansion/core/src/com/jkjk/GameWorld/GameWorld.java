@@ -85,7 +85,8 @@ public class GameWorld {
 	 */
 	public GameWorld() {
 		world = new World(new Vector2(0, 0), true);
-		cl = MMContactListener.getInstance(this);
+//		cl = MMContactListener.getInstance(this);
+		cl = new MMContactListener(this);
 		world.setContactListener(cl);
 
 		itemsToRemove = cl.getItemsToRemove();
@@ -463,9 +464,10 @@ public class GameWorld {
 	public void dispose(){
 		world.dispose();
 		cl = null;
-		world = new World(new Vector2(0, 0), true);
-		cl = MMContactListener.getInstance(this);
-		world.setContactListener(cl);
+		
+//		world = new World(new Vector2(0, 0), true);
+//		cl = MMContactListener.getInstance(this);
+//		world.setContactListener(cl);
 
 		itemsToRemove = null;
 		weaponsToRemove = null;

@@ -59,7 +59,7 @@ public class MultiplayerSessionInfo {
 		mIncomingInvitationId=null;
 		mRoomId=null;
 		mParticipants=null;
-		mState=1000;
+		mState=ROOM_MENU;
 
 		isServer=false;
 		serverAddress=null;
