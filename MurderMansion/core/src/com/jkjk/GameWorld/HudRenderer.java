@@ -50,7 +50,6 @@ public class HudRenderer {
 	private Texture weapon_parts_counter;
 	private Actor counter_actor;
 	private BitmapFont font;
-	private BitmapFont smallFont;
 	private String time;
 	private Float playTime;
 
@@ -76,7 +75,6 @@ public class HudRenderer {
 	private boolean PanicCD;
 	private boolean DisguiseCD;
 	private boolean HauntCD;
-	// private boolean ItemsCD;
 	private boolean WeaponsCD;
 	private Animation PanicCoolDownAnimation;
 	private Animation DisguiseCoolDownAnimation;
@@ -94,6 +92,7 @@ public class HudRenderer {
 
 	private int minutes;
 	private int seconds;
+	
 
 	/**
 	 * Constructs the link from the Box2D world created in GameWorld to HudRenderer. Allows rendering of the
@@ -143,6 +142,7 @@ public class HudRenderer {
 		pauseStage.addActor(getMainMenuButton());
 		pauseStage.addActor(getContinueButton());
 		pauseStage.addActor(getSettingsButton());
+		
 	}
 
 	public static HudRenderer getInstance(GameWorld gWorld, MMClient client, float gameWidth,
@@ -209,20 +209,18 @@ public class HudRenderer {
 		batch.draw(emptySlot, 480, 22, 120, 120);
 		font.draw(batch, getTime(delta), 80, 328);
 		WeaponPartsDisplay();
-<<<<<<< HEAD
-		
 
 		if (gameIsPaused==false){
 			batch.draw(timebox, 55, 280);
 			batch.draw(weapon_parts_counter, 440, 235);
 			batch.draw(emptySlot, 480, 22, 120, 120);
-			font.draw(batch, getTime(), 75, 330);
+			font.draw(batch, getTime(delta), 75, 330);
 		}
-		
-		if(player.getType().equals("Civilian")||player.getType().equals("Murderer")){
-			coolDownAnimationCheck();
-			prohibitButtonsCheck();
-		}
+//		
+//		if(player.getType().equals("Civilian")||player.getType().equals("Murderer")){
+//			coolDownAnimationCheck(delta);
+//			prohibitButtonsCheck();
+//		}
 		
 		//PAUSE SCREEN IS LOADED
 		if (gameIsPaused==true){
@@ -265,12 +263,11 @@ public class HudRenderer {
 		
 		}
 		
-=======
+
 
 		coolDownAnimationCheck(delta);
 		prohibitButtonsCheck();
 
->>>>>>> e851b1c92dbd2a68ab9bb30668c068823afe935b
 		batch.end();
 
 
@@ -826,7 +823,7 @@ public class HudRenderer {
 		x = 522;
 		y = 92;
 
-		disguiseToMur = new ImageButton(mur_MtC);
+		disguiseToMur = new ImageButton(mur_CtM);
 		disguiseToMur.setX(x);
 		disguiseToMur.setY(y);
 		disguiseToMur.setWidth(33);
@@ -883,16 +880,7 @@ public class HudRenderer {
 	 * Displays a given text message on game play screen for a specified amount of time.
 	 */
 	public void displayMessage(String msg, Duration d){
-		if(d.isCountingDown()){
-			d.update();
-			smallFont.draw(batch,  msg,  250,  300);
-		}
-//		if(!d.isCountingDown()){
-//			d.startCountdown();
-//		}
-//		else{
-//			font.draw(batch, msg, 250 , 400);
-//		}
+		
 	}
 
 	/**

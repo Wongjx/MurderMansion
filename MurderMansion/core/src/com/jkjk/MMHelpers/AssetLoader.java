@@ -14,6 +14,7 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TmxMapLoader;
 import com.badlogic.gdx.scenes.scene2d.ui.ImageButton.ImageButtonStyle;
+import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Label.LabelStyle;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton.TextButtonStyle;
@@ -76,10 +77,12 @@ public class AssetLoader {
 	public static BitmapFont basker32black;
 	public static BitmapFont basker45black;
 	public static BitmapFont basker32blackTime;
+	public static BitmapFont basker32blackSmall;
 	public static Drawable buttonUp;
 	public static Drawable buttonDown;
 
 	public static LabelStyle title;
+	public static Label message;
 
 	public static Skin touchpadSkin;
 	public static Skin menuSkin;
@@ -240,6 +243,7 @@ public class AssetLoader {
 		basker32black = new BitmapFont(Gdx.files.internal("Fonts/Basker32.fnt"));
 		basker45black = new BitmapFont(Gdx.files.internal("Fonts/Baskek45.fnt"));
 		basker32blackTime = new BitmapFont(Gdx.files.internal("Fonts/Basker32.fnt"));
+		basker32blackSmall = new BitmapFont(Gdx.files.internal("Fonts/Basker32.fnt"));
 	}
 
 	private static void loadMenuScreen() {
@@ -341,6 +345,13 @@ public class AssetLoader {
 
 		// PAUSE SCREEN
 		pause_main = new Texture(Gdx.files.internal("basic/pause_background.png"));
+		
+		// OVER TIME
+		LabelStyle labelStyle = new LabelStyle();
+		labelStyle.font = menuSkin.getFont("basker45");
+		labelStyle.font.scale(((Gdx.graphics.getWidth() - gameWidth) / gameWidth)/0.2f);
+		message = new Label("The gates are open...", labelStyle);
+		
 	}
 
 	private static void loadCharacters() {
@@ -359,12 +370,12 @@ public class AssetLoader {
 		civPanicAnimation0.setPlayMode(PlayMode.LOOP);
 		civ_panic_rest0 = civilianTR0[1][0];
 
-		TextureRegion[] civstun0 = Arrays.copyOfRange(civilianTR0[2], 0, 3);
+		TextureRegion[] civStunParts0 = Arrays.copyOfRange(civilianTR0[2], 0, 3);
 		TextureRegion[] civStun0 = new TextureRegion[21];
-		for (int i = 0; i < civStun0.length - 2; i++) {
-			civStun0[i] = civstun0[0];
-			civStun0[i + 1] = civstun0[1];
-			civStun0[i + 2] = civstun0[2];
+		for (int i = 0; i < civStun0.length - 2; i+=3) {
+			civStun0[i] = civStunParts0[0];
+			civStun0[i + 1] = civStunParts0[1];
+			civStun0[i + 2] = civStunParts0[2];
 		}
 		civStunAnimation0 = new Animation(0.2f, civStun0);
 		civStunAnimation0.setPlayMode(PlayMode.NORMAL);
@@ -394,14 +405,14 @@ public class AssetLoader {
 		civPanicAnimation1.setPlayMode(PlayMode.LOOP);
 		civ_panic_rest1 = civilianTR1[1][0];
 
-		TextureRegion[] civstun1 = Arrays.copyOfRange(civilianTR1[2], 0, 3);
+		TextureRegion[] civStunParts1 = Arrays.copyOfRange(civilianTR1[2], 0, 3);
 		TextureRegion[] civStun1 = new TextureRegion[21];
-		for (int i = 0; i < civStun1.length - 2; i++) {
-			civStun1[i] = civstun1[0];
-			civStun1[i + 1] = civstun1[1];
-			civStun1[i + 2] = civstun1[2];
+		for (int i = 0; i < civStun1.length - 2; i+=3) {
+			civStun1[i] = civStunParts1[0];
+			civStun1[i + 1] = civStunParts1[1];
+			civStun1[i + 2] = civStunParts1[2];
 		}
-		civStunAnimation1 = new Animation(0.5f, civStun1);
+		civStunAnimation1 = new Animation(0.2f, civStun1);
 		civStunAnimation1.setPlayMode(PlayMode.NORMAL);
 
 		civBatAnimation1 = new Animation(0.1f, Arrays.copyOfRange(civilianTR1[3], 0, 3));
@@ -429,14 +440,14 @@ public class AssetLoader {
 		civPanicAnimation2.setPlayMode(PlayMode.LOOP);
 		civ_panic_rest2 = civilianTR2[1][0];
 
-		TextureRegion[] civstun2 = Arrays.copyOfRange(civilianTR2[2], 0, 3);
+		TextureRegion[] civStunParts2 = Arrays.copyOfRange(civilianTR2[2], 0, 3);
 		TextureRegion[] civStun2 = new TextureRegion[21];
-		for (int i = 0; i < civStun2.length - 2; i++) {
-			civStun2[i] = civstun2[0];
-			civStun2[i + 1] = civstun2[1];
-			civStun2[i + 2] = civstun2[2];
+		for (int i = 0; i < civStun2.length - 2; i+=3) {
+			civStun2[i] = civStunParts2[0];
+			civStun2[i + 1] = civStunParts2[1];
+			civStun2[i + 2] = civStunParts2[2];
 		}
-		civStunAnimation2 = new Animation(0.5f, Arrays.copyOfRange(civilianTR2[2], 0, 3));
+		civStunAnimation2 = new Animation(0.2f, civStun2);
 		civStunAnimation2.setPlayMode(PlayMode.NORMAL);
 
 		civBatAnimation2 = new Animation(0.1f, Arrays.copyOfRange(civilianTR2[3], 0, 3));
@@ -464,14 +475,14 @@ public class AssetLoader {
 		civPanicAnimation3.setPlayMode(PlayMode.LOOP);
 		civ_panic_rest3 = civilianTR3[1][0];
 
-		TextureRegion[] civstun3 = Arrays.copyOfRange(civilianTR3[2], 0, 3);
+		TextureRegion[] civStunParts3 = Arrays.copyOfRange(civilianTR3[2], 0, 3);
 		TextureRegion[] civStun3 = new TextureRegion[21];
-		for (int i = 0; i < civStun3.length - 2; i++) {
-			civStun3[i] = civstun3[0];
-			civStun3[i + 1] = civstun3[1];
-			civStun3[i + 2] = civstun3[2];
+		for (int i = 0; i < civStun3.length - 2; i+=3) {
+			civStun3[i] = civStunParts3[0];
+			civStun3[i + 1] = civStunParts3[1];
+			civStun3[i + 2] = civStunParts3[2];
 		}
-		civStunAnimation3 = new Animation(0.5f, Arrays.copyOfRange(civilianTR3[2], 0, 3));
+		civStunAnimation3 = new Animation(0.2f, civStun3);
 		civStunAnimation3.setPlayMode(PlayMode.NORMAL);
 
 		civBatAnimation3 = new Animation(0.1f, Arrays.copyOfRange(civilianTR3[3], 0, 3));
@@ -492,7 +503,7 @@ public class AssetLoader {
 
 		for (int i = 0; i < murTR.length; i++) {
 			for (int j = 0; j < murTR[0].length; j++) {
-				murTR[i][j].setRegion(murTR[i][j].getRegionX() - 10, murTR[i][j].getRegionY() - 10, 270, 270);
+				murTR[i][j].setRegion(murTR[i][j].getRegionX() - 25, murTR[i][j].getRegionY() - 25, 300, 300);
 			}
 		}
 
