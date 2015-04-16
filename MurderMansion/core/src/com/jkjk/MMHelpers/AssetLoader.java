@@ -231,6 +231,7 @@ public class AssetLoader {
 	public static Sound hauntSound2;
 	public static Sound hauntSound3;
 	public static Sound characterDeathSound;
+	public static Sound clickSound;
 
 	private static ArrayList<Music> musicBox;
 	private static ArrayList<Sound> soundBox;
@@ -715,6 +716,8 @@ public class AssetLoader {
 		soundBox.add(hauntSound1 = Gdx.audio.newSound(Gdx.files.internal("sfx/haunt1.mp3")));
 		soundBox.add(hauntSound2 = Gdx.audio.newSound(Gdx.files.internal("sfx/haunt2.mp3")));
 		soundBox.add(hauntSound3 = Gdx.audio.newSound(Gdx.files.internal("sfx/haunt3.mp3")));
+
+		soundBox.add(clickSound = Gdx.audio.newSound(Gdx.files.internal("sfx/click.mp3")));
 	}
 
 	public static void obstacleSFX() {

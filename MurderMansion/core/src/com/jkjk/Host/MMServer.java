@@ -17,6 +17,7 @@ import java.util.Random;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import com.badlogic.gdx.Gdx;
+import com.jkjk.GameObjects.Duration;
 import com.jkjk.Host.Helpers.Location;
 import com.jkjk.Host.Helpers.ObstaclesHandler;
 import com.jkjk.MMHelpers.MultiplayerSessionInfo;
@@ -36,6 +37,7 @@ public class MMServer {
 	private final int numOfPlayers;
 	private final int murdererId;
 	private AtomicInteger readyCount;
+	private Duration gameStartPause;
 
 	private long startTime;
 	private long runTime;
@@ -65,7 +67,7 @@ public class MMServer {
 		clients = new ArrayList<Socket>();
 		serverOutput = new ArrayList<PrintWriter>();
 		serverInput = new ArrayList<BufferedReader>();
-		serverListeners=new ArrayList<Thread>();
+		serverListeners = new ArrayList<Thread>();
 
 		// System.out.println("Initialize fields");
 		startTime = System.currentTimeMillis();
@@ -75,15 +77,16 @@ public class MMServer {
 		obstaclesHandler = ObstaclesHandler.getInstance();
 		nextItemSpawnTime = 10000;
 		nextObstacleRemoveTime = 30000;
-		nextLightningTime = 30000;
+		nextLightningTime = 25000;
 
+		gameStartPause = new Duration(3000);
 		gameStatus = new GameStatus();
 		random = new Random();
 
 		// System.out.println("Assigning murderer");
 		murdererId = random.nextInt(numOfPlayers);
-		//Set number of players who have loaded and ready to play=0
-		readyCount= new AtomicInteger(0);
+		// Set number of players who have loaded and ready to play=0
+		readyCount = new AtomicInteger(0);
 		initPlayers();
 
 		// Attempt to connect to clients (numOfPlayers)
@@ -92,23 +95,29 @@ public class MMServer {
 		acceptServerConnections();
 	}
 
-//	public static MMServer getInstance(int numOfPlayers, MultiplayerSessionInfo info)
-//			throws InterruptedException {
-//		if (instance == null) {
-//			instance = new MMServer(numOfPlayers, info);
-//			System.out.println("new instance of MMServer made");
-//		}
-//		return instance;
-//	}
+	// public static MMServer getInstance(int numOfPlayers, MultiplayerSessionInfo info)
+	// throws InterruptedException {
+	// if (instance == null) {
+	// instance = new MMServer(numOfPlayers, info);
+	// System.out.println("new instance of MMServer made");
+	// }
+	// return instance;
+	// }
 
 	/**
 	 * Start updating only when all clients have successfully synchronized.
 	 */
 	public void update() {
-		runTime = System.currentTimeMillis() - startTime;
-		handleSpawn();
-		checkWin();
-		lightningStrike();
+		if (!gameStartPause.isCountingDown()) {
+			runTime = System.currentTimeMillis() - startTime;
+			handleSpawn();
+			checkWin();
+			lightningStrike();
+		} else {
+			gameStartPause.update();
+			if (!gameStartPause.isCountingDown())
+				sendToClients("startgame");
+		}
 	}
 
 	private void handleSpawn() {
@@ -270,7 +279,7 @@ public class MMServer {
 			this.serverListeners = new ArrayList<Thread>(serverListeners);
 		}
 	}
-	
+
 	public ArrayList<Thread> getServerListeners() {
 		synchronized (serverListeners) {
 			ArrayList<Thread> ret = new ArrayList<Thread>(serverListeners);
@@ -330,7 +339,6 @@ public class MMServer {
 		}
 	}
 
-
 	/**
 	 * Get local ip address in IPV4 format
 	 * 
@@ -364,11 +372,11 @@ public class MMServer {
 	 */
 	public void handleMessage(String message) throws NumberFormatException, InterruptedException {
 		String[] msg = message.split("_");
-		//If client ready message
-		if(msg[0].equals("ready")){
+		// If client ready message
+		if (msg[0].equals("ready")) {
 			readyCount.getAndIncrement();
-			if(readyCount.get()>=numOfPlayers){
-				sendToClients("startgame");
+			if (readyCount.get() >= numOfPlayers) {
+				gameStartPause.startCountdown();
 			}
 		}
 
@@ -456,13 +464,13 @@ public class MMServer {
 			}
 		}
 	}
-	
-	public void endSession() throws IOException{
-//		instance= null;
-		for(Thread t:serverListeners){
+
+	public void endSession() throws IOException {
+		// instance= null;
+		for (Thread t : serverListeners) {
 			t.interrupt();
 		}
-		for(Socket s: clients){
+		for (Socket s : clients) {
 			s.getOutputStream().flush();
 			s.close();
 		}
@@ -639,7 +647,7 @@ class serverListener extends Thread {
 			} catch (Exception e) {
 				e.printStackTrace();
 				System.out.println("Error while reading: " + e.getMessage());
-				break;
+				// break;
 			}
 
 		}

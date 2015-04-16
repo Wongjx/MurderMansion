@@ -86,6 +86,7 @@ public class MenuScreen implements Screen {
 		buttonPlay.addListener(new ClickListener() {
 			@Override
 			public void clicked(InputEvent event, float x, float y) {
+				AssetLoader.clickSound.play(AssetLoader.VOLUME);
 				GameWorld world = new GameWorld();
 				GameRenderer renderer = new GameRenderer(world, gameWidth, gameHeight);
 				
@@ -104,6 +105,7 @@ public class MenuScreen implements Screen {
 		buttonLogin.addListener(new ClickListener() {
 			@Override
 			public void clicked(InputEvent event, float x, float y) {
+				AssetLoader.clickSound.play(AssetLoader.VOLUME);
 				game.actionResolver.loginGPGS();
 
 			}
@@ -112,6 +114,7 @@ public class MenuScreen implements Screen {
 		buttonLogout.addListener(new ClickListener() {
 			@Override
 			public void clicked(InputEvent event, float x, float y) {
+				AssetLoader.clickSound.play(AssetLoader.VOLUME);
 				game.actionResolver.logoutGPGS();
 			}
 		});
@@ -119,6 +122,7 @@ public class MenuScreen implements Screen {
 		buttonQuick.addListener(new ClickListener() {
 			@Override
 			public void clicked(InputEvent event, float x, float y) {
+				AssetLoader.clickSound.play(AssetLoader.VOLUME);
 				// Host multiplayer game
 				game.actionResolver.startQuickGame();
 				game.mMultiplayerSession.mState = game.mMultiplayerSession.ROOM_WAIT;
@@ -130,6 +134,7 @@ public class MenuScreen implements Screen {
 		buttonInvite.addListener(new ClickListener() {
 			@Override
 			public void clicked(InputEvent event, float x, float y) {
+				AssetLoader.clickSound.play(AssetLoader.VOLUME);
 				game.actionResolver.sendInvitations();
 				game.mMultiplayerSession.mState = game.mMultiplayerSession.ROOM_WAIT;
 				((Game) Gdx.app.getApplicationListener()).setScreen(new WaitScreen(game, gameWidth,
@@ -140,6 +145,7 @@ public class MenuScreen implements Screen {
 		buttonJoin.addListener(new ClickListener() {
 			@Override
 			public void clicked(InputEvent event, float x, float y) {
+				AssetLoader.clickSound.play(AssetLoader.VOLUME);
 				game.actionResolver.seeInvitations();
 				game.mMultiplayerSession.mState = game.mMultiplayerSession.ROOM_WAIT;
 				((Game) Gdx.app.getApplicationListener()).setScreen(new WaitScreen(game, gameWidth,

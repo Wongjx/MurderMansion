@@ -104,6 +104,7 @@ public class ScoreScreen implements Screen {
         nextButton.addListener(new ClickListener(){
             @Override
             public void clicked(InputEvent event, float x, float y) {
+				AssetLoader.clickSound.play(AssetLoader.VOLUME);
             	try{
             		if(game.mMultiplayerSession.isServer){
                 		game.mMultiplayerSession.getServer().endSession();

@@ -267,6 +267,7 @@ public class HudRenderer {
 		buttonMainMenu.addListener(new ClickListener() {
 			@Override
 			public void clicked(InputEvent event, float x, float y) {
+				AssetLoader.clickSound.play(AssetLoader.VOLUME);
             	try{
             		if(game.mMultiplayerSession.isServer){
                 		game.mMultiplayerSession.getServer().endSession();
@@ -324,6 +325,7 @@ public class HudRenderer {
 				unmuteButton.remove();
 				settingsStage.addActor(getMuteButton());
 				AssetLoader.unmuteSFX();
+				AssetLoader.clickSound.play(AssetLoader.VOLUME);
 			}
 		});
 
@@ -547,7 +549,6 @@ public class HudRenderer {
 
 		settingsButton.addListener(new ClickListener() {
 			public void clicked(InputEvent event, float x, float y) {
-
 				System.out.println("Clicked on settings button");
 				inSettings = true;
 				Gdx.input.setInputProcessor(settingsStage);
