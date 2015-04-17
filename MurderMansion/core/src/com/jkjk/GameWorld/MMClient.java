@@ -9,6 +9,7 @@ import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.net.SocketException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.concurrent.ConcurrentHashMap;
 
 import com.badlogic.gdx.graphics.OrthographicCamera;
@@ -27,7 +28,6 @@ import com.jkjk.Host.Helpers.Location;
 import com.jkjk.Host.Helpers.ObstaclesHandler;
 import com.jkjk.Host.Helpers.SpawnBuffer;
 import com.jkjk.MMHelpers.AssetLoader;
-import com.sun.corba.se.impl.orbutil.threadpool.TimeoutException;
 
 /**
  * MMClient listens to input from the Server by the host. Inputs include sharable data such as player
@@ -65,8 +65,11 @@ public class MMClient {
 
 	private int numOfPlayers;
 	private int id;
+	private String participantId;
+	private HashMap<String,String> participantNames;
 	private int murdererId;
 	private ArrayList<GameCharacter> playerList;
+	
 
 	private final long UPDATES_PER_SEC = 50;
 	private long lastUpdated;
@@ -95,7 +98,7 @@ public class MMClient {
 	 *            GameRenderer instance
 	 * @throws Exception
 	 */
-	public MMClient(GameWorld gWorld, GameRenderer renderer, String serverAddress, int serverPort)
+	public MMClient(GameWorld gWorld, GameRenderer renderer, String serverAddress, int serverPort, String participantId,HashMap<String,String> participantNames)
 			throws Exception {
 
 		this.gWorld = gWorld;
@@ -104,6 +107,8 @@ public class MMClient {
 		weaponFac = new WeaponFactory();
 		gameCharFac = new GameCharacterFactory();
 
+		this.participantId=participantId;
+		this.participantNames=participantNames;
 		this.serverAddress = serverAddress;
 		this.serverPort = serverPort;
 		this.isGameStart=false;
@@ -112,6 +117,10 @@ public class MMClient {
 
 		// Set cuurent time to last updated time
 		this.lastUpdated = System.currentTimeMillis();
+		
+		//Send client participant id to server
+		this.clientOutput.println(participantId);
+		System.out.println("My participantId: "+participantId);
 
 		// Receive initialzation parameters
 		numOfPlayers = Integer.parseInt(clientInput.readLine());
@@ -304,7 +313,6 @@ public class MMClient {
 				}
 			}
 		}
-
 	}
 
 	public void createObstacles() {
@@ -319,6 +327,16 @@ public class MMClient {
 						new Obstacles(gWorld, new Vector2(ob.get()[0], ob.get()[1]), 1));
 			i++;
 		}
+	}
+	
+	public String[] requestParticipantIds() throws IOException{
+		clientOutput.println("getids");
+		String[] participantIds =clientInput.readLine().split("_");
+		String[] clientNames= new String[numOfPlayers];
+		for (int i=0;i<numOfPlayers;i++){
+			clientNames[i]=participantNames.get(participantIds[i]);
+		}
+		return clientNames;
 	}
 
 	/**

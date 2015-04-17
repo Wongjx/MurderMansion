@@ -2,6 +2,7 @@ package com.jkjk.MMHelpers;
 
 import java.net.InetAddress;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.ReentrantLock;
 
@@ -20,7 +21,7 @@ public class MultiplayerSessionInfo {
 	public String mIncomingInvitationId;
 	public String mRoomId;
 	public ArrayList mParticipants;
-//	public Object mMyId; 
+	public HashMap<String,String> mParticipantNames;
 	public int mState=1000;
 
 	public boolean isServer;
@@ -36,6 +37,7 @@ public class MultiplayerSessionInfo {
 	public final int ROOM_MENU=1003;
 	
 	public MultiplayerSessionInfo(){
+		this.mParticipantNames= new HashMap<String,String>();
 	}
 
 	public MMServer getServer() {
@@ -60,6 +62,7 @@ public class MultiplayerSessionInfo {
 		mRoomId=null;
 		mParticipants=null;
 		mState=ROOM_MENU;
+		mParticipantNames=null;
 
 		isServer=false;
 		serverAddress=null;

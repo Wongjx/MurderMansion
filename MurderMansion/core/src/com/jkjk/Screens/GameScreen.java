@@ -49,6 +49,7 @@ public class GameScreen implements Screen {
 	public void show() {
 		AssetLoader.menuMusic.stop();
 		AssetLoader.gameMusic.play();
+		
 		client.updatePlayerIsReady();
 	}
 
