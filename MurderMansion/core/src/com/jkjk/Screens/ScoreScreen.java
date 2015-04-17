@@ -81,6 +81,7 @@ public class ScoreScreen implements Screen {
 		BUTTON_HEIGHT = 60;
 
 		nextButton = new ImageButton(normal1);
+		table = new Table();
 	}
 
 	/**

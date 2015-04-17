@@ -36,6 +36,7 @@ public class MMServer {
 	private ConcurrentHashMap<String, BufferedReader> serverInput;
 	private ConcurrentHashMap<String, Thread> serverListeners;
 	private final ConcurrentHashMap<String, Observer> observers;
+	public final ConcurrentHashMap<String, String> participantId;
 
 	private int numOfPlayers;
 	private final int murdererId;
@@ -71,6 +72,7 @@ public class MMServer {
 		serverInput = new ConcurrentHashMap<String, BufferedReader>();
 		serverListeners = new ConcurrentHashMap<String, Thread>();
 		observers = new ConcurrentHashMap<String,Observer>();
+		participantId = new ConcurrentHashMap<String,String>();
 
 		// System.out.println("Initialize fields");
 		startTime = System.currentTimeMillis();
@@ -385,6 +387,15 @@ public class MMServer {
 				gameStartPause.startCountdown();
 			}
 		}
+		//If client asking for all participant ids
+		else if (msg[0].equals("getids")){
+			String ret="";
+			for (int i=0;i<numOfPlayers;i++){
+				ret+=participantId.get("Player "+i)+"_";
+			}
+			ret=ret.substring(0, ret.length()-1);
+			serverOutput.get("Player "+msg[1]).println(ret);
+		}
 
 		// If player position update message
 		else if (msg[0].equals("loc")) {
@@ -553,7 +564,11 @@ class serverAcceptThread extends Thread {
 				server.getObjectLocations().register(player);
 				server.getGameStatus().register(player);
 				server.getObservers().put("Player "+idCount,player);
-
+				
+				//Get google play participant id of client
+				String participantId =reader.readLine();
+				server.participantId.put("Player "+idCount, participantId);
+				
 				// Send out initializing information to client
 				writer.println(server.getNumOfPlayers());
 				writer.println(idCount);

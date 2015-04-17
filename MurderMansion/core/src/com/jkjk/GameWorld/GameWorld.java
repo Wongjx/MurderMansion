@@ -129,7 +129,7 @@ public class GameWorld {
 		
 		random = new Random();
 		
-		TM = new ToastMessage(330f);
+		TM = new ToastMessage(350f);
 	}
 
 	/**
@@ -207,7 +207,6 @@ public class GameWorld {
 		ambientLightValue = player.getAmbientLightValue();
 
 		world.destroyBody(player.getBody());
-		TM.setDisplayMessage("You have been Murdered...");
 		player = gameCharFac.createCharacter("Ghost", player.getId(), this, true);
 		player.set_deathPositionX(currentPositionX);
 		player.set_deathPositionY(currentPositionY);
@@ -355,7 +354,7 @@ public class GameWorld {
 		obstacleList.get(location).getBody().setActive(false);
 		obstacleList.get(location).getBody().setTransform(0, 0, 0);
 		obstacleList.remove(location);
-		TM.setDisplayMessage("One Obstacle Removed");
+		TM.setDisplayMessage("An Obstacle has Disappeared...");
 	}
 
 	public void lightningStrike() {

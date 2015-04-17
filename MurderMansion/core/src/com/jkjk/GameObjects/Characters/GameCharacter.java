@@ -1,12 +1,7 @@
 package com.jkjk.GameObjects.Characters;
 
 import java.util.Random;
-
 import box2dLight.RayHandler;
-
-import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.audio.Music;
-import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.physics.box2d.Body;
@@ -27,6 +22,7 @@ public abstract class GameCharacter {
 
 	private String type;
 	private boolean isPlayer;
+	private GameWorld gWorld;
 
 	private boolean alive;
 	protected boolean itemChange, weaponChange, abilityChange;
@@ -73,6 +69,7 @@ public abstract class GameCharacter {
 
 		this.type = type;
 		this.id = id;
+		this.gWorld = gWorld;
 		AbilityFactory af = new AbilityFactory();
 		ability = af.createAbility(gWorld, this);
 
@@ -126,6 +123,7 @@ public abstract class GameCharacter {
 
 	public void die() {
 		alive = false;
+		gWorld.getTM().setDisplayMessage("You have died...");
 		AssetLoader.characterDeathSound.play(AssetLoader.VOLUME);
 	}
 
