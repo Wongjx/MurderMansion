@@ -96,6 +96,7 @@ public class HudRenderer {
 	
 	private ToastMessage TM;
 	private ToastMessage GWTM;
+	private boolean SyncSwitch;
 	
 //	private boolean 
 	/**
@@ -146,6 +147,7 @@ public class HudRenderer {
 		
 		TM = new ToastMessage(300f);
 		GWTM = gWorld.getTM();
+		SyncSwitch = true;
 	}
 
 	public static HudRenderer getInstance(GameWorld gWorld, MMClient client, float gameWidth,
@@ -205,41 +207,52 @@ public class HudRenderer {
 	 * @param delta
 	 *            The time between each render.
 	 */
-	public void render(float delta) {
-
+	public void render(float delta,boolean gameStarted) {
 		batch.begin();
 		
-		batch.draw(timebox, 55, 280);
-		batch.draw(weapon_parts_counter, 440, 235);
-		batch.draw(emptySlot, 480, 22, 120, 120);
-		font.draw(batch, getTime(delta), 80, 328);
-		WeaponPartsDisplay();
-		coolDownAnimationCheck(delta);
-		prohibitButtonsCheck();
-		TM.render(batch);
-		GWTM.render(batch);
-		batch.end();
-
-		if (gWorld.getPlayer().getItemChange())
-			itemCheck();
-		if (gWorld.getPlayer().getWeaponChange())
-			weaponCheck();
-		if (gWorld.getPlayer().getAbilityChange())
-			abilityCheck();
-
-		stage.draw(); // Draw touchpad
-		stage.act(Gdx.graphics.getDeltaTime()); // Acts stage at deltatime
-
-		if (inSettings) {
-			batch.begin();
-			batch.draw(pause_main, 0, 0);
-			if (mute)
-				batch.draw(AssetLoader.soundoff_tex, 390, 180);
-			else
-				batch.draw(AssetLoader.soundon_tex, 390, 180);
+		if(!gameStarted){
+			if(SyncSwitch){
+				GWTM.setDisplayMessage("Synchronizing...");
+				SyncSwitch = false;
+			}
+			else{
+				GWTM.render(batch);
+			}
 			batch.end();
-			settingsStage.draw();
-			settingsStage.act(Gdx.graphics.getDeltaTime());
+		}
+		else{
+			batch.draw(timebox, 55, 280);
+			batch.draw(weapon_parts_counter, 440, 235);
+			batch.draw(emptySlot, 480, 22, 120, 120);
+			font.draw(batch, getTime(delta), 80, 328);
+			WeaponPartsDisplay();
+			coolDownAnimationCheck(delta);
+			prohibitButtonsCheck();
+			TM.render(batch);
+			GWTM.render(batch);
+			batch.end();
+	
+			if (gWorld.getPlayer().getItemChange())
+				itemCheck();
+			if (gWorld.getPlayer().getWeaponChange())
+				weaponCheck();
+			if (gWorld.getPlayer().getAbilityChange())
+				abilityCheck();
+	
+			stage.draw(); // Draw touchpad
+			stage.act(Gdx.graphics.getDeltaTime()); // Acts stage at deltatime
+	
+			if (inSettings) {
+				batch.begin();
+				batch.draw(pause_main, 0, 0);
+				if (mute)
+					batch.draw(AssetLoader.soundoff_tex, 390, 180);
+				else
+					batch.draw(AssetLoader.soundon_tex, 390, 180);
+				batch.end();
+				settingsStage.draw();
+				settingsStage.act(Gdx.graphics.getDeltaTime());
+			}
 		}
 	}
 
