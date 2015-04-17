@@ -9,6 +9,7 @@ import com.jkjk.MMHelpers.AssetLoader;
 import com.jkjk.MMHelpers.MultiplayerSessionInfo;
 import com.jkjk.Screens.MenuScreen;
 import com.jkjk.Screens.ScoreScreen;
+import com.jkjk.Screens.SplashScreen;
 
 public class MurderMansion extends Game {
 	public ActionResolver actionResolver;
@@ -28,13 +29,12 @@ public class MurderMansion extends Game {
 
 	@Override
 	public void create() {
-
-		
 		GdxNativesLoader.load();
-		AssetLoader.load();
-//		setScreen(new SplashScreen(this, V_WIDTH * SCALE, V_HEIGHT * SCALE));
+		AssetLoader.initiate();
+		AssetLoader.loadLogo();
+		setScreen(new SplashScreen(this, V_WIDTH * SCALE, V_HEIGHT * SCALE));
 //		setScreen(new WaitScreen(this, V_WIDTH * SCALE, V_HEIGHT * SCALE));
-		setScreen(new MenuScreen(this,V_WIDTH * SCALE, V_HEIGHT * SCALE));
+//		setScreen(new MenuScreen(this,V_WIDTH * SCALE, V_HEIGHT * SCALE));
 //		setScreen(new GameScreen(V_WIDTH * SCALE, V_HEIGHT * SCALE));
 //		setScreen(new ScoreScreen(this,V_WIDTH * SCALE, V_HEIGHT * SCALE, true));
 	}

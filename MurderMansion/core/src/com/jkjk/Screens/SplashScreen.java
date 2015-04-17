@@ -6,6 +6,7 @@ import aurelienribon.tweenengine.TweenCallback;
 import aurelienribon.tweenengine.TweenEquations;
 import aurelienribon.tweenengine.TweenManager;
 
+import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.GL20;
@@ -24,11 +25,13 @@ public class SplashScreen implements Screen {
 	
 	private float gameWidth;
 	private float gameHeight;
+	private int renderLoops;
 
 	public SplashScreen(MurderMansion game, float gameWidth, float gameHeight) {
 		this.game = game;
 		this.gameWidth = gameWidth;
 		this.gameHeight = gameHeight;
+		renderLoops = 0;
 	}
 
 	@Override
@@ -67,6 +70,17 @@ public class SplashScreen implements Screen {
 		batcher.begin();
 		sprite.draw(batcher);
 		batcher.end();
+		if (renderLoops == 100) {
+			AssetLoader.loadFont();
+			AssetLoader.loadMenuScreen();
+			AssetLoader.loadMenuSfx();
+			AssetLoader.loadLoadingScreen();
+			AssetLoader.loadTutorialScreen();
+			AssetLoader.loadCharacters();
+			AssetLoader.loadHUD();
+			AssetLoader.loadMapSprites();
+		}
+		renderLoops++;
 	}
 
 	@Override

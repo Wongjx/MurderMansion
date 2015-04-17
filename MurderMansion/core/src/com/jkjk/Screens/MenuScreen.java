@@ -33,7 +33,6 @@ public class MenuScreen implements Screen {
 	private float gameHeight;
 	private float BUTTON_WIDTH;
 	private float BUTTON_HEIGHT;
-	
 
 	private SpriteBatch batch;
 	private Texture background;
@@ -60,7 +59,7 @@ public class MenuScreen implements Screen {
 		BUTTON_HEIGHT = 40;
 
 		normal = AssetLoader.normal;
-		
+
 		stage = new Stage(new ExtendViewport(gameWidth, gameHeight));
 		buttonPlay = new TextButton("Enter", normal);
 		buttonJoin = new TextButton("Join Game", normal);
@@ -72,11 +71,15 @@ public class MenuScreen implements Screen {
 
 	@Override
 	public void show() {
+
 		// The elements are displayed in the order you add them.
 		// The first appear on top, the last at the bottom.
-		AssetLoader.gameMusic.stop();
+		if (AssetLoader.gameMusic != null) {
+			AssetLoader.gameMusic.stop();
+			AssetLoader.disposeSFX();
+		}
 		AssetLoader.menuMusic.play();
-		
+
 		batch = new SpriteBatch();
 		background = AssetLoader.menuBackground;
 		background.setFilter(TextureFilter.Linear, TextureFilter.Linear);
@@ -89,7 +92,7 @@ public class MenuScreen implements Screen {
 				AssetLoader.clickSound.play(AssetLoader.VOLUME);
 				GameWorld world = new GameWorld();
 				GameRenderer renderer = new GameRenderer(world, gameWidth, gameHeight);
-				
+
 				try {
 					game.mMultiplayerSession.isServer = true;
 					game.mMultiplayerSession.setServer(new MMServer(1, game.mMultiplayerSession));
@@ -98,7 +101,7 @@ public class MenuScreen implements Screen {
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
-				((Game) Gdx.app.getApplicationListener()).setScreen(new GameScreen(game, gameWidth,
+				((Game) Gdx.app.getApplicationListener()).setScreen(new LoadingScreen(game, gameWidth,
 						gameHeight, world, renderer));
 			}
 		});
@@ -151,7 +154,7 @@ public class MenuScreen implements Screen {
 				((Game) Gdx.app.getApplicationListener()).setScreen(new WaitScreen(game, gameWidth,
 						gameHeight));
 			}
-			
+
 		});
 
 		buttonPlay.setSize(this.BUTTON_WIDTH, this.BUTTON_HEIGHT);
