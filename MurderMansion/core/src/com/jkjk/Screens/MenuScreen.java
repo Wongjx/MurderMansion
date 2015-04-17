@@ -44,6 +44,7 @@ public class MenuScreen implements Screen {
 	private Stage stage;
 	private TextButton buttonQuick;
 	private TextButton buttonLogin;
+	private TextButton buttonLogout;
 	private TextButton buttonPlay;
 	private TextButton buttonJoin;
 	private TextButton buttonTutorial;
@@ -66,6 +67,7 @@ public class MenuScreen implements Screen {
 		buttonJoin = new TextButton("Join Game", normal);
 		buttonTutorial = new TextButton("Tutorial", normal);
 		buttonLogin = new TextButton("Login", normal);
+		buttonLogout = new TextButton("Logout", normal);
 		buttonQuick = new TextButton("Quick Game", normal);
 		buttonInvite = new TextButton("Invite", normal);
 	}
@@ -107,6 +109,15 @@ public class MenuScreen implements Screen {
 			public void clicked(InputEvent event, float x, float y) {
 				AssetLoader.clickSound.play(AssetLoader.VOLUME);
 				game.actionResolver.loginGPGS();
+
+			}
+		});
+		
+		buttonLogout.addListener(new ClickListener() {
+			@Override
+			public void clicked(InputEvent event, float x, float y) {
+				AssetLoader.clickSound.play(AssetLoader.VOLUME);
+				game.actionResolver.logoutGPGS();
 
 			}
 		});
@@ -167,6 +178,10 @@ public class MenuScreen implements Screen {
 		buttonLogin.setSize(this.BUTTON_WIDTH, this.BUTTON_HEIGHT);
 		buttonLogin.setPosition(345, 220);
 		stage.addActor(buttonLogin);
+		
+		buttonLogout.setSize(this.BUTTON_WIDTH, this.BUTTON_HEIGHT);
+		buttonLogout.setPosition(345, 20);
+		stage.addActor(buttonLogout);
 
 		buttonTutorial.setSize(this.BUTTON_WIDTH, this.BUTTON_HEIGHT);
 		buttonTutorial.setPosition(475, 100);
