@@ -121,7 +121,7 @@ public class GameWorld {
 
 		obstacleList = new ConcurrentHashMap<Vector2, Obstacles>();
 
-		gameOverTimer = new Duration(50000);
+		gameOverTimer = new Duration(5000);
 		lightningDuration = new Duration(500);
 
 		Box2DMapObjectParser parser = new Box2DMapObjectParser();

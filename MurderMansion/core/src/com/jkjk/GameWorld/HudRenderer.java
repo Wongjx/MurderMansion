@@ -144,7 +144,7 @@ public class HudRenderer {
 		settingsStage.addActor(getMuteButton());
 		settingsStage.addActor(getSettingsCloseButton());
 		
-		TM = new ToastMessage(300f);
+		TM = new ToastMessage(350);
 		GWTM = gWorld.getTM();
 	}
 
