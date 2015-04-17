@@ -77,7 +77,6 @@ public class GameScreen implements Screen {
 					System.out.println("GAMEWORLD UPDATE: GAMEOVER COMPLETE");
 					((Game) Gdx.app.getApplicationListener()).setScreen(new ScoreScreen(game, gameWidth,
 							gameHeight, gWorld.isMurWin()));
-					System.out.println("Game renderer and HUD renderer disposed");
 				}
 			}
 		}
