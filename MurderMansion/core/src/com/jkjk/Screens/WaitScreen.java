@@ -11,6 +11,7 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.utils.SpriteDrawable;
+import com.badlogic.gdx.utils.viewport.ExtendViewport;
 import com.jkjk.GameWorld.GameRenderer;
 import com.jkjk.GameWorld.GameWorld;
 import com.jkjk.GameWorld.MMClient;
@@ -19,7 +20,7 @@ import com.jkjk.MurderMansion.MurderMansion;
 
 public class WaitScreen implements Screen {
 	
-	private Stage stage = new Stage();
+	private Stage stage;
 	private SpriteBatch batcher;
 	private Sprite sprite;
 	private MurderMansion game;
@@ -31,6 +32,7 @@ public class WaitScreen implements Screen {
 		this.game = game;
 		this.gameWidth = gameWidth;
 		this.gameHeight = gameHeight;
+		stage = new Stage(new ExtendViewport(gameWidth, gameHeight));
 	}
 
 	@Override
@@ -77,8 +79,8 @@ public class WaitScreen implements Screen {
 				System.out.println("Error @ HERE!");
 				e.printStackTrace();
 			}
-			System.out.println("Setting screen to new game screen.");
-			((Game) Gdx.app.getApplicationListener()).setScreen(new GameScreen(game, gameWidth, gameHeight,
+			System.out.println("Setting screen to new loading screen.");
+			((Game) Gdx.app.getApplicationListener()).setScreen(new LoadingScreen(game, gameWidth, gameHeight,
 					gWorld, renderer));
 
 		} else if (game.mMultiplayerSession.mState == game.mMultiplayerSession.ROOM_MENU) {

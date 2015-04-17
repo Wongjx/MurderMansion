@@ -71,11 +71,11 @@ public class GameScreen implements Screen {
 		if (gWorld.isCivWin() || gWorld.isMurWin()) {
 			gWorld.getGameOverTimer().update();
 			if (!gWorld.getGameOverTimer().isCountingDown()) {
-				if (client.getNumOfPlayers() > 1) {
+//				if (client.getNumOfPlayers() > 1) {
 					System.out.println("GAMEWORLD UPDATE: GAMEOVER COMPLETE");
 					((Game) Gdx.app.getApplicationListener()).setScreen(new ScoreScreen(game, gameWidth,
 							gameHeight, gWorld.isMurWin()));
-				}
+//				}
 			}
 		}
 	}

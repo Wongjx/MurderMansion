@@ -1,6 +1,7 @@
 package com.jkjk.MurderMansion.android;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import android.app.Activity;
@@ -94,6 +95,13 @@ public class GPSListeners implements RoomStatusUpdateListener, RoomUpdateListene
         }
         
         Log.d(TAG, "Number of participants "+room.getParticipants().size());
+        
+        //Decide who is the server
+        ArrayList<String> participants= room.getParticipantIds();
+        Collections.sort(participants);
+        if(participants.get(0).equals(activity.mMultiplayerSeisson.mId)){
+        	activity.mMultiplayerSeisson.isServer=true;
+        }
         
     	if(activity.mMultiplayerSeisson.isServer){
     		try{

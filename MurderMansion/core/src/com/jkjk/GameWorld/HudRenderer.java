@@ -69,7 +69,7 @@ public class HudRenderer {
 	private Touchpad touchpad;
 	private Drawable touchKnob;
 
-	
+
 	private boolean PanicCD;
 	private boolean DisguiseCD;
 	private boolean HauntCD;
@@ -93,12 +93,12 @@ public class HudRenderer {
 	private int seconds;
 
 	private boolean mute;
-	
+
 	private ToastMessage TM;
 	private ToastMessage GWTM;
 	private boolean SyncSwitch;
-	
-//	private boolean 
+
+	//	private boolean 
 	/**
 	 * Constructs the link from the Box2D world created in GameWorld to HudRenderer. Allows rendering of the
 	 * player's touchpad, item slots, time left and weapon parts collected based on what had happened in the
@@ -144,8 +144,7 @@ public class HudRenderer {
 		settingsStage.addActor(getMainMenuButton());
 		settingsStage.addActor(getMuteButton());
 		settingsStage.addActor(getSettingsCloseButton());
-		
-		TM = new ToastMessage(300f);
+		TM = new ToastMessage(330f);
 		GWTM = gWorld.getTM();
 		SyncSwitch = true;
 	}
@@ -194,7 +193,7 @@ public class HudRenderer {
 		// Top part of the screen
 		timebox = AssetLoader.time;
 		weapon_parts_counter = AssetLoader.weapon_parts_counter;
-		font = AssetLoader.basker32blackTime;
+		font = AssetLoader.crimesFont36Time;
 		settingsButtonDraw = AssetLoader.settings_button_draw;
 		pause_main = AssetLoader.pause_main;
 		normalSettings = AssetLoader.normalSettings;
@@ -209,15 +208,10 @@ public class HudRenderer {
 	 */
 	public void render(float delta,boolean gameStarted) {
 		batch.begin();
-		
+
 		if(!gameStarted){
-			if(SyncSwitch){
-				GWTM.setDisplayMessage("Synchronizing...");
-				SyncSwitch = false;
-			}
-			else{
-				GWTM.render(batch);
-			}
+			String s = "Synchronizing...";
+			font.draw(batch, s, 300-(font.getBounds(s).width/2), 330);
 			batch.end();
 		}
 		else{
@@ -230,18 +224,19 @@ public class HudRenderer {
 			prohibitButtonsCheck();
 			TM.render(batch);
 			GWTM.render(batch);
+			
 			batch.end();
-	
+
 			if (gWorld.getPlayer().getItemChange())
 				itemCheck();
 			if (gWorld.getPlayer().getWeaponChange())
 				weaponCheck();
 			if (gWorld.getPlayer().getAbilityChange())
 				abilityCheck();
-	
+
 			stage.draw(); // Draw touchpad
 			stage.act(Gdx.graphics.getDeltaTime()); // Acts stage at deltatime
-	
+
 			if (inSettings) {
 				batch.begin();
 				batch.draw(pause_main, 0, 0);
@@ -265,6 +260,9 @@ public class HudRenderer {
 		minutes = (int) Math.floor(playTime / 60.0f);
 		seconds = (int) Math.floor(playTime - minutes * 60);
 		time = String.format("%d:%02d", minutes, seconds);
+		if (minutes < 0 ){
+			return String.format("%d:%02d", 0, 0);
+		}
 
 		return time;
 	}
@@ -290,34 +288,34 @@ public class HudRenderer {
 			@Override
 			public void clicked(InputEvent event, float x, float y) {
 				AssetLoader.clickSound.play(AssetLoader.VOLUME);
-            	try{
-            		if(game.mMultiplayerSession.isServer){
-                		game.mMultiplayerSession.getServer().endSession();
-//                		System.out.println("Ended server session.");
-                	}
+				try{
+					if(game.mMultiplayerSession.isServer){
+						game.mMultiplayerSession.getServer().endSession();
+						//                		System.out.println("Ended server session.");
+					}
 
-            		if (game.mMultiplayerSession.getClient()!=null){
-            			game.mMultiplayerSession.getClient().endSession();
-            		}else{
-            			//TODO HALP HALP HALP CLIENT NOT SUPPOSED TO BE NULL
-            			System.out.println("CLIENT IS NULL?!!!?");
-            		}
-            		
-//            		System.out.println("Leave room");
-            		game.actionResolver.leaveRoom();
-            		
-//            		System.out.println("End mMultiplayer session");
-                	game.mMultiplayerSession.endSession();
-            	}catch(Exception e){
-            		System.out.println("Error on button press: "+e.getMessage());
-            	}
-            	((Game)Gdx.app.getApplicationListener()).setScreen(new MenuScreen(game, gameWidth, gameHeight));
+					if (game.mMultiplayerSession.getClient()!=null){
+						game.mMultiplayerSession.getClient().endSession();
+					}else{
+						//TODO HALP HALP HALP CLIENT NOT SUPPOSED TO BE NULL
+						System.out.println("CLIENT IS NULL?!!!?");
+					}
+
+					//            		System.out.println("Leave room");
+					game.actionResolver.leaveRoom();
+
+					//            		System.out.println("End mMultiplayer session");
+					game.mMultiplayerSession.endSession();
+				}catch(Exception e){
+					System.out.println("Error on button press: "+e.getMessage());
+				}
+				((Game)Gdx.app.getApplicationListener()).setScreen(new MenuScreen(game, gameWidth, gameHeight));
 			}
 		});
 
 		return buttonMainMenu;
 	}
-	
+
 	public Actor getSettingsCloseButton() {
 		settingsCloseButton = new ImageButton(settingsCloseDraw);
 		settingsCloseButton.setSize(this.BUTTON_WIDTH, this.BUTTON_HEIGHT);
@@ -332,7 +330,7 @@ public class HudRenderer {
 		});
 		return settingsCloseButton;
 	}
-		
+
 
 	public Actor getUnmuteButton() {
 		unmuteButton = new TextButton("Sound off", normalSettings);
@@ -353,7 +351,7 @@ public class HudRenderer {
 
 		return unmuteButton;
 	}
-	
+
 	public Actor getMuteButton() {
 		muteButton = new TextButton("Sound on", normalSettings);
 		muteButton.setSize(this.BUTTON_WIDTH, this.BUTTON_HEIGHT);
@@ -387,8 +385,8 @@ public class HudRenderer {
 
 	private void WeaponPartsDisplay() {
 		int numParts = gWorld.getNumOfWeaponPartsCollected();
-		font.draw(batch, Integer.toString(numParts), 456, 325);
-		font.draw(batch, Integer.toString(client.getNumOfPlayers() * 2), 520, 312);
+		font.draw(batch, Integer.toString(numParts), 456, 328);
+		font.draw(batch, Integer.toString(client.getNumOfPlayers() * 2), 520, 315);
 	}
 
 	/**
@@ -694,7 +692,7 @@ public class HudRenderer {
 				client.updatePlayerUseItem();
 				if (gWorld.getPlayer().getType() == "Ghost")
 					TM.setDisplayMessage("Put down Disarm Trap");
-					AssetLoader.pickUpItemSound.play(AssetLoader.VOLUME);
+				AssetLoader.pickUpItemSound.play(AssetLoader.VOLUME);
 			}
 		});
 
@@ -788,7 +786,7 @@ public class HudRenderer {
 		itemButton.setSize(40, 40);
 		AssetLoader.pickUpItemSound.play(AssetLoader.VOLUME);
 		TM.setDisplayMessage("Obtained Trap");
-		
+
 		itemButton.addListener(new ClickListener() {
 			@Override
 			public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
@@ -823,7 +821,7 @@ public class HudRenderer {
 		disguiseToCiv.setWidth(33);
 		disguiseToCiv.setHeight(33);
 		disguiseToCiv.setName("Disguise to civilian");
-		
+
 		disguiseToCiv.addListener(new ClickListener() {
 			public void clicked(InputEvent event, float x, float y) {
 				System.out.println("Clicked on disguise to civilian button");
@@ -849,14 +847,13 @@ public class HudRenderer {
 	public ImageButton getDisguiseToMur() {
 		x = 522;
 		y = 92;
-
 		disguiseToMur = new ImageButton(mur_CtM);
 		disguiseToMur.setX(x);
 		disguiseToMur.setY(y);
 		disguiseToMur.setWidth(33);
 		disguiseToMur.setHeight(33);
 		disguiseToMur.setName("Disguise to murderer");
-		
+
 		disguiseToMur.addListener(new ClickListener() {
 			public void clicked(InputEvent event, float x, float y) {
 				System.out.println("Clicked on disguise to murderer button");
@@ -904,7 +901,7 @@ public class HudRenderer {
 
 		return hauntButton;
 	}
-	
+
 	public ToastMessage getTM(){
 		return TM;
 	}

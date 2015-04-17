@@ -6,6 +6,7 @@ import aurelienribon.tweenengine.TweenCallback;
 import aurelienribon.tweenengine.TweenEquations;
 import aurelienribon.tweenengine.TweenManager;
 
+import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.GL20;
@@ -21,14 +22,16 @@ public class SplashScreen implements Screen {
 	private SpriteBatch batcher;
 	private Sprite sprite;
 	private MurderMansion game;
-	
+
 	private float gameWidth;
 	private float gameHeight;
+	private int renderLoops;
 
 	public SplashScreen(MurderMansion game, float gameWidth, float gameHeight) {
 		this.game = game;
 		this.gameWidth = gameWidth;
 		this.gameHeight = gameHeight;
+		renderLoops = 0;
 	}
 
 	@Override
@@ -36,8 +39,9 @@ public class SplashScreen implements Screen {
 		sprite = new Sprite(AssetLoader.logo);
 		sprite.setColor(1, 1, 1, 0);
 
-		sprite.setPosition((Gdx.graphics.getWidth()/2 - sprite.getWidth()/2), 
-				(Gdx.graphics.getHeight()/2 - sprite.getHeight()/2));
+		sprite.setPosition((Gdx.graphics.getWidth() / 2 - sprite.getWidth() / 2),
+				(Gdx.graphics.getHeight() / 2 - sprite.getHeight() / 2));
+		sprite.setScale(Gdx.graphics.getWidth() / gameWidth / 2);
 		setupTween();
 		batcher = new SpriteBatch();
 	}
@@ -49,13 +53,12 @@ public class SplashScreen implements Screen {
 		TweenCallback cb = new TweenCallback() {
 			@Override
 			public void onEvent(int type, BaseTween<?> source) {
-				game.setScreen(new MenuScreen(game,gameWidth,gameHeight));
+				game.setScreen(new MenuScreen(game, gameWidth, gameHeight));
 			}
 		};
 
-		Tween.to(sprite, SpriteAccessor.ALPHA, 2f).target(1)
-				.ease(TweenEquations.easeInOutQuad).repeatYoyo(1, 0.5f)
-				.setCallback(cb).setCallbackTriggers(TweenCallback.COMPLETE)
+		Tween.to(sprite, SpriteAccessor.ALPHA, 2f).target(1).ease(TweenEquations.easeInOutQuad)
+				.repeatYoyo(1, 0.5f).setCallback(cb).setCallbackTriggers(TweenCallback.COMPLETE)
 				.start(manager);
 	}
 
@@ -67,6 +70,18 @@ public class SplashScreen implements Screen {
 		batcher.begin();
 		sprite.draw(batcher);
 		batcher.end();
+		if (renderLoops == 100) {
+			AssetLoader.loadFont();
+			AssetLoader.loadMenuScreen();
+			AssetLoader.loadMenuSfx();
+			AssetLoader.loadLoadingScreen();
+			AssetLoader.loadTutorialScreen();
+			AssetLoader.loadCharacters();
+			AssetLoader.loadHUD();
+			AssetLoader.loadMapSprites();
+			AssetLoader.loadScoreScreen();
+		}
+		renderLoops++;
 	}
 
 	@Override
