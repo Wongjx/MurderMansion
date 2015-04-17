@@ -15,7 +15,6 @@ import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
 import com.badlogic.gdx.scenes.scene2d.ui.ImageButton.ImageButtonStyle;
-import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton.TextButtonStyle;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
@@ -33,14 +32,11 @@ public class ScoreScreen implements Screen {
 	private MurderMansion game;
 
 	private Stage stage;
-	private Table table;
 
 	private float gameWidth;
 	private float gameHeight;
-	private float TITLE_PAD;
 	private float BUTTON_WIDTH;
 	private float BUTTON_HEIGHT;
-	private float BUTTON_PAD;
 
 	private SpriteBatch batch;
 	private Texture background;
@@ -66,7 +62,6 @@ public class ScoreScreen implements Screen {
 
 		// Create a Stage and add TouchPad
 		stage = new Stage(new ExtendViewport(gameWidth, gameHeight));
-		table = new Table();
 
 		BUTTON_WIDTH = 60;
 		BUTTON_HEIGHT = 60;
@@ -133,13 +128,6 @@ public class ScoreScreen implements Screen {
         nextButton.setPosition(560, 20);
 	    stage.addActor(nextButton);
 	    
-	    
-//        table.add(nextButton).size(this.BUTTON_WIDTH,this.BUTTON_HEIGHT);
-
-        table.setFillParent(true);
-        stage.addActor(table);
-        table.debug();
-
         Gdx.input.setInputProcessor(stage);
 	}
 
@@ -153,6 +141,10 @@ public class ScoreScreen implements Screen {
 		Gdx.gl.glClearColor(0, 0, 0, 1);
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
+		batch.begin();
+		sprite.draw(batch);
+		batch.end();
+		
 		stage.draw();
 		stage.act(Gdx.graphics.getDeltaTime()); // Acts stage at deltatime
 	}

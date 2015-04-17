@@ -508,7 +508,6 @@ public class MMServer {
 	}
 	
 	private void killPlayer(int playerId){
-		//TODO kill player in gameworld
 		this.playerStats.updateIsAlive(SERVER_ID, playerId, 0);
 	}
 	
@@ -536,6 +535,8 @@ class serverAcceptThread extends Thread {
 		while (server.getClients().size() < server.getNumOfPlayers()) {
 			try {
 				Socket socket = server.serverSocket.accept();
+				//Set socket timeout as 30 seconds
+				socket.setSoTimeout(30000);				
 				// Add in client socket
 				server.getClients().put("Player "+idCount, socket);
 				// Add input stream
