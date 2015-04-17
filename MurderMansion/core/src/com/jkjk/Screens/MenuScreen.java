@@ -41,12 +41,12 @@ public class MenuScreen implements Screen {
 	private TextButtonStyle normal;
 
 	private Stage stage;
-	private TextButton buttonPlay;
-	private TextButton buttonJoin;
-	private TextButton buttonLogout;
-	private TextButton buttonLogin;
 	private TextButton buttonQuick;
-	private TextButton buttonInvite;
+	private TextButton buttonLogin;
+	private TextButton buttonPlay;
+//	private TextButton buttonJoin;
+//	private TextButton buttonLogout;
+//	private TextButton buttonInvite;
 
 	private MurderMansion game;
 
@@ -62,11 +62,11 @@ public class MenuScreen implements Screen {
 
 		stage = new Stage(new ExtendViewport(gameWidth, gameHeight));
 		buttonPlay = new TextButton("Enter", normal);
-		buttonJoin = new TextButton("Join Game", normal);
-		buttonLogout = new TextButton("Logout", normal);
+//		buttonJoin = new TextButton("Join Game", normal);
+//		buttonLogout = new TextButton("Logout", normal);
 		buttonLogin = new TextButton("Login", normal);
 		buttonQuick = new TextButton("Quick Game", normal);
-		buttonInvite = new TextButton("Invite", normal);
+//		buttonInvite = new TextButton("Invite", normal);
 	}
 
 	@Override
@@ -114,14 +114,14 @@ public class MenuScreen implements Screen {
 			}
 		});
 
-		buttonLogout.addListener(new ClickListener() {
-			@Override
-			public void clicked(InputEvent event, float x, float y) {
-				AssetLoader.clickSound.play(AssetLoader.VOLUME);
-				game.actionResolver.logoutGPGS();
-			}
-		});
-
+//		buttonLogout.addListener(new ClickListener() {
+//			@Override
+//			public void clicked(InputEvent event, float x, float y) {
+//				AssetLoader.clickSound.play(AssetLoader.VOLUME);
+//				game.actionResolver.logoutGPGS();
+//			}
+//		});
+//
 		buttonQuick.addListener(new ClickListener() {
 			@Override
 			public void clicked(InputEvent event, float x, float y) {
@@ -133,32 +133,31 @@ public class MenuScreen implements Screen {
 						gameHeight));
 			}
 		});
-
-		buttonInvite.addListener(new ClickListener() {
-			@Override
-			public void clicked(InputEvent event, float x, float y) {
-				AssetLoader.clickSound.play(AssetLoader.VOLUME);
-				game.actionResolver.sendInvitations();
-				game.mMultiplayerSession.mState = game.mMultiplayerSession.ROOM_WAIT;
-				((Game) Gdx.app.getApplicationListener()).setScreen(new WaitScreen(game, gameWidth,
-						gameHeight));
-			}
-		});
-
-		buttonJoin.addListener(new ClickListener() {
-			@Override
-			public void clicked(InputEvent event, float x, float y) {
-				AssetLoader.clickSound.play(AssetLoader.VOLUME);
-				game.actionResolver.seeInvitations();
-				game.mMultiplayerSession.mState = game.mMultiplayerSession.ROOM_WAIT;
-				((Game) Gdx.app.getApplicationListener()).setScreen(new WaitScreen(game, gameWidth,
-						gameHeight));
-			}
-
-		});
+//		buttonInvite.addListener(new ClickListener() {
+//			@Override
+//			public void clicked(InputEvent event, float x, float y) {
+//				AssetLoader.clickSound.play(AssetLoader.VOLUME);
+//				game.actionResolver.sendInvitations();
+//				game.mMultiplayerSession.mState = game.mMultiplayerSession.ROOM_WAIT;
+//				((Game) Gdx.app.getApplicationListener()).setScreen(new WaitScreen(game, gameWidth,
+//						gameHeight));
+//			}
+//		});
+//
+//		buttonJoin.addListener(new ClickListener() {
+//			@Override
+//			public void clicked(InputEvent event, float x, float y) {
+//				AssetLoader.clickSound.play(AssetLoader.VOLUME);
+//				game.actionResolver.seeInvitations();
+//				game.mMultiplayerSession.mState = game.mMultiplayerSession.ROOM_WAIT;
+//				((Game) Gdx.app.getApplicationListener()).setScreen(new WaitScreen(game, gameWidth,
+//						gameHeight));
+//			}
+//			
+//		});
 
 		buttonPlay.setSize(this.BUTTON_WIDTH, this.BUTTON_HEIGHT);
-		buttonPlay.setPosition(345, 220);
+		buttonPlay.setPosition(345, 160);
 		stage.addActor(buttonPlay);
 
 		buttonQuick.setSize(this.BUTTON_WIDTH, this.BUTTON_HEIGHT);
@@ -166,20 +165,20 @@ public class MenuScreen implements Screen {
 		stage.addActor(buttonQuick);
 
 		buttonLogin.setSize(this.BUTTON_WIDTH, this.BUTTON_HEIGHT);
-		buttonLogin.setPosition(345, 160);
+		buttonLogin.setPosition(345, 220);
 		stage.addActor(buttonLogin);
 
-		buttonLogout.setSize(this.BUTTON_WIDTH, this.BUTTON_HEIGHT);
-		buttonLogout.setPosition(475, 160);
-		stage.addActor(buttonLogout);
-
-		buttonInvite.setSize(this.BUTTON_WIDTH, this.BUTTON_HEIGHT);
-		buttonInvite.setPosition(345, 100);
-		stage.addActor(buttonInvite);
-
-		buttonJoin.setSize(this.BUTTON_WIDTH, this.BUTTON_HEIGHT);
-		buttonJoin.setPosition(475, 100);
-		stage.addActor(buttonJoin);
+//		buttonLogout.setSize(this.BUTTON_WIDTH, this.BUTTON_HEIGHT);
+//		buttonLogout.setPosition(475, 160);
+//		stage.addActor(buttonLogout);
+//
+//		buttonInvite.setSize(this.BUTTON_WIDTH, this.BUTTON_HEIGHT);
+//		buttonInvite.setPosition(345, 100);
+//		stage.addActor(buttonInvite);
+//
+//		buttonJoin.setSize(this.BUTTON_WIDTH, this.BUTTON_HEIGHT);
+//		buttonJoin.setPosition(475, 100);
+//		stage.addActor(buttonJoin);
 
 		System.out.println("height: " + BUTTON_HEIGHT);
 		System.out.println("width: " + BUTTON_WIDTH);

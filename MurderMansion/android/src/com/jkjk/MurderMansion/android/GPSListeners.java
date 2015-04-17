@@ -1,6 +1,7 @@
 package com.jkjk.MurderMansion.android;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import android.app.Activity;
@@ -95,6 +96,13 @@ public class GPSListeners implements RoomStatusUpdateListener, RoomUpdateListene
         
         Log.d(TAG, "Number of participants "+room.getParticipants().size());
         
+        //Decide who is the server
+        ArrayList<String> participants= room.getParticipantIds();
+        Collections.sort(participants);
+        if(participants.get(0).equals(activity.mMultiplayerSeisson.mId)){
+        	activity.mMultiplayerSeisson.isServer=true;
+        }
+        
     	if(activity.mMultiplayerSeisson.isServer){
     		try{
         		//Create MMServer with current number of players and broadcast server details
@@ -147,8 +155,9 @@ public class GPSListeners implements RoomStatusUpdateListener, RoomUpdateListene
     // Called when we get disconnected from the room. We return to the main screen.
     @Override
     public void onDisconnectedFromRoom(Room room) {
-    	activity.mMultiplayerSeisson.endSession();
-    	activity.mMultiplayerSeisson.mState=activity.mMultiplayerSeisson.ROOM_MENU;
+    	System.out.println("Disconnected from GPS room");
+//    	activity.mMultiplayerSeisson.endSession();
+//    	activity.mMultiplayerSeisson.mState=activity.mMultiplayerSeisson.ROOM_MENU;
 //        showGameError();
     }
 
@@ -183,6 +192,7 @@ public class GPSListeners implements RoomStatusUpdateListener, RoomUpdateListene
 
     @Override
     public void onPeerLeft(Room room, List<String> peersWhoLeft) {
+    	System.out.println("Peer left GPS room");
         updateRoom(room);
     }
 

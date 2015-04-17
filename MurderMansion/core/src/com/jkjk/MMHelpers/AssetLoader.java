@@ -16,6 +16,7 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TmxMapLoader;
 import com.badlogic.gdx.scenes.scene2d.ui.ImageButton.ImageButtonStyle;
+import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Label.LabelStyle;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton.TextButtonStyle;
@@ -82,14 +83,18 @@ public class AssetLoader {
 	public static Texture logoTexture;
 	public static TextureRegion logo;
 	public static TextButtonStyle normal;
+	
 	public static BitmapFont crimesFont36;
 	public static BitmapFont crimesFont48;
 	public static BitmapFont crimesFont36Time;
 	public static BitmapFont crimesFont36Settings;
+	public static BitmapFont crimesFont36Message;
+	
 	public static Drawable buttonUp;
 	public static Drawable buttonDown;
 
 	public static LabelStyle title;
+	public static Label message;
 
 	public static Skin touchpadSkin;
 	public static Skin menuSkin;
@@ -178,15 +183,10 @@ public class AssetLoader {
 	public static Animation civShotgunAnimation3;
 
 	public static Texture murderer;
-	// public static Texture mur_walk;
 	public static Animation murAnimation;
-	// public static Texture mur_knife;
 	public static Animation murKnifeAnimation;
-	// public static Texture mur_plantTrap;
 	public static Animation murPlantTrapAnimation;
-	// public static Texture mur_death;
 	public static Animation murDeathAnimation;
-	// public static Texture mur_civTransformation;
 	public static Animation murToCivAnimation0;
 	public static Animation civToMurAnimation0;
 	public static Animation murToCivAnimation1;
@@ -195,8 +195,11 @@ public class AssetLoader {
 	public static Animation civToMurAnimation2;
 	public static Animation murToCivAnimation3;
 	public static Animation civToMurAnimation3;
-	// public static Texture mur_stun;
 	public static Animation murStunAnimation;
+	public static Animation civPlantTrapAnimation0;
+	public static Animation civPlantTrapAnimation1;
+	public static Animation civPlantTrapAnimation2;
+	public static Animation civPlantTrapAnimation3;
 
 	public static Texture ghostHauntT;
 	public static Animation ghostHauntAnimation;
@@ -286,6 +289,7 @@ public class AssetLoader {
 		crimesFont36Time = new BitmapFont(Gdx.files.internal("Fonts/crimesFont36.fnt"));
 		crimesFont36Time.setScale(0.7f, 0.7f);
 		crimesFont36Settings = new BitmapFont(Gdx.files.internal("Fonts/crimesFont36.fnt"));
+		crimesFont36Message = new BitmapFont(Gdx.files.internal("Fonts/crimesFont36.fnt"));
 	}
 
 	public static void loadMenuScreen() {
@@ -405,6 +409,14 @@ public class AssetLoader {
 
 		// PAUSE SCREEN
 		pause_main = new Texture(Gdx.files.internal("basic/pause_background.png"));
+		
+//		// OVER TIME
+//		LabelStyle labelStyle = new LabelStyle();
+//		labelStyle.font = menuSkin.getFont("basker45");
+//		labelStyle.font.scale(((Gdx.graphics.getWidth() - gameWidth) / gameWidth)/0.2f);
+//		message = new Label("The gates are open...", labelStyle);
+		crimesFont36Message.setScale(.6f,.6f);
+		
 	}
 
 	public static void loadCharacters() {
@@ -423,12 +435,13 @@ public class AssetLoader {
 		civPanicAnimation0.setPlayMode(PlayMode.LOOP);
 		civ_panic_rest0 = civilianTR0[1][0];
 
-		TextureRegion[] civstun0 = Arrays.copyOfRange(civilianTR0[2], 0, 3);
-		TextureRegion[] civStun0 = new TextureRegion[15];
-		for (int i = 0; i < civStun0.length - 2; i += 3) {
-			civStun0[i] = civstun0[0];
-			civStun0[i + 1] = civstun0[1];
-			civStun0[i + 2] = civstun0[2];
+
+		TextureRegion[] civStunParts0 = Arrays.copyOfRange(civilianTR0[2], 0, 3);
+		TextureRegion[] civStun0 = new TextureRegion[21];
+		for (int i = 0; i < civStun0.length - 2; i+=3) {
+			civStun0[i] = civStunParts0[0];
+			civStun0[i + 1] = civStunParts0[1];
+			civStun0[i + 2] = civStunParts0[2];
 		}
 		civStunAnimation0 = new Animation(0.208f, civStun0);
 		civStunAnimation0.setPlayMode(PlayMode.NORMAL);
@@ -458,12 +471,13 @@ public class AssetLoader {
 		civPanicAnimation1.setPlayMode(PlayMode.LOOP);
 		civ_panic_rest1 = civilianTR1[1][0];
 
-		TextureRegion[] civstun1 = Arrays.copyOfRange(civilianTR1[2], 0, 3);
-		TextureRegion[] civStun1 = new TextureRegion[15];
-		for (int i = 0; i < civStun1.length - 2; i += 3) {
-			civStun1[i] = civstun1[0];
-			civStun1[i + 1] = civstun1[1];
-			civStun1[i + 2] = civstun1[2];
+
+		TextureRegion[] civStunParts1 = Arrays.copyOfRange(civilianTR1[2], 0, 3);
+		TextureRegion[] civStun1 = new TextureRegion[21];
+		for (int i = 0; i < civStun1.length - 2; i+=3) {
+			civStun1[i] = civStunParts1[0];
+			civStun1[i + 1] = civStunParts1[1];
+			civStun1[i + 2] = civStunParts1[2];
 		}
 		civStunAnimation1 = new Animation(0.208f, civStun1);
 		civStunAnimation1.setPlayMode(PlayMode.NORMAL);
@@ -493,12 +507,13 @@ public class AssetLoader {
 		civPanicAnimation2.setPlayMode(PlayMode.LOOP);
 		civ_panic_rest2 = civilianTR2[1][0];
 
-		TextureRegion[] civstun2 = Arrays.copyOfRange(civilianTR2[2], 0, 3);
-		TextureRegion[] civStun2 = new TextureRegion[15];
-		for (int i = 0; i < civStun2.length - 2; i += 3) {
-			civStun2[i] = civstun2[0];
-			civStun2[i + 1] = civstun2[1];
-			civStun2[i + 2] = civstun2[2];
+
+		TextureRegion[] civStunParts2 = Arrays.copyOfRange(civilianTR2[2], 0, 3);
+		TextureRegion[] civStun2 = new TextureRegion[21];
+		for (int i = 0; i < civStun2.length - 2; i+=3) {
+			civStun2[i] = civStunParts2[0];
+			civStun2[i + 1] = civStunParts2[1];
+			civStun2[i + 2] = civStunParts2[2];
 		}
 		civStunAnimation2 = new Animation(0.208f, civStun2);
 		civStunAnimation2.setPlayMode(PlayMode.NORMAL);
@@ -528,12 +543,13 @@ public class AssetLoader {
 		civPanicAnimation3.setPlayMode(PlayMode.LOOP);
 		civ_panic_rest3 = civilianTR3[1][0];
 
-		TextureRegion[] civstun3 = Arrays.copyOfRange(civilianTR3[2], 0, 3);
-		TextureRegion[] civStun3 = new TextureRegion[15];
-		for (int i = 0; i < civStun3.length - 2; i += 3) {
-			civStun3[i] = civstun3[0];
-			civStun3[i + 1] = civstun3[1];
-			civStun3[i + 2] = civstun3[2];
+
+		TextureRegion[] civStunParts3 = Arrays.copyOfRange(civilianTR3[2], 0, 3);
+		TextureRegion[] civStun3 = new TextureRegion[21];
+		for (int i = 0; i < civStun3.length - 2; i+=3) {
+			civStun3[i] = civStunParts3[0];
+			civStun3[i + 1] = civStunParts3[1];
+			civStun3[i + 2] = civStunParts3[2];
 		}
 		civStunAnimation3 = new Animation(0.208f, civStun3);
 		civStunAnimation3.setPlayMode(PlayMode.NORMAL);
@@ -553,13 +569,13 @@ public class AssetLoader {
 		murderer = new Texture(Gdx.files.internal("animation/MUR_CIV0.png"));
 		murderer.setFilter(TextureFilter.Nearest, TextureFilter.Nearest);
 		TextureRegion[][] murTR = TextureRegion.split(murderer, 250, 250);
-
-		for (int i = 0; i < murTR.length; i += 3) {
+		for (int i = 0; i < murTR.length; i++) {
 			for (int j = 0; j < murTR[0].length; j++) {
-				murTR[i][j].setRegion(murTR[i][j].getRegionX() - 24, murTR[i][j].getRegionY() - 24, 300, 300);
+				murTR[i][j].setRegion(murTR[i][j].getRegionX() - 25, murTR[i][j].getRegionY() - 25, 300, 300);
 			}
 		}
-
+		
+		
 		murAnimation = new Animation(0.9f, Arrays.copyOfRange(murTR[0], 0, 3));
 		murAnimation.setPlayMode(PlayMode.LOOP_PINGPONG);
 		mur_rest = murTR[0][1];
@@ -576,9 +592,18 @@ public class AssetLoader {
 
 		murKnifeAnimation = new Animation(0.1f, Arrays.copyOfRange(murTR[2], 0, 4));
 		murKnifeAnimation.setPlayMode(PlayMode.NORMAL);
-
-		murPlantTrapAnimation = new Animation(0.2f, murTR[3]);
+		
+		murPlantTrapAnimation = new Animation(0.25f, murTR[4]);
 		murPlantTrapAnimation.setPlayMode(PlayMode.NORMAL);
+		
+		civPlantTrapAnimation0 = new Animation(0.25f, civilianTR0[6]);
+		civPlantTrapAnimation0.setPlayMode(PlayMode.NORMAL);
+		civPlantTrapAnimation1 = new Animation(0.25f, civilianTR1[6]);
+		civPlantTrapAnimation1.setPlayMode(PlayMode.NORMAL);
+		civPlantTrapAnimation2 = new Animation(0.25f, civilianTR2[6]);
+		civPlantTrapAnimation2.setPlayMode(PlayMode.NORMAL);
+		civPlantTrapAnimation3 = new Animation(0.25f, civilianTR3[6]);
+		civPlantTrapAnimation3.setPlayMode(PlayMode.NORMAL);
 
 		TextureRegion[] civmur0 = new TextureRegion[6];
 		TextureRegion[] civmur1 = new TextureRegion[6];

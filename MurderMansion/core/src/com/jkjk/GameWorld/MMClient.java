@@ -7,10 +7,10 @@ import java.io.PrintWriter;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.Socket;
+import java.net.SocketException;
 import java.util.ArrayList;
 import java.util.concurrent.ConcurrentHashMap;
 
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
@@ -27,6 +27,7 @@ import com.jkjk.Host.Helpers.Location;
 import com.jkjk.Host.Helpers.ObstaclesHandler;
 import com.jkjk.Host.Helpers.SpawnBuffer;
 import com.jkjk.MMHelpers.AssetLoader;
+import com.sun.corba.se.impl.orbutil.threadpool.TimeoutException;
 
 /**
  * MMClient listens to input from the Server by the host. Inputs include sharable data such as player
@@ -212,12 +213,12 @@ public class MMClient {
 		clientOutput.println("ready_" + id);
 
 		// // CREATE SPRITES FOR TESTING
-		// ItemSprite temporaryItem = new ItemSprite(gWorld);
-		// gWorld.getItemList().put(new Vector2(800f, 490), temporaryItem);
-		// temporaryItem.spawn(800f, 490, 0);
-		// WeaponSprite tempWeap = new WeaponSprite(gWorld);
-		// gWorld.getWeaponList().put(new Vector2(750f, 490), tempWeap);
-		// tempWeap.spawn(750f, 490, 0);
+//		 ItemSprite temporaryItem = new ItemSprite(gWorld);
+//		 gWorld.getItemList().put(new Vector2(800f, 490), temporaryItem);
+//		 temporaryItem.spawn(800f, 490, 0);
+//		 WeaponSprite tempWeap = new WeaponSprite(gWorld);
+//		 gWorld.getWeaponList().put(new Vector2(750f, 490), tempWeap);
+//		 tempWeap.spawn(750f, 490, 0);
 		//
 		// for (int i = 0; i < 8; i++) {
 		// createWeaponParts(750 + (20 * i), 460);
@@ -255,6 +256,7 @@ public class MMClient {
 	public void initClientSocket(String address, int port) throws Exception {
 		if (address != null) {
 			clientSocket = new Socket();
+			clientSocket.setSoTimeout(30000);
 			// Create InetSocketAddress and connect to server socket
 			InetAddress addr = InetAddress.getByName(address);
 			InetSocketAddress iAddress = new InetSocketAddress(addr, port);
@@ -265,6 +267,7 @@ public class MMClient {
 
 		} else {
 			// TODO Request information from server again
+			
 		}
 	}
 
@@ -811,6 +814,7 @@ public class MMClient {
 			System.out.println("Remove obstacle @ x:" + msg[1] + " y: " + msg[2]);
 			Vector2 location = new Vector2(Float.parseFloat(msg[1]), Float.parseFloat(msg[2]));
 			gWorld.removeObstacle(location);
+			
 			if (gWorld.getObstacleList().isEmpty())
 				AssetLoader.obstacleSoundmd.play();
 			else
@@ -860,11 +864,18 @@ class clientListener extends Thread {
 					// String message = new String(msg);
 					client.handleMessage(msg);
 				}
-			} catch (Exception e) {
-				e.printStackTrace();
+			}catch(SocketException e){
 				System.out.println("Client error while reading: " + e.getMessage());
 				break;
+			}catch (Exception e) {
+				e.printStackTrace();
+				System.out.println("Client error while reading: " + e.getMessage());
+//				break;
 			}
 		}
+		
+		System.out.println("Client listener thread closed.");
+		client.getgWorld().setCivWin(true);
+		
 	}
 }

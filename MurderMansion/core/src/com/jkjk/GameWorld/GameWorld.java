@@ -7,6 +7,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import net.dermetfan.gdx.physics.box2d.Box2DMapObjectParser;
 import box2dLight.RayHandler;
 
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.World;
@@ -23,6 +24,7 @@ import com.jkjk.GameObjects.Weapons.WeaponPartSprite;
 import com.jkjk.GameObjects.Weapons.WeaponSprite;
 import com.jkjk.MMHelpers.AssetLoader;
 import com.jkjk.MMHelpers.MMContactListener;
+import com.jkjk.MMHelpers.ToastMessage;
 
 /**
  * GameWorld's primary purpose is to update the results of interactions in the world. It deals with creation
@@ -73,6 +75,8 @@ public class GameWorld {
 	private Duration lightningDuration;
 	
 	private Random random;
+	
+	private ToastMessage TM;
 
 	/**
 	 * Constructs the Box2D world, adding Box2D objects such as players, items and weapons. Attaches the
@@ -117,14 +121,15 @@ public class GameWorld {
 
 		obstacleList = new ConcurrentHashMap<Vector2, Obstacles>();
 
-		gameOverTimer = new Duration(5000);
+		gameOverTimer = new Duration(50000);
 		lightningDuration = new Duration(500);
 
 		Box2DMapObjectParser parser = new Box2DMapObjectParser();
 		parser.load(world, AssetLoader.tiledMap);
 		
 		random = new Random();
-
+		
+		TM = new ToastMessage(330f);
 	}
 
 	/**
@@ -158,7 +163,6 @@ public class GameWorld {
 				player.setAmbientLightValue(storeLightValue);
 			}
 		}
-
 	}
 
 	/**
@@ -171,10 +175,13 @@ public class GameWorld {
 		if (type == 0) {
 			player = gameCharFac.createCharacter("Murderer", id, this, true);
 			createDoor();
+			TM.setDisplayMessage("Welcome... Murderer...");
 		} else if (type == 2)
 			player = gameCharFac.createCharacter("Ghost", id, this, true);
-		else
+		else{
 			player = gameCharFac.createCharacter("Civilian", id, this, true);
+			TM.setDisplayMessage("Welcome... Civilian...");
+		}
 		player.getBody().getFixtureList().get(0).setUserData("player");
 		player.spawn(x, y, angle);
 		return player;
@@ -200,7 +207,7 @@ public class GameWorld {
 		ambientLightValue = player.getAmbientLightValue();
 
 		world.destroyBody(player.getBody());
-
+		TM.setDisplayMessage("You have been Murdered...");
 		player = gameCharFac.createCharacter("Ghost", player.getId(), this, true);
 		player.set_deathPositionX(currentPositionX);
 		player.set_deathPositionY(currentPositionY);
@@ -293,6 +300,7 @@ public class GameWorld {
 	private void checkStun(MMClient client){
 		if (player.isStun()){
 			client.updatePlayerIsStun(client.getId(), 1);
+			TM.setDisplayMessage("You have been Stunned");
 		}
 	}
 
@@ -303,24 +311,34 @@ public class GameWorld {
 		if (cl.getAtStairs()) {
 			cl.notAtStairs();
 			if (cl.getStairsName().equals("L1S1")) {
+				TM.setDisplayMessage("The Second Floor");
 				player.getBody().setTransform(2610, 870, player.getBody().getAngle());
 			} else if (cl.getStairsName().equals("L1S2")) {
+				TM.setDisplayMessage("The Second Floor");
 				player.getBody().setTransform(2305, 870, player.getBody().getAngle());
 			} else if (cl.getStairsName().equals("L1S3")) {
+				TM.setDisplayMessage("The Second Floor");
 				player.getBody().setTransform(2285, 269, player.getBody().getAngle());
 			} else if (cl.getStairsName().equals("L1S4")) {
+				TM.setDisplayMessage("The Second Floor");
 				player.getBody().setTransform(2835, 155, player.getBody().getAngle());
 			} else if (cl.getStairsName().equals("L2S1")) {
+				TM.setDisplayMessage("The First Floor");
 				player.getBody().setTransform(645, 870, player.getBody().getAngle());
 			} else if (cl.getStairsName().equals("L2S2")) {
+				TM.setDisplayMessage("The First Floor");
 				player.getBody().setTransform(445, 870, player.getBody().getAngle());
 			} else if (cl.getStairsName().equals("L2S3")) {
+				TM.setDisplayMessage("The First Floor");
 				player.getBody().setTransform(445, 269, player.getBody().getAngle());
 			} else if (cl.getStairsName().equals("L2S4")) {
+				TM.setDisplayMessage("The First Floor");
 				player.getBody().setTransform(910, 180, player.getBody().getAngle());
 			} else if (cl.getStairsName().equals("L1S5")) {
+				TM.setDisplayMessage("The Basement");
 				player.getBody().setTransform(3515, 640, player.getBody().getAngle());
 			} else if (cl.getStairsName().equals("LbS1")) {
+				TM.setDisplayMessage("The First Floor");
 				player.getBody().setTransform(310, 250, player.getBody().getAngle());
 			}
 		}
@@ -337,6 +355,7 @@ public class GameWorld {
 		obstacleList.get(location).getBody().setActive(false);
 		obstacleList.get(location).getBody().setTransform(0, 0, 0);
 		obstacleList.remove(location);
+		TM.setDisplayMessage("One Obstacle Removed");
 	}
 
 	public void lightningStrike() {
@@ -459,6 +478,10 @@ public class GameWorld {
 
 	public void addNumOfWeaponPartsCollected() {
 		this.numOfWeaponPartsCollected++;
+	}
+	
+	public ToastMessage getTM(){
+		return TM;
 	}
 	
 	public void dispose(){
