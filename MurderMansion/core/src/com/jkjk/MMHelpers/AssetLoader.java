@@ -55,6 +55,7 @@ public class AssetLoader {
 	public static Texture scoreBackground;
 	public static Skin scoreSkin;
 	public static ImageButtonStyle normal1;
+	public static Texture rip;
 
 	// CIVILIAN
 	public static Texture civ_weapon_bat_tex;
@@ -330,6 +331,7 @@ public class AssetLoader {
 		normal1.up = scoreSkin.getDrawable("buttonUp");
 		normal1.down = scoreSkin.getDrawable("buttonDown");
 		normal1.pressedOffsetY = -1;
+		rip = new Texture(Gdx.files.internal("score_screen/rip.png"));
 	}
 
 	public static void loadHUD() {
@@ -819,6 +821,64 @@ public class AssetLoader {
 
 	public static void dispose() {
 		// We must dispose of the texture when we are finished.
+		menuSkin.dispose();
+		logoTexture.dispose();
+		touchpadSkin.dispose();
+		menuBackground.dispose();
+		scoreBackground.dispose();
+		pause_main.dispose();
+		cooldownTexture.dispose();
+		time.dispose();
+		weapon_parts_counter.dispose();
+		tiledMap.dispose();
+		emptySlot.dispose();
+		settings_button_tex.dispose();
+		civ_weapon_bat_tex.dispose();
+		civ_item_tex.dispose();
+		civ_dash_tex.dispose();
+		mur_weapon_tex.dispose();
+		mur_item_tex.dispose();
+		mur_swap_C_tex.dispose();
+		mur_swap_M_tex.dispose();
+		civilianTexture0.dispose();
+		civilianTexture1.dispose();
+		civilianTexture2.dispose();
+		civ_dead_lines.dispose();
+		ghost_float.dispose();
+		plantedTrapTexture.dispose();
+		restingTrapTexture.dispose();
+		disarmTrapSpriteTexture.dispose();
+		batSpriteTexture.dispose();
+		knifeSpriteTexture.dispose();
+		shotgunPartTexture.dispose();
+		haunt_tex.dispose();
+		ghostHauntT.dispose();
+		walkSound.dispose();
+		runSound.dispose();
+		rip.dispose();
+
+		// Dispose Sound
+		plantTrapSound.dispose();
+		knifeStabSound.dispose();
+		batSwingSound.dispose();
+		disarmTrapSound.dispose();
+		pickUpItemSound.dispose();
+		menuMusic.dispose();
+		gameMusic.dispose();
+		shotgunBlastSound.dispose();
+		knifeThrustSound.dispose();
+		trapDisarmedSound.dispose();
+		trappedSound.dispose();
+		batHitSound.dispose();
+		lightningSound.dispose();
+		obstacleSound1.dispose();
+		obstacleSound2.dispose();
+		obstacleSound3.dispose();
+		obstacleSoundmd.dispose();
+		hauntSound1.dispose();
+		hauntSound2.dispose();
+		hauntSound3.dispose();
+		characterDeathSound.dispose();
 		try {
 			menuSkin.dispose();
 			logoTexture.dispose();

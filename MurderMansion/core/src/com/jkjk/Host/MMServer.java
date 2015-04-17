@@ -536,7 +536,8 @@ class serverAcceptThread extends Thread {
 			try {
 				Socket socket = server.serverSocket.accept();
 				//Set socket timeout as 30 seconds
-				socket.setSoTimeout(30000);				
+				socket.setSoTimeout(30000);	
+				socket.setKeepAlive(true);
 				// Add in client socket
 				server.getClients().put("Player "+idCount, socket);
 				// Add input stream

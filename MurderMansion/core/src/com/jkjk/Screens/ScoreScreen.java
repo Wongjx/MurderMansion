@@ -11,10 +11,13 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.Texture.TextureFilter;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
 import com.badlogic.gdx.scenes.scene2d.ui.ImageButton.ImageButtonStyle;
+import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton.TextButtonStyle;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
@@ -44,6 +47,10 @@ public class ScoreScreen implements Screen {
 
 	private ImageButtonStyle normal1;
 	private ImageButton nextButton;
+	
+	private Table table;
+	private Texture rip;
+	private Image rip_image;
 
 	private boolean murWin;
 
@@ -79,6 +86,7 @@ public class ScoreScreen implements Screen {
 	 */
 	private void initAssets(float w, float h) {
 		normal1 = AssetLoader.normal1;
+		rip = AssetLoader.rip;
 
 	}
 
@@ -95,7 +103,9 @@ public class ScoreScreen implements Screen {
     	sprite = new Sprite(background);
     	sprite.setSize(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
     	
-        
+    	Image rip_image = new Image(rip);
+    	table.add(rip_image);
+    	
         nextButton.addListener(new ClickListener(){
             @Override
             public void clicked(InputEvent event, float x, float y) {
@@ -127,6 +137,7 @@ public class ScoreScreen implements Screen {
         nextButton.setSize(this.BUTTON_WIDTH,this.BUTTON_HEIGHT);
         nextButton.setPosition(560, 20);
 	    stage.addActor(nextButton);
+	    stage.addActor(table);
 	    
         Gdx.input.setInputProcessor(stage);
 	}
@@ -147,6 +158,7 @@ public class ScoreScreen implements Screen {
 		
 		stage.draw();
 		stage.act(Gdx.graphics.getDeltaTime()); // Acts stage at deltatime
+		
 	}
 
 	/*
