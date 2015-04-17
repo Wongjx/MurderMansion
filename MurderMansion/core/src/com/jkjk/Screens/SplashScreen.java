@@ -71,7 +71,6 @@ public class SplashScreen implements Screen {
 		sprite.draw(batcher);
 		batcher.end();
 		if (renderLoops == 100) {
-			AssetLoader.loadFont();
 			AssetLoader.loadMenuScreen();
 			AssetLoader.loadMenuSfx();
 			AssetLoader.loadLoadingScreen();

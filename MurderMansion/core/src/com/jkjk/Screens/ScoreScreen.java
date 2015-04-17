@@ -51,6 +51,13 @@ public class ScoreScreen implements Screen {
 	private Table table;
 	private Texture rip;
 	private Image rip_image;
+	private Image rip_image1;
+	private Image rip_image2;
+	private Image rip_image3;
+	private Texture civ_char;
+	private Image civ_char_image;
+	private Texture mur_char;
+	private Image mur_char_image;
 
 	private boolean murWin;
 
@@ -87,6 +94,8 @@ public class ScoreScreen implements Screen {
 	private void initAssets(float w, float h) {
 		normal1 = AssetLoader.normal1;
 		rip = AssetLoader.rip;
+		civ_char = AssetLoader.civ_char;
+		mur_char = AssetLoader.mur_char;
 
 	}
 
@@ -103,8 +112,24 @@ public class ScoreScreen implements Screen {
     	sprite = new Sprite(background);
     	sprite.setSize(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
     	
-    	Image rip_image = new Image(rip);
-    	table.add(rip_image);
+    	table = new Table();
+    	table.padTop(120);
+//    	table.setBounds(table.getOriginX(), table.getOriginY(), 600, 127);
+    	table.setWidth(600);
+    	
+    	rip_image = new Image(rip);
+    	rip_image1 = new Image(rip);
+    	rip_image2 = new Image(rip);
+    	rip_image3 = new Image(rip);
+    	civ_char_image = new Image(civ_char);
+    	mur_char_image = new Image(mur_char);
+    	
+    	table.add(rip_image).size(87, 127).spaceRight(20);
+    	table.add(civ_char_image).size(87, 127).spaceRight(20);
+    	table.add(mur_char_image).size(87, 127).spaceRight(20);
+    	table.add(rip_image1).size(87, 127).spaceRight(20);
+    	table.add(rip_image2).size(87, 127).spaceRight(20);
+    	table.add(rip_image3).size(87, 127).spaceRight(20);
     	
         nextButton.addListener(new ClickListener(){
             @Override
@@ -155,10 +180,11 @@ public class ScoreScreen implements Screen {
 		batch.begin();
 		sprite.draw(batch);
 		batch.end();
-		
+		table.setFillParent(true);
+		stage.addActor(table);
 		stage.draw();
 		stage.act(Gdx.graphics.getDeltaTime()); // Acts stage at deltatime
-		
+		table.debugAll();
 	}
 
 	/*

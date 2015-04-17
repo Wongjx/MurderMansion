@@ -56,6 +56,8 @@ public class AssetLoader {
 	public static Skin scoreSkin;
 	public static ImageButtonStyle normal1;
 	public static Texture rip;
+	public static Texture civ_char;
+	public static Texture mur_char;
 
 	// CIVILIAN
 	public static Texture civ_weapon_bat_tex;
@@ -332,6 +334,8 @@ public class AssetLoader {
 		normal1.down = scoreSkin.getDrawable("buttonDown");
 		normal1.pressedOffsetY = -1;
 		rip = new Texture(Gdx.files.internal("score_screen/rip.png"));
+		civ_char = new Texture(Gdx.files.internal("score_screen/civilian.png"));
+		mur_char = new Texture(Gdx.files.internal("score_screen/murderer.png"));
 	}
 
 	public static void loadHUD() {
@@ -921,6 +925,9 @@ public class AssetLoader {
 			tutorialP1.dispose();
 			hudOverlay.dispose();
 			hudTutorial.dispose();
+			civ_char.dispose();
+			mur_char.dispose();
+			
 
 			// Dispose Sound
 			menuMusic.dispose();

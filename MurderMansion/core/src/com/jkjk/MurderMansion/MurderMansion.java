@@ -32,11 +32,13 @@ public class MurderMansion extends Game {
 		GdxNativesLoader.load();
 		AssetLoader.initiate();
 		AssetLoader.loadLogo();
-		setScreen(new SplashScreen(this, V_WIDTH * SCALE, V_HEIGHT * SCALE));
+		AssetLoader.loadFont();
+		AssetLoader.loadScoreScreen();
+//		setScreen(new SplashScreen(this, V_WIDTH * SCALE, V_HEIGHT * SCALE));
 //		setScreen(new WaitScreen(this, V_WIDTH * SCALE, V_HEIGHT * SCALE));
 //		setScreen(new MenuScreen(this,V_WIDTH * SCALE, V_HEIGHT * SCALE));
 //		setScreen(new GameScreen(V_WIDTH * SCALE, V_HEIGHT * SCALE));
-//		setScreen(new ScoreScreen(this,V_WIDTH * SCALE, V_HEIGHT * SCALE, true));
+		setScreen(new ScoreScreen(this,V_WIDTH * SCALE, V_HEIGHT * SCALE, true));
 	}
 
 	@Override
