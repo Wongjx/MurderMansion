@@ -87,7 +87,6 @@ public class LoadingScreen implements Screen {
 		stage.act();
 		if (renderLoops == 500) {
 			AssetLoader.loadGameSfx();
-			AssetLoader.loadScoreScreen();
 			System.out.println("Setting screen to new game screen.");
 			((Game) Gdx.app.getApplicationListener()).setScreen(new GameScreen(game, gameWidth, gameHeight,
 					gWorld, renderer));

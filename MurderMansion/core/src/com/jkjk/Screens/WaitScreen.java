@@ -79,7 +79,7 @@ public class WaitScreen implements Screen {
 				System.out.println("Error @ HERE!");
 				e.printStackTrace();
 			}
-			System.out.println("Setting screen to new game screen.");
+			System.out.println("Setting screen to new loading screen.");
 			((Game) Gdx.app.getApplicationListener()).setScreen(new LoadingScreen(game, gameWidth, gameHeight,
 					gWorld, renderer));
 

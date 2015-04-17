@@ -79,6 +79,7 @@ public class SplashScreen implements Screen {
 			AssetLoader.loadCharacters();
 			AssetLoader.loadHUD();
 			AssetLoader.loadMapSprites();
+			AssetLoader.loadScoreScreen();
 		}
 		renderLoops++;
 	}

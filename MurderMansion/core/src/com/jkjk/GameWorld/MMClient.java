@@ -217,9 +217,6 @@ public class MMClient {
 		Thread thread = new clientListener(clientInput, this);
 		this.clientListenerThread = thread;
 		thread.start();
-		
-		// Send ready message to server
-		clientOutput.println("ready_" + id);
 
 		// // CREATE SPRITES FOR TESTING
 //		 ItemSprite temporaryItem = new ItemSprite(gWorld);
