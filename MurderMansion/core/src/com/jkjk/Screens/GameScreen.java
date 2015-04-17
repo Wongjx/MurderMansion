@@ -57,7 +57,7 @@ public class GameScreen implements Screen {
 		runTime += delta;
 		gWorld.update(delta, client);
 		renderer.render(delta, runTime, client);
-		if(game.mMultiplayerSession.getClient().getIsGameStart()){
+		if(client.getIsGameStart()){
 			hudRenderer.render(delta);
 		}
 		//ELSE SYNCHRONIZING PRINT OUT HERE. TOAST MESSAGE.
@@ -67,7 +67,6 @@ public class GameScreen implements Screen {
 				info.getServer().update();
 			} catch (NullPointerException e) {
 				e.printStackTrace();
-				System.out.println("Error in GameScreen. info.getServer() NULL!");
 				System.out.println("Disconnected?");
 			}
 		}
