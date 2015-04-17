@@ -681,7 +681,7 @@ class serverListener extends Thread {
 			} catch (Exception e) {
 				e.printStackTrace();
 				System.out.println("Error while reading: " + e.getMessage());
-				 break;
+				break;
 			}
 		}
 		

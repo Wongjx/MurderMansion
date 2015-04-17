@@ -55,6 +55,7 @@ public class AssetLoader {
 	public static Texture scoreBackground;
 	public static Skin scoreSkin;
 	public static ImageButtonStyle normal1;
+	public static Texture rip;
 
 	// CIVILIAN
 	public static Texture civ_weapon_bat_tex;
@@ -83,12 +84,13 @@ public class AssetLoader {
 	public static Texture logoTexture;
 	public static TextureRegion logo;
 	public static TextButtonStyle normal;
-	public static BitmapFont basker32black;
-	public static BitmapFont basker45black;
-	public static BitmapFont basker32blackTime;
-	public static BitmapFont basker32blackMessage;
-	public static BitmapFont basker32blackSettings;
-
+	
+	public static BitmapFont crimesFont36;
+	public static BitmapFont crimesFont48;
+	public static BitmapFont crimesFont36Time;
+	public static BitmapFont crimesFont36Settings;
+	public static BitmapFont crimesFont36Message;
+	
 	public static Drawable buttonUp;
 	public static Drawable buttonDown;
 
@@ -209,6 +211,15 @@ public class AssetLoader {
 	public static Texture obstacle;
 	public static Texture main_door;
 
+	// LOAD SCREEN
+	public static Texture civLoad;
+	public static Texture murLoad;
+	public static Texture civTut;
+	public static Texture murTut;
+	public static Texture tutorialP1;
+	public static Texture hudOverlay;
+	public static Texture hudTutorial;
+
 	// SOUNDS
 	public static Music menuMusic;
 	public static Music gameMusic;
@@ -241,21 +252,28 @@ public class AssetLoader {
 
 	private static Random random;
 
-	public static void load() {
-
+	public static void initiate() {
 		gameWidth = (MurderMansion.V_WIDTH * MurderMansion.SCALE);
 		random = new Random();
 		VOLUME = 1;
+		musicBox = new ArrayList<Music>();
+		soundBox = new ArrayList<Sound>();
+	}
 
+	public static void loadAll() {
 		loadLogo();
 		loadFont();
 		loadMenuScreen();
+		loadMenuSfx();
+
 		loadScoreScreen();
 		loadHUD();
 		loadCharacters();
 		loadMapSprites();
-		loadSfx();
+		loadGameSfx();
 
+		loadTutorialScreen();
+		loadLoadingScreen();
 	}
 
 	public static void loadLogo() {
@@ -267,11 +285,12 @@ public class AssetLoader {
 	}
 
 	public static void loadFont() {
-		basker32black = new BitmapFont(Gdx.files.internal("Fonts/Basker32.fnt"));
-		basker45black = new BitmapFont(Gdx.files.internal("Fonts/Baskek45.fnt"));
-		basker32blackTime = new BitmapFont(Gdx.files.internal("Fonts/Basker32.fnt"));
-		basker32blackMessage = new BitmapFont(Gdx.files.internal("Fonts/Basker32.fnt"));
-		basker32blackSettings = new BitmapFont(Gdx.files.internal("Fonts/Basker32.fnt"));
+		crimesFont36 = new BitmapFont(Gdx.files.internal("Fonts/crimesFont36.fnt"));
+		crimesFont48 = new BitmapFont(Gdx.files.internal("Fonts/crimesFont48.fnt"));
+		crimesFont36Time = new BitmapFont(Gdx.files.internal("Fonts/crimesFont36.fnt"));
+		crimesFont36Time.setScale(0.7f, 0.7f);
+		crimesFont36Settings = new BitmapFont(Gdx.files.internal("Fonts/crimesFont36.fnt"));
+		crimesFont36Message = new BitmapFont(Gdx.files.internal("Fonts/crimesFont36.fnt"));
 	}
 
 	public static void loadMenuScreen() {
@@ -279,36 +298,40 @@ public class AssetLoader {
 		// Create new skin for menu screen
 		menuSkin = new Skin();
 		// Set menu font
-		menuSkin.add("basker32", basker32black);
-		menuSkin.add("basker45", basker45black);
+		menuSkin.add("crimesFont36", crimesFont36);
+		menuSkin.add("crimesFont48", crimesFont48);
 		// Set menu buttons
 		menuSkin.add("buttonUp", new Texture("basic/button_up.png"));
 		menuSkin.add("buttonDown", new Texture("basic/button_down.png"));
 		// Create Text button Style
 		normal = new TextButtonStyle();
-		normal.font = menuSkin.getFont("basker32");
+		normal.font = menuSkin.getFont("crimesFont36");
 		normal.font.setScale(0.65f, 0.65f);
 		normal.up = menuSkin.getDrawable("buttonUp");
 		normal.down = menuSkin.getDrawable("buttonDown");
 		normal.pressedOffsetY = -1;
 		// Set label style for title
 		title = new LabelStyle();
-		title.font = menuSkin.getFont("basker45");
+		title.font = menuSkin.getFont("crimesFont48");
 		title.font.scale((Gdx.graphics.getWidth() - gameWidth) / gameWidth);
+
+		// MAP
+		tiledMap = new TmxMapLoader().load("map/mansion2.tmx");
 	}
 
 	public static void loadScoreScreen() {
 		// SCORE SCREEN
 		scoreBackground = new Texture(Gdx.files.internal("score_screen/score_background.png"));
 		scoreSkin = new Skin();
-		scoreSkin.add("basker32", basker32black);
-		scoreSkin.add("basker45", basker45black);
+		scoreSkin.add("crimesFont36", crimesFont36);
+		scoreSkin.add("crimesFont48", crimesFont48);
 		scoreSkin.add("buttonUp", new Texture("score_screen/next_button_up.png"));
 		scoreSkin.add("buttonDown", new Texture("score_screen/next_button_down.png"));
 		normal1 = new ImageButtonStyle();
 		normal1.up = scoreSkin.getDrawable("buttonUp");
 		normal1.down = scoreSkin.getDrawable("buttonDown");
 		normal1.pressedOffsetY = -1;
+		rip = new Texture(Gdx.files.internal("score_screen/rip.png"));
 	}
 
 	public static void loadHUD() {
@@ -341,7 +364,7 @@ public class AssetLoader {
 
 		// PAUSE SCREEN
 		normalSettings = new TextButtonStyle();
-		normalSettings.font = basker32blackSettings;
+		normalSettings.font = crimesFont36Settings;
 		normalSettings.font.setScale(0.4f, 0.6f);
 		normalSettings.up = menuSkin.getDrawable("buttonUp");
 		normalSettings.down = menuSkin.getDrawable("buttonDown");
@@ -394,7 +417,7 @@ public class AssetLoader {
 //		labelStyle.font = menuSkin.getFont("basker45");
 //		labelStyle.font.scale(((Gdx.graphics.getWidth() - gameWidth) / gameWidth)/0.2f);
 //		message = new Label("The gates are open...", labelStyle);
-		basker32blackMessage.setScale(.6f,.6f);
+		crimesFont36Message.setScale(.6f,.6f);
 		
 	}
 
@@ -656,8 +679,6 @@ public class AssetLoader {
 	}
 
 	public static void loadMapSprites() {
-		// MAP
-		tiledMap = new TmxMapLoader().load("map/mansion2.tmx");
 
 		// PICK UP ITEM TEXTURES
 		plantedTrapTexture = new Texture(Gdx.files.internal("gamehelper/planted_trap_animation.png"));
@@ -701,20 +722,21 @@ public class AssetLoader {
 		main_door = new Texture(Gdx.files.internal("map/main-door.png"));
 	}
 
-	public static void loadSfx() {
-		musicBox = new ArrayList<Music>();
-		soundBox = new ArrayList<Sound>();
-
+	public static void loadMenuSfx() {
 		musicBox.add(menuMusic = Gdx.audio.newMusic(Gdx.files.internal("bgm/MenuScreen Music.mp3")));
 		menuMusic.setLooping(true);
-		musicBox.add(gameMusic = Gdx.audio.newMusic(Gdx.files.internal("bgm/GameScreen Music.mp3")));
-		gameMusic.setLooping(true);
+		soundBox.add(clickSound = Gdx.audio.newSound(Gdx.files.internal("sfx/click.mp3")));
 
 		musicBox.add(walkSound = Gdx.audio.newMusic(Gdx.files.internal("sfx/walking.mp3")));
 		walkSound.setVolume(0.8f);
 
 		musicBox.add(runSound = Gdx.audio.newMusic(Gdx.files.internal("sfx/running.mp3")));
 		runSound.setVolume(0.8f);
+	}
+
+	public static void loadGameSfx() {
+		musicBox.add(gameMusic = Gdx.audio.newMusic(Gdx.files.internal("bgm/GameScreen Music.mp3")));
+		gameMusic.setLooping(true);
 
 		soundBox.add(plantTrapSound = Gdx.audio.newSound(Gdx.files.internal("sfx/plantTrap.mp3")));
 		soundBox.add(knifeStabSound = Gdx.audio.newSound(Gdx.files.internal("sfx/Knife Stab.mp3")));
@@ -740,8 +762,19 @@ public class AssetLoader {
 		soundBox.add(hauntSound1 = Gdx.audio.newSound(Gdx.files.internal("sfx/haunt1.mp3")));
 		soundBox.add(hauntSound2 = Gdx.audio.newSound(Gdx.files.internal("sfx/haunt2.mp3")));
 		soundBox.add(hauntSound3 = Gdx.audio.newSound(Gdx.files.internal("sfx/haunt3.mp3")));
+	}
 
-		soundBox.add(clickSound = Gdx.audio.newSound(Gdx.files.internal("sfx/click.mp3")));
+	public static void loadLoadingScreen() {
+		civLoad = new Texture(Gdx.files.internal("tutorial/Civilian-load-screen.png"));
+		murLoad = new Texture(Gdx.files.internal("tutorial/Murderer-load-screen.png"));
+	}
+
+	public static void loadTutorialScreen() {
+		civTut = new Texture(Gdx.files.internal("tutorial/Tutorial-Civilian.png"));
+		murTut = new Texture(Gdx.files.internal("tutorial/Tutorial-Murderer.png"));
+		tutorialP1 = new Texture(Gdx.files.internal("tutorial/Tutorial-Page-1.png"));
+		hudOverlay = new Texture(Gdx.files.internal("tutorial/HUD-Overlay-Tutorial.png"));
+		hudTutorial = new Texture(Gdx.files.internal("tutorial/HUD-Tutorial.png"));
 	}
 
 	public static void obstacleSFX() {
@@ -822,6 +855,7 @@ public class AssetLoader {
 		ghostHauntT.dispose();
 		walkSound.dispose();
 		runSound.dispose();
+		rip.dispose();
 
 		// Dispose Sound
 		plantTrapSound.dispose();
@@ -845,5 +879,83 @@ public class AssetLoader {
 		hauntSound2.dispose();
 		hauntSound3.dispose();
 		characterDeathSound.dispose();
+		try {
+			menuSkin.dispose();
+			logoTexture.dispose();
+			touchpadSkin.dispose();
+			menuBackground.dispose();
+			scoreBackground.dispose();
+			pause_main.dispose();
+			cooldownTexture.dispose();
+			time.dispose();
+			weapon_parts_counter.dispose();
+			tiledMap.dispose();
+			emptySlot.dispose();
+			settings_button_tex.dispose();
+			civ_weapon_bat_tex.dispose();
+			civ_item_tex.dispose();
+			civ_dash_tex.dispose();
+			mur_weapon_tex.dispose();
+			mur_item_tex.dispose();
+			mur_swap_C_tex.dispose();
+			mur_swap_M_tex.dispose();
+			civilianTexture0.dispose();
+			civilianTexture1.dispose();
+			civilianTexture2.dispose();
+			civ_dead_lines.dispose();
+			ghost_float.dispose();
+			plantedTrapTexture.dispose();
+			restingTrapTexture.dispose();
+			disarmTrapSpriteTexture.dispose();
+			batSpriteTexture.dispose();
+			knifeSpriteTexture.dispose();
+			shotgunPartTexture.dispose();
+			haunt_tex.dispose();
+			ghostHauntT.dispose();
+			walkSound.dispose();
+			runSound.dispose();
+			civLoad.dispose();
+			murLoad.dispose();
+			civTut.dispose();
+			murTut.dispose();
+			tutorialP1.dispose();
+			hudOverlay.dispose();
+			hudTutorial.dispose();
+
+			// Dispose Sound
+			menuMusic.dispose();
+			clickSound.dispose();
+			walkSound.dispose();
+			runSound.dispose();
+		} catch (NullPointerException e) {
+
+		}
+	}
+
+	public static void disposeSFX() {
+		try {
+			plantTrapSound.dispose();
+			knifeStabSound.dispose();
+			batSwingSound.dispose();
+			disarmTrapSound.dispose();
+			pickUpItemSound.dispose();
+			gameMusic.dispose();
+			shotgunBlastSound.dispose();
+			knifeThrustSound.dispose();
+			trapDisarmedSound.dispose();
+			trappedSound.dispose();
+			batHitSound.dispose();
+			lightningSound.dispose();
+			obstacleSound1.dispose();
+			obstacleSound2.dispose();
+			obstacleSound3.dispose();
+			obstacleSoundmd.dispose();
+			hauntSound1.dispose();
+			hauntSound2.dispose();
+			hauntSound3.dispose();
+			characterDeathSound.dispose();
+		} catch (NullPointerException e) {
+
+		}
 	}
 }
