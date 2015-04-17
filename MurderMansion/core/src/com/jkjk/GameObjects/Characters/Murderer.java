@@ -67,7 +67,7 @@ public class Murderer extends GameCharacter {
 			civStunAnimation = AssetLoader.civStunAnimation0;
 			murToCivAnimation = AssetLoader.murToCivAnimation0;
 			civToMurAnimation = AssetLoader.civToMurAnimation0;
-			civPlantTrapAnimation = AssetLoader.civDisarmAnimation0;
+			civPlantTrapAnimation = AssetLoader.civPlantTrapAnimation0;
 			civRest = AssetLoader.civ_rest0;
 			break;
 		case 1:
@@ -75,7 +75,7 @@ public class Murderer extends GameCharacter {
 			civStunAnimation = AssetLoader.civStunAnimation1;
 			murToCivAnimation = AssetLoader.murToCivAnimation1;
 			civToMurAnimation = AssetLoader.civToMurAnimation1;
-			civPlantTrapAnimation = AssetLoader.civDisarmAnimation1;
+			civPlantTrapAnimation = AssetLoader.civPlantTrapAnimation1;
 			civRest = AssetLoader.civ_rest1;
 			break;
 		case 2:
@@ -83,7 +83,7 @@ public class Murderer extends GameCharacter {
 			civStunAnimation = AssetLoader.civStunAnimation2;
 			murToCivAnimation = AssetLoader.murToCivAnimation2;
 			civToMurAnimation = AssetLoader.civToMurAnimation2;
-			civPlantTrapAnimation = AssetLoader.civDisarmAnimation2;
+			civPlantTrapAnimation = AssetLoader.civPlantTrapAnimation2;
 			civRest = AssetLoader.civ_rest2;
 			break;
 		case 3:
@@ -91,7 +91,7 @@ public class Murderer extends GameCharacter {
 			civStunAnimation = AssetLoader.civStunAnimation3;
 			murToCivAnimation = AssetLoader.murToCivAnimation3;
 			civToMurAnimation = AssetLoader.civToMurAnimation3;
-			civPlantTrapAnimation = AssetLoader.civDisarmAnimation3;
+			civPlantTrapAnimation = AssetLoader.civPlantTrapAnimation3;
 			civRest = AssetLoader.civ_rest3;
 			break;
 		default:

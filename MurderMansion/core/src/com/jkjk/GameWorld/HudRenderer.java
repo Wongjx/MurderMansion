@@ -9,7 +9,6 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
-import com.badlogic.gdx.scenes.scene2d.Touchable;
 import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton.TextButtonStyle;
@@ -18,10 +17,10 @@ import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.viewport.ExtendViewport;
-import com.jkjk.GameObjects.Duration;
 import com.jkjk.GameObjects.Characters.GameCharacter;
 import com.jkjk.GameObjects.Characters.Murderer;
 import com.jkjk.MMHelpers.AssetLoader;
+import com.jkjk.MMHelpers.ToastMessage;
 import com.jkjk.MurderMansion.MurderMansion;
 import com.jkjk.Screens.MenuScreen;
 
@@ -92,12 +91,14 @@ public class HudRenderer {
 
 	private int minutes;
 	private int seconds;
-<<<<<<< HEAD
-	
-=======
-	private boolean mute;
->>>>>>> 2ab11144cb5d318d1766f61de6ef53f48c34a88c
 
+	private boolean mute;
+	
+	private ToastMessage TM;
+	private int textBoxLeft;
+	private int textBoxRight;
+	
+//	private boolean 
 	/**
 	 * Constructs the link from the Box2D world created in GameWorld to HudRenderer. Allows rendering of the
 	 * player's touchpad, item slots, time left and weapon parts collected based on what had happened in the
@@ -125,12 +126,7 @@ public class HudRenderer {
 
 		// countdown
 		playTime = 240.0f;
-		
-<<<<<<< HEAD
-		hudCam = new OrthographicCamera();
-		hudCam.setToOrtho(false, gameWidth, gameHeight);
-=======
->>>>>>> 2ab11144cb5d318d1766f61de6ef53f48c34a88c
+
 		batch = new SpriteBatch();
 
 		// Create a Stage and add TouchPad
@@ -144,20 +140,14 @@ public class HudRenderer {
 
 		Gdx.input.setInputProcessor(stage);
 
-<<<<<<< HEAD
-		pauseCam = new OrthographicCamera();
-		pauseCam.setToOrtho(false, gameWidth, gameHeight);
-		pauseStage = new Stage(new ExtendViewport(gameWidth, gameHeight, pauseCam), batch);
-		pauseStage.addActor(getMainMenuButton());
-		pauseStage.addActor(getContinueButton());
-		pauseStage.addActor(getSettingsButton());
-		
-=======
 		settingsStage = new Stage(new ExtendViewport(gameWidth, gameHeight), batch);
 		settingsStage.addActor(getMainMenuButton());
 		settingsStage.addActor(getMuteButton());
 		settingsStage.addActor(getSettingsCloseButton());
->>>>>>> 2ab11144cb5d318d1766f61de6ef53f48c34a88c
+		
+		TM = new ToastMessage();
+		textBoxLeft = 200;
+		textBoxRight = 400;
 	}
 
 	public static HudRenderer getInstance(GameWorld gWorld, MMClient client, float gameWidth,
@@ -220,70 +210,16 @@ public class HudRenderer {
 	public void render(float delta) {
 
 		batch.begin();
+		
 		batch.draw(timebox, 55, 280);
 		batch.draw(weapon_parts_counter, 440, 235);
 		batch.draw(emptySlot, 480, 22, 120, 120);
 		font.draw(batch, getTime(delta), 80, 328);
 		WeaponPartsDisplay();
-
-		if (gameIsPaused==false){
-			batch.draw(timebox, 55, 280);
-			batch.draw(weapon_parts_counter, 440, 235);
-			batch.draw(emptySlot, 480, 22, 120, 120);
-			font.draw(batch, getTime(delta), 75, 330);
-		}
-//		
-//		if(player.getType().equals("Civilian")||player.getType().equals("Murderer")){
-//			coolDownAnimationCheck(delta);
-//			prohibitButtonsCheck();
-//		}
-		
-		//PAUSE SCREEN IS LOADED
-		if (gameIsPaused==true){
-			batch.draw(pause_main, 0, 0);
-			stage.clear(); // why got a lonely hexagon HUD left ah??
-			
-			 buttonMainMenu.addListener(new ClickListener(){
-		            @Override
-		            public void clicked(InputEvent event, float x, float y) {
-		            	((Game)Gdx.app.getApplicationListener()).setScreen(new MenuScreen(game, gameWidth, gameHeight));
-		            }
-		        });
-			 
-			 buttonContinue.addListener(new ClickListener(){
-		            @Override
-		            public void clicked(InputEvent event, float x, float y) {
-		            	gameIsPaused=false;
-		            }
-		        });
-			 
-			 buttonSettings.addListener(new ClickListener(){
-		            @Override
-		            public void clicked(InputEvent event, float x, float y) {
-		            	System.out.println("Settings button is pressed");
-		            }
-		        });
-			 
-			 buttonMainMenu.setSize(this.BUTTON_WIDTH,this.BUTTON_HEIGHT);
-			 buttonMainMenu.setPosition(146, 90);
-		     stage.addActor(buttonMainMenu);
-		     
-		     buttonContinue.setSize(this.BUTTON_WIDTH,this.BUTTON_HEIGHT);
-		     buttonContinue.setPosition(275, 90);
-		     stage.addActor(buttonContinue);
-		     
-		     buttonSettings.setSize(this.BUTTON_WIDTH,this.BUTTON_HEIGHT);
-		     buttonSettings.setPosition(390, 90);
-		     stage.addActor(buttonSettings);
-		     
-		
-		}
-		
-
-
+		AssetLoader.basker32blackMessage.draw(batch, "A",  400, 300);
 		coolDownAnimationCheck(delta);
 		prohibitButtonsCheck();
-
+		TM.render(batch);
 		batch.end();
 
 		if (gWorld.getPlayer().getItemChange())
@@ -648,7 +584,7 @@ public class HudRenderer {
 		weaponButton.setY(y);
 		weaponButton.setName("Weapon Button");
 		AssetLoader.pickUpItemSound.play(AssetLoader.VOLUME);
-
+		TM.setDisplayMessage("Obtained Bat");
 		weaponButton.addListener(new ClickListener() {
 			@Override
 			public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
@@ -663,10 +599,14 @@ public class HudRenderer {
 				if (gWorld.getPlayer().useWeapon()) {
 					// start drawing cool down animation.
 					WeaponsCD = true;
-					if (gWorld.getPlayer().getType() == "Ghost")
+					if (gWorld.getPlayer().getType() == "Ghost"){
 						AssetLoader.pickUpItemSound.play(AssetLoader.VOLUME);
-					else
+						TM.setDisplayMessage("Picked Up Bat");
+					}
+					else{
+						TM.setDisplayMessage("Swung Bat");
 						AssetLoader.batSwingSound.play(AssetLoader.VOLUME);
+					}
 					client.updatePlayerUseWeapon();
 				}
 			}
@@ -690,7 +630,7 @@ public class HudRenderer {
 		weaponButton.setY(y);
 		weaponButton.setName("Weapon Button");
 		AssetLoader.pickUpItemSound.play(AssetLoader.VOLUME);
-
+		TM.setDisplayMessage("Obtained Shotgun");
 		weaponButton.addListener(new ClickListener() {
 			@Override
 			public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
@@ -702,6 +642,7 @@ public class HudRenderer {
 				System.out.println("Clicked on shotgun button");
 				if (gWorld.getPlayer().useWeapon()) {
 					// start drawing cool down animation
+					TM.setDisplayMessage("Shot Shotgun");
 					WeaponsCD = true;
 					client.updatePlayerUseWeapon();
 					AssetLoader.shotgunBlastSound.play(AssetLoader.VOLUME);
@@ -727,6 +668,7 @@ public class HudRenderer {
 		itemButton.setY(y);
 		itemButton.setName("Item Button");
 		AssetLoader.pickUpItemSound.play(AssetLoader.VOLUME);
+		TM.setDisplayMessage("Obtained Disarm Trap");
 
 		itemButton.addListener(new ClickListener() {
 			@Override
@@ -740,6 +682,7 @@ public class HudRenderer {
 				gWorld.getPlayer().useItem();
 				client.updatePlayerUseItem();
 				if (gWorld.getPlayer().getType() == "Ghost")
+					TM.setDisplayMessage("Put down Disarm Trap");
 					AssetLoader.pickUpItemSound.play(AssetLoader.VOLUME);
 			}
 		});
@@ -770,6 +713,7 @@ public class HudRenderer {
 
 				if (gWorld.getPlayer().useAbility()) {
 					// start drawing cool down animation with ability frame time.
+					TM.setDisplayMessage("Quick! Run!");
 					PanicCD = true;
 					client.updatePlayerUseAbility();
 				}
@@ -793,7 +737,7 @@ public class HudRenderer {
 		weaponButton.setY(y);
 		weaponButton.setName("Weapon Button");
 		AssetLoader.pickUpItemSound.play(AssetLoader.VOLUME);
-
+		TM.setDisplayMessage("Obtained Knife");
 		weaponButton.addListener(new ClickListener() {
 			@Override
 			public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
@@ -805,6 +749,7 @@ public class HudRenderer {
 				System.out.println("Clicked on knife button");
 				if (gWorld.getPlayer().useWeapon()) {
 					// start to draw cool down animation
+					TM.setDisplayMessage("Stabbed Knife");
 					WeaponsCD = true;
 					client.updatePlayerUseWeapon();
 					AssetLoader.knifeThrustSound.play(AssetLoader.VOLUME);
@@ -831,7 +776,8 @@ public class HudRenderer {
 		itemButton.setName("Item Button");
 		itemButton.setSize(40, 40);
 		AssetLoader.pickUpItemSound.play(AssetLoader.VOLUME);
-
+		TM.setDisplayMessage("Obtained Trap");
+		
 		itemButton.addListener(new ClickListener() {
 			@Override
 			public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
@@ -843,6 +789,7 @@ public class HudRenderer {
 				System.out.println("Clicked on trap button");
 				gWorld.getPlayer().useItem();
 				client.updatePlayerUseItem();
+				TM.setDisplayMessage("Planting Trap...");
 				AssetLoader.disarmTrapSound.play(AssetLoader.VOLUME);
 			}
 		});
@@ -865,7 +812,7 @@ public class HudRenderer {
 		disguiseToCiv.setWidth(33);
 		disguiseToCiv.setHeight(33);
 		disguiseToCiv.setName("Disguise to civilian");
-
+		
 		disguiseToCiv.addListener(new ClickListener() {
 			public void clicked(InputEvent event, float x, float y) {
 				System.out.println("Clicked on disguise to civilian button");
@@ -873,6 +820,7 @@ public class HudRenderer {
 				System.out.println(gWorld.getPlayer().getBody().getPosition());
 				if (gWorld.getPlayer().useAbility()) {
 					// start drawing cool down animation with ability frame time.
+					TM.setDisplayMessage("Disguising...");
 					DisguiseCD = true;
 					client.updatePlayerUseAbility();
 				}
@@ -897,7 +845,7 @@ public class HudRenderer {
 		disguiseToMur.setWidth(33);
 		disguiseToMur.setHeight(33);
 		disguiseToMur.setName("Disguise to murderer");
-
+		
 		disguiseToMur.addListener(new ClickListener() {
 			public void clicked(InputEvent event, float x, float y) {
 				System.out.println("Clicked on disguise to murderer button");
@@ -905,6 +853,7 @@ public class HudRenderer {
 				System.out.println(gWorld.getPlayer().getBody().getPosition());
 				if (gWorld.getPlayer().useAbility()) {
 					// start drawing cool down animation with ability frame time.
+					TM.setDisplayMessage("Revealing true identity");
 					DisguiseCD = true;
 					client.updatePlayerUseAbility();
 				}
@@ -935,6 +884,7 @@ public class HudRenderer {
 				System.out.println(gWorld.getPlayer().getBody().getPosition());
 				if (gWorld.getPlayer().useAbility()) {
 					// start drawing cool down animation with ability frame time.
+					TM.setDisplayMessage("CHAOS AND CONFUSION");
 					HauntCD = true;
 					client.updatePlayerUseAbility();
 				}
@@ -944,11 +894,8 @@ public class HudRenderer {
 		return hauntButton;
 	}
 	
-	/**
-	 * Displays a given text message on game play screen for a specified amount of time.
-	 */
-	public void displayMessage(String msg, Duration d){
-		
+	public ToastMessage getTM(){
+		return TM;
 	}
 
 	/**

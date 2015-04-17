@@ -38,7 +38,6 @@ public class Duration {
 			if (diff >= duration) {
 				// not on cooldown anymore :D
 				this.isCountdown = false;
-
 			}
 		}
 	}
