@@ -113,7 +113,6 @@ public class ScoreScreen implements Screen {
             			System.out.println("CLIENT IS NULL?!!!?");
             		}
             		
-//            		System.out.println("Leave room");
             		game.actionResolver.leaveRoom();
             		
 //            		System.out.println("End mMultiplayer session");
