@@ -203,7 +203,7 @@ public class AndroidLauncher extends AndroidApplication implements GameHelperLis
 		// quick-start a game with 1 randomly selected opponent
 		if (gameHelper.isSignedIn()) {
 			//Set multiplayer flag to be true so that game screen will choose to create multiplayer world instead
-			final int MIN_OPPONENTS = 1, MAX_OPPONENTS = 1;
+			final int MIN_OPPONENTS = 1, MAX_OPPONENTS = 6;
 			Bundle autoMatchCriteria = RoomConfig.createAutoMatchCriteria(MIN_OPPONENTS,MAX_OPPONENTS, 0);
 
 			RoomConfig.Builder rtmConfigBuilder = RoomConfig.builder(mGooglePlayListeners);
