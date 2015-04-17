@@ -212,12 +212,12 @@ public class MMClient {
 		clientOutput.println("ready_" + id);
 
 		// // CREATE SPRITES FOR TESTING
-		// ItemSprite temporaryItem = new ItemSprite(gWorld);
-		// gWorld.getItemList().put(new Vector2(800f, 490), temporaryItem);
-		// temporaryItem.spawn(800f, 490, 0);
-		// WeaponSprite tempWeap = new WeaponSprite(gWorld);
-		// gWorld.getWeaponList().put(new Vector2(750f, 490), tempWeap);
-		// tempWeap.spawn(750f, 490, 0);
+//		 ItemSprite temporaryItem = new ItemSprite(gWorld);
+//		 gWorld.getItemList().put(new Vector2(800f, 490), temporaryItem);
+//		 temporaryItem.spawn(800f, 490, 0);
+//		 WeaponSprite tempWeap = new WeaponSprite(gWorld);
+//		 gWorld.getWeaponList().put(new Vector2(750f, 490), tempWeap);
+//		 tempWeap.spawn(750f, 490, 0);
 		//
 		// for (int i = 0; i < 8; i++) {
 		// createWeaponParts(750 + (20 * i), 460);
@@ -811,6 +811,7 @@ public class MMClient {
 			System.out.println("Remove obstacle @ x:" + msg[1] + " y: " + msg[2]);
 			Vector2 location = new Vector2(Float.parseFloat(msg[1]), Float.parseFloat(msg[2]));
 			gWorld.removeObstacle(location);
+			
 			if (gWorld.getObstacleList().isEmpty())
 				AssetLoader.obstacleSoundmd.play();
 			else

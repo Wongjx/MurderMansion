@@ -60,7 +60,6 @@ public class GameScreen implements Screen {
 		if(client.getIsGameStart()){
 			hudRenderer.render(delta);
 		}
-		//ELSE SYNCHRONIZING PRINT OUT HERE. TOAST MESSAGE.
 		// if phone is designated server
 		if (info.isServer) {
 			try {

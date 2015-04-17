@@ -95,8 +95,7 @@ public class HudRenderer {
 	private boolean mute;
 	
 	private ToastMessage TM;
-	private int textBoxLeft;
-	private int textBoxRight;
+	private ToastMessage GWTM;
 	
 //	private boolean 
 	/**
@@ -145,9 +144,8 @@ public class HudRenderer {
 		settingsStage.addActor(getMuteButton());
 		settingsStage.addActor(getSettingsCloseButton());
 		
-		TM = new ToastMessage();
-		textBoxLeft = 200;
-		textBoxRight = 400;
+		TM = new ToastMessage(300f);
+		GWTM = gWorld.getTM();
 	}
 
 	public static HudRenderer getInstance(GameWorld gWorld, MMClient client, float gameWidth,
@@ -216,10 +214,10 @@ public class HudRenderer {
 		batch.draw(emptySlot, 480, 22, 120, 120);
 		font.draw(batch, getTime(delta), 80, 328);
 		WeaponPartsDisplay();
-		AssetLoader.basker32blackMessage.draw(batch, "A",  400, 300);
 		coolDownAnimationCheck(delta);
 		prohibitButtonsCheck();
 		TM.render(batch);
+		GWTM.render(batch);
 		batch.end();
 
 		if (gWorld.getPlayer().getItemChange())

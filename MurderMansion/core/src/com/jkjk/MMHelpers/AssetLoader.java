@@ -548,13 +548,13 @@ public class AssetLoader {
 		murderer = new Texture(Gdx.files.internal("animation/MUR_CIV0.png"));
 		murderer.setFilter(TextureFilter.Nearest, TextureFilter.Nearest);
 		TextureRegion[][] murTR = TextureRegion.split(murderer, 250, 250);
-
-		for (int i = 0; i < murTR.length; i += 3) {
+		for (int i = 0; i < murTR.length; i++) {
 			for (int j = 0; j < murTR[0].length; j++) {
-				murTR[i][j].setRegion(murTR[i][j].getRegionX() - 24, murTR[i][j].getRegionY() - 24, 300, 300);
+				murTR[i][j].setRegion(murTR[i][j].getRegionX() - 25, murTR[i][j].getRegionY() - 25, 300, 300);
 			}
 		}
-
+		
+		
 		murAnimation = new Animation(0.9f, Arrays.copyOfRange(murTR[0], 0, 3));
 		murAnimation.setPlayMode(PlayMode.LOOP_PINGPONG);
 		mur_rest = murTR[0][1];
@@ -572,16 +572,16 @@ public class AssetLoader {
 		murKnifeAnimation = new Animation(0.1f, Arrays.copyOfRange(murTR[2], 0, 4));
 		murKnifeAnimation.setPlayMode(PlayMode.NORMAL);
 		
-		murPlantTrapAnimation = new Animation(0.2f, murTR[4]);
+		murPlantTrapAnimation = new Animation(0.25f, murTR[4]);
 		murPlantTrapAnimation.setPlayMode(PlayMode.NORMAL);
 		
-		civPlantTrapAnimation0 = new Animation(0.2f, civilianTR0[6]);
+		civPlantTrapAnimation0 = new Animation(0.25f, civilianTR0[6]);
 		civPlantTrapAnimation0.setPlayMode(PlayMode.NORMAL);
-		civPlantTrapAnimation1 = new Animation(0.2f, civilianTR1[5]);
+		civPlantTrapAnimation1 = new Animation(0.25f, civilianTR1[6]);
 		civPlantTrapAnimation1.setPlayMode(PlayMode.NORMAL);
-		civPlantTrapAnimation2 = new Animation(0.2f, civilianTR2[5]);
+		civPlantTrapAnimation2 = new Animation(0.25f, civilianTR2[6]);
 		civPlantTrapAnimation2.setPlayMode(PlayMode.NORMAL);
-		civPlantTrapAnimation3 = new Animation(0.2f, civilianTR3[5]);
+		civPlantTrapAnimation3 = new Animation(0.25f, civilianTR3[6]);
 		civPlantTrapAnimation3.setPlayMode(PlayMode.NORMAL);
 
 		TextureRegion[] civmur0 = new TextureRegion[6];

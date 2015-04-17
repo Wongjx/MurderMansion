@@ -1,9 +1,7 @@
 package com.jkjk.MMHelpers;
 
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.physics.box2d.Body;
-import com.badlogic.gdx.physics.box2d.BodyDef;
-import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
 import com.jkjk.GameObjects.Duration;
 
 public class ToastMessage {
@@ -11,13 +9,20 @@ public class ToastMessage {
 	private boolean show;
 	private String message;
 	private Duration ttl;
+	private BitmapFont font;
+	private float x;
+	private float y;
 	
-	public ToastMessage(){
+	public ToastMessage(float y){
 		show = false;
 		ttl = new Duration(5000);
+		font = AssetLoader.basker32blackMessage;
+		x = 0f;
+		this.y = y;
 	}
 	
 	public void setDisplayMessage(String s){
+		x = 300-(font.getBounds(s).width/2);
 		ttl.startCountdown();
 		this.message = s;
 		show=true;
@@ -25,7 +30,7 @@ public class ToastMessage {
 	
 	public void render(SpriteBatch batch){
 		if(show==true){
-			AssetLoader.basker32blackMessage.draw(batch, message, 220, 300);
+			font.draw(batch, message, x, y);
 			ttl.update();
 		}
 		if(!ttl.isCountingDown()){
