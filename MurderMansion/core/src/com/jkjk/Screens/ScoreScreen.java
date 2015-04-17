@@ -74,6 +74,8 @@ public class ScoreScreen implements Screen {
 		BUTTON_HEIGHT = 60;
 
 		nextButton = new ImageButton(normal1);
+		
+		table = new Table();
 	}
 
 	/**
@@ -103,7 +105,7 @@ public class ScoreScreen implements Screen {
     	sprite = new Sprite(background);
     	sprite.setSize(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
     	
-    	Image rip_image = new Image(rip);
+    	rip_image = new Image(rip);
     	table.add(rip_image);
     	
         nextButton.addListener(new ClickListener(){

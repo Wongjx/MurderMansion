@@ -129,7 +129,7 @@ public class GameWorld {
 		
 		random = new Random();
 		
-		TM = new ToastMessage(330f);
+		TM = new ToastMessage(310);
 	}
 
 	/**
@@ -311,34 +311,34 @@ public class GameWorld {
 		if (cl.getAtStairs()) {
 			cl.notAtStairs();
 			if (cl.getStairsName().equals("L1S1")) {
-				TM.setDisplayMessage("The Second Floor");
+				TM.setDisplayMessage("Second Level");
 				player.getBody().setTransform(2610, 870, player.getBody().getAngle());
 			} else if (cl.getStairsName().equals("L1S2")) {
-				TM.setDisplayMessage("The Second Floor");
+				TM.setDisplayMessage("Second Level");
 				player.getBody().setTransform(2305, 870, player.getBody().getAngle());
 			} else if (cl.getStairsName().equals("L1S3")) {
-				TM.setDisplayMessage("The Second Floor");
+				TM.setDisplayMessage("Second Level");
 				player.getBody().setTransform(2285, 269, player.getBody().getAngle());
 			} else if (cl.getStairsName().equals("L1S4")) {
-				TM.setDisplayMessage("The Second Floor");
+				TM.setDisplayMessage("Second Level");
 				player.getBody().setTransform(2835, 155, player.getBody().getAngle());
 			} else if (cl.getStairsName().equals("L2S1")) {
-				TM.setDisplayMessage("The First Floor");
+				TM.setDisplayMessage("First Level");
 				player.getBody().setTransform(645, 870, player.getBody().getAngle());
 			} else if (cl.getStairsName().equals("L2S2")) {
-				TM.setDisplayMessage("The First Floor");
+				TM.setDisplayMessage("First Level");
 				player.getBody().setTransform(445, 870, player.getBody().getAngle());
 			} else if (cl.getStairsName().equals("L2S3")) {
-				TM.setDisplayMessage("The First Floor");
+				TM.setDisplayMessage("First Level");
 				player.getBody().setTransform(445, 269, player.getBody().getAngle());
 			} else if (cl.getStairsName().equals("L2S4")) {
-				TM.setDisplayMessage("The First Floor");
+				TM.setDisplayMessage("First Level");
 				player.getBody().setTransform(910, 180, player.getBody().getAngle());
 			} else if (cl.getStairsName().equals("L1S5")) {
-				TM.setDisplayMessage("The Basement");
+				TM.setDisplayMessage("Basement");
 				player.getBody().setTransform(3515, 640, player.getBody().getAngle());
 			} else if (cl.getStairsName().equals("LbS1")) {
-				TM.setDisplayMessage("The First Floor");
+				TM.setDisplayMessage("First Level");
 				player.getBody().setTransform(310, 250, player.getBody().getAngle());
 			}
 		}
@@ -355,7 +355,7 @@ public class GameWorld {
 		obstacleList.get(location).getBody().setActive(false);
 		obstacleList.get(location).getBody().setTransform(0, 0, 0);
 		obstacleList.remove(location);
-		TM.setDisplayMessage("One Obstacle Removed");
+		TM.setDisplayMessage("An obstacle mysterious disappeared...");
 	}
 
 	public void lightningStrike() {

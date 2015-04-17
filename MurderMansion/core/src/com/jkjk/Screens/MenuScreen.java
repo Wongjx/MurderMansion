@@ -115,7 +115,7 @@ public class MenuScreen implements Screen {
 
 			}
 		});
-		
+
 		buttonLogout.addListener(new ClickListener() {
 			@Override
 			public void clicked(InputEvent event, float x, float y) {
@@ -124,14 +124,14 @@ public class MenuScreen implements Screen {
 
 			}
 		});
-
+		final MenuScreen menuScreen = this;
 		buttonTutorial.addListener(new ClickListener() {
 			@Override
 			public void clicked(InputEvent event, float x, float y) {
 				AssetLoader.clickSound.play(AssetLoader.VOLUME);
-				//TODO Set to tutorial screen
-//				((Game) Gdx.app.getApplicationListener()).setScreen(new WaitScreen(game, gameWidth,
-//						gameHeight));
+				// TODO Set to tutorial screen
+				((Game) Gdx.app.getApplicationListener()).setScreen(new TutorialScreen(menuScreen, gameWidth,
+						gameHeight));
 			}
 		});
 
@@ -167,7 +167,7 @@ public class MenuScreen implements Screen {
 				((Game) Gdx.app.getApplicationListener()).setScreen(new WaitScreen(game, gameWidth,
 						gameHeight));
 			}
-			
+
 		});
 
 		buttonPlay.setSize(this.BUTTON_WIDTH, this.BUTTON_HEIGHT);
@@ -181,7 +181,7 @@ public class MenuScreen implements Screen {
 		buttonLogin.setSize(this.BUTTON_WIDTH, this.BUTTON_HEIGHT);
 		buttonLogin.setPosition(345, 220);
 		stage.addActor(buttonLogin);
-		
+
 		buttonLogout.setSize(this.BUTTON_WIDTH, this.BUTTON_HEIGHT);
 		buttonLogout.setPosition(345, 20);
 		stage.addActor(buttonLogout);
@@ -235,7 +235,6 @@ public class MenuScreen implements Screen {
 
 	@Override
 	public void hide() {
-		dispose();
 	}
 
 	@Override
