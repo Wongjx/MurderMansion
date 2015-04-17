@@ -863,8 +863,10 @@ class clientListener extends Thread {
 			} catch (Exception e) {
 				e.printStackTrace();
 				System.out.println("Client error while reading: " + e.getMessage());
-				break;
+//				break;
 			}
 		}
+		
+		System.out.println("Client listener thread closed.");
 	}
 }

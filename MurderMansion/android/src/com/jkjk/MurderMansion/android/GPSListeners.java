@@ -147,8 +147,9 @@ public class GPSListeners implements RoomStatusUpdateListener, RoomUpdateListene
     // Called when we get disconnected from the room. We return to the main screen.
     @Override
     public void onDisconnectedFromRoom(Room room) {
-    	activity.mMultiplayerSeisson.endSession();
-    	activity.mMultiplayerSeisson.mState=activity.mMultiplayerSeisson.ROOM_MENU;
+    	System.out.println("Disconnected from GPS room");
+//    	activity.mMultiplayerSeisson.endSession();
+//    	activity.mMultiplayerSeisson.mState=activity.mMultiplayerSeisson.ROOM_MENU;
 //        showGameError();
     }
 
@@ -183,6 +184,7 @@ public class GPSListeners implements RoomStatusUpdateListener, RoomUpdateListene
 
     @Override
     public void onPeerLeft(Room room, List<String> peersWhoLeft) {
+    	System.out.println("Peer left GPS room");
         updateRoom(room);
     }
 
