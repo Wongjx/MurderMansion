@@ -16,13 +16,13 @@ public class ToastMessage {
 	public ToastMessage(float y){
 		show = false;
 		ttl = new Duration(5000);
-		font = AssetLoader.crimesFont36Message;
+		font = AssetLoader.basker32Message;
 		x = 0f;
 		this.y = y;
 	}
 	
 	public void setDisplayMessage(String s){
-		x = 300-(font.getBounds(s).width/2);
+		x = 320-(font.getBounds(s).width/2);
 		ttl.startCountdown();
 		this.message = s;
 		show=true;

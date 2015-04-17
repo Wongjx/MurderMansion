@@ -56,6 +56,8 @@ public class AssetLoader {
 	public static Skin scoreSkin;
 	public static ImageButtonStyle normal1;
 	public static Texture rip;
+	public static Texture civ_char;
+	public static Texture mur_char;
 
 	// CIVILIAN
 	public static Texture civ_weapon_bat_tex;
@@ -89,7 +91,7 @@ public class AssetLoader {
 	public static BitmapFont crimesFont48;
 	public static BitmapFont crimesFont36Time;
 	public static BitmapFont crimesFont36Settings;
-	public static BitmapFont crimesFont36Message;
+	public static BitmapFont basker32Message;
 	
 	public static Drawable buttonUp;
 	public static Drawable buttonDown;
@@ -296,7 +298,7 @@ public class AssetLoader {
 		crimesFont36Time = new BitmapFont(Gdx.files.internal("Fonts/crimesFont36.fnt"));
 		crimesFont36Time.setScale(0.7f, 0.7f);
 		crimesFont36Settings = new BitmapFont(Gdx.files.internal("Fonts/crimesFont36.fnt"));
-		crimesFont36Message = new BitmapFont(Gdx.files.internal("Fonts/crimesFont36.fnt"));
+		basker32Message = new BitmapFont(Gdx.files.internal("Fonts/basker32.fnt"));
 	}
 
 	public static void loadMenuScreen() {
@@ -338,6 +340,8 @@ public class AssetLoader {
 		normal1.down = scoreSkin.getDrawable("buttonDown");
 		normal1.pressedOffsetY = -1;
 		rip = new Texture(Gdx.files.internal("score_screen/rip.png"));
+		civ_char = new Texture(Gdx.files.internal("score_screen/civilian.png"));
+		mur_char = new Texture(Gdx.files.internal("score_screen/murderer.png"));
 	}
 
 	public static void loadHUD() {
@@ -423,7 +427,7 @@ public class AssetLoader {
 //		labelStyle.font = menuSkin.getFont("basker45");
 //		labelStyle.font.scale(((Gdx.graphics.getWidth() - gameWidth) / gameWidth)/0.2f);
 //		message = new Label("The gates are open...", labelStyle);
-		crimesFont36Message.setScale(.5f,.5f);
+		basker32Message.setScale(.6f,.6f);
 		
 	}
 
@@ -879,6 +883,8 @@ public class AssetLoader {
 			civButtonDown.dispose();
 			murButton.dispose();
 			murButtonDown.dispose();
+			civ_char.dispose();
+			mur_char.dispose();
 
 			// Dispose Sound
 			menuMusic.dispose();

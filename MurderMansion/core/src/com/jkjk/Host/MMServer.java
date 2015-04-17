@@ -29,13 +29,14 @@ public class MMServer {
 	public ServerSocket serverSocket;
 	private String serverAddress;
 	private int serverPort;
-	private final int SERVER_ID=-1;
+	private final int SERVER_ID = -1;
 
 	private ConcurrentHashMap<String, Socket> clients;
 	private ConcurrentHashMap<String, PrintWriter> serverOutput;
 	private ConcurrentHashMap<String, BufferedReader> serverInput;
 	private ConcurrentHashMap<String, Thread> serverListeners;
 	private final ConcurrentHashMap<String, Observer> observers;
+	public final ConcurrentHashMap<String, String> participantId;
 
 	private int numOfPlayers;
 	private final int murdererId;
@@ -70,7 +71,8 @@ public class MMServer {
 		serverOutput = new ConcurrentHashMap<String, PrintWriter>();
 		serverInput = new ConcurrentHashMap<String, BufferedReader>();
 		serverListeners = new ConcurrentHashMap<String, Thread>();
-		observers = new ConcurrentHashMap<String,Observer>();
+		observers = new ConcurrentHashMap<String, Observer>();
+		participantId = new ConcurrentHashMap<String, String>();
 
 		// System.out.println("Initialize fields");
 		startTime = System.currentTimeMillis();
@@ -78,9 +80,9 @@ public class MMServer {
 		objectLocations = new ObjectLocations(numOfPlayers, this);
 
 		obstaclesHandler = ObstaclesHandler.getInstance();
-		nextItemSpawnTime = 10000 + gameStartPauseDuration;
-		nextObstacleRemoveTime = 30000 + gameStartPauseDuration;
-		nextLightningTime = 20000 + gameStartPauseDuration;
+		nextItemSpawnTime = 10000;
+		nextObstacleRemoveTime = 30000;
+		nextLightningTime = 20000;
 
 		gameStartPause = new Duration(gameStartPauseDuration);
 		gameStatus = new GameStatus();
@@ -111,14 +113,16 @@ public class MMServer {
 	 * Start updating only when all clients have successfully synchronized.
 	 */
 	public void update() {
-		runTime = System.currentTimeMillis() - startTime;
-		handleSpawn();
-		checkWin();
-		lightningStrike();
-		if (gameStartPause.isCountingDown()) {
+		if (gameStatus.getGameStatus() == 1) {
+			runTime = System.currentTimeMillis() - startTime;
+			handleSpawn();
+			checkWin();
+			lightningStrike();
+		}
+		if (gameStartPause.isCountingDown() && gameStatus.getGameStatus() == 0) {
 			gameStartPause.update();
 			if (!gameStartPause.isCountingDown())
-				sendToClients("startgame");
+				gameStatus.begin();
 		}
 	}
 
@@ -262,7 +266,7 @@ public class MMServer {
 			return serverOutput;
 		}
 	}
-	
+
 	public ConcurrentHashMap<String, Observer> getObservers() {
 		synchronized (observers) {
 			return observers;
@@ -385,6 +389,15 @@ public class MMServer {
 				gameStartPause.startCountdown();
 			}
 		}
+		// If client asking for all participant ids
+		else if (msg[0].equals("getids")) {
+			String ret = "";
+			for (int i = 0; i < numOfPlayers; i++) {
+				ret += participantId.get("Player " + i) + "_";
+			}
+			ret = ret.substring(0, ret.length() - 1);
+			serverOutput.get("Player " + msg[1]).println(ret);
+		}
 
 		// If player position update message
 		else if (msg[0].equals("loc")) {
@@ -482,35 +495,35 @@ public class MMServer {
 		}
 		System.out.println("MMServer seisson ended.");
 	}
-	
-	public void removePlayer(int playerId){
-		Observer toRemove = observers.get("Player "+playerId);
-		unregisterFromSubjects(toRemove);	//PlayerStats, Object locations
-		killPlayer(playerId);		
-		removeFromPlayerLists(playerId);	 //clients, serverOuput, serverInput, serverListeners, observers
-		decreaseNumOfPlayers();		
+
+	public void removePlayer(int playerId) {
+		Observer toRemove = observers.get("Player " + playerId);
+		unregisterFromSubjects(toRemove); // PlayerStats, Object locations
+		killPlayer(playerId);
+		removeFromPlayerLists(playerId); // clients, serverOuput, serverInput, serverListeners, observers
+		decreaseNumOfPlayers();
 	}
-	
-	private void unregisterFromSubjects(Observer obs){
+
+	private void unregisterFromSubjects(Observer obs) {
 		this.playerStats.unregister(obs);
 		this.objectLocations.unregister(obs);
 	}
-	private void removeFromPlayerLists(int playerId){
-		this.clients.remove("Player "+playerId);
-		this.observers.remove("Player "+playerId);
-		this.serverOutput.remove("Player "+playerId);
-		this.serverInput.remove("Player "+playerId);
-		this.serverListeners.remove("Player "+playerId);
+
+	private void removeFromPlayerLists(int playerId) {
+		this.clients.remove("Player " + playerId);
+		this.observers.remove("Player " + playerId);
+		this.serverOutput.remove("Player " + playerId);
+		this.serverInput.remove("Player " + playerId);
+		this.serverListeners.remove("Player " + playerId);
 	}
-	
-	private void decreaseNumOfPlayers(){
+
+	private void decreaseNumOfPlayers() {
 		this.numOfPlayers--;
 	}
-	
-	private void killPlayer(int playerId){
+
+	private void killPlayer(int playerId) {
 		this.playerStats.updateIsAlive(SERVER_ID, playerId, 0);
 	}
-	
 
 }
 
@@ -535,24 +548,28 @@ class serverAcceptThread extends Thread {
 		while (server.getClients().size() < server.getNumOfPlayers()) {
 			try {
 				Socket socket = server.serverSocket.accept();
-				//Set socket timeout as 30 seconds
-				socket.setSoTimeout(30000);	
+				// Set socket timeout as 30 seconds
+				socket.setSoTimeout(30000);
 				socket.setKeepAlive(true);
 				// Add in client socket
-				server.getClients().put("Player "+idCount, socket);
+				server.getClients().put("Player " + idCount, socket);
 				// Add input stream
 				BufferedReader reader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-				server.getServerInput().put("Player "+idCount, reader);
+				server.getServerInput().put("Player " + idCount, reader);
 				// Add output stream
 				PrintWriter writer = new PrintWriter(socket.getOutputStream(), true);
-				server.getServerOutput().put("Player "+idCount, writer);
+				server.getServerOutput().put("Player " + idCount, writer);
 
 				// Register client to playerStatus subject
 				Observer player = new Observer(writer);
 				server.getPlayerStats().register(player);
 				server.getObjectLocations().register(player);
 				server.getGameStatus().register(player);
-				server.getObservers().put("Player "+idCount,player);
+				server.getObservers().put("Player " + idCount, player);
+
+				// Get google play participant id of client
+				String participantId = reader.readLine();
+				server.participantId.put("Player " + idCount, participantId);
 
 				// Send out initializing information to client
 				writer.println(server.getNumOfPlayers());
@@ -641,12 +658,12 @@ class serverAcceptThread extends Thread {
 				System.out.println(message);
 				writer.println(message);
 				writer.println("end");
-				
+
 				// Start a listener thread for each client socket connected
-				Thread thread = new serverListener(reader , server, idCount);
-				server.getServerListeners().put("Player "+idCount,thread);
+				Thread thread = new serverListener(reader, server, idCount);
+				server.getServerListeners().put("Player " + idCount, thread);
 				thread.start();
-				
+
 				// Increase id count
 				idCount++;
 
@@ -663,10 +680,10 @@ class serverListener extends Thread {
 	private final int playerId;
 	private String msg;
 
-	public serverListener(BufferedReader inputStream, MMServer server,int playerId) {
+	public serverListener(BufferedReader inputStream, MMServer server, int playerId) {
 		this.server = server;
 		this.input = inputStream;
-		this.playerId=playerId;
+		this.playerId = playerId;
 	}
 
 	@Override
@@ -684,9 +701,9 @@ class serverListener extends Thread {
 				break;
 			}
 		}
-		
+
 		System.out.println("Connection with client has been terminated.");
 		server.removePlayer(playerId);
-		
+
 	}
 }

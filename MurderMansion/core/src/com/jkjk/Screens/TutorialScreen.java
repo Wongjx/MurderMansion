@@ -50,9 +50,9 @@ public class TutorialScreen implements Screen {
 		murButtonDown = new Image(AssetLoader.murButtonDown);
 		murButtonDown.setPosition(124, 154);
 		backButton = new Image(AssetLoader.backButton);
-		backButton.setPosition(20, 20);
+		backButton.setPosition(20, 150);
 		nextButton = new Image(AssetLoader.nextButton);
-		nextButton.setPosition(550, 280);
+		nextButton.setPosition(550, 150);
 
 		civButton.addListener(new ClickListener() {
 			@Override

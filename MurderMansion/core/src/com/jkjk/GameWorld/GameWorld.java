@@ -73,9 +73,9 @@ public class GameWorld {
 	private float ambientLightValue;
 	private float storeLightValue;
 	private Duration lightningDuration;
-	
+
 	private Random random;
-	
+
 	private ToastMessage TM;
 
 	/**
@@ -89,7 +89,7 @@ public class GameWorld {
 	 */
 	public GameWorld() {
 		world = new World(new Vector2(0, 0), true);
-//		cl = MMContactListener.getInstance(this);
+		// cl = MMContactListener.getInstance(this);
 		cl = new MMContactListener(this);
 		world.setContactListener(cl);
 
@@ -126,9 +126,9 @@ public class GameWorld {
 
 		Box2DMapObjectParser parser = new Box2DMapObjectParser();
 		parser.load(world, AssetLoader.tiledMap);
-		
+
 		random = new Random();
-		
+
 		TM = new ToastMessage(310);
 	}
 
@@ -148,6 +148,7 @@ public class GameWorld {
 			player.update();
 		} else {
 			client.updatePlayerIsAlive(client.getId(), 0);
+			TM.setDisplayMessage("You Have Died... Your Spirit Seeks Vengeance.");
 			createGhost();
 		}
 		checkStairs();
@@ -178,7 +179,7 @@ public class GameWorld {
 			TM.setDisplayMessage("Welcome... Murderer...");
 		} else if (type == 2)
 			player = gameCharFac.createCharacter("Ghost", id, this, true);
-		else{
+		else {
 			player = gameCharFac.createCharacter("Civilian", id, this, true);
 			TM.setDisplayMessage("Welcome... Civilian...");
 		}
@@ -207,7 +208,6 @@ public class GameWorld {
 		ambientLightValue = player.getAmbientLightValue();
 
 		world.destroyBody(player.getBody());
-		TM.setDisplayMessage("You have been Murdered...");
 		player = gameCharFac.createCharacter("Ghost", player.getId(), this, true);
 		player.set_deathPositionX(currentPositionX);
 		player.set_deathPositionY(currentPositionY);
@@ -296,9 +296,9 @@ public class GameWorld {
 			client.removeTrapLocation(bodyToRemove.getPosition().x, bodyToRemove.getPosition().y);
 		}
 	}
-	
-	private void checkStun(MMClient client){
-		if (player.isStun()){
+
+	private void checkStun(MMClient client) {
+		if (player.isStun()) {
 			client.updatePlayerIsStun(client.getId(), 1);
 			TM.setDisplayMessage("You have been Stunned");
 		}
@@ -355,7 +355,7 @@ public class GameWorld {
 		obstacleList.get(location).getBody().setActive(false);
 		obstacleList.get(location).getBody().setTransform(0, 0, 0);
 		obstacleList.remove(location);
-		TM.setDisplayMessage("An obstacle mysterious disappeared...");
+		TM.setDisplayMessage("An Obstacle has Disappeared...");
 	}
 
 	public void lightningStrike() {
@@ -427,6 +427,10 @@ public class GameWorld {
 	}
 
 	public void setInSafeArea(boolean inSafeArea) {
+		if (inSafeArea)
+			TM.setDisplayMessage("You're now safe from the murderer");
+		else
+			TM.setDisplayMessage("Are you crazy? Don't go back in!");
 		this.inSafeArea = inSafeArea;
 	}
 
@@ -479,18 +483,18 @@ public class GameWorld {
 	public void addNumOfWeaponPartsCollected() {
 		this.numOfWeaponPartsCollected++;
 	}
-	
-	public ToastMessage getTM(){
+
+	public ToastMessage getTM() {
 		return TM;
 	}
-	
-	public void dispose(){
+
+	public void dispose() {
 		world.dispose();
 		cl = null;
-		
-//		world = new World(new Vector2(0, 0), true);
-//		cl = MMContactListener.getInstance(this);
-//		world.setContactListener(cl);
+
+		// world = new World(new Vector2(0, 0), true);
+		// cl = MMContactListener.getInstance(this);
+		// world.setContactListener(cl);
 
 		itemsToRemove = null;
 		weaponsToRemove = null;

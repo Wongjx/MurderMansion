@@ -58,7 +58,7 @@ public class Trap extends Item  {
 		playerAngle = character.getBody().getAngle();
 
 		spawn(playerPosition.x, playerPosition.y, playerAngle);
-		AssetLoader.plantTrapSound.play();
+		AssetLoader.plantTrapSound.play(AssetLoader.VOLUME);
 
 		client.produceTrapLocation(body.getPosition().x,body.getPosition().y);
 
