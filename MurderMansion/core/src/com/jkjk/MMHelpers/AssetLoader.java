@@ -55,6 +55,7 @@ public class AssetLoader {
 	public static Texture scoreBackground;
 	public static Skin scoreSkin;
 	public static ImageButtonStyle normal1;
+	public static Texture rip;
 
 	// CIVILIAN
 	public static Texture civ_weapon_bat_tex;
@@ -309,6 +310,7 @@ public class AssetLoader {
 		normal1.up = scoreSkin.getDrawable("buttonUp");
 		normal1.down = scoreSkin.getDrawable("buttonDown");
 		normal1.pressedOffsetY = -1;
+		rip = new Texture(Gdx.files.internal("score_screen/rip.png"));
 	}
 
 	public static void loadHUD() {
@@ -822,6 +824,7 @@ public class AssetLoader {
 		ghostHauntT.dispose();
 		walkSound.dispose();
 		runSound.dispose();
+		rip.dispose();
 
 		// Dispose Sound
 		plantTrapSound.dispose();
