@@ -183,7 +183,7 @@ public class ScoreScreen implements Screen {
     		else{
     			//type = 0 = murderer
     			//if character is murderer
-    			if (type == playerType.get("Player "+ i)){
+    			if (type != playerType.get("Player "+ i)){
     				image_array[i] = new Image(civ_char);
     			}
     			//if character is civilian

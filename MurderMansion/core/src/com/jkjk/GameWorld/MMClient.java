@@ -65,9 +65,8 @@ public class MMClient {
 
 	private int numOfPlayers;
 	private int id;
-	private String participantId;
-	private String[] participantIds;
-	private HashMap<String,String> participantNames;
+	private final String mName;
+	private String[] clientNames;
 	private int murdererId;
 	private ArrayList<GameCharacter> playerList;
 	
@@ -99,7 +98,7 @@ public class MMClient {
 	 *            GameRenderer instance
 	 * @throws Exception
 	 */
-	public MMClient(GameWorld gWorld, GameRenderer renderer, String serverAddress, int serverPort, String participantId,HashMap<String,String> participantNames)
+	public MMClient(GameWorld gWorld, GameRenderer renderer, String serverAddress, int serverPort, String participantId,String mName)
 			throws Exception {
 
 		this.gWorld = gWorld;
@@ -107,8 +106,8 @@ public class MMClient {
 		itemFac = new ItemFactory();
 		weaponFac = new WeaponFactory();
 		gameCharFac = new GameCharacterFactory();
-
-		this.participantId=participantId;
+		
+		this.mName=mName;
 		this.serverAddress = serverAddress;
 		this.serverPort = serverPort;
 		this.isGameStart=false;
@@ -119,8 +118,8 @@ public class MMClient {
 		this.lastUpdated = System.currentTimeMillis();
 		
 		//Send client participant id to server
-		this.clientOutput.println(participantId);
-		System.out.println("My participantId: "+participantId);
+		this.clientOutput.println(mName);
+		System.out.println("My name is : "+mName);
 
 		// Receive initialzation parameters
 		numOfPlayers = Integer.parseInt(clientInput.readLine());
@@ -128,8 +127,7 @@ public class MMClient {
 		murdererId = Integer.parseInt(clientInput.readLine());
 
 		//Intialize String[] for participant names
-		this.participantNames= participantNames;
-		this.participantIds=new String[numOfPlayers];
+		this.clientNames=new String[numOfPlayers];
 
 		
 		// System.out.println("Creating item spawn buffers");
@@ -219,12 +217,12 @@ public class MMClient {
 		createObstacles();
 		
 		//Get participant ids from server 
-		if ((message = clientInput.readLine()).equals("participantIds")) {
-			 System.out.println("Get particpant ids");
+		if ((message = clientInput.readLine()).equals("clientNames")) {
+			 System.out.println("Get client names");
 			while (!(message = clientInput.readLine()).equals("end")) {
 				String[] ids = message.split("_");
 				for (int i = 0; i < numOfPlayers; i++) {
-					participantIds[i]= ids[i];
+					clientNames[i]= ids[i];
 				}
 			}
 		}
@@ -361,10 +359,6 @@ public class MMClient {
 	}
 	
 	public String[] getParticipantNames(){
-		String[] clientNames= new String[numOfPlayers];
-		for (int i=0;i<numOfPlayers;i++){
-			clientNames[i]=participantNames.get(participantIds[i]);
-		}
 		return clientNames;
 	}
 
