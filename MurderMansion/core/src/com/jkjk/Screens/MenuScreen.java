@@ -124,13 +124,13 @@ public class MenuScreen implements Screen {
 
 			}
 		});
-		final MenuScreen menuScreen = this;
+
 		buttonTutorial.addListener(new ClickListener() {
 			@Override
 			public void clicked(InputEvent event, float x, float y) {
 				AssetLoader.clickSound.play(AssetLoader.VOLUME);
 				// TODO Set to tutorial screen
-				((Game) Gdx.app.getApplicationListener()).setScreen(new TutorialScreen(menuScreen, gameWidth,
+				((Game) Gdx.app.getApplicationListener()).setScreen(new TutorialScreen(game, gameWidth,
 						gameHeight));
 			}
 		});

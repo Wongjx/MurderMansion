@@ -15,6 +15,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.viewport.ExtendViewport;
 import com.jkjk.MMHelpers.AssetLoader;
+import com.jkjk.MurderMansion.MurderMansion;
 
 /**
  * @author LeeJunXiang
@@ -27,6 +28,8 @@ public class TutorialScreen implements Screen {
 	private Image civTut;
 	private Image murTut;
 	private Image hudTut;
+	private Image screenTut;
+	private Image mapTut;
 	private Image civButton;
 	private Image murButton;
 	private Image civButtonDown;
@@ -34,12 +37,14 @@ public class TutorialScreen implements Screen {
 	private Image backButton;
 	private Image nextButton;
 
-	public TutorialScreen(final MenuScreen menuScreen, float gameWidth, float gameHeight) {
+	public TutorialScreen(final MurderMansion game, final float gameWidth, final float gameHeight) {
 		stage = new Stage(new ExtendViewport(gameWidth, gameHeight));
 		page1 = new Image(AssetLoader.tutorialP1);
 		civTut = new Image(AssetLoader.civTut);
 		murTut = new Image(AssetLoader.murTut);
 		hudTut = new Image(AssetLoader.hudTutorial);
+		screenTut = new Image(AssetLoader.screenTutorial);
+		mapTut = new Image(AssetLoader.mapTutorial);
 
 		civButton = new Image(AssetLoader.civButton);
 		civButton.setPosition(464, 154);
@@ -106,9 +111,21 @@ public class TutorialScreen implements Screen {
 			@Override
 			public void clicked(InputEvent event, float x, float y) {
 				AssetLoader.clickSound.play(AssetLoader.VOLUME);
-				stage.clear();
-				stage.addActor(hudTut);
-				stage.addActor(backButton);
+				if (stage.getActors().first().equals(hudTut)) {
+					stage.clear();
+					stage.addActor(screenTut);
+					stage.addActor(backButton);
+					stage.addActor(nextButton);
+				} else if (stage.getActors().first().equals(screenTut)) {
+					stage.clear();
+					stage.addActor(mapTut);
+					stage.addActor(backButton);
+				} else {
+					stage.clear();
+					stage.addActor(hudTut);
+					stage.addActor(backButton);
+					stage.addActor(nextButton);
+				}
 			}
 
 		});
@@ -124,9 +141,20 @@ public class TutorialScreen implements Screen {
 					stage.addActor(murButton);
 					stage.addActor(backButton);
 					stage.addActor(nextButton);
+				} else if (stage.getActors().first().equals(screenTut)) {
+					stage.clear();
+					stage.addActor(hudTut);
+					stage.addActor(backButton);
+					stage.addActor(nextButton);
+				} else if (stage.getActors().first().equals(mapTut)) {
+					stage.clear();
+					stage.addActor(screenTut);
+					stage.addActor(backButton);
+					stage.addActor(nextButton);
 				} else {
 					stage.clear();
-					((Game) Gdx.app.getApplicationListener()).setScreen(menuScreen);
+					((Game) Gdx.app.getApplicationListener()).setScreen(new MenuScreen(game, gameWidth,
+							gameHeight));
 				}
 			}
 
@@ -212,7 +240,7 @@ public class TutorialScreen implements Screen {
 	@Override
 	public void dispose() {
 		// TODO Auto-generated method stub
-
+		stage.dispose();
 	}
 
 }

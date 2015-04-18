@@ -221,6 +221,8 @@ public class AssetLoader {
 	public static Texture tutorialP1;
 	public static Texture hudOverlay;
 	public static Texture hudTutorial;
+	public static Texture screenTutorial;
+	public static Texture mapTutorial;
 	public static Texture civButton;
 	public static Texture civButtonDown;
 	public static Texture murButton;
@@ -298,7 +300,7 @@ public class AssetLoader {
 		crimesFont36Time = new BitmapFont(Gdx.files.internal("Fonts/crimesFont36.fnt"));
 		crimesFont36Time.setScale(0.7f, 0.7f);
 		crimesFont36Settings = new BitmapFont(Gdx.files.internal("Fonts/crimesFont36.fnt"));
-		basker32Message = new BitmapFont(Gdx.files.internal("Fonts/basker32.fnt"));
+		basker32Message = new BitmapFont(Gdx.files.internal("Fonts/Basker32.fnt"));
 	}
 
 	public static void loadMenuScreen() {
@@ -785,6 +787,8 @@ public class AssetLoader {
 		tutorialP1 = new Texture(Gdx.files.internal("tutorial/Tutorial-Page-1.png"));
 		hudOverlay = new Texture(Gdx.files.internal("tutorial/HUD-Overlay-Tutorial.png"));
 		hudTutorial = new Texture(Gdx.files.internal("tutorial/HUD-Tutorial.png"));
+		screenTutorial = new Texture(Gdx.files.internal("tutorial/Screen-Tutorial.png"));
+		mapTutorial = new Texture(Gdx.files.internal("tutorial/Map-Tutorial.png"));
 		civButton = new Texture(Gdx.files.internal("tutorial/civButton.png"));
 		civButtonDown = new Texture(Gdx.files.internal("tutorial/civButtonDown.png"));
 		murButton = new Texture(Gdx.files.internal("tutorial/murButton.png"));
@@ -879,6 +883,8 @@ public class AssetLoader {
 			tutorialP1.dispose();
 			hudOverlay.dispose();
 			hudTutorial.dispose();
+			screenTutorial.dispose();
+			mapTutorial.dispose();
 			civButton.dispose();
 			civButtonDown.dispose();
 			murButton.dispose();
