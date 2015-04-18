@@ -6,18 +6,13 @@ package com.jkjk.Screens;
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
-import com.badlogic.gdx.graphics.g2d.Sprite;
-import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.utils.viewport.ExtendViewport;
 import com.jkjk.GameWorld.GameRenderer;
 import com.jkjk.GameWorld.GameWorld;
-import com.jkjk.GameWorld.HudRenderer;
 import com.jkjk.GameWorld.MMClient;
-import com.jkjk.Host.MMServer;
 import com.jkjk.MMHelpers.AssetLoader;
-import com.jkjk.MMHelpers.MultiplayerSessionInfo;
 import com.jkjk.MurderMansion.MurderMansion;
 
 /**
@@ -25,16 +20,12 @@ import com.jkjk.MurderMansion.MurderMansion;
  * 
  */
 public class LoadingScreen implements Screen {
-	private MultiplayerSessionInfo info;
 	private GameWorld gWorld;
 	private GameRenderer renderer;
-	private HudRenderer hudRenderer;
-	private float runTime;
 	private float gameWidth;
 	private float gameHeight;
 	private MurderMansion game;
 
-	private MMServer server;
 	private MMClient client;
 
 	private Image loadingImageCiv;
@@ -52,7 +43,6 @@ public class LoadingScreen implements Screen {
 		this.gameWidth = gameWidth;
 		this.gameHeight = gameHeight;
 		this.client = game.mMultiplayerSession.getClient();
-		this.info = game.mMultiplayerSession;
 		this.gWorld = client.getgWorld();
 		this.renderer = client.getRenderer();
 		stage = new Stage(new ExtendViewport(gameWidth, gameHeight));
@@ -85,6 +75,7 @@ public class LoadingScreen implements Screen {
 	public void render(float delta) {
 		stage.draw();
 		stage.act();
+
 		if (renderLoops == 500) {
 			AssetLoader.loadGameSfx();
 			System.out.println("Setting screen to new game screen.");

@@ -90,8 +90,7 @@ public class ScoreScreen implements Screen {
 	private Integer type;
 
 	/**
-	 * Score screen shows score board
-	 * 
+	 * Score screen
 	 * @param murWin
 	 *            who won the game? murderer or civilian?
 	 */
@@ -102,12 +101,14 @@ public class ScoreScreen implements Screen {
 		this.game=game;
 		initAssets(gameWidth, gameHeight);
 		
-		try {
-			names = mmclient.getParticipantNames();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+//		names = new String[]{"wong","jx","enyan","kat"};
+		
+//		try {
+//			names = mmclient.getParticipantNames();
+//		} catch (IOException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		}
 		numOfNames = names.length;
 		playerIsAlive = mmclient.get_playerIsAlive();
 		playerType = mmclient.get_playerType();
@@ -286,7 +287,7 @@ public class ScoreScreen implements Screen {
 		stage.addActor(table);
 		stage.draw();
 		stage.act(Gdx.graphics.getDeltaTime()); // Acts stage at deltatime
-		table.debugAll();
+//		table.debugAll();
 	}
 
 	/*
