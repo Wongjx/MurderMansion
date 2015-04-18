@@ -326,7 +326,7 @@ public class MMClient {
 		}
 	}
 	
-	public String[] requestParticipantIds() throws IOException{
+	public String[] requestParticipantNames() throws IOException{
 		clientOutput.println("getids");
 		String[] participantIds =clientInput.readLine().split("_");
 		String[] clientNames= new String[numOfPlayers];
