@@ -302,9 +302,9 @@ public abstract class GameCharacter {
 			rayHandler.setCombinedMatrix(cam.combined);
 			try {
 				rayHandler.updateAndRender();
-			} catch (GdxRuntimeException e) {
+			} catch (Exception e) {
 				e.printStackTrace();
-				System.out.println("RUNTIME EXCEPTION AT GAMECHARACTER");
+				System.out.println("EXCEPTION AT GAMECHARACTER");
 			}
 		}
 
