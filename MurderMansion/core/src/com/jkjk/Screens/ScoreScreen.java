@@ -45,6 +45,7 @@ public class ScoreScreen implements Screen {
 	private MMClient mmclient;
 	
 	private String[] names;
+	private int numOfNames;
 	private final ConcurrentHashMap<String, Integer> playerIsAlive; 
 	private final ConcurrentHashMap<String, Integer> playerType; 
 
@@ -64,7 +65,8 @@ public class ScoreScreen implements Screen {
 	
 	private Table table;
 	
-	private Label scoreLabel;
+	private Label[] label_array;
+//	private Label scoreLabel;
 //	private Label scoreLabel1;
 //	private Label scoreLabel2;
 //	private Label scoreLabel3;
@@ -73,15 +75,16 @@ public class ScoreScreen implements Screen {
 //	private Label scoreLabel6;
 	private LabelStyle scoreLabelStyle;
 	
+	private Image[] image_array;
 	private Texture rip;
-	private Image rip_image;
+//	private Image rip_image;
 //	private Image rip_image1;
 //	private Image rip_image2;
 //	private Image rip_image3;
 	private Texture civ_char;
-	private Image civ_char_image;
+//	private Image civ_char_image;
 	private Texture mur_char;
-	private Image mur_char_image;
+//	private Image mur_char_image;
 	
 	private Integer status; 
 	private Integer type;
@@ -105,6 +108,7 @@ public class ScoreScreen implements Screen {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+		numOfNames = names.length;
 		playerIsAlive = mmclient.get_playerIsAlive();
 		playerType = mmclient.get_playerType();
 		status = 1; //default test = alive
@@ -118,6 +122,9 @@ public class ScoreScreen implements Screen {
 
 		nextButton = new ImageButton(normal1);
 		table = new Table();
+		
+		label_array = new Label[numOfNames];
+		image_array = new Image[numOfNames];
 	}
 
 	/**
@@ -153,36 +160,42 @@ public class ScoreScreen implements Screen {
     	table = new Table();
     	table.padTop(120);
     	
-    	for (int i=0 ; i<names.length ; i++){
-    		scoreLabel = new Label(names[i],scoreLabelStyle);
-    		scoreLabel.setAlignment(Align.center);
-    		table.add(scoreLabel).size(82, 48).spaceRight(10);
+    	//FIRST ROW: NAME OF PLAYERS
+    	for (int i=0 ; i<numOfNames ; i++){
+    		label_array[i] = new Label(names[i],scoreLabelStyle);
+    		label_array[i].setAlignment(Align.center);
+    	}
+    	for (int i=0 ; i<numOfNames ; i++){
+    		table.add(label_array[i]).size(82, 48).spaceRight(10);
     	}
     	
     	table.row();
     	
-    	for (int i=0 ; i<names.length ; i++){
+    	
+    	//SECOND ROW: STATUS & TYPES OF PLAYERS
+    	for (int i=0 ; i<numOfNames ; i++){
     		
     		//status = 1 = alive
     		//if character is dead
     		if (status != playerIsAlive.get(names[i])){
-    			rip_image = new Image(rip);
-    			table.add(rip_image).size(87, 127).spaceRight(10);
+    			image_array[i] = new Image(rip);
     		}
     		//if character is alive
     		else{
     			//type = 0 = murderer
     			//if character is murderer
     			if (type == playerType.get(names[i])){
-    				civ_char_image = new Image(civ_char);
-    				table.add(civ_char_image).size(87, 127).spaceRight(10);
+    				image_array[i] = new Image(civ_char);
     			}
     			//if character is civilian
     			else{
-    				mur_char_image = new Image(mur_char);
-    				table.add(mur_char_image).size(87, 127).spaceRight(10);
+    				image_array[i] = new Image(mur_char);
     			}
     		}
+    	}
+    	
+    	for (int i=0 ; i<numOfNames ; i++){
+    		table.add(image_array[i]).size(82, 127).spaceRight(10);
     	}
     	
     	//the following works for testing
