@@ -46,6 +46,9 @@ public class AssetLoader {
 	public static TextureRegionDrawable soundoff_draw;
 	public static Texture soundon_tex;
 	public static TextureRegionDrawable soundon_draw;
+	
+	public static Texture muteButton;
+	public static Texture unmuteButton;
 
 	// PAUSE SCREEN
 	public static Texture pause_main;
@@ -327,6 +330,9 @@ public class AssetLoader {
 		normal.up = menuSkin.getDrawable("buttonUp");
 		normal.down = menuSkin.getDrawable("buttonDown");
 		normal.pressedOffsetY = -1;
+		
+		muteButton = new Texture(Gdx.files.internal("menu_screen/muteButton.png"));
+		unmuteButton = new Texture(Gdx.files.internal("menu_screen/unmuteButton.png"));
 
 		// MAP
 		tiledMap = new TmxMapLoader().load("map/mansion2.tmx");
@@ -851,6 +857,8 @@ public class AssetLoader {
 	public static void dispose() {
 		// We must dispose of the texture when we are finished.
 		try {
+			muteButton.dispose();
+			unmuteButton.dispose();
 			menuSkin.dispose();
 			logoTexture.dispose();
 			touchpadSkin.dispose();

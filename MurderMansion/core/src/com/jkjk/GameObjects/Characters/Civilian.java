@@ -197,7 +197,9 @@ public class Civilian extends GameCharacter {
 
 	public boolean useAbility() {// panic
 		if (super.useAbility()) {
-			body.setUserData(civPanicAnimation);
+			if (gWorld.getPlayer().lightContains(body.getPosition().x, body.getPosition().y)) {
+				body.setUserData(civPanicAnimation);
+			}
 			return true;
 		}
 		return false;
@@ -205,17 +207,21 @@ public class Civilian extends GameCharacter {
 
 	public void stun() {// stun
 		super.stun();
-		body.setUserData(civStunAnimation);
+		if (gWorld.getPlayer().lightContains(body.getPosition().x, body.getPosition().y)) {
+			body.setUserData(civStunAnimation);
+		}
 
 	}
 
 	public boolean useWeapon() {// bat
 		if (currentAnimation == civWalkAnimation || currentAnimation == civPanicAnimation) {
 			if (super.useWeapon()) {// boolean
-				if (weapon.getName().equals("Shotgun")) {
-					body.setUserData(civShotgunAnimation);
-				} else {
-					body.setUserData(civBatAnimation);
+				if (gWorld.getPlayer().lightContains(body.getPosition().x, body.getPosition().y)) {
+					if (weapon.getName().equals("Shotgun")) {
+						body.setUserData(civShotgunAnimation);
+					} else {
+						body.setUserData(civBatAnimation);
+					}
 				}
 				return true;
 			}
@@ -226,7 +232,9 @@ public class Civilian extends GameCharacter {
 	public void useItem() {
 		if (currentAnimation == civWalkAnimation || currentAnimation == civPanicAnimation) {
 			super.useItem();
-			body.setUserData(civDisarmAnimation);
+			if (gWorld.getPlayer().lightContains(body.getPosition().x, body.getPosition().y)) {
+				body.setUserData(civDisarmAnimation);
+			}
 		}
 	}
 }

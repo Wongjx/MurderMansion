@@ -6,6 +6,7 @@ import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.scenes.scene2d.ui.Touchpad;
+import com.badlogic.gdx.utils.GdxRuntimeException;
 import com.jkjk.GameObjects.Duration;
 import com.jkjk.GameObjects.Abilities.Ability;
 import com.jkjk.GameObjects.Abilities.AbilityFactory;
@@ -299,7 +300,12 @@ public abstract class GameCharacter {
 			cam.position.set(body.getPosition(), 0); // Set cam position to be on player
 
 			rayHandler.setCombinedMatrix(cam.combined);
-			rayHandler.updateAndRender();
+			try {
+				rayHandler.updateAndRender();
+			} catch (GdxRuntimeException e) {
+				e.printStackTrace();
+				System.out.println("RUNTIME EXCEPTION AT GAMECHARACTER");
+			}
 		}
 
 	}

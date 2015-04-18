@@ -1,11 +1,8 @@
 package com.jkjk.Screens;
 
-import java.util.concurrent.CountDownLatch;
-
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
-import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.Texture.TextureFilter;
@@ -13,11 +10,9 @@ import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
-import com.badlogic.gdx.scenes.scene2d.ui.Label.LabelStyle;
-import com.badlogic.gdx.scenes.scene2d.ui.Table;
+import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton.TextButtonStyle;
-import com.badlogic.gdx.scenes.scene2d.utils.Align;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.viewport.ExtendViewport;
 import com.jkjk.GameWorld.GameRenderer;
@@ -49,6 +44,9 @@ public class MenuScreen implements Screen {
 	private TextButton buttonTutorial;
 	private TextButton buttonInvite;
 
+	private Image muteButton;
+	private Image unmuteButton;
+
 	private MurderMansion game;
 
 	public MenuScreen(MurderMansion game, float gameWidth, float gameHeight) {
@@ -62,13 +60,17 @@ public class MenuScreen implements Screen {
 		normal = AssetLoader.normal;
 
 		stage = new Stage(new ExtendViewport(gameWidth, gameHeight));
-		buttonPlay = new TextButton("Enter", normal);
+		buttonPlay = new TextButton("Debug", normal);
 		buttonJoin = new TextButton("Join Game", normal);
-		buttonTutorial = new TextButton("Tutorial", normal);
+		buttonTutorial = new TextButton("Help", normal);
 		buttonLogin = new TextButton("Login", normal);
 		buttonLogout = new TextButton("Logout", normal);
 		buttonQuick = new TextButton("Quick Game", normal);
 		buttonInvite = new TextButton("Invite", normal);
+
+		// TODO
+		muteButton = new Image(AssetLoader.muteButton);
+		unmuteButton = new Image(AssetLoader.unmuteButton);
 	}
 
 	@Override
@@ -99,7 +101,8 @@ public class MenuScreen implements Screen {
 					game.mMultiplayerSession.isServer = true;
 					game.mMultiplayerSession.setServer(new MMServer(1, game.mMultiplayerSession));
 					game.mMultiplayerSession.setClient(new MMClient(world, renderer,
-							game.mMultiplayerSession.serverAddress, game.mMultiplayerSession.serverPort,game.mMultiplayerSession.mId,game.mMultiplayerSession.mParticipantNames));
+							game.mMultiplayerSession.serverAddress, game.mMultiplayerSession.serverPort,
+							game.mMultiplayerSession.mId, game.mMultiplayerSession.mParticipantNames));
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
@@ -140,12 +143,12 @@ public class MenuScreen implements Screen {
 			public void clicked(InputEvent event, float x, float y) {
 				AssetLoader.clickSound.play(AssetLoader.VOLUME);
 				// Host multiplayer game
-				if(game.actionResolver.getSignedInGPGS()){
+				if (game.actionResolver.getSignedInGPGS()) {
 					game.actionResolver.startQuickGame();
 					game.mMultiplayerSession.mState = game.mMultiplayerSession.ROOM_WAIT;
 					((Game) Gdx.app.getApplicationListener()).setScreen(new WaitScreen(game, gameWidth,
 							gameHeight));
-				} else{
+				} else {
 					game.actionResolver.loginGPGS();
 				}
 			}
@@ -155,12 +158,12 @@ public class MenuScreen implements Screen {
 			@Override
 			public void clicked(InputEvent event, float x, float y) {
 				AssetLoader.clickSound.play(AssetLoader.VOLUME);
-				if(game.actionResolver.getSignedInGPGS()){
+				if (game.actionResolver.getSignedInGPGS()) {
 					game.actionResolver.sendInvitations();
 					game.mMultiplayerSession.mState = game.mMultiplayerSession.ROOM_WAIT;
 					((Game) Gdx.app.getApplicationListener()).setScreen(new WaitScreen(game, gameWidth,
 							gameHeight));
-				}else{
+				} else {
 					game.actionResolver.loginGPGS();
 				}
 			}
@@ -170,36 +173,61 @@ public class MenuScreen implements Screen {
 			@Override
 			public void clicked(InputEvent event, float x, float y) {
 				AssetLoader.clickSound.play(AssetLoader.VOLUME);
-				if(game.actionResolver.getSignedInGPGS()){
+				if (game.actionResolver.getSignedInGPGS()) {
 					game.actionResolver.seeInvitations();
 					game.mMultiplayerSession.mState = game.mMultiplayerSession.ROOM_WAIT;
 					((Game) Gdx.app.getApplicationListener()).setScreen(new WaitScreen(game, gameWidth,
 							gameHeight));
-				}else{
+				} else {
 					game.actionResolver.loginGPGS();
 				}
 			}
 
 		});
 
+		muteButton.addListener(new ClickListener() {
+			@Override
+			public void clicked(InputEvent event, float x, float y) {
+				AssetLoader.muteSFX();
+				muteButton.remove();
+				stage.addActor(unmuteButton);
+			}
+
+		});
+
+		unmuteButton.addListener(new ClickListener() {
+			@Override
+			public void clicked(InputEvent event, float x, float y) {
+				AssetLoader.unmuteSFX();
+				AssetLoader.clickSound.play(AssetLoader.VOLUME);
+				unmuteButton.remove();
+				stage.addActor(muteButton);
+			}
+
+		});
+
 		buttonPlay.setSize(this.BUTTON_WIDTH, this.BUTTON_HEIGHT);
-		buttonPlay.setPosition(345, 100);
+		buttonPlay.setPosition(20, 300);
 		stage.addActor(buttonPlay);
 
 		buttonQuick.setSize(this.BUTTON_WIDTH, this.BUTTON_HEIGHT);
-		buttonQuick.setPosition(475, 220);
+		buttonQuick.setPosition(410, 220);
 		stage.addActor(buttonQuick);
 
-		buttonLogin.setSize(this.BUTTON_WIDTH, this.BUTTON_HEIGHT);
-		buttonLogin.setPosition(345, 220);
-		stage.addActor(buttonLogin);
+		buttonLogin.setSize(this.BUTTON_WIDTH / 2, this.BUTTON_HEIGHT);
+		buttonLogin.setPosition(510, 15);
+		if (!game.actionResolver.getSignedInGPGS()) {
+			stage.addActor(buttonLogin);
+		}
 
-		buttonLogout.setSize(this.BUTTON_WIDTH, this.BUTTON_HEIGHT);
-		buttonLogout.setPosition(345, 20);
-		stage.addActor(buttonLogout);
+		buttonLogout.setSize(this.BUTTON_WIDTH / 2, this.BUTTON_HEIGHT);
+		buttonLogout.setPosition(510, 15);
+		if (game.actionResolver.getSignedInGPGS()) {
+			stage.addActor(buttonLogout);
+		}
 
-		buttonTutorial.setSize(this.BUTTON_WIDTH, this.BUTTON_HEIGHT);
-		buttonTutorial.setPosition(475, 100);
+		buttonTutorial.setSize(this.BUTTON_WIDTH / 2, this.BUTTON_HEIGHT);
+		buttonTutorial.setPosition(440, 15);
 		stage.addActor(buttonTutorial);
 
 		buttonInvite.setSize(this.BUTTON_WIDTH, this.BUTTON_HEIGHT);
@@ -210,8 +238,10 @@ public class MenuScreen implements Screen {
 		buttonJoin.setPosition(475, 160);
 		stage.addActor(buttonJoin);
 
-		System.out.println("height: " + BUTTON_HEIGHT);
-		System.out.println("width: " + BUTTON_WIDTH);
+		muteButton.setPosition(580, 15);
+		stage.addActor(muteButton);
+
+		unmuteButton.setPosition(580, 15);
 
 		Gdx.input.setInputProcessor(stage);
 	}
