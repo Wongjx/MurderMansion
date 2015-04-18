@@ -96,6 +96,8 @@ public class HudRenderer {
 	private ToastMessage TM;
 	private ToastMessage GWTM;
 	private boolean welcomeMsg;
+	private float scale;
+	private BitmapFont syncFont;
 
 	// private boolean
 	/**
@@ -146,6 +148,7 @@ public class HudRenderer {
 		TM = new ToastMessage(335);
 		GWTM = gWorld.getTM();
 		welcomeMsg = true;
+		scale = Gdx.graphics.getWidth() / gameWidth;
 	}
 
 	public static HudRenderer getInstance(GameWorld gWorld, MMClient client, float gameWidth,
@@ -193,6 +196,7 @@ public class HudRenderer {
 		timebox = AssetLoader.time;
 		weapon_parts_counter = AssetLoader.weapon_parts_counter;
 		font = AssetLoader.crimesFont36Time;
+		syncFont = AssetLoader.crimesFont36Sync;
 		settingsButtonDraw = AssetLoader.settings_button_draw;
 		pause_main = AssetLoader.pause_main;
 		normalSettings = AssetLoader.normalSettings;
@@ -210,7 +214,7 @@ public class HudRenderer {
 
 		if (!gameStarted) {
 			String s = "Synchronizing...";
-			font.draw(batch, s, 300-(font.getBounds(s).width/2), 330);
+			syncFont.draw(batch, s, (300-(font.getBounds(s).width/2)) * scale, 330 * scale);
 			GWTM.render(batch);
 			batch.end();
 		}

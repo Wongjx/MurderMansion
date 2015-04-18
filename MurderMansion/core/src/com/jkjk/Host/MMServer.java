@@ -75,7 +75,6 @@ public class MMServer {
 		participantId = new ConcurrentHashMap<String, String>();
 
 		// System.out.println("Initialize fields");
-		startTime = System.currentTimeMillis();
 		playerStats = new PlayerStatuses(numOfPlayers);
 		objectLocations = new ObjectLocations(numOfPlayers, this);
 
@@ -121,8 +120,10 @@ public class MMServer {
 		}
 		if (gameStartPause.isCountingDown() && gameStatus.getGameStatus() == 0) {
 			gameStartPause.update();
-			if (!gameStartPause.isCountingDown())
+			if (!gameStartPause.isCountingDown()) {
+				startTime = System.currentTimeMillis();
 				gameStatus.begin();
+			}
 		}
 	}
 
@@ -539,13 +540,13 @@ class serverAcceptThread extends Thread {
 		while (server.getClients().size() < server.getNumOfPlayers()) {
 			try {
 				Socket socket = server.serverSocket.accept();
-				
+
 				// Set socket timeout as 30 seconds
 				socket.setSoTimeout(30000);
-				
+
 				// Add in client socket
 				server.getClients().put("Player " + idCount, socket);
-				
+
 				// Add input stream
 				BufferedReader reader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
 				server.getServerInput().put("Player " + idCount, reader);
@@ -664,16 +665,16 @@ class serverAcceptThread extends Thread {
 				Gdx.app.log(TAG, "Error creating server socket: " + e.getMessage());
 			}
 		}
-		
-		//Send collated list of participant ids to all clients
-			String ret = "";
-			for (int i = 0; i < server.getNumOfPlayers(); i++) {
-				ret += server.participantId.get("Player " + i) + "_";
-			}
-			ret = ret.substring(0, ret.length() - 1);
-			server.sendToClients("participantIds");
-			server.sendToClients(ret);
-			server.sendToClients("end");
+
+		// Send collated list of participant ids to all clients
+		String ret = "";
+		for (int i = 0; i < server.getNumOfPlayers(); i++) {
+			ret += server.participantId.get("Player " + i) + "_";
+		}
+		ret = ret.substring(0, ret.length() - 1);
+		server.sendToClients("participantIds");
+		server.sendToClients(ret);
+		server.sendToClients("end");
 	}
 }
 
@@ -698,12 +699,11 @@ class serverListener extends Thread {
 					// Do something with message
 					server.handleMessage(msg);
 				}
-			}catch(SocketException e){
+			} catch (SocketException e) {
 				System.out.println("Server socket error while reading: " + e.getMessage());
 				e.printStackTrace();
 				break;
-			}
-			catch (Exception e) {
+			} catch (Exception e) {
 				System.out.println("Server error while reading: " + e.getMessage());
 				e.printStackTrace();
 			}
