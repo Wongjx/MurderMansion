@@ -120,6 +120,11 @@ public class TutorialScreen implements Screen {
 					stage.clear();
 					stage.addActor(mapTut);
 					stage.addActor(backButton);
+					stage.addActor(nextButton);
+				} else if (stage.getActors().first().equals(mapTut)) {
+					stage.clear();
+					((Game) Gdx.app.getApplicationListener()).setScreen(new MenuScreen(game, gameWidth,
+							gameHeight));
 				} else {
 					stage.clear();
 					stage.addActor(hudTut);

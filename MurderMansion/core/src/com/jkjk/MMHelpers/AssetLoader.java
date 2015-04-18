@@ -91,6 +91,7 @@ public class AssetLoader {
 	public static BitmapFont crimesFont36;
 	public static BitmapFont crimesFont48;
 	public static BitmapFont crimesFont36Time;
+	public static BitmapFont crimesFont36Sync;
 	public static BitmapFont crimesFont36Settings;
 	public static BitmapFont crimesFont36Message;
 	public static BitmapFont crimesFont36Black;
@@ -302,6 +303,8 @@ public class AssetLoader {
 		crimesFont48 = new BitmapFont(Gdx.files.internal("Fonts/crimesFont48.fnt"));
 		crimesFont36Time = new BitmapFont(Gdx.files.internal("Fonts/crimesFont36.fnt"));
 		crimesFont36Time.setScale(0.7f, 0.7f);
+		crimesFont36Sync = new BitmapFont(Gdx.files.internal("Fonts/crimesFont36.fnt"));
+		crimesFont36Sync.setScale(Gdx.graphics.getWidth() / gameWidth);
 		crimesFont36Settings = new BitmapFont(Gdx.files.internal("Fonts/crimesFont36.fnt"));
 		crimesFont36Black = new BitmapFont(Gdx.files.internal("Fonts/crimesFont36Black.fnt"));
 		basker32Message = new BitmapFont(Gdx.files.internal("Fonts/Basker32.fnt"));
