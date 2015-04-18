@@ -72,7 +72,7 @@ public class WaitScreen implements Screen {
 
 			try {
 				game.mMultiplayerSession.setClient(new MMClient(gWorld, renderer,
-						game.mMultiplayerSession.serverAddress, game.mMultiplayerSession.serverPort,game.mMultiplayerSession.mId,game.mMultiplayerSession.mParticipantNames));
+						game.mMultiplayerSession.serverAddress, game.mMultiplayerSession.serverPort,game.mMultiplayerSession.mId,game.mMultiplayerSession.mName));
 				System.out.println("Set new client.");
 
 			} catch (Exception e) {

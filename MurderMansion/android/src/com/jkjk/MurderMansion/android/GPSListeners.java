@@ -103,17 +103,8 @@ public class GPSListeners implements RoomStatusUpdateListener, RoomUpdateListene
         	activity.mMultiplayerSeisson.isServer=true;
         }
         
-        //Get and store display name of players
-        ArrayList<String> ptIds =room.getParticipantIds() ;
-        for(String id:ptIds){
-        	Participant pt = room.getParticipant(id);
-        	String name = pt.getDisplayName();
-        	try{
-        		activity.mMultiplayerSeisson.mParticipantNames.put(id, name);
-        	}catch(Exception e){
-        		activity.mMultiplayerSeisson.mParticipantNames.put(id, "Player" +id);
-        	}
-        }
+
+
         
     	if(activity.mMultiplayerSeisson.isServer){
     		try{
@@ -157,6 +148,7 @@ public class GPSListeners implements RoomStatusUpdateListener, RoomUpdateListene
         activity.mMultiplayerSeisson.mRoomId=room.getRoomId();
         activity.mMultiplayerSeisson.mParticipants=room.getParticipants();
         activity.mMultiplayerSeisson.mId=room.getParticipantId(Games.Players.getCurrentPlayerId(mGoogleApiClient));
+        activity.mMultiplayerSeisson.mName=room.getParticipant(room.getParticipantId(Games.Players.getCurrentPlayerId(mGoogleApiClient))).getDisplayName();
 
         // print out the list of participants (for debug purposes)
         Log.d(TAG, "Room ID: " +activity.mMultiplayerSeisson.mRoomId);

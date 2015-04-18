@@ -21,7 +21,7 @@ public class MultiplayerSessionInfo {
 	public String mIncomingInvitationId;
 	public String mRoomId;
 	public ArrayList mParticipants;
-	public HashMap<String,String> mParticipantNames;
+	public String mName;
 	public int mState=1000;
 
 	public boolean isServer;
@@ -37,7 +37,6 @@ public class MultiplayerSessionInfo {
 	public final int ROOM_MENU=1003;
 	
 	public MultiplayerSessionInfo(){
-		this.mParticipantNames= new HashMap<String,String>();
 	}
 
 	public MMServer getServer() {
@@ -62,7 +61,7 @@ public class MultiplayerSessionInfo {
 		mRoomId=null;
 		mParticipants=null;
 		mState=ROOM_MENU;
-		mParticipantNames=null;
+		mName = null;
 
 		isServer=false;
 		serverAddress=null;

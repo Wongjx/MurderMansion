@@ -36,7 +36,7 @@ public class MMServer {
 	private ConcurrentHashMap<String, BufferedReader> serverInput;
 	private ConcurrentHashMap<String, Thread> serverListeners;
 	private final ConcurrentHashMap<String, Observer> observers;
-	public final ConcurrentHashMap<String, String> participantId;
+	public final ConcurrentHashMap<String, String> clientNames;
 
 	private int numOfPlayers;
 	private final int murdererId;
@@ -72,7 +72,7 @@ public class MMServer {
 		serverInput = new ConcurrentHashMap<String, BufferedReader>();
 		serverListeners = new ConcurrentHashMap<String, Thread>();
 		observers = new ConcurrentHashMap<String, Observer>();
-		participantId = new ConcurrentHashMap<String, String>();
+		clientNames = new ConcurrentHashMap<String, String>();
 
 		// System.out.println("Initialize fields");
 		playerStats = new PlayerStatuses(numOfPlayers);
@@ -562,8 +562,8 @@ class serverAcceptThread extends Thread {
 				server.getObservers().put("Player " + idCount, player);
 				
 				// Get google play participant id of client
-				String participantId = reader.readLine();
-				server.participantId.put("Player " + idCount, participantId);
+				String clientName = reader.readLine();
+				server.clientNames.put("Player " + idCount, clientName);
 
 				// Send out initializing information to client
 				writer.println(server.getNumOfPlayers());
@@ -670,10 +670,10 @@ class serverAcceptThread extends Thread {
 		//Send collated list of participant ids to all clients
 			String ret = "";
 			for (int i = 0; i < server.getNumOfPlayers(); i++) {
-				ret += server.participantId.get("Player " + i) + "_";
+				ret += server.clientNames.get("Player " + i) + "_";
 			}
 			ret = ret.substring(0, ret.length() - 1);
-			server.sendToClients("participantIds");
+			server.sendToClients("clientNames");
 			server.sendToClients(ret);
 			server.sendToClients("end");
 			
