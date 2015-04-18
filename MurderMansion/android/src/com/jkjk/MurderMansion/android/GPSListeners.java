@@ -103,6 +103,11 @@ public class GPSListeners implements RoomStatusUpdateListener, RoomUpdateListene
         	activity.mMultiplayerSeisson.isServer=true;
         }
         
+        //Get and store display name of players
+        for(String id:room.getParticipantIds()){
+        	activity.mMultiplayerSeisson.mParticipantNames.put(id, room.getParticipant(id).getDisplayName());
+        }
+        
     	if(activity.mMultiplayerSeisson.isServer){
     		try{
         		//Create MMServer with current number of players and broadcast server details

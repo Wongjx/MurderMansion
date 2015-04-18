@@ -99,7 +99,7 @@ public class MenuScreen implements Screen {
 					game.mMultiplayerSession.isServer = true;
 					game.mMultiplayerSession.setServer(new MMServer(1, game.mMultiplayerSession));
 					game.mMultiplayerSession.setClient(new MMClient(world, renderer,
-							game.mMultiplayerSession.serverAddress, game.mMultiplayerSession.serverPort));
+							game.mMultiplayerSession.serverAddress, game.mMultiplayerSession.serverPort,game.mMultiplayerSession.mId,game.mMultiplayerSession.mParticipantNames));
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
@@ -115,7 +115,7 @@ public class MenuScreen implements Screen {
 
 			}
 		});
-		
+
 		buttonLogout.addListener(new ClickListener() {
 			@Override
 			public void clicked(InputEvent event, float x, float y) {
@@ -124,14 +124,14 @@ public class MenuScreen implements Screen {
 
 			}
 		});
-
+		final MenuScreen menuScreen = this;
 		buttonTutorial.addListener(new ClickListener() {
 			@Override
 			public void clicked(InputEvent event, float x, float y) {
 				AssetLoader.clickSound.play(AssetLoader.VOLUME);
-				//TODO Set to tutorial screen
-//				((Game) Gdx.app.getApplicationListener()).setScreen(new WaitScreen(game, gameWidth,
-//						gameHeight));
+				// TODO Set to tutorial screen
+				((Game) Gdx.app.getApplicationListener()).setScreen(new TutorialScreen(menuScreen, gameWidth,
+						gameHeight));
 			}
 		});
 
@@ -140,10 +140,14 @@ public class MenuScreen implements Screen {
 			public void clicked(InputEvent event, float x, float y) {
 				AssetLoader.clickSound.play(AssetLoader.VOLUME);
 				// Host multiplayer game
-				game.actionResolver.startQuickGame();
-				game.mMultiplayerSession.mState = game.mMultiplayerSession.ROOM_WAIT;
-				((Game) Gdx.app.getApplicationListener()).setScreen(new WaitScreen(game, gameWidth,
-						gameHeight));
+				if(game.actionResolver.getSignedInGPGS()){
+					game.actionResolver.startQuickGame();
+					game.mMultiplayerSession.mState = game.mMultiplayerSession.ROOM_WAIT;
+					((Game) Gdx.app.getApplicationListener()).setScreen(new WaitScreen(game, gameWidth,
+							gameHeight));
+				} else{
+					game.actionResolver.loginGPGS();
+				}
 			}
 		});
 
@@ -151,10 +155,14 @@ public class MenuScreen implements Screen {
 			@Override
 			public void clicked(InputEvent event, float x, float y) {
 				AssetLoader.clickSound.play(AssetLoader.VOLUME);
-				game.actionResolver.sendInvitations();
-				game.mMultiplayerSession.mState = game.mMultiplayerSession.ROOM_WAIT;
-				((Game) Gdx.app.getApplicationListener()).setScreen(new WaitScreen(game, gameWidth,
-						gameHeight));
+				if(game.actionResolver.getSignedInGPGS()){
+					game.actionResolver.sendInvitations();
+					game.mMultiplayerSession.mState = game.mMultiplayerSession.ROOM_WAIT;
+					((Game) Gdx.app.getApplicationListener()).setScreen(new WaitScreen(game, gameWidth,
+							gameHeight));
+				}else{
+					game.actionResolver.loginGPGS();
+				}
 			}
 		});
 
@@ -162,12 +170,16 @@ public class MenuScreen implements Screen {
 			@Override
 			public void clicked(InputEvent event, float x, float y) {
 				AssetLoader.clickSound.play(AssetLoader.VOLUME);
-				game.actionResolver.seeInvitations();
-				game.mMultiplayerSession.mState = game.mMultiplayerSession.ROOM_WAIT;
-				((Game) Gdx.app.getApplicationListener()).setScreen(new WaitScreen(game, gameWidth,
-						gameHeight));
+				if(game.actionResolver.getSignedInGPGS()){
+					game.actionResolver.seeInvitations();
+					game.mMultiplayerSession.mState = game.mMultiplayerSession.ROOM_WAIT;
+					((Game) Gdx.app.getApplicationListener()).setScreen(new WaitScreen(game, gameWidth,
+							gameHeight));
+				}else{
+					game.actionResolver.loginGPGS();
+				}
 			}
-			
+
 		});
 
 		buttonPlay.setSize(this.BUTTON_WIDTH, this.BUTTON_HEIGHT);
@@ -181,7 +193,7 @@ public class MenuScreen implements Screen {
 		buttonLogin.setSize(this.BUTTON_WIDTH, this.BUTTON_HEIGHT);
 		buttonLogin.setPosition(345, 220);
 		stage.addActor(buttonLogin);
-		
+
 		buttonLogout.setSize(this.BUTTON_WIDTH, this.BUTTON_HEIGHT);
 		buttonLogout.setPosition(345, 20);
 		stage.addActor(buttonLogout);
@@ -235,7 +247,6 @@ public class MenuScreen implements Screen {
 
 	@Override
 	public void hide() {
-		dispose();
 	}
 
 	@Override

@@ -56,6 +56,8 @@ public class AssetLoader {
 	public static Skin scoreSkin;
 	public static ImageButtonStyle normal1;
 	public static Texture rip;
+	public static Texture civ_char;
+	public static Texture mur_char;
 
 	// CIVILIAN
 	public static Texture civ_weapon_bat_tex;
@@ -89,7 +91,7 @@ public class AssetLoader {
 	public static BitmapFont crimesFont48;
 	public static BitmapFont crimesFont36Time;
 	public static BitmapFont crimesFont36Settings;
-	public static BitmapFont crimesFont36Message;
+	public static BitmapFont basker32Message;
 	
 	public static Drawable buttonUp;
 	public static Drawable buttonDown;
@@ -219,6 +221,12 @@ public class AssetLoader {
 	public static Texture tutorialP1;
 	public static Texture hudOverlay;
 	public static Texture hudTutorial;
+	public static Texture civButton;
+	public static Texture civButtonDown;
+	public static Texture murButton;
+	public static Texture murButtonDown;
+	public static Texture backButton;
+	public static Texture nextButton;
 
 	// SOUNDS
 	public static Music menuMusic;
@@ -290,7 +298,7 @@ public class AssetLoader {
 		crimesFont36Time = new BitmapFont(Gdx.files.internal("Fonts/crimesFont36.fnt"));
 		crimesFont36Time.setScale(0.7f, 0.7f);
 		crimesFont36Settings = new BitmapFont(Gdx.files.internal("Fonts/crimesFont36.fnt"));
-		crimesFont36Message = new BitmapFont(Gdx.files.internal("Fonts/crimesFont36.fnt"));
+		basker32Message = new BitmapFont(Gdx.files.internal("Fonts/basker32.fnt"));
 	}
 
 	public static void loadMenuScreen() {
@@ -332,6 +340,8 @@ public class AssetLoader {
 		normal1.down = scoreSkin.getDrawable("buttonDown");
 		normal1.pressedOffsetY = -1;
 		rip = new Texture(Gdx.files.internal("score_screen/rip.png"));
+		civ_char = new Texture(Gdx.files.internal("score_screen/civilian.png"));
+		mur_char = new Texture(Gdx.files.internal("score_screen/murderer.png"));
 	}
 
 	public static void loadHUD() {
@@ -417,7 +427,7 @@ public class AssetLoader {
 //		labelStyle.font = menuSkin.getFont("basker45");
 //		labelStyle.font.scale(((Gdx.graphics.getWidth() - gameWidth) / gameWidth)/0.2f);
 //		message = new Label("The gates are open...", labelStyle);
-		crimesFont36Message.setScale(.6f,.6f);
+		basker32Message.setScale(.6f,.6f);
 		
 	}
 
@@ -775,6 +785,12 @@ public class AssetLoader {
 		tutorialP1 = new Texture(Gdx.files.internal("tutorial/Tutorial-Page-1.png"));
 		hudOverlay = new Texture(Gdx.files.internal("tutorial/HUD-Overlay-Tutorial.png"));
 		hudTutorial = new Texture(Gdx.files.internal("tutorial/HUD-Tutorial.png"));
+		civButton = new Texture(Gdx.files.internal("tutorial/civButton.png"));
+		civButtonDown = new Texture(Gdx.files.internal("tutorial/civButtonDown.png"));
+		murButton = new Texture(Gdx.files.internal("tutorial/murButton.png"));
+		murButtonDown = new Texture(Gdx.files.internal("tutorial/murButtonDown.png"));
+		backButton = new Texture(Gdx.files.internal("tutorial/backButton.png"));
+		nextButton = new Texture(Gdx.files.internal("tutorial/nextButton.png"));
 	}
 
 	public static void obstacleSFX() {
@@ -821,64 +837,6 @@ public class AssetLoader {
 
 	public static void dispose() {
 		// We must dispose of the texture when we are finished.
-		menuSkin.dispose();
-		logoTexture.dispose();
-		touchpadSkin.dispose();
-		menuBackground.dispose();
-		scoreBackground.dispose();
-		pause_main.dispose();
-		cooldownTexture.dispose();
-		time.dispose();
-		weapon_parts_counter.dispose();
-		tiledMap.dispose();
-		emptySlot.dispose();
-		settings_button_tex.dispose();
-		civ_weapon_bat_tex.dispose();
-		civ_item_tex.dispose();
-		civ_dash_tex.dispose();
-		mur_weapon_tex.dispose();
-		mur_item_tex.dispose();
-		mur_swap_C_tex.dispose();
-		mur_swap_M_tex.dispose();
-		civilianTexture0.dispose();
-		civilianTexture1.dispose();
-		civilianTexture2.dispose();
-		civ_dead_lines.dispose();
-		ghost_float.dispose();
-		plantedTrapTexture.dispose();
-		restingTrapTexture.dispose();
-		disarmTrapSpriteTexture.dispose();
-		batSpriteTexture.dispose();
-		knifeSpriteTexture.dispose();
-		shotgunPartTexture.dispose();
-		haunt_tex.dispose();
-		ghostHauntT.dispose();
-		walkSound.dispose();
-		runSound.dispose();
-		rip.dispose();
-
-		// Dispose Sound
-		plantTrapSound.dispose();
-		knifeStabSound.dispose();
-		batSwingSound.dispose();
-		disarmTrapSound.dispose();
-		pickUpItemSound.dispose();
-		menuMusic.dispose();
-		gameMusic.dispose();
-		shotgunBlastSound.dispose();
-		knifeThrustSound.dispose();
-		trapDisarmedSound.dispose();
-		trappedSound.dispose();
-		batHitSound.dispose();
-		lightningSound.dispose();
-		obstacleSound1.dispose();
-		obstacleSound2.dispose();
-		obstacleSound3.dispose();
-		obstacleSoundmd.dispose();
-		hauntSound1.dispose();
-		hauntSound2.dispose();
-		hauntSound3.dispose();
-		characterDeathSound.dispose();
 		try {
 			menuSkin.dispose();
 			logoTexture.dispose();
@@ -921,6 +879,12 @@ public class AssetLoader {
 			tutorialP1.dispose();
 			hudOverlay.dispose();
 			hudTutorial.dispose();
+			civButton.dispose();
+			civButtonDown.dispose();
+			murButton.dispose();
+			murButtonDown.dispose();
+			civ_char.dispose();
+			mur_char.dispose();
 
 			// Dispose Sound
 			menuMusic.dispose();
