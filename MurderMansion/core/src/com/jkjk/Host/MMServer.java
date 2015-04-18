@@ -10,7 +10,7 @@ import java.net.NetworkInterface;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.SocketException;
-import java.util.ArrayList;
+import java.net.SocketTimeoutException;
 import java.util.Collection;
 import java.util.Enumeration;
 import java.util.Random;
@@ -390,6 +390,9 @@ public class MMServer {
 				gameStartPause.startCountdown();
 			}
 		}
+		else if (msg[0].equals("statuscheck")) {
+			this.getServerOutput().get("Player "+msg[1]).println("check_ok");
+		}
 
 		// If player position update message
 		else if (msg[0].equals("loc")) {
@@ -479,9 +482,11 @@ public class MMServer {
 	public void endSession() throws IOException {
 		// instance= null;
 		for (Thread t : serverListeners.values()) {
+//			System.out.println(t.getId());
 			t.interrupt();
 		}
 		for (Socket s : clients.values()) {
+//			System.out.println(s.getPort());
 			s.getOutputStream().flush();
 			s.close();
 		}
@@ -542,7 +547,7 @@ class serverAcceptThread extends Thread {
 				Socket socket = server.serverSocket.accept();
 
 				// Set socket timeout as 30 seconds
-				socket.setSoTimeout(60000);
+				socket.setSoTimeout(30000);
 
 				// Add in client socket
 				server.getClients().put("Player " + idCount, socket);
@@ -699,16 +704,25 @@ class serverListener extends Thread {
 		while (!isInterrupted()) {
 			try {
 				if ((msg = input.readLine()) != null) {
-					// System.out.println("MMServer Message received: "+msg);
+					 System.out.println("MMServer Message received: "+msg);
 					// Do something with message
 					server.handleMessage(msg);
 				}
+				else{
+					this.server.getServerOutput().get("Player "+playerId).println("statuscheck");
+				}
+			} catch (SocketTimeoutException e) {
+				System.out.println("Server "+playerId+" Error: Socket Timeout " + e.getMessage());
+				e.printStackTrace();
+				this.server.getServerOutput().get("Player "+playerId).println("statuscheck");
+				
 			} catch (SocketException e) {
-				System.out.println("Server socket error while reading: " + e.getMessage());
+				System.out.println("Server "+playerId+" Error: Socket error: " + e.getMessage());
 				e.printStackTrace();
 				break;
-			} catch (Exception e) {
-				System.out.println("Server error while reading: " + e.getMessage());
+			} 
+			catch (Exception e) {
+				System.out.println("Server "+playerId+" Error: While reading: " + e.getMessage());
 				e.printStackTrace();
 			}
 		}
