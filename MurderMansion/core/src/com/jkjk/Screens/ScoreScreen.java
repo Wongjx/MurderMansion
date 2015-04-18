@@ -160,6 +160,7 @@ public class ScoreScreen implements Screen {
     	
     	//FIRST ROW: NAME OF PLAYERS
     	for (int i=0 ; i<numOfNames ; i++){
+    		System.out.println("Name of player: "+names[i]);
     		label_array[i] = new Label(names[i],scoreLabelStyle);
     		label_array[i].setAlignment(Align.center);
     	}
@@ -175,14 +176,14 @@ public class ScoreScreen implements Screen {
     		
     		//status = 1 = alive
     		//if character is dead
-    		if (status != playerIsAlive.get(names[i])){
+    		if (status != playerIsAlive.get("Player "+ i)){
     			image_array[i] = new Image(rip);
     		}
     		//if character is alive
     		else{
     			//type = 0 = murderer
     			//if character is murderer
-    			if (type == playerType.get(names[i])){
+    			if (type == playerType.get("Player "+ i)){
     				image_array[i] = new Image(civ_char);
     			}
     			//if character is civilian

@@ -541,7 +541,7 @@ class serverAcceptThread extends Thread {
 				Socket socket = server.serverSocket.accept();
 				
 				// Set socket timeout as 30 seconds
-				socket.setSoTimeout(30000);
+				socket.setSoTimeout(60000);
 				
 				// Add in client socket
 				server.getClients().put("Player " + idCount, socket);
@@ -559,7 +559,7 @@ class serverAcceptThread extends Thread {
 				server.getObjectLocations().register(player);
 				server.getGameStatus().register(player);
 				server.getObservers().put("Player " + idCount, player);
-
+				
 				// Get google play participant id of client
 				String participantId = reader.readLine();
 				server.participantId.put("Player " + idCount, participantId);
@@ -674,6 +674,8 @@ class serverAcceptThread extends Thread {
 			server.sendToClients("participantIds");
 			server.sendToClients(ret);
 			server.sendToClients("end");
+			
+			System.out.println("End of client intialization");
 	}
 }
 

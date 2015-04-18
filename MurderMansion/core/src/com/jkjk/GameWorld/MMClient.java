@@ -279,7 +279,7 @@ public class MMClient {
 	public void initClientSocket(String address, int port) throws Exception {
 		if (address != null) {
 			clientSocket = new Socket();
-			clientSocket.setSoTimeout(30000);
+			clientSocket.setSoTimeout(60000);
 			// Create InetSocketAddress and connect to server socket
 			InetAddress addr = InetAddress.getByName(address);
 			InetSocketAddress iAddress = new InetSocketAddress(addr, port);
@@ -907,7 +907,7 @@ class clientListener extends Thread {
 		while (!isInterrupted()) {
 			try {
 				if ((msg = input.readLine()) != null) {
-					// System.out.println("MMClient Message received: " + msg);
+//					 System.out.println("MMClient Message received: " + msg);
 					// String message = new String(msg);
 					client.handleMessage(msg);
 				}
