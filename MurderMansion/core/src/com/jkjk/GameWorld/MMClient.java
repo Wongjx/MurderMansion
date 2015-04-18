@@ -360,7 +360,7 @@ public class MMClient {
 		}
 	}
 	
-	public String[] getParticipantNames() throws IOException{
+	public String[] getParticipantNames(){
 		String[] clientNames= new String[numOfPlayers];
 		for (int i=0;i<numOfPlayers;i++){
 			clientNames[i]=participantNames.get(participantIds[i]);

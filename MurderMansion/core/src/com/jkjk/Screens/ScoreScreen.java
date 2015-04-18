@@ -103,12 +103,9 @@ public class ScoreScreen implements Screen {
 		
 //		names = new String[]{"wong","jx","enyan","kat"};
 		
-//		try {
-//			names = mmclient.getParticipantNames();
-//		} catch (IOException e) {
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//		}
+		
+		names = mmclient.getParticipantNames();
+		
 		numOfNames = names.length;
 		playerIsAlive = mmclient.get_playerIsAlive();
 		playerType = mmclient.get_playerType();
