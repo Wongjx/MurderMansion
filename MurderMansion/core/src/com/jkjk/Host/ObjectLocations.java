@@ -32,9 +32,9 @@ public class ObjectLocations implements Subject {
 		this.server = server;
 
 		this.itemLocations = new SpawnBuffer(numOfPlayers * 3);
-		this.weaponLocations = new SpawnBuffer(numOfPlayers);
+		this.weaponLocations = new SpawnBuffer((int) (numOfPlayers * 1.5));
 		this.weaponPartLocations = new SpawnBuffer(numOfPlayers * 2);
-		this.trapLocations = new SpawnBuffer(numOfPlayers);
+		this.trapLocations = new SpawnBuffer(numOfPlayers * 2);
 
 		itemSpawner = new ItemSpawner();
 		weaponSpawner = new WeaponSpawner();
