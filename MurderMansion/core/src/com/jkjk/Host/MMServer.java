@@ -389,15 +389,6 @@ public class MMServer {
 				gameStartPause.startCountdown();
 			}
 		}
-		// If client asking for all participant ids
-		else if (msg[0].equals("getids")) {
-			String ret = "";
-			for (int i = 0; i < numOfPlayers; i++) {
-				ret += participantId.get("Player " + i) + "_";
-			}
-			ret = ret.substring(0, ret.length() - 1);
-			serverOutput.get("Player " + msg[1]).println(ret);
-		}
 
 		// If player position update message
 		else if (msg[0].equals("loc")) {
@@ -548,11 +539,13 @@ class serverAcceptThread extends Thread {
 		while (server.getClients().size() < server.getNumOfPlayers()) {
 			try {
 				Socket socket = server.serverSocket.accept();
+				
 				// Set socket timeout as 30 seconds
 				socket.setSoTimeout(30000);
-				socket.setKeepAlive(true);
+				
 				// Add in client socket
 				server.getClients().put("Player " + idCount, socket);
+				
 				// Add input stream
 				BufferedReader reader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
 				server.getServerInput().put("Player " + idCount, reader);
@@ -671,6 +664,16 @@ class serverAcceptThread extends Thread {
 				Gdx.app.log(TAG, "Error creating server socket: " + e.getMessage());
 			}
 		}
+		
+		//Send collated list of participant ids to all clients
+			String ret = "";
+			for (int i = 0; i < server.getNumOfPlayers(); i++) {
+				ret += server.participantId.get("Player " + i) + "_";
+			}
+			ret = ret.substring(0, ret.length() - 1);
+			server.sendToClients("participantIds");
+			server.sendToClients(ret);
+			server.sendToClients("end");
 	}
 }
 

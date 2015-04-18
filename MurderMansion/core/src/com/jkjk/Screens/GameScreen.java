@@ -75,7 +75,7 @@ public class GameScreen implements Screen {
 				if (client.getNumOfPlayers() > 1) {
 					System.out.println("GAMEWORLD UPDATE: GAMEOVER COMPLETE");
 					((Game) Gdx.app.getApplicationListener()).setScreen(new ScoreScreen(game, gameWidth,
-							gameHeight, gWorld.isMurWin()));
+							gameHeight, client));
 				}
 			}
 		}

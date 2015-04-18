@@ -95,7 +95,7 @@ public class HudRenderer {
 
 	private ToastMessage TM;
 	private ToastMessage GWTM;
-	private boolean SyncSwitch;
+	private boolean welcomeMsg;
 
 	// private boolean
 	/**
@@ -145,7 +145,7 @@ public class HudRenderer {
 		settingsStage.addActor(getSettingsCloseButton());
 		TM = new ToastMessage(335);
 		GWTM = gWorld.getTM();
-		SyncSwitch = true;
+		welcomeMsg = true;
 	}
 
 	public static HudRenderer getInstance(GameWorld gWorld, MMClient client, float gameWidth,
@@ -210,9 +210,20 @@ public class HudRenderer {
 
 		if (!gameStarted) {
 			String s = "Synchronizing...";
-			font.draw(batch, s, 320 - (font.getBounds(s).width / 2), 330);
+			font.draw(batch, s, 300-(font.getBounds(s).width/2), 330);
+			GWTM.render(batch);
 			batch.end();
-		} else {
+		}
+		else{
+			if(welcomeMsg){
+				welcomeMsg = false;
+				if (gWorld.getPlayer().getType().equals("Murderer")){
+					GWTM.setDisplayMessage("Welcome... Murderer...");
+				}
+				else{
+					GWTM.setDisplayMessage("Welcome... Civilian...");
+				}
+			}
 			batch.draw(timebox, 55, 280);
 			batch.draw(weapon_parts_counter, 470, 235);
 			batch.draw(emptySlot, 480, 22, 120, 120);
@@ -679,7 +690,7 @@ public class HudRenderer {
 		itemButton.setName("Item Button");
 		AssetLoader.pickUpItemSound.play(AssetLoader.VOLUME);
 		if (gWorld.getPlayer().getType() == "Ghost")
-			TM.setDisplayMessage("Picked Item Up");
+			TM.setDisplayMessage("Picked Up Item");
 		else
 			TM.setDisplayMessage("Obtained Disarm Trap");
 

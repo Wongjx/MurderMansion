@@ -121,7 +121,7 @@ public class GameWorld {
 
 		obstacleList = new ConcurrentHashMap<Vector2, Obstacles>();
 
-		gameOverTimer = new Duration(5000);
+		gameOverTimer = new Duration(500);
 		lightningDuration = new Duration(500);
 
 		Box2DMapObjectParser parser = new Box2DMapObjectParser();
@@ -176,12 +176,10 @@ public class GameWorld {
 		if (type == 0) {
 			player = gameCharFac.createCharacter("Murderer", id, this, true);
 			createDoor();
-			TM.setDisplayMessage("Welcome... Murderer...");
 		} else if (type == 2)
 			player = gameCharFac.createCharacter("Ghost", id, this, true);
 		else {
 			player = gameCharFac.createCharacter("Civilian", id, this, true);
-			TM.setDisplayMessage("Welcome... Civilian...");
 		}
 		player.getBody().getFixtureList().get(0).setUserData("player");
 		player.spawn(x, y, angle);
