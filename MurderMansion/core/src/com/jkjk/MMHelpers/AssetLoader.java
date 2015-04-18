@@ -304,7 +304,7 @@ public class AssetLoader {
 		crimesFont36Message = new BitmapFont(Gdx.files.internal("Fonts/crimesFont36.fnt"));
 		crimesFont36Black = new BitmapFont(Gdx.files.internal("Fonts/crimesFont36.fnt"));
 		// I WANT BLACK COLOUR BUT CANNOT...
-		basker32Message = new BitmapFont(Gdx.files.internal("Fonts/basker32.fnt"));
+		basker32Message = new BitmapFont(Gdx.files.internal("Fonts/Basker32.fnt"));
 	}
 
 	public static void loadMenuScreen() {
