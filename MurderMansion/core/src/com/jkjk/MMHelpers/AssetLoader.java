@@ -58,6 +58,7 @@ public class AssetLoader {
 	public static Texture rip;
 	public static Texture civ_char;
 	public static Texture mur_char;
+	public static LabelStyle scoreLabelStyle;
 
 	// CIVILIAN
 	public static Texture civ_weapon_bat_tex;
@@ -92,6 +93,7 @@ public class AssetLoader {
 	public static BitmapFont crimesFont36Time;
 	public static BitmapFont crimesFont36Settings;
 	public static BitmapFont crimesFont36Message;
+	public static BitmapFont crimesFont36Black;
 	
 	public static Drawable buttonUp;
 	public static Drawable buttonDown;
@@ -293,6 +295,8 @@ public class AssetLoader {
 		crimesFont36Time.setScale(0.7f, 0.7f);
 		crimesFont36Settings = new BitmapFont(Gdx.files.internal("Fonts/crimesFont36.fnt"));
 		crimesFont36Message = new BitmapFont(Gdx.files.internal("Fonts/crimesFont36.fnt"));
+		crimesFont36Black = new BitmapFont(Gdx.files.internal("Fonts/crimesFont36.fnt"));
+		// I WANT BLACK COLOUR BUT CANNOT...
 	}
 
 	public static void loadMenuScreen() {
@@ -312,10 +316,6 @@ public class AssetLoader {
 		normal.up = menuSkin.getDrawable("buttonUp");
 		normal.down = menuSkin.getDrawable("buttonDown");
 		normal.pressedOffsetY = -1;
-		// Set label style for title
-		title = new LabelStyle();
-		title.font = menuSkin.getFont("crimesFont48");
-		title.font.scale((Gdx.graphics.getWidth() - gameWidth) / gameWidth);
 
 		// MAP
 		tiledMap = new TmxMapLoader().load("map/mansion2.tmx");
@@ -326,9 +326,11 @@ public class AssetLoader {
 		scoreBackground = new Texture(Gdx.files.internal("score_screen/score_background.png"));
 		scoreSkin = new Skin();
 		scoreSkin.add("crimesFont36", crimesFont36);
+		scoreSkin.add("crimesFont36Black", crimesFont36Black);
 		scoreSkin.add("crimesFont48", crimesFont48);
 		scoreSkin.add("buttonUp", new Texture("score_screen/next_button_up.png"));
 		scoreSkin.add("buttonDown", new Texture("score_screen/next_button_down.png"));
+		scoreSkin.add("namebox", new Texture("score_screen/namebox.png"));
 		normal1 = new ImageButtonStyle();
 		normal1.up = scoreSkin.getDrawable("buttonUp");
 		normal1.down = scoreSkin.getDrawable("buttonDown");
@@ -336,6 +338,10 @@ public class AssetLoader {
 		rip = new Texture(Gdx.files.internal("score_screen/rip.png"));
 		civ_char = new Texture(Gdx.files.internal("score_screen/civilian.png"));
 		mur_char = new Texture(Gdx.files.internal("score_screen/murderer.png"));
+		scoreLabelStyle = new LabelStyle();
+		scoreLabelStyle.font = scoreSkin.getFont("crimesFont36Black");
+		scoreLabelStyle.font.setScale(0.5f, 0.5f);
+		scoreLabelStyle.background = scoreSkin.getDrawable("namebox");
 	}
 
 	public static void loadHUD() {
