@@ -66,6 +66,7 @@ public class MMClient {
 	private int numOfPlayers;
 	private int id;
 	private String participantId;
+	private String[] participantIds;
 	private HashMap<String,String> participantNames;
 	private int murdererId;
 	private ArrayList<GameCharacter> playerList;
@@ -108,7 +109,6 @@ public class MMClient {
 		gameCharFac = new GameCharacterFactory();
 
 		this.participantId=participantId;
-		this.participantNames=participantNames;
 		this.serverAddress = serverAddress;
 		this.serverPort = serverPort;
 		this.isGameStart=false;
@@ -127,6 +127,11 @@ public class MMClient {
 		id = Integer.parseInt(clientInput.readLine());
 		murdererId = Integer.parseInt(clientInput.readLine());
 
+		//Intialize String[] for participant names
+		this.participantNames= participantNames;
+		this.participantIds=new String[numOfPlayers];
+
+		
 		// System.out.println("Creating item spawn buffers");
 		itemLocations = new SpawnBuffer(numOfPlayers * 3);
 		weaponLocations = new SpawnBuffer(numOfPlayers);
@@ -212,6 +217,18 @@ public class MMClient {
 
 		initPlayers();
 		createObstacles();
+		
+		//Get participant ids from server 
+		if ((message = clientInput.readLine()).equals("participantIds")) {
+			 System.out.println("Get particpant ids");
+			while (!(message = clientInput.readLine()).equals("end")) {
+				String[] ids = message.split("_");
+				for (int i = 0; i < numOfPlayers; i++) {
+					participantIds[i]= ids[i];
+				}
+			}
+		}
+
 
 		// Create and start extra thread that reads any incoming messages
 		Thread thread = new clientListener(clientInput, this);
@@ -343,9 +360,7 @@ public class MMClient {
 		}
 	}
 	
-	public String[] requestParticipantNames() throws IOException{
-		clientOutput.println("getids");
-		String[] participantIds =clientInput.readLine().split("_");
+	public String[] getParticipantNames() throws IOException{
 		String[] clientNames= new String[numOfPlayers];
 		for (int i=0;i<numOfPlayers;i++){
 			clientNames[i]=participantNames.get(participantIds[i]);

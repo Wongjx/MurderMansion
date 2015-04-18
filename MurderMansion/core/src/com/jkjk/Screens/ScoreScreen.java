@@ -100,7 +100,7 @@ public class ScoreScreen implements Screen {
 		initAssets(gameWidth, gameHeight);
 		
 		try {
-			names = mmclient.requestParticipantIds();
+			names = mmclient.getParticipantNames();
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
