@@ -2,7 +2,6 @@ package com.jkjk.GameObjects.Abilities;
 
 import com.jkjk.GameObjects.Duration;
 import com.jkjk.GameObjects.Characters.GameCharacter;
-import com.jkjk.MMHelpers.AssetLoader;
 
 public class Panic extends Ability {
 	

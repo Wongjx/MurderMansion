@@ -32,6 +32,8 @@ public class Murderer extends GameCharacter {
 	private Animation civPlantTrapAnimation;
 	private TextureRegion civRest;
 
+	private volatile boolean seen;
+
 	private Music walkSound;
 
 	Murderer(int id, GameWorld gWorld, boolean isPlayer) {
@@ -107,9 +109,11 @@ public class Murderer extends GameCharacter {
 
 		super.render(cam, batch);
 
-		if (gWorld.getPlayer().lightContains(body.getPosition().x, body.getPosition().y)) {
+		seen = gWorld.getPlayer().lightContains(body.getPosition().x, body.getPosition().y);
+		currentAnimation = (Animation) body.getUserData();
+
+		if (seen) {
 			runTime += Gdx.graphics.getRawDeltaTime();
-			currentAnimation = (Animation) body.getUserData();
 			batch.begin();
 
 			if (currentAnimation == AssetLoader.murAnimation || currentAnimation == civWalkAnimation) {
@@ -117,13 +121,13 @@ public class Murderer extends GameCharacter {
 					if (!walkSound.isPlaying() && isPlayer()) {
 						walkSound.play();
 					}
-					if (isDisguised()){
-					batch.draw(civWalkAnimation.getKeyFrame(runTime * 4, true), body.getPosition().x - 9,
-							body.getPosition().y - 9, 9, 9, 18, 18, 6f, 6f,
-							(float) (body.getAngle() * 180 / Math.PI) - 90);
-					} else {
-						batch.draw(AssetLoader.murAnimation.getKeyFrame(runTime * 4, true), body.getPosition().x - 9,
+					if (isDisguised()) {
+						batch.draw(civWalkAnimation.getKeyFrame(runTime * 4, true), body.getPosition().x - 9,
 								body.getPosition().y - 9, 9, 9, 18, 18, 6f, 6f,
+								(float) (body.getAngle() * 180 / Math.PI) - 90);
+					} else {
+						batch.draw(AssetLoader.murAnimation.getKeyFrame(runTime * 4, true),
+								body.getPosition().x - 9, body.getPosition().y - 9, 9, 9, 18, 18, 6f, 6f,
 								(float) (body.getAngle() * 180 / Math.PI) - 90);
 					}
 				} else {
@@ -159,6 +163,15 @@ public class Murderer extends GameCharacter {
 			}
 
 			batch.end();
+		} else {
+			if (!currentAnimation.isAnimationFinished(animationRunTime)) {
+				animationRunTime = 0;
+				if (!isDisguised()) {
+					body.setUserData(AssetLoader.murAnimation);
+				} else {
+					body.setUserData(civWalkAnimation);
+				}
+			}
 		}
 
 	}
@@ -174,7 +187,7 @@ public class Murderer extends GameCharacter {
 			ability.use();
 			ability.cooldown();
 			abilityChange = true;
-			if (gWorld.getPlayer().lightContains(body.getPosition().x, body.getPosition().y)) {
+			if (seen) {
 				if (disguised) {
 					body.setUserData(civToMurAnimation);
 				} else {
@@ -195,9 +208,9 @@ public class Murderer extends GameCharacter {
 	}
 
 	public boolean useWeapon() {
-		if (currentAnimation == AssetLoader.murAnimation) {
+		if (!disguised) {
 			if (super.useWeapon()) {
-				if (gWorld.getPlayer().lightContains(body.getPosition().x, body.getPosition().y)) {
+				if (seen) {
 					body.setUserData(AssetLoader.murKnifeAnimation);
 				}
 				return true;
@@ -205,29 +218,26 @@ public class Murderer extends GameCharacter {
 				return false;
 			}
 		} else {
-			System.out.println("You cannot use your weapon while disguised.");
-			gWorld.getTM().setDisplayMessage("You cannot use your knife while disguised");
+			if (isPlayer)
+				gWorld.getTM().setDisplayMessage("You cannot use your knife while disguised");
 			return false;
 		}
 	}
 
 	public void useItem() {
-		if (currentAnimation == AssetLoader.murAnimation || currentAnimation == civWalkAnimation) {
-			super.useItem();
-
-			if (gWorld.getPlayer().lightContains(body.getPosition().x, body.getPosition().y)) {
-				if (disguised) {
-					body.setUserData(civPlantTrapAnimation);
-				} else {
-					body.setUserData(AssetLoader.murPlantTrapAnimation);
-				}
+		super.useItem();
+		if (seen) {
+			if (disguised) {
+				body.setUserData(civPlantTrapAnimation);
+			} else {
+				body.setUserData(AssetLoader.murPlantTrapAnimation);
 			}
 		}
 	}
 
 	public void stun() {
 		super.stun();
-		if (gWorld.getPlayer().lightContains(body.getPosition().x, body.getPosition().y)) {
+		if (seen) {
 			if (!isDisguised()) {
 				body.setUserData(AssetLoader.murStunAnimation);
 			} else {

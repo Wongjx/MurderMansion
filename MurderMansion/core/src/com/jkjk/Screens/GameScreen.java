@@ -3,7 +3,6 @@ package com.jkjk.Screens;
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
-import com.badlogic.gdx.audio.Music;
 import com.jkjk.GameWorld.GameRenderer;
 import com.jkjk.GameWorld.GameWorld;
 import com.jkjk.GameWorld.HudRenderer;
@@ -49,7 +48,7 @@ public class GameScreen implements Screen {
 	public void show() {
 		AssetLoader.menuMusic.stop();
 		AssetLoader.gameMusic.play();
-		
+
 		client.updatePlayerIsReady();
 	}
 
@@ -58,7 +57,7 @@ public class GameScreen implements Screen {
 		runTime += delta;
 		gWorld.update(delta, client);
 		renderer.render(delta, runTime, client);
-		hudRenderer.render(delta,client.getIsGameStart());
+		hudRenderer.render(delta, client.getIsGameStart());
 		// if phone is designated server
 		if (info.isServer) {
 			try {
@@ -72,11 +71,9 @@ public class GameScreen implements Screen {
 		if (gWorld.isCivWin() || gWorld.isMurWin()) {
 			gWorld.getGameOverTimer().update();
 			if (!gWorld.getGameOverTimer().isCountingDown()) {
-//				if (client.getNumOfPlayers() > 1) {
-					System.out.println("GAMEWORLD UPDATE: GAMEOVER COMPLETE");
-					((Game) Gdx.app.getApplicationListener()).setScreen(new ScoreScreen(game, gameWidth,
-							gameHeight, client));
-//				}
+				System.out.println("GAMEWORLD UPDATE: GAMEOVER COMPLETE");
+				((Game) Gdx.app.getApplicationListener()).setScreen(new ScoreScreen(game, gameWidth,
+						gameHeight, client));
 			}
 		}
 	}

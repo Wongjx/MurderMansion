@@ -13,7 +13,6 @@ import com.jkjk.MMHelpers.AssetLoader;
 
 public class Haunt extends Ability {
 
-	private GameWorld gWorld;
 	private GameCharacter character;
 	private Body body;
 	private BodyDef bdef;
@@ -24,7 +23,6 @@ public class Haunt extends Ability {
 
 	Haunt(GameWorld gWorld, GameCharacter character) {
 		super(character);
-		this.gWorld = gWorld;
 		this.character = character;
 		bdef = new BodyDef();
 		fdef = new FixtureDef();

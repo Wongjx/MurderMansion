@@ -7,7 +7,6 @@ import java.util.concurrent.ConcurrentHashMap;
 import net.dermetfan.gdx.physics.box2d.Box2DMapObjectParser;
 import box2dLight.RayHandler;
 
-import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.World;
@@ -121,7 +120,7 @@ public class GameWorld {
 
 		obstacleList = new ConcurrentHashMap<Vector2, Obstacles>();
 
-		gameOverTimer = new Duration(500);
+		gameOverTimer = new Duration(3000);
 		lightningDuration = new Duration(500);
 
 		Box2DMapObjectParser parser = new Box2DMapObjectParser();
@@ -192,6 +191,7 @@ public class GameWorld {
 	public void createDoor() {
 		if (player.getType() == "Murderer") {
 			new Obstacles(this, new Vector2(915.2f, 511.8f), 0);
+			
 		}
 	}
 
@@ -451,6 +451,7 @@ public class GameWorld {
 	public void setCivWin(boolean civWin) {
 		this.civWin = civWin;
 		if (civWin) {
+			TM.setDisplayMessage("The civilians have prevailed!");
 			gameOverTimer.startCountdown();
 		}
 	}
@@ -462,6 +463,7 @@ public class GameWorld {
 	public void setMurWin(boolean murWin) {
 		this.murWin = murWin;
 		if (murWin) {
+			TM.setDisplayMessage("The murderer's scheme is complete...");
 			gameOverTimer.startCountdown();
 		}
 	}

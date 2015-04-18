@@ -2,8 +2,6 @@ package com.jkjk.Host;
 
 import java.util.ArrayList;
 
-import javax.print.attribute.standard.Severity;
-
 import com.jkjk.Host.Helpers.ItemSpawner;
 import com.jkjk.Host.Helpers.Location;
 import com.jkjk.Host.Helpers.SpawnBuffer;
@@ -47,6 +45,7 @@ public class ObjectLocations implements Subject {
 
 	// Visible consume methods for objects
 	public void consumeItem(Location location, int origin) throws InterruptedException {
+		System.out.println("ObjectLocations: Item Consumed");
 		itemLocations.consume(location);
 		itemSpawner.restore(location);
 		message = "item_" + origin + "_con_" + Float.toString(location.get()[0]) + "_"
@@ -55,6 +54,7 @@ public class ObjectLocations implements Subject {
 	}
 
 	public void consumeWeapon(Location location, int origin) {
+		System.out.println("ObjectLocations: Weapon Consumed");
 		weaponLocations.consume(location);
 		weaponSpawner.restore(location);
 		message = "weapon_" + origin + "_con_" + Float.toString(location.get()[0]) + "_"
@@ -63,8 +63,10 @@ public class ObjectLocations implements Subject {
 	}
 
 	public void consumeWeaponPart(Location location, int origin) {
+		System.out.println("ObjectLocations: WP Consumed");
 		weaponPartLocations.consume(location);
 		if (origin != server.getMurdererId()) {
+			System.out.println("ObjectLocations: weapon part capacity successfully lowered by 1");
 			weaponPartLocations.setCapacity(weaponPartLocations.getCapacity() - 1);
 		}
 		weaponPartSpawner.restore(location);

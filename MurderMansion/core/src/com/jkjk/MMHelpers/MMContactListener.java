@@ -14,7 +14,6 @@ import com.jkjk.GameObjects.Items.DisarmTrap;
  * @author JunXiang Will handle contact between weapons and characters
  */
 public class MMContactListener implements ContactListener {
-	private static MMContactListener instance;
 
 	private Fixture fa;
 	private Fixture fb;
@@ -38,13 +37,6 @@ public class MMContactListener implements ContactListener {
 		atStairs = false;
 		stairsName = null;
 	}
-
-//	public static MMContactListener getInstance(GameWorld gWorld) {
-//		if (instance == null) {
-//			instance = new MMContactListener(gWorld);
-//		}
-//		return instance;
-//	}
 
 	// called when two fixtures start to collide
 	public void beginContact(Contact c) {

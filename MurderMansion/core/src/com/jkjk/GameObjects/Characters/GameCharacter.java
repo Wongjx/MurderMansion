@@ -6,7 +6,6 @@ import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.scenes.scene2d.ui.Touchpad;
-import com.badlogic.gdx.utils.GdxRuntimeException;
 import com.jkjk.GameObjects.Duration;
 import com.jkjk.GameObjects.Abilities.Ability;
 import com.jkjk.GameObjects.Abilities.AbilityFactory;
@@ -22,7 +21,7 @@ import com.jkjk.MMHelpers.AssetLoader;
 public abstract class GameCharacter {
 
 	private String type;
-	private boolean isPlayer;
+	protected boolean isPlayer;
 	private GameWorld gWorld;
 
 	private boolean alive;
@@ -196,7 +195,6 @@ public abstract class GameCharacter {
 	public boolean useWeapon() {
 		if (!weapon.isOnCooldown()) {
 			weapon.use();
-			System.out.println("GameChar class: weapon was really used");
 			weaponUses--;
 			if (weaponUses > 0) {
 				weapon.cooldown();
@@ -305,6 +303,7 @@ public abstract class GameCharacter {
 			} catch (Exception e) {
 				e.printStackTrace();
 				System.out.println("EXCEPTION AT GAMECHARACTER");
+				rayHandler.setAmbientLight(ambientLightValue);
 			}
 		}
 

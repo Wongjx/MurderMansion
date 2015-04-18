@@ -3,15 +3,12 @@
  */
 package com.jkjk.GameObjects;
 
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
-import com.badlogic.gdx.physics.box2d.CircleShape;
 import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.jkjk.GameWorld.GameWorld;
@@ -23,7 +20,6 @@ import com.jkjk.MMHelpers.AssetLoader;
  */
 public class Obstacles {
 
-	private GameWorld gWorld;
 	private Body body;
 	private int type;
 
@@ -34,7 +30,6 @@ public class Obstacles {
 	 *            0 for main door, 1 for normal obstacle
 	 */
 	public Obstacles(GameWorld gWorld, Vector2 location, int type) {
-		this.gWorld = gWorld;
 		this.type = type;
 
 		BodyDef bdef = new BodyDef();

@@ -15,14 +15,13 @@ import com.jkjk.GameWorld.MMClient;
  * 
  */
 public class ObstaclesHandler {
-
-	private static ObstaclesHandler instance;
+	
 	private ArrayList<Location> obstacleLocations;
 	private Random randInt;
 	private Location location;
 	private int index;
 
-	private ObstaclesHandler() {
+	public ObstaclesHandler() {
 		obstacleLocations = new ArrayList<Location>();
 		obstacleLocations.add(new Location(new float[] { 915.2f, 511.8f })); // MAIN DOOR. ONLY DESTROY WHEN AT 0MIN
 		obstacleLocations.add(new Location(new float[] { 736.5f, 809.4f }));
@@ -34,13 +33,6 @@ public class ObstaclesHandler {
 		obstacleLocations.add(new Location(new float[] { 2802.6f, 490.1f }));
 
 		randInt = new Random();
-	}
-	
-	public static ObstaclesHandler getInstance() {
-		if (instance == null) {
-			instance = new ObstaclesHandler();
-		}
-		return instance;
 	}
 
 	/**

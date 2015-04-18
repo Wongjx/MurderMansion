@@ -19,6 +19,7 @@ import com.jkjk.GameWorld.GameRenderer;
 import com.jkjk.GameWorld.GameWorld;
 import com.jkjk.GameWorld.MMClient;
 import com.jkjk.Host.MMServer;
+import com.jkjk.Host.Helpers.ObstaclesHandler;
 import com.jkjk.MMHelpers.AssetLoader;
 import com.jkjk.MurderMansion.MurderMansion;
 
@@ -62,7 +63,7 @@ public class MenuScreen implements Screen {
 		stage = new Stage(new ExtendViewport(gameWidth, gameHeight));
 		buttonPlay = new TextButton("Debug", normal);
 		buttonJoin = new TextButton("Join Game", normal);
-		buttonTutorial = new TextButton("Help", normal);
+		buttonTutorial = new TextButton("Tutorial", normal);
 		buttonLogin = new TextButton("Login", normal);
 		buttonLogout = new TextButton("Logout", normal);
 		buttonQuick = new TextButton("Quick Game", normal);
@@ -115,7 +116,8 @@ public class MenuScreen implements Screen {
 			public void clicked(InputEvent event, float x, float y) {
 				AssetLoader.clickSound.play(AssetLoader.VOLUME);
 				game.actionResolver.loginGPGS();
-
+				buttonLogin.remove();
+				stage.addActor(buttonLogout);
 			}
 		});
 
@@ -124,7 +126,8 @@ public class MenuScreen implements Screen {
 			public void clicked(InputEvent event, float x, float y) {
 				AssetLoader.clickSound.play(AssetLoader.VOLUME);
 				game.actionResolver.logoutGPGS();
-
+				buttonLogout.remove();
+				stage.addActor(buttonLogin);
 			}
 		});
 
@@ -211,31 +214,31 @@ public class MenuScreen implements Screen {
 		stage.addActor(buttonPlay);
 
 		buttonQuick.setSize(this.BUTTON_WIDTH, this.BUTTON_HEIGHT);
-		buttonQuick.setPosition(410, 220);
+		buttonQuick.setPosition(425, 220);
 		stage.addActor(buttonQuick);
 
-		buttonLogin.setSize(this.BUTTON_WIDTH / 2, this.BUTTON_HEIGHT);
-		buttonLogin.setPosition(510, 15);
+		buttonLogin.setSize(this.BUTTON_WIDTH / 3 * 2, this.BUTTON_HEIGHT);
+		buttonLogin.setPosition(490, 15);
 		if (!game.actionResolver.getSignedInGPGS()) {
 			stage.addActor(buttonLogin);
 		}
 
-		buttonLogout.setSize(this.BUTTON_WIDTH / 2, this.BUTTON_HEIGHT);
-		buttonLogout.setPosition(510, 15);
+		buttonLogout.setSize(this.BUTTON_WIDTH / 3 * 2, this.BUTTON_HEIGHT);
+		buttonLogout.setPosition(490, 15);
 		if (game.actionResolver.getSignedInGPGS()) {
 			stage.addActor(buttonLogout);
 		}
 
-		buttonTutorial.setSize(this.BUTTON_WIDTH / 2, this.BUTTON_HEIGHT);
-		buttonTutorial.setPosition(440, 15);
+		buttonTutorial.setSize(this.BUTTON_WIDTH / 3 * 2, this.BUTTON_HEIGHT);
+		buttonTutorial.setPosition(400, 15);
 		stage.addActor(buttonTutorial);
 
 		buttonInvite.setSize(this.BUTTON_WIDTH, this.BUTTON_HEIGHT);
-		buttonInvite.setPosition(345, 160);
+		buttonInvite.setPosition(425, 160);
 		stage.addActor(buttonInvite);
 
 		buttonJoin.setSize(this.BUTTON_WIDTH, this.BUTTON_HEIGHT);
-		buttonJoin.setPosition(475, 160);
+		buttonJoin.setPosition(425, 100);
 		stage.addActor(buttonJoin);
 
 		muteButton.setPosition(580, 15);
@@ -254,7 +257,7 @@ public class MenuScreen implements Screen {
 		batch.begin();
 		sprite.draw(batch);
 		batch.end();
-
+		
 		stage.act();
 		stage.draw();
 

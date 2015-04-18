@@ -15,13 +15,9 @@ public class Disguise extends Ability {
 	public void use() {
 		if (((Murderer)gameCharacter).isDisguised()) {
 			((Murderer)gameCharacter).setDisguise(false);
-			System.out.println("Change sprite to murderer");
-			//gameCharacter.getBody().setUserData(AssetLoader.civToMurAnimation);
 		} 
 		else {
 			((Murderer)gameCharacter).setDisguise(true);
-			System.out.println("Change sprite to civilian");
-			//gameCharacter.getBody().setUserData(AssetLoader.murToCivAnimation);
 		}
 
 

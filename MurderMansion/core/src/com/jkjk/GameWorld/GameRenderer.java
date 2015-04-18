@@ -9,7 +9,6 @@ import com.badlogic.gdx.maps.tiled.TiledMapRenderer;
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
 import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
 import com.jkjk.GameObjects.Obstacles;
-import com.jkjk.GameObjects.Characters.GameCharacter;
 import com.jkjk.GameObjects.Items.ItemSprite;
 import com.jkjk.GameObjects.Items.Trap;
 import com.jkjk.GameObjects.Weapons.WeaponPartSprite;
@@ -24,14 +23,9 @@ import com.jkjk.MMHelpers.AssetLoader;
  * 
  */
 public class GameRenderer {
-	private static GameRenderer instance;
-
 	private GameWorld gWorld; // Box2D world. This will hold all objects (players, items, walls)
 	private OrthographicCamera cam; // Game camera. Views what is happening in the game.
 	private Box2DDebugRenderer b2dr; // Renders Box2D objects. (For debugging)
-
-	// Game Objects
-	private GameCharacter player; // Player's character
 
 	// Game Assets
 	private TiledMap tiledMap; // Loaded map
@@ -120,7 +114,6 @@ public class GameRenderer {
 	 * Releases the resources held by objects or images loaded.
 	 */
 	public void rendererDispose() {
-		instance=null;
 		gWorld.getWorld().dispose();
 		b2dr.dispose();
 	}

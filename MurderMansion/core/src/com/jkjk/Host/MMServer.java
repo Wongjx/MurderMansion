@@ -10,7 +10,6 @@ import java.net.NetworkInterface;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.SocketException;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Enumeration;
 import java.util.Random;
@@ -64,7 +63,7 @@ public class MMServer {
 	public MMServer(int numOfPlayers, MultiplayerSessionInfo info) throws InterruptedException {
 		this.numOfPlayers = numOfPlayers;
 		this.info = info;
-		int gameStartPauseDuration = 3000;
+		int gameStartPauseDuration = 2000;
 
 		// System.out.println("Initialize Client list and listeners");
 		clients = new ConcurrentHashMap<String, Socket>();
@@ -78,7 +77,7 @@ public class MMServer {
 		playerStats = new PlayerStatuses(numOfPlayers);
 		objectLocations = new ObjectLocations(numOfPlayers, this);
 
-		obstaclesHandler = ObstaclesHandler.getInstance();
+		obstaclesHandler = new ObstaclesHandler();
 		nextItemSpawnTime = 10000;
 		nextObstacleRemoveTime = 30000;
 		nextLightningTime = 20000;
@@ -131,12 +130,21 @@ public class MMServer {
 		// Item/Weapon/WeaponPart Spawn
 		if (runTime > nextItemSpawnTime) {
 			System.out.println("SPAWN!");
-			if (!objectLocations.getItemLocations().isFull())
+			if (!objectLocations.getItemLocations().isFull()) {
 				objectLocations.spawnItems(1);
-			if (!objectLocations.getWeaponLocations().isFull())
+				System.out.println("Item spawned with size: "
+						+ objectLocations.getItemLocations().getBuffer().size());
+			}
+			if (!objectLocations.getWeaponLocations().isFull()) {
 				objectLocations.spawnWeapons(1);
-			if (!objectLocations.getWeaponPartLocations().isFull())
+				System.out.println("Weapon spawned with size: "
+						+ objectLocations.getWeaponLocations().getBuffer().size());
+			}
+			if (!objectLocations.getWeaponPartLocations().isFull()) {
 				objectLocations.spawnWeaponParts(1);
+				System.out.println("Weapon Part spawned with size: "
+						+ objectLocations.getWeaponPartLocations().getBuffer().size());
+			}
 			nextItemSpawnTime += (random.nextInt(15000) + 10000);
 		}
 
@@ -169,8 +177,9 @@ public class MMServer {
 					continue;
 				if (playerStats.getPlayerIsAliveValue("Player " + i) == 1) {
 					numStillAlive++;
-					if (playerStats.getPlayerIsInSafeRegion("Player " + 1) == 1) {
+					if (playerStats.getPlayerIsInSafeRegion("Player " + i) == 1) {
 						numInSafeRegion++;
+						System.out.println("ENTERED SAFE REGION!");
 					}
 				}
 			}
@@ -416,7 +425,7 @@ public class MMServer {
 			playerStats.updateIsStun(Integer.parseInt(msg[1]), Integer.parseInt(msg[2]),
 					Integer.parseInt(msg[3]));
 		} else if (msg[0].equals("safe")) {
-			System.out.println("Player " + msg[1] + " is safe.");
+			System.out.println("Player " + msg[1] + " in safe region?: " + msg[2]);
 			playerStats.updateIsInSafeRegion(Integer.parseInt(msg[1]), Integer.parseInt(msg[2]));
 		} else if (msg[0].equals("useItem")) {
 			System.out.println("Player " + msg[1] + " using item.");
@@ -439,6 +448,7 @@ public class MMServer {
 		// If item consumption or production message
 		else if (msg[0].equals("item")) {
 			if (msg[2].equals("con")) {
+				System.out.println("Server: Consume item");
 				objectLocations.consumeItem(
 						new Location(new float[] { Float.parseFloat(msg[3]), Float.parseFloat(msg[4]) }),
 						Integer.parseInt(msg[1]));
@@ -449,6 +459,7 @@ public class MMServer {
 			}
 		} else if (msg[0].equals("weapon")) {
 			if (msg[2].equals("con")) {
+				System.out.println("Server: Consume weapon");
 				objectLocations.consumeWeapon(
 						new Location(new float[] { Float.parseFloat(msg[3]), Float.parseFloat(msg[4]) }),
 						Integer.parseInt(msg[1]));
@@ -459,6 +470,7 @@ public class MMServer {
 			}
 		} else if (msg[0].equals("weaponpart")) {
 			if (msg[2].equals("con")) {
+				System.out.println("Server: Consume WP");
 				objectLocations.consumeWeaponPart(
 						new Location(new float[] { Float.parseFloat(msg[3]), Float.parseFloat(msg[4]) }),
 						Integer.parseInt(msg[1]));
@@ -542,7 +554,7 @@ class serverAcceptThread extends Thread {
 				Socket socket = server.serverSocket.accept();
 
 				// Set socket timeout as 30 seconds
-				socket.setSoTimeout(60000);
+				socket.setSoTimeout(90000);
 
 				// Add in client socket
 				server.getClients().put("Player " + idCount, socket);
@@ -560,7 +572,7 @@ class serverAcceptThread extends Thread {
 				server.getObjectLocations().register(player);
 				server.getGameStatus().register(player);
 				server.getObservers().put("Player " + idCount, player);
-				
+
 				// Get google play participant id of client
 				String clientName = reader.readLine();
 				server.clientNames.put("Player " + idCount, clientName);
@@ -666,18 +678,17 @@ class serverAcceptThread extends Thread {
 			}
 		}
 
-		
-		//Send collated list of participant ids to all clients
-			String ret = "";
-			for (int i = 0; i < server.getNumOfPlayers(); i++) {
-				ret += server.clientNames.get("Player " + i) + "_";
-			}
-			ret = ret.substring(0, ret.length() - 1);
-			server.sendToClients("clientNames");
-			server.sendToClients(ret);
-			server.sendToClients("end");
-			
-			System.out.println("End of client intialization");
+		// Send collated list of participant ids to all clients
+		String ret = "";
+		for (int i = 0; i < server.getNumOfPlayers(); i++) {
+			ret += server.clientNames.get("Player " + i) + "_";
+		}
+		ret = ret.substring(0, ret.length() - 1);
+		server.sendToClients("clientNames");
+		server.sendToClients(ret);
+		server.sendToClients("end");
+
+		System.out.println("End of client intialization");
 
 	}
 }

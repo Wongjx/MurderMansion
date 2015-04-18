@@ -38,7 +38,6 @@ public class PlayerStatuses implements Subject{
 	 * @param status 1 -> true; 0 -> false;
 	 */
 	public void updateIsAlive(int origin,int id,int status){
-		System.out.println("UPDATE IS ALIVE: " + status);
 		playerIsAlive.put("Player "+id, status);
 		message="alive_"+origin+"_"+id+"_"+status;
 		updateAll(origin);

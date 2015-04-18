@@ -4,24 +4,31 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public class SpawnBuffer {
 	private int capacity;
-	private ConcurrentHashMap<String, Location> buffer;
+	private ConcurrentHashMap<Float, Location> buffer;
 
 	public SpawnBuffer(int capacity) {
 		this.capacity = capacity;
-		buffer = new ConcurrentHashMap<String, Location>(capacity);
+		buffer = new ConcurrentHashMap<Float, Location>(capacity);
 	}
 
 	public void produce(Location location) {
+		System.out.println("SpawnBuffer: tried to produce");
 		if (buffer.size() < capacity) {
-			buffer.put(location.toString(), new Location(location.get()));
+			System.out.println("SpawnBuffer: produced successfully");
+			buffer.put(location.get()[0] * location.get()[1], new Location(location.get()));
 		}
 
 	}
 
 	public void consume(Location location) {
+		System.out.println("SpawnBuffer: tried to consume");
 		if (buffer.size() > 0) {
-			if (buffer.containsKey(location.toString()))
-				buffer.remove(location.toString());
+			System.out.println("SpawnBuffer: consumed successfully");
+			System.out.println("SpawnBuffer requesting to consume key: " + location.get()[0] * location.get()[1]);
+			if (!buffer.containsKey(location.get()[0] * location.get()[1])) {
+				System.out.println("SpawnBuffer: location not found when consume");
+			}
+			buffer.remove(location.get()[0] * location.get()[1]);
 		}
 	}
 
@@ -41,7 +48,7 @@ public class SpawnBuffer {
 		return buffer.size() == capacity;
 	}
 
-	public ConcurrentHashMap<String, Location> getBuffer() {
+	public ConcurrentHashMap<Float, Location> getBuffer() {
 		return buffer;
 	}
 }
