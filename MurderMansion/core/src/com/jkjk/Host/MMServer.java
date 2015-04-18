@@ -698,10 +698,14 @@ class serverListener extends Thread {
 					// Do something with message
 					server.handleMessage(msg);
 				}
-			} catch (Exception e) {
+			}catch(SocketException e){
+				System.out.println("Server socket error while reading: " + e.getMessage());
 				e.printStackTrace();
-				System.out.println("Error while reading: " + e.getMessage());
 				break;
+			}
+			catch (Exception e) {
+				System.out.println("Server error while reading: " + e.getMessage());
+				e.printStackTrace();
 			}
 		}
 

@@ -912,11 +912,12 @@ class clientListener extends Thread {
 					client.handleMessage(msg);
 				}
 			}catch(SocketException e){
-				System.out.println("Client error while reading: " + e.getMessage());
+				System.out.println("Client socket error while reading: " + e.getMessage());
+				e.printStackTrace();
 				break;
 			}catch (Exception e) {
-				e.printStackTrace();
 				System.out.println("Client error while reading: " + e.getMessage());
+				e.printStackTrace();
 //				break;
 			}
 		}
