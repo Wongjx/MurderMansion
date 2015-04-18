@@ -123,7 +123,7 @@ public abstract class GameCharacter {
 
 	public void die() {
 		alive = false;
-		gWorld.getTM().setDisplayMessage("You have died...");
+		gWorld.getTM().setDisplayMessage("You Hear A Scream... Then Silence");
 		AssetLoader.characterDeathSound.play(AssetLoader.VOLUME);
 	}
 

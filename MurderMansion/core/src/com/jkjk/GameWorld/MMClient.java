@@ -286,7 +286,7 @@ public class MMClient {
 				System.out.println("I'M PLAYER NUMBER " + id);
 				// If self
 				if (i == murdererId) {
-					playerType.put("Player " + i, 0);
+					playerType.put("Player " + i, 1);
 				} else {
 					playerType.put("Player " + i, 1);
 				}
@@ -310,6 +310,23 @@ public class MMClient {
 				}
 			}
 		}
+	}
+	
+	/**
+	 * If 0 = DEAD;
+	 * If 1 = ALIVE;
+	 */
+	public ConcurrentHashMap<String, Integer> get_playerIsAlive(){
+		return playerIsAlive;
+	}
+	
+	/**
+	 * If 0 = MURDERER;
+	 * If 1 = CIVILIAN;
+	 * If 2 = GHOST;
+	 */
+	public ConcurrentHashMap<String, Integer> get_playerType(){
+		return playerType;
 	}
 
 	public void createObstacles() {
@@ -712,7 +729,7 @@ public class MMClient {
 		playerList.get(id).set_deathPositionX(currentPositionX);
 		playerList.get(id).set_deathPositionY(currentPositionY);
 	}
-
+	
 	public void handleMessage(String message) {
 		String[] msg = message.split("_");
 		//if start game message
