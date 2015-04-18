@@ -15,6 +15,7 @@ public class ToastMessage {
 	
 	public ToastMessage(float y){
 		show = false;
+		message = "";
 		ttl = new Duration(5000);
 		font = AssetLoader.crimesFont36Message;
 		x = 0f;
