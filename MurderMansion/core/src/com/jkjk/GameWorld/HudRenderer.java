@@ -306,14 +306,7 @@ public class HudRenderer {
 						game.mMultiplayerSession.getServer().endSession();
 						// System.out.println("Ended server session.");
 					}
-
-					if (game.mMultiplayerSession.getClient() != null) {
-						game.mMultiplayerSession.getClient().endSession();
-					} else {
-						// TODO HALP HALP HALP CLIENT NOT SUPPOSED TO BE NULL
-						System.out.println("CLIENT IS NULL?!!!?");
-					}
-
+					game.mMultiplayerSession.getClient().endSession();
 					// System.out.println("Leave room");
 					game.actionResolver.leaveRoom();
 

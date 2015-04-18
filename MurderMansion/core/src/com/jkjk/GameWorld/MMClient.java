@@ -8,6 +8,7 @@ import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.net.SocketException;
+import java.net.SocketTimeoutException;
 import java.util.ArrayList;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -67,7 +68,7 @@ public class MMClient {
 	private ArrayList<GameCharacter> playerList;
 	
 
-	private final long UPDATES_PER_SEC = 50;
+	private final long UPDATES_PER_SEC = 30;
 	private long lastUpdated;
 
 	private final ConcurrentHashMap<String, Integer> playerIsAlive; // If 1 ->true; If 0 -> false;
@@ -240,15 +241,6 @@ public class MMClient {
 
 	}
 
-//	public static MMClient getInstance(GameWorld gWorld, GameRenderer renderer, String serverAddress,
-//			int serverPort) throws Exception {
-//		if (instance == null) {
-//			System.out.println("New instance of MMClient made!");
-//			instance = new MMClient(gWorld, renderer, serverAddress, serverPort);
-//		}
-//		return instance;
-//	}
-
 	/**
 	 * Initialize client socket
 	 * 
@@ -257,7 +249,9 @@ public class MMClient {
 	public void initClientSocket(String address, int port) throws Exception {
 		if (address != null) {
 			clientSocket = new Socket();
-			clientSocket.setSoTimeout(90000);
+			
+			//Time out in 60 seconds
+			clientSocket.setSoTimeout(5000);
 			// Create InetSocketAddress and connect to server socket
 			InetAddress addr = InetAddress.getByName(address);
 			InetSocketAddress iAddress = new InetSocketAddress(addr, port);
@@ -689,6 +683,9 @@ public class MMClient {
 	public int getId() {
 		return id;
 	}
+	public int getMurdererId(){
+		return murdererId;
+	}
 
 	public void sendToServer(String message) {
 		clientOutput.println(message);
@@ -724,6 +721,9 @@ public class MMClient {
 		if(msg[0].equals("startgame")){
 			this.isGameStart=true;
 			System.out.println("All players ready. Start GAME!!");
+		}
+		else if (msg[0].equals("statuscheck")) {
+			this.clientOutput.println("check_ok");
 		}
 
 		// if player position update message
@@ -845,10 +845,7 @@ public class MMClient {
 		}
 	}
 	public void endSession() throws IOException{
-//		instance=null;
-//		System.out.println("Interrupt everythang");
 		this.clientListenerThread.interrupt();
-//		System.out.println("Closing all lose holes");
 		this.clientSocket.close();
 		System.out.println("MMClient seisson ended.");
 
@@ -871,23 +868,41 @@ class clientListener extends Thread {
 		while (!isInterrupted()) {
 			try {
 				if ((msg = input.readLine()) != null) {
-//					 System.out.println("MMClient Message received: " + msg);
-					// String message = new String(msg);
+					 System.out.println("MMClient Message received: " + msg);
 					client.handleMessage(msg);
+				}else{
+					client.getClientOutput().println("statuscheck_"+client.getId());
 				}
-			}catch(SocketException e){
-				System.out.println("Client socket error while reading: " + e.getMessage());
+			}catch(SocketTimeoutException e){
+				System.out.println("Client error: Socket timeout: " + e.getMessage());
 				e.printStackTrace();
+				client.getClientOutput().println("statuscheck_"+client.getId());
+				
+			}catch(SocketException E){
+				System.out.println("Client error: Socket error: " + E.getMessage());
+				E.printStackTrace();
 				break;
+				
 			}catch (Exception e) {
-				System.out.println("Client error while reading: " + e.getMessage());
+				System.out.println("Client error: While reading: " + e.getMessage());
 				e.printStackTrace();
 //				break;
 			}
 		}
 		
 		System.out.println("Client listener thread closed.");
-		client.getgWorld().setCivWin(true);
+		if(client.getId()==client.getMurdererId()){
+			client.getgWorld().setMurWin(true);
+		}else{
+			client.getgWorld().setCivWin(true);
+		}
+		try {
+			this.input.close();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
 		
 	}
 }
