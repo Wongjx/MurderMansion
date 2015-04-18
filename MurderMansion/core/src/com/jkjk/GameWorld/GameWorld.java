@@ -73,9 +73,9 @@ public class GameWorld {
 	private float ambientLightValue;
 	private float storeLightValue;
 	private Duration lightningDuration;
-	
+
 	private Random random;
-	
+
 	private ToastMessage TM;
 
 	/**
@@ -89,7 +89,7 @@ public class GameWorld {
 	 */
 	public GameWorld() {
 		world = new World(new Vector2(0, 0), true);
-//		cl = MMContactListener.getInstance(this);
+		// cl = MMContactListener.getInstance(this);
 		cl = new MMContactListener(this);
 		world.setContactListener(cl);
 
@@ -121,15 +121,15 @@ public class GameWorld {
 
 		obstacleList = new ConcurrentHashMap<Vector2, Obstacles>();
 
-		gameOverTimer = new Duration(5000);
+		gameOverTimer = new Duration(500);
 		lightningDuration = new Duration(500);
 
 		Box2DMapObjectParser parser = new Box2DMapObjectParser();
 		parser.load(world, AssetLoader.tiledMap);
-		
+
 		random = new Random();
-		
-		TM = new ToastMessage(350f);
+
+		TM = new ToastMessage(310);
 	}
 
 	/**
@@ -148,6 +148,7 @@ public class GameWorld {
 			player.update();
 		} else {
 			client.updatePlayerIsAlive(client.getId(), 0);
+			TM.setDisplayMessage("You Have Died... Your Spirit Seeks Vengeance.");
 			createGhost();
 		}
 		checkStairs();
@@ -175,12 +176,10 @@ public class GameWorld {
 		if (type == 0) {
 			player = gameCharFac.createCharacter("Murderer", id, this, true);
 			createDoor();
-			TM.setDisplayMessage("Welcome... Murderer...");
 		} else if (type == 2)
 			player = gameCharFac.createCharacter("Ghost", id, this, true);
-		else{
+		else {
 			player = gameCharFac.createCharacter("Civilian", id, this, true);
-			TM.setDisplayMessage("Welcome... Civilian...");
 		}
 		player.getBody().getFixtureList().get(0).setUserData("player");
 		player.spawn(x, y, angle);
@@ -295,9 +294,9 @@ public class GameWorld {
 			client.removeTrapLocation(bodyToRemove.getPosition().x, bodyToRemove.getPosition().y);
 		}
 	}
-	
-	private void checkStun(MMClient client){
-		if (player.isStun()){
+
+	private void checkStun(MMClient client) {
+		if (player.isStun()) {
 			client.updatePlayerIsStun(client.getId(), 1);
 			TM.setDisplayMessage("You have been Stunned");
 		}
@@ -310,34 +309,34 @@ public class GameWorld {
 		if (cl.getAtStairs()) {
 			cl.notAtStairs();
 			if (cl.getStairsName().equals("L1S1")) {
-				TM.setDisplayMessage("The Second Floor");
+				TM.setDisplayMessage("Second Level");
 				player.getBody().setTransform(2610, 870, player.getBody().getAngle());
 			} else if (cl.getStairsName().equals("L1S2")) {
-				TM.setDisplayMessage("The Second Floor");
+				TM.setDisplayMessage("Second Level");
 				player.getBody().setTransform(2305, 870, player.getBody().getAngle());
 			} else if (cl.getStairsName().equals("L1S3")) {
-				TM.setDisplayMessage("The Second Floor");
+				TM.setDisplayMessage("Second Level");
 				player.getBody().setTransform(2285, 269, player.getBody().getAngle());
 			} else if (cl.getStairsName().equals("L1S4")) {
-				TM.setDisplayMessage("The Second Floor");
+				TM.setDisplayMessage("Second Level");
 				player.getBody().setTransform(2835, 155, player.getBody().getAngle());
 			} else if (cl.getStairsName().equals("L2S1")) {
-				TM.setDisplayMessage("The First Floor");
+				TM.setDisplayMessage("First Level");
 				player.getBody().setTransform(645, 870, player.getBody().getAngle());
 			} else if (cl.getStairsName().equals("L2S2")) {
-				TM.setDisplayMessage("The First Floor");
+				TM.setDisplayMessage("First Level");
 				player.getBody().setTransform(445, 870, player.getBody().getAngle());
 			} else if (cl.getStairsName().equals("L2S3")) {
-				TM.setDisplayMessage("The First Floor");
+				TM.setDisplayMessage("First Level");
 				player.getBody().setTransform(445, 269, player.getBody().getAngle());
 			} else if (cl.getStairsName().equals("L2S4")) {
-				TM.setDisplayMessage("The First Floor");
+				TM.setDisplayMessage("First Level");
 				player.getBody().setTransform(910, 180, player.getBody().getAngle());
 			} else if (cl.getStairsName().equals("L1S5")) {
-				TM.setDisplayMessage("The Basement");
+				TM.setDisplayMessage("Basement");
 				player.getBody().setTransform(3515, 640, player.getBody().getAngle());
 			} else if (cl.getStairsName().equals("LbS1")) {
-				TM.setDisplayMessage("The First Floor");
+				TM.setDisplayMessage("First Level");
 				player.getBody().setTransform(310, 250, player.getBody().getAngle());
 			}
 		}
@@ -426,6 +425,10 @@ public class GameWorld {
 	}
 
 	public void setInSafeArea(boolean inSafeArea) {
+		if (inSafeArea)
+			TM.setDisplayMessage("You're now safe from the murderer");
+		else
+			TM.setDisplayMessage("Are you crazy? Don't go back in!");
 		this.inSafeArea = inSafeArea;
 	}
 
@@ -478,18 +481,18 @@ public class GameWorld {
 	public void addNumOfWeaponPartsCollected() {
 		this.numOfWeaponPartsCollected++;
 	}
-	
-	public ToastMessage getTM(){
+
+	public ToastMessage getTM() {
 		return TM;
 	}
-	
-	public void dispose(){
+
+	public void dispose() {
 		world.dispose();
 		cl = null;
-		
-//		world = new World(new Vector2(0, 0), true);
-//		cl = MMContactListener.getInstance(this);
-//		world.setContactListener(cl);
+
+		// world = new World(new Vector2(0, 0), true);
+		// cl = MMContactListener.getInstance(this);
+		// world.setContactListener(cl);
 
 		itemsToRemove = null;
 		weaponsToRemove = null;
