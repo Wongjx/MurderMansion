@@ -219,14 +219,12 @@ public class MenuScreen implements Screen {
 
 		buttonLogin.setSize(this.BUTTON_WIDTH / 3 * 2, this.BUTTON_HEIGHT);
 		buttonLogin.setPosition(490, 15);
-		if (!game.actionResolver.getSignedInGPGS()) {
-			stage.addActor(buttonLogin);
-		}
-
 		buttonLogout.setSize(this.BUTTON_WIDTH / 3 * 2, this.BUTTON_HEIGHT);
 		buttonLogout.setPosition(490, 15);
 		if (game.actionResolver.getSignedInGPGS()) {
 			stage.addActor(buttonLogout);
+		} else {
+			stage.addActor(buttonLogin);
 		}
 
 		buttonTutorial.setSize(this.BUTTON_WIDTH / 3 * 2, this.BUTTON_HEIGHT);
@@ -242,9 +240,12 @@ public class MenuScreen implements Screen {
 		stage.addActor(buttonJoin);
 
 		muteButton.setPosition(580, 15);
-		stage.addActor(muteButton);
-
 		unmuteButton.setPosition(580, 15);
+		if (AssetLoader.VOLUME == 1) {
+			stage.addActor(muteButton);
+		} else {
+			stage.addActor(unmuteButton);
+		}
 
 		Gdx.input.setInputProcessor(stage);
 	}
@@ -257,7 +258,7 @@ public class MenuScreen implements Screen {
 		batch.begin();
 		sprite.draw(batch);
 		batch.end();
-		
+
 		stage.act();
 		stage.draw();
 
