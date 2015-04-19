@@ -51,6 +51,7 @@ public class GameWorld {
 	private boolean inSafeArea;
 	private boolean civWin;
 	private boolean murWin;
+	private boolean disconnected;
 	private Duration gameOverTimer;
 
 	private ConcurrentHashMap<Vector2, Obstacles> obstacleList;
@@ -191,7 +192,7 @@ public class GameWorld {
 	public void createDoor() {
 		if (player.getType() == "Murderer") {
 			new Obstacles(this, new Vector2(915.2f, 511.8f), 0);
-			
+
 		}
 	}
 
@@ -353,7 +354,11 @@ public class GameWorld {
 		obstacleList.get(location).getBody().setActive(false);
 		obstacleList.get(location).getBody().setTransform(0, 0, 0);
 		obstacleList.remove(location);
-		TM.setDisplayMessage("An Obstacle has Disappeared...");
+		if (obstacleList.size() == 0) {
+			TM.setDisplayMessage("The mansion door creak open... This is your chance to escape!");
+		} else {
+			TM.setDisplayMessage("An Obstacle has Disappeared...");
+		}
 	}
 
 	public void lightningStrike() {
@@ -464,6 +469,18 @@ public class GameWorld {
 		this.murWin = murWin;
 		if (murWin) {
 			TM.setDisplayMessage("The murderer's scheme is complete...");
+			gameOverTimer.startCountdown();
+		}
+	}
+
+	public boolean isDisconnected() {
+		return disconnected;
+	}
+
+	public void setDisconnected(boolean disconnected) {
+		this.disconnected = disconnected;
+		if (disconnected) {
+			TM.setDisplayMessage("Your connection to the real world has been lost...");
 			gameOverTimer.startCountdown();
 		}
 	}

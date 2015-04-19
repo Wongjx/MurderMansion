@@ -54,28 +54,33 @@ public class GameScreen implements Screen {
 
 	@Override
 	public void render(float delta) {
-		runTime += delta;
-		gWorld.update(delta, client);
-		renderer.render(delta, runTime, client);
-		hudRenderer.render(delta, client.getIsGameStart());
-		// if phone is designated server
-		if (info.isServer) {
-			try {
-				info.getServer().update();
-			} catch (NullPointerException e) {
-				e.printStackTrace();
-				System.out.println("Disconnected?");
-			}
-		}
-
 		if (gWorld.isCivWin() || gWorld.isMurWin()) {
 			gWorld.getGameOverTimer().update();
 			if (!gWorld.getGameOverTimer().isCountingDown()) {
 				System.out.println("GAMEWORLD UPDATE: GAMEOVER COMPLETE");
-//				((Game) Gdx.app.getApplicationListener()).setScreen(new ScoreScreen(game, gameWidth,
-//						gameHeight, client));
 				((Game) Gdx.app.getApplicationListener()).setScreen(new ScoreScreen(game, gameWidth,
-						gameHeight));
+						gameHeight, client));
+			}
+		} else if (gWorld.isDisconnected()) {
+			gWorld.getGameOverTimer().update();
+			if (!gWorld.getGameOverTimer().isCountingDown()) {
+				System.out.println("GAMEWORLD UPDATE: GAMEOVER COMPLETE");
+				((Game) Gdx.app.getApplicationListener()).setScreen(new ScoreScreen(game, gameWidth,
+						gameHeight, client));
+			}
+		} else {
+			runTime += delta;
+			gWorld.update(delta, client);
+			renderer.render(delta, runTime, client);
+			hudRenderer.render(delta, client.getIsGameStart());
+			// if phone is designated server
+			if (info.isServer) {
+				try {
+					info.getServer().update();
+				} catch (NullPointerException e) {
+					e.printStackTrace();
+					System.out.println("Disconnected?");
+				}
 			}
 		}
 	}

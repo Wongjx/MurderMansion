@@ -18,6 +18,7 @@ public class ToastMessage {
 		message = "";
 		ttl = new Duration(5000);
 		font = AssetLoader.basker32Message;
+		font.setScale(.5f,.5f);
 		x = 0f;
 		this.y = y;
 	}

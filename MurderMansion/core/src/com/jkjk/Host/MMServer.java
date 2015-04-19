@@ -399,9 +399,12 @@ public class MMServer {
 			if (readyCount.get() >= numOfPlayers) {
 				gameStartPause.startCountdown();
 			}
-		}
-		else if (msg[0].equals("statuscheck")) {
-			this.getServerOutput().get("Player "+msg[1]).println("check_ok");
+			// TODO
+		} else if (msg[0].equals("connection")) {
+			if (msg[2].equals("check")) {
+				this.getServerOutput().get("Player " + msg[1]).println("connection_server_ok");
+				this.getServerOutput().get("Player " + msg[1]).flush();
+			}
 		}
 
 		// If player position update message
@@ -495,11 +498,11 @@ public class MMServer {
 	public void endSession() throws IOException {
 		// instance= null;
 		for (Thread t : serverListeners.values()) {
-//			System.out.println(t.getId());
+			// System.out.println(t.getId());
 			t.interrupt();
 		}
 		for (Socket s : clients.values()) {
-//			System.out.println(s.getPort());
+			// System.out.println(s.getPort());
 			s.getOutputStream().flush();
 			s.close();
 		}
@@ -560,7 +563,7 @@ class serverAcceptThread extends Thread {
 				Socket socket = server.serverSocket.accept();
 
 				// Set socket timeout as 30 seconds
-				socket.setSoTimeout(30000);
+				socket.setSoTimeout(5000);
 
 				// Add in client socket
 				server.getClients().put("Player " + idCount, socket);
@@ -672,6 +675,8 @@ class serverAcceptThread extends Thread {
 				writer.println("end");
 
 				// Start a listener thread for each client socket connected
+				
+				//TODO
 				Thread thread = new serverListener(reader, server, idCount);
 				server.getServerListeners().put("Player " + idCount, thread);
 				thread.start();
@@ -711,35 +716,114 @@ class serverListener extends Thread {
 		this.playerId = playerId;
 	}
 
+	// @Override
+	// public void run() {
+	// while (!isInterrupted()) {
+	// try {
+	// if ((msg = input.readLine()) != null) {
+	// System.out.println("MMServer Message received: "+msg);
+	// // Do something with message
+	// server.handleMessage(msg);
+	// }
+	// else{
+	// this.server.getServerOutput().get("Player "+playerId).println("statuscheck");
+	// }
+	// } catch (SocketTimeoutException e) {
+	// System.out.println("Server "+playerId+" Error: Socket Timeout " + e.getMessage());
+	// e.printStackTrace();
+	// this.server.getServerOutput().get("Player "+playerId).println("statuscheck");
+	//
+	// } catch (SocketException e) {
+	// System.out.println("Server "+playerId+" Error: Socket error: " + e.getMessage());
+	// e.printStackTrace();
+	// break;
+	// }
+	// catch (Exception e) {
+	// System.out.println("Server "+playerId+" Error: While reading: " + e.getMessage());
+	// e.printStackTrace();
+	// }
+	// }
+	//
+	// System.out.println("Connection with client has been terminated.");
+	// server.removePlayer(playerId);
+	//
+	// }
+
 	@Override
 	public void run() {
 		while (!isInterrupted()) {
 			try {
 				if ((msg = input.readLine()) != null) {
-					 System.out.println("MMServer Message received: "+msg);
+					System.out.println("MMServer Message received: " + msg);
 					// Do something with message
+					if (msg.equals("connection_" + playerId + "_close")){
+						System.out.println("Server listener " + playerId + " close.");
+						break;
+					}
 					server.handleMessage(msg);
-				}
-				else{
-					this.server.getServerOutput().get("Player "+playerId).println("statuscheck");
+				} else {
+					System.out.println("Server listener " + playerId + " receiving null. Terminating now.");
+					break;
 				}
 			} catch (SocketTimeoutException e) {
-				System.out.println("Server "+playerId+" Error: Socket Timeout " + e.getMessage());
+				// TODO
+				System.out.println("Server listener " + playerId + " timeout. check from client status.");
+				server.getServerOutput().get("Player " + playerId).println("connection_server_check");
+				server.getServerOutput().get("Player " + playerId).flush();
+				try {
+					msg = input.readLine();
+					System.out.println("Server listener received message from client " + playerId + ": "
+							+ msg);
+				} catch (IOException e1) {
+					System.out.println("IO exception on server listener e1");
+					msg = "noreply";
+					e1.printStackTrace();
+				} catch (NullPointerException e1) {
+					System.out.println("Server listener " + playerId
+							+ " received null in message. Terminating now.");
+					break;
+				}
+				if (msg.equals("connection_" + playerId + "_ok")) {
+					System.out.println("Server listener reply from client " + playerId
+							+ " satisfactory. Continue listening.");
+					continue;
+				} else if (msg.equals("connection_" + playerId + "_check")) {
+					try {
+						server.handleMessage(msg);
+					} catch (NumberFormatException e1) {
+						System.out.println("Received number format exception on server listener");
+						e1.printStackTrace();
+					} catch (InterruptedException e1) {
+						System.out.println("Received interrupted exception on server listener");
+						e1.printStackTrace();
+					}
+					System.out.println("Server listener " + playerId
+							+ " reply from server satisfactory. Continue listening.");
+					continue;
+				} else {
+					System.out.println("Server listener " + playerId
+							+ " received unsatisfactory reply. Terminating now");
+					break;
+				}
+			} catch (NumberFormatException e) {
+				System.out.println("Server listener for player " + playerId
+						+ " has formatting error. Ignoring...");
 				e.printStackTrace();
-				this.server.getServerOutput().get("Player "+playerId).println("statuscheck");
-				
-			} catch (SocketException e) {
-				System.out.println("Server "+playerId+" Error: Socket error: " + e.getMessage());
+				continue;
+			} catch (IOException e) {
+				System.out.println("Server listener for player " + playerId
+						+ " has IO problems. Terminating now. ");
 				e.printStackTrace();
 				break;
-			} 
-			catch (Exception e) {
-				System.out.println("Server "+playerId+" Error: While reading: " + e.getMessage());
+			} catch (InterruptedException e) {
+				System.out.println("Server listener for player " + playerId
+						+ " was interrupted. Terminating now. ");
 				e.printStackTrace();
+				break;
 			}
 		}
 
-		System.out.println("Connection with client has been terminated.");
+		System.out.println("Connection with client " + playerId + " has been terminated.");
 		server.removePlayer(playerId);
 
 	}

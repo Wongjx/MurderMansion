@@ -3,6 +3,7 @@ package com.jkjk.MMHelpers;
 import java.net.InetAddress;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.ReentrantLock;
 
@@ -53,7 +54,7 @@ public class MultiplayerSessionInfo {
 
 	public void setClient(MMClient client) {
 		this.client = client;
-	}
+	}	
 	
 	public void endSession(){
 		mId=null;

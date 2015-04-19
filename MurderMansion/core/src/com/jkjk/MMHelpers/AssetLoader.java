@@ -460,7 +460,6 @@ public class AssetLoader {
 //		labelStyle.font = menuSkin.getFont("basker45");
 //		labelStyle.font.scale(((Gdx.graphics.getWidth() - gameWidth) / gameWidth)/0.2f);
 //		message = new Label("The gates are open...", labelStyle);
-		basker32Message.setScale(.6f,.6f);
 		
 	}
 
