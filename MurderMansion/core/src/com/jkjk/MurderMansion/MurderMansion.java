@@ -4,6 +4,9 @@ import com.badlogic.gdx.Application;
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.utils.GdxNativesLoader;
+import com.jkjk.GameWorld.GameRenderer;
+import com.jkjk.GameWorld.GameWorld;
+import com.jkjk.GameWorld.MMClient;
 import com.jkjk.MMHelpers.ActionResolver;
 import com.jkjk.MMHelpers.AssetLoader;
 import com.jkjk.MMHelpers.MultiplayerSessionInfo;
@@ -25,20 +28,21 @@ public class MurderMansion extends Game {
 		this.actionResolver=actionResolver;
 		this.mMultiplayerSession=mMultiplayerSeisson; 
 	}
-	
 
 	@Override
 	public void create() {
 		GdxNativesLoader.load();
 		AssetLoader.initiate();
 		AssetLoader.loadLogo();
-//		AssetLoader.loadFont();
-//		AssetLoader.loadScoreScreen();
-		setScreen(new SplashScreen(this, V_WIDTH * SCALE, V_HEIGHT * SCALE));
+		AssetLoader.loadFont();
+		AssetLoader.loadScoreScreen();
+//		setScreen(new SplashScreen(this, V_WIDTH * SCALE, V_HEIGHT * SCALE));
 //		setScreen(new WaitScreen(this, V_WIDTH * SCALE, V_HEIGHT * SCALE));
 //		setScreen(new MenuScreen(this,V_WIDTH * SCALE, V_HEIGHT * SCALE));
 //		setScreen(new GameScreen(V_WIDTH * SCALE, V_HEIGHT * SCALE));
 //		setScreen(new ScoreScreen(this,V_WIDTH * SCALE, V_HEIGHT * SCALE, true));
+		//to test score screen
+		setScreen(new ScoreScreen(this,V_WIDTH * SCALE, V_HEIGHT * SCALE));
 	}
 
 	@Override

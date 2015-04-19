@@ -14,6 +14,7 @@ import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.Texture.TextureFilter;
+import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.scenes.scene2d.Actor;
@@ -50,6 +51,9 @@ public class ScoreScreen implements Screen {
 	private final ConcurrentHashMap<String, Integer> playerType; 
 
 	private Stage stage;
+	private float animationRunTime;
+	private Animation score_animation;
+	private Texture score_texture;
 
 	private float gameWidth;
 	private float gameHeight;
@@ -57,7 +61,6 @@ public class ScoreScreen implements Screen {
 	private float BUTTON_HEIGHT;
 
 	private SpriteBatch batch;
-	private Texture background;
 	private Sprite sprite;
 
 	private ImageButtonStyle normal1;
@@ -66,6 +69,20 @@ public class ScoreScreen implements Screen {
 	private Table table;
 	
 	private Label[] label_array;
+	private LabelStyle scoreLabelStyle;
+	
+	private Image[] image_array;
+	private Texture rip;
+	private Texture civ_char0;
+	private Texture civ_char1;
+	private Texture civ_char2;
+	private Texture civ_char3;
+	private Texture mur_char;
+	
+	private Integer status; 
+	private Integer type;
+	
+	//for testing only
 //	private Label scoreLabel;
 //	private Label scoreLabel1;
 //	private Label scoreLabel2;
@@ -73,21 +90,12 @@ public class ScoreScreen implements Screen {
 //	private Label scoreLabel4;
 //	private Label scoreLabel5;
 //	private Label scoreLabel6;
-	private LabelStyle scoreLabelStyle;
-	
-	private Image[] image_array;
-	private Texture rip;
 //	private Image rip_image;
 //	private Image rip_image1;
 //	private Image rip_image2;
 //	private Image rip_image3;
-	private Texture civ_char;
 //	private Image civ_char_image;
-	private Texture mur_char;
 //	private Image mur_char_image;
-	
-	private Integer status; 
-	private Integer type;
 
 	/**
 	 * Score screen
@@ -101,11 +109,17 @@ public class ScoreScreen implements Screen {
 		this.game=game;
 		initAssets(gameWidth, gameHeight);
 		
+//	public ScoreScreen(MurderMansion game, float gameWidth, float gameHeight) {
+//			this.gameHeight=gameHeight;
+//			this.gameWidth=gameWidth;
+//			this.game=game;
+//			initAssets(gameWidth, gameHeight);
+		
 //		names = new String[]{"wong","jx","enyan","kat"};
 		
 		
 		names = mmclient.getParticipantNames();
-		
+//		
 		numOfNames = names.length;
 		playerIsAlive = mmclient.get_playerIsAlive();
 		playerType = mmclient.get_playerType();
@@ -136,10 +150,14 @@ public class ScoreScreen implements Screen {
 	private void initAssets(float w, float h) {
 		normal1 = AssetLoader.normal1;
 		rip = AssetLoader.rip;
-		civ_char = AssetLoader.civ_char;
+		civ_char0 = AssetLoader.civ_char0;
+		civ_char1 = AssetLoader.civ_char1;
+		civ_char2 = AssetLoader.civ_char2;
+		civ_char3 = AssetLoader.civ_char3;
 		mur_char = AssetLoader.mur_char;
 		scoreLabelStyle = AssetLoader.scoreLabelStyle;
-
+		score_animation = AssetLoader.score_background_animation;
+		score_texture = AssetLoader.score_texture;
 	}
 
 	/*
@@ -150,12 +168,11 @@ public class ScoreScreen implements Screen {
 	@Override
 	public void show() {    	
     	batch = new SpriteBatch();
-    	background = AssetLoader.scoreBackground;
-    	background.setFilter(TextureFilter.Linear, TextureFilter.Linear);
-    	sprite = new Sprite(background);
-    	sprite.setSize(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
     	
-    	table = new Table();
+		sprite = new Sprite(score_texture);
+		sprite.setSize(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+		
+		table = new Table();
     	table.padTop(120);
     	
     	//FIRST ROW: NAME OF PLAYERS
@@ -182,11 +199,12 @@ public class ScoreScreen implements Screen {
     		//if character is alive
     		else{
     			//type = 0 = murderer
-    			//if character is murderer
-    			if (type != playerType.get("Player "+ i)){
-    				image_array[i] = new Image(civ_char);
-    			}
     			//if character is civilian
+    			//TODO: ASSIGN DIFFERENT CHARACTER FOR DIFFERENT IDs
+    			if (type != playerType.get("Player "+ i)){
+    				image_array[i] = new Image(civ_char0);
+    			}
+    			//if character is murderer
     			else{
     				image_array[i] = new Image(mur_char);
     			}
@@ -196,6 +214,8 @@ public class ScoreScreen implements Screen {
     	for (int i=0 ; i<numOfNames ; i++){
     		table.add(image_array[i]).size(82, 127).spaceRight(10);
     	}
+    	
+    	
     	
     	//the following works for testing
 //    	scoreLabel1 = new Label("Katherine",scoreLabelStyle);
@@ -215,7 +235,7 @@ public class ScoreScreen implements Screen {
 //    	rip_image1 = new Image(rip);
 //    	rip_image2 = new Image(rip);
 //    	rip_image3 = new Image(rip);
-//    	civ_char_image = new Image(civ_char);
+//    	civ_char_image = new Image(civ_char0);
 //    	mur_char_image = new Image(mur_char);
     	
 //    	table.add(scoreLabel1).size(82, 48).spaceRight(10);
@@ -225,12 +245,12 @@ public class ScoreScreen implements Screen {
 //    	table.add(scoreLabel5).size(82, 48).spaceRight(10);
 //    	table.add(scoreLabel6).size(82, 48).spaceRight(10);
 //    	table.row();
-//    	table.add(rip_image).size(87, 127).spaceRight(10);
-//    	table.add(civ_char_image).size(87, 127).spaceRight(10);
-//    	table.add(mur_char_image).size(87, 127).spaceRight(10);
-//    	table.add(rip_image1).size(87, 127).spaceRight(10);
-//    	table.add(rip_image2).size(87, 127).spaceRight(10);
-//    	table.add(rip_image3).size(87, 127).spaceRight(10);
+//    	table.add(rip_image).size(80, 150).spaceRight(22);
+//    	table.add(civ_char_image).size(80, 150).spaceRight(22);
+//    	table.add(mur_char_image).size(80, 150).spaceRight(22);
+//    	table.add(rip_image1).size(80, 150).spaceRight(22);
+//    	table.add(rip_image2).size(80, 150).spaceRight(22);
+//    	table.add(rip_image3).size(80, 150).spaceRight(22);
     	
         nextButton.addListener(new ClickListener(){
             @Override
@@ -280,12 +300,18 @@ public class ScoreScreen implements Screen {
 
 		batch.begin();
 		sprite.draw(batch);
+		//TODO: ANIMATION NOT WORKING :(
+//		animationRunTime += Gdx.graphics.getRawDeltaTime();
+//		batch.draw(score_animation.getKeyFrame(animationRunTime), 0, 0, 640, 360);
 		batch.end();
+		
 		table.setFillParent(true);
 		stage.addActor(table);
 		stage.draw();
 		stage.act(Gdx.graphics.getDeltaTime()); // Acts stage at deltatime
 //		table.debugAll();
+		
+		
 	}
 
 	/*
