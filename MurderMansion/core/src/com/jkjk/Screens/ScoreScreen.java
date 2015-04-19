@@ -180,6 +180,8 @@ public class ScoreScreen implements Screen {
     		System.out.println("Name of player: "+names[i]);
     		label_array[i] = new Label(names[i],scoreLabelStyle);
     		label_array[i].setAlignment(Align.center);
+    		label_array[i].setWrap(true);
+    		label_array[i].setWidth(BUTTON_WIDTH);
     	}
     	for (int i=0 ; i<numOfNames ; i++){
     		table.add(label_array[i]).size(82, 48).spaceRight(10);

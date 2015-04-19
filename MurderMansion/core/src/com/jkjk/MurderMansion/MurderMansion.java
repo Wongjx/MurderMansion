@@ -36,13 +36,13 @@ public class MurderMansion extends Game {
 		AssetLoader.loadLogo();
 		AssetLoader.loadFont();
 		AssetLoader.loadScoreScreen();
-//		setScreen(new SplashScreen(this, V_WIDTH * SCALE, V_HEIGHT * SCALE));
+		setScreen(new SplashScreen(this, V_WIDTH * SCALE, V_HEIGHT * SCALE));
 //		setScreen(new WaitScreen(this, V_WIDTH * SCALE, V_HEIGHT * SCALE));
 //		setScreen(new MenuScreen(this,V_WIDTH * SCALE, V_HEIGHT * SCALE));
 //		setScreen(new GameScreen(V_WIDTH * SCALE, V_HEIGHT * SCALE));
 //		setScreen(new ScoreScreen(this,V_WIDTH * SCALE, V_HEIGHT * SCALE, true));
 		//to test score screen
-		setScreen(new ScoreScreen(this,V_WIDTH * SCALE, V_HEIGHT * SCALE));
+//		setScreen(new ScoreScreen(this,V_WIDTH * SCALE, V_HEIGHT * SCALE));
 	}
 
 	@Override
