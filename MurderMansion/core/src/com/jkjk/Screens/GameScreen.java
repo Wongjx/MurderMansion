@@ -68,19 +68,18 @@ public class GameScreen implements Screen {
 				((Game) Gdx.app.getApplicationListener()).setScreen(new ScoreScreen(game, gameWidth,
 						gameHeight, client));
 			}
-		} else {
-			runTime += delta;
-			gWorld.update(delta, client);
-			renderer.render(delta, runTime, client);
-			hudRenderer.render(delta, client.getIsGameStart());
-			// if phone is designated server
-			if (info.isServer) {
-				try {
-					info.getServer().update();
-				} catch (NullPointerException e) {
-					e.printStackTrace();
-					System.out.println("Disconnected?");
-				}
+		}
+		runTime += delta;
+		gWorld.update(delta, client);
+		renderer.render(delta, runTime, client);
+		hudRenderer.render(delta, client.getIsGameStart());
+		// if phone is designated server
+		if (info.isServer) {
+			try {
+				info.getServer().update();
+			} catch (NullPointerException e) {
+				e.printStackTrace();
+				System.out.println("Disconnected?");
 			}
 		}
 	}

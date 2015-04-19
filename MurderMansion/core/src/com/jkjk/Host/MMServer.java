@@ -399,7 +399,6 @@ public class MMServer {
 			if (readyCount.get() >= numOfPlayers) {
 				gameStartPause.startCountdown();
 			}
-			// TODO
 		} else if (msg[0].equals("connection")) {
 			if (msg[2].equals("check")) {
 				this.getServerOutput().get("Player " + msg[1]).println("connection_server_ok");
@@ -676,7 +675,6 @@ class serverAcceptThread extends Thread {
 
 				// Start a listener thread for each client socket connected
 				
-				//TODO
 				Thread thread = new serverListener(reader, server, idCount);
 				server.getServerListeners().put("Player " + idCount, thread);
 				thread.start();
@@ -716,45 +714,12 @@ class serverListener extends Thread {
 		this.playerId = playerId;
 	}
 
-	// @Override
-	// public void run() {
-	// while (!isInterrupted()) {
-	// try {
-	// if ((msg = input.readLine()) != null) {
-	// System.out.println("MMServer Message received: "+msg);
-	// // Do something with message
-	// server.handleMessage(msg);
-	// }
-	// else{
-	// this.server.getServerOutput().get("Player "+playerId).println("statuscheck");
-	// }
-	// } catch (SocketTimeoutException e) {
-	// System.out.println("Server "+playerId+" Error: Socket Timeout " + e.getMessage());
-	// e.printStackTrace();
-	// this.server.getServerOutput().get("Player "+playerId).println("statuscheck");
-	//
-	// } catch (SocketException e) {
-	// System.out.println("Server "+playerId+" Error: Socket error: " + e.getMessage());
-	// e.printStackTrace();
-	// break;
-	// }
-	// catch (Exception e) {
-	// System.out.println("Server "+playerId+" Error: While reading: " + e.getMessage());
-	// e.printStackTrace();
-	// }
-	// }
-	//
-	// System.out.println("Connection with client has been terminated.");
-	// server.removePlayer(playerId);
-	//
-	// }
-
 	@Override
 	public void run() {
 		while (!isInterrupted()) {
 			try {
 				if ((msg = input.readLine()) != null) {
-					System.out.println("MMServer Message received: " + msg);
+//					System.out.println("MMServer Message received: " + msg);
 					// Do something with message
 					if (msg.equals("connection_" + playerId + "_close")){
 						System.out.println("Server listener " + playerId + " close.");
@@ -766,7 +731,6 @@ class serverListener extends Thread {
 					break;
 				}
 			} catch (SocketTimeoutException e) {
-				// TODO
 				System.out.println("Server listener " + playerId + " timeout. check from client status.");
 				server.getServerOutput().get("Player " + playerId).println("connection_server_check");
 				server.getServerOutput().get("Player " + playerId).flush();

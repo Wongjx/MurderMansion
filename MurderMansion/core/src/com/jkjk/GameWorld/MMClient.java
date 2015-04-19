@@ -721,7 +721,6 @@ public class MMClient {
 		} else if (msg[0].equals("connection")) {
 			if (msg[1].equals("server")) {
 				if (msg[2].equals("check")) {
-					// TODO
 					System.out.println("Client " + id + " received server connection check. Replying now.");
 					this.clientOutput.println("connection_" + id + "_ok");
 					this.clientOutput.flush();
@@ -866,57 +865,13 @@ class clientListener extends Thread {
 		this.client = client;
 	}
 
-	// @Override
-	// public void run() {
-	// System.out.println("Starting client listener thread.");
-	// while (!isInterrupted()) {
-	// try {
-	// if ((msg = input.readLine()) != null) {
-	// System.out.println("MMClient Message received: " + msg);
-	// client.handleMessage(msg);
-	// }else{
-	// client.getClientOutput().println("statuscheck_"+client.getId());
-	// }
-	// }catch(SocketTimeoutException e){
-	// System.out.println("Client error: Socket timeout: " + e.getMessage());
-	// e.printStackTrace();
-	// client.getClientOutput().println("statuscheck_"+client.getId());
-	//
-	// }catch(SocketException E){
-	// System.out.println("Client error: Socket error: " + E.getMessage());
-	// E.printStackTrace();
-	// break;
-	//
-	// }catch (Exception e) {
-	// System.out.println("Client error: While reading: " + e.getMessage());
-	// e.printStackTrace();
-	// // break;
-	// }
-	// }
-	//
-	// System.out.println("Client listener thread closed.");
-	// if(client.getId()==client.getMurdererId()){
-	// client.getgWorld().setMurWin(true);
-	// }else{
-	// client.getgWorld().setCivWin(true);
-	// }
-	// try {
-	// this.input.close();
-	// } catch (IOException e) {
-	// // TODO Auto-generated catch block
-	// e.printStackTrace();
-	// }
-	//
-	//
-	// }
-
 	@Override
 	public void run() {
 		System.out.println("Starting client listener thread.");
 		while (!isInterrupted()) {
 			try {
 				if ((msg = input.readLine()) != null) {
-					System.out.println("MMClient Message received: " + msg);
+//					System.out.println("MMClient Message received: " + msg);
 					client.handleMessage(msg);
 				} else {
 					System.out.println("Client listener " + client.getId()
@@ -970,13 +925,10 @@ class clientListener extends Thread {
 		}
 
 		System.out.println("Client listener " + client.getId() + " thread closed.");
-		if (client.getId() == client.getMurdererId()) {
-			client.getgWorld().setDisconnected(true);
-		}
+		client.getgWorld().setDisconnected(true);
 		try {
 			this.input.close();
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 
