@@ -58,8 +58,6 @@ public abstract class GameCharacter {
 	private int nextBrightTime;
 	private long startTime;
 	private long brightTime;
-	
-	protected Duration idleTimer;
 
 	GameCharacter(String type, int id, GameWorld gWorld, boolean isPlayer) {
 		this.isPlayer = isPlayer;
@@ -68,8 +66,6 @@ public abstract class GameCharacter {
 		touchpad = AssetLoader.touchpad;
 		stunDuration = new Duration(2500);
 		hauntDuration = new Duration(4000);
-		idleTimer = new Duration(60000);
-		idleTimer.startCountdown();
 
 		this.type = type;
 		this.id = id;
@@ -252,11 +248,6 @@ public abstract class GameCharacter {
 	}
 
 	public void update() {
-		idleTimer.update();
-		if (!idleTimer.isCountingDown()){
-			die();
-		}
-		
 		if (weapon != null) {
 			weapon.update();
 			if (weapon.isCompleted() && weaponUses == 0) {
@@ -346,7 +337,6 @@ public abstract class GameCharacter {
 			if (!touchpad.isTouched()) {
 				body.setAngularVelocity(0);
 			} else {
-				idleTimer.startCountdown();
 				angleDiff = (Math.atan2(touchpadY, touchpadX) - (body.getAngle())) % (Math.PI * 2);
 				if (angleDiff > 0) {
 					if (angleDiff >= 3.14) {
@@ -377,7 +367,6 @@ public abstract class GameCharacter {
 
 	public void setPosition(float x, float y, float angle, float velocity) {
 		body.setTransform(x, y, angle);
-		idleTimer.startCountdown();
 		if (velocity != 0) {
 			body.setLinearVelocity(0.00001f, 0.000001f);
 		}

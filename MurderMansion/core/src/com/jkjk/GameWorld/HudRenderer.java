@@ -214,15 +214,17 @@ public class HudRenderer {
 
 		if (!gameStarted) {
 			String s = "Synchronizing...";
-			syncFont.draw(batch, s, (300 - (font.getBounds(s).width / 2)) * scale, 330 * scale);
+			syncFont.draw(batch, s, (300-(font.getBounds(s).width/2)) * scale, 330 * scale);
 			GWTM.render(batch);
 			batch.end();
-		} else {
-			if (welcomeMsg) {
+		}
+		else{
+			if(welcomeMsg){
 				welcomeMsg = false;
-				if (gWorld.getPlayer().getType().equals("Murderer")) {
+				if (gWorld.getPlayer().getType().equals("Murderer")){
 					GWTM.setDisplayMessage("Welcome... Murderer...");
-				} else {
+				}
+				else{
 					GWTM.setDisplayMessage("Welcome... Civilian...");
 				}
 			}
@@ -601,7 +603,7 @@ public class HudRenderer {
 			TM.setDisplayMessage("Picked Bat Up");
 		} else
 			TM.setDisplayMessage("Obtained Bat");
-
+		
 		weaponButton.addListener(new ClickListener() {
 			@Override
 			public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
@@ -700,10 +702,9 @@ public class HudRenderer {
 				System.out.println("Clicked on disarm trap button");
 				gWorld.getPlayer().useItem();
 				client.updatePlayerUseItem();
-				if (gWorld.getPlayer().getType() == "Ghost") {
+				if (gWorld.getPlayer().getType() == "Ghost")
 					TM.setDisplayMessage("Placing Item Down");
-					AssetLoader.pickUpItemSound.play(AssetLoader.VOLUME);
-				}
+				AssetLoader.pickUpItemSound.play(AssetLoader.VOLUME);
 			}
 		});
 
