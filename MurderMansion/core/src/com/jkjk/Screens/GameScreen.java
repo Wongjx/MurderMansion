@@ -72,8 +72,10 @@ public class GameScreen implements Screen {
 			gWorld.getGameOverTimer().update();
 			if (!gWorld.getGameOverTimer().isCountingDown()) {
 				System.out.println("GAMEWORLD UPDATE: GAMEOVER COMPLETE");
+//				((Game) Gdx.app.getApplicationListener()).setScreen(new ScoreScreen(game, gameWidth,
+//						gameHeight, client));
 				((Game) Gdx.app.getApplicationListener()).setScreen(new ScoreScreen(game, gameWidth,
-						gameHeight, client));
+						gameHeight));
 			}
 		}
 	}

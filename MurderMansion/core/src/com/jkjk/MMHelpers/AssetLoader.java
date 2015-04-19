@@ -55,11 +55,16 @@ public class AssetLoader {
 	public static TextButtonStyle normalSettings;
 
 	// SCORE SCREEN
-	public static Texture scoreBackground;
+	public static Texture score_background_texture;
+	public static Animation score_background_animation;
+	public static Texture score_texture;
 	public static Skin scoreSkin;
 	public static ImageButtonStyle normal1;
 	public static Texture rip;
-	public static Texture civ_char;
+	public static Texture civ_char0;
+	public static Texture civ_char1;
+	public static Texture civ_char2;
+	public static Texture civ_char3;
 	public static Texture mur_char;
 	public static LabelStyle scoreLabelStyle;
 
@@ -340,7 +345,15 @@ public class AssetLoader {
 
 	public static void loadScoreScreen() {
 		// SCORE SCREEN
-		scoreBackground = new Texture(Gdx.files.internal("score_screen/score_background.png"));
+		
+		score_background_texture = new Texture(Gdx.files.internal("score_screen/score_animation.png"));
+		score_background_texture.setFilter(TextureFilter.Nearest, TextureFilter.Nearest);
+		TextureRegion[] score_background = TextureRegion.split(score_background_texture, 796, 448)[0];
+		score_background_animation = new Animation(0.3f, score_background);
+		score_background_animation.setPlayMode(Animation.PlayMode.LOOP);
+		
+		score_texture = new Texture("score_screen/score_background.png");
+		
 		scoreSkin = new Skin();
 		scoreSkin.add("crimesFont36", crimesFont36);
 		scoreSkin.add("crimesFont36Black", crimesFont36Black);
@@ -353,8 +366,11 @@ public class AssetLoader {
 		normal1.down = scoreSkin.getDrawable("buttonDown");
 		normal1.pressedOffsetY = -1;
 		rip = new Texture(Gdx.files.internal("score_screen/rip.png"));
-		civ_char = new Texture(Gdx.files.internal("score_screen/civilian.png"));
-		mur_char = new Texture(Gdx.files.internal("score_screen/murderer.png"));
+		civ_char0 = new Texture(Gdx.files.internal("score_screen/civ0.png"));
+		civ_char1 = new Texture(Gdx.files.internal("score_screen/civ1.png"));
+		civ_char2 = new Texture(Gdx.files.internal("score_screen/civ2.png"));
+		civ_char3 = new Texture(Gdx.files.internal("score_screen/civ3.png"));
+		mur_char = new Texture(Gdx.files.internal("score_screen/mur.png"));
 		scoreLabelStyle = new LabelStyle();
 		scoreLabelStyle.font = scoreSkin.getFont("crimesFont36Black");
 		scoreLabelStyle.font.setScale(0.5f, 0.5f);
@@ -863,7 +879,8 @@ public class AssetLoader {
 			logoTexture.dispose();
 			touchpadSkin.dispose();
 			menuBackground.dispose();
-			scoreBackground.dispose();
+			score_texture.dispose();
+			score_background_texture.dispose();
 			pause_main.dispose();
 			cooldownTexture.dispose();
 			time.dispose();
@@ -906,7 +923,10 @@ public class AssetLoader {
 			civButtonDown.dispose();
 			murButton.dispose();
 			murButtonDown.dispose();
-			civ_char.dispose();
+			civ_char0.dispose();
+			civ_char1.dispose();
+			civ_char2.dispose();
+			civ_char3.dispose();
 			mur_char.dispose();
 
 			// Dispose Sound
