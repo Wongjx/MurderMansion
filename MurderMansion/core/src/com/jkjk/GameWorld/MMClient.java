@@ -848,8 +848,10 @@ public class MMClient {
 	}
 
 	public void endSession() throws IOException {
-		this.clientListenerThread.interrupt();
-		this.clientSocket.close();
+		if (!clientListenerThread.isAlive() && clientListenerThread != null)
+			this.clientListenerThread.interrupt();
+		if (!clientSocket.isClosed() && clientSocket != null)
+			this.clientSocket.close();
 		System.out.println("MMClient seisson ended.");
 
 	}
@@ -871,7 +873,7 @@ class clientListener extends Thread {
 		while (!isInterrupted()) {
 			try {
 				if ((msg = input.readLine()) != null) {
-//					System.out.println("MMClient Message received: " + msg);
+					// System.out.println("MMClient Message received: " + msg);
 					client.handleMessage(msg);
 				} else {
 					System.out.println("Client listener " + client.getId()
@@ -887,27 +889,14 @@ class clientListener extends Thread {
 					System.out.println("Client listener " + client.getId() + " received message: " + msg);
 				} catch (IOException e1) {
 					System.out.println("IO exception on client listener " + client.getId() + " e1");
-					msg = "noreply";
 					e1.printStackTrace();
+					break;
 				} catch (NullPointerException e1) {
 					System.out.println("Client listener " + client.getId()
 							+ " received null in message. Terminating now.");
 					break;
 				}
-				if (msg.equals("connection_" + "server" + "_ok")) {
-					System.out.println("Client listener " + client.getId()
-							+ " reply from server satisfactory. Continue listening.");
-					continue;
-				} else if (msg.equals("connection_" + "server" + "_check")) {
-					client.handleMessage(msg);
-					System.out.println("Client listener " + client.getId()
-							+ " reply from server satisfactory. Continue listening.");
-					continue;
-				} else {
-					System.out.println("Client listener " + client.getId()
-							+ " received unsatisfactory reply. Terminating now");
-					break;
-				}
+				client.handleMessage(msg);
 			} catch (SocketException E) {
 				System.out.println("Client error: Socket error: " + E.getMessage());
 				E.printStackTrace();
@@ -922,14 +911,20 @@ class clientListener extends Thread {
 				System.out.println("Other exception thrown on client listener. continuing.");
 				continue;
 			}
+			if (client.getgWorld().isCivWin() || client.getgWorld().isMurWin()) {
+				System.out.println("Client " + client.getId() + " terminating due to win condition.");
+				break;
+			}
 		}
 
 		System.out.println("Client listener " + client.getId() + " thread closed.");
-		client.getgWorld().setDisconnected(true);
-		try {
-			this.input.close();
-		} catch (IOException e) {
-			e.printStackTrace();
+		if (!(client.getgWorld().isCivWin() || client.getgWorld().isMurWin())) {
+			client.getgWorld().setDisconnected(true);
+			try {
+				this.input.close();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
 		}
 
 	}

@@ -46,7 +46,7 @@ public class MMContactListener implements ContactListener {
 		fbUD = fb.getUserData();
 
 		if (faUD != null && fbUD != null) {
-			System.out.println("Begin contact: fa: " + faUD + ", fb: " + fbUD);
+//			System.out.println("Begin contact: fa: " + faUD + ", fb: " + fbUD);
 			if (faUD.equals("player") || fbUD.equals("player")) {
 				if (faUD.equals("item") && gWorld.getPlayer().getItem() == null) {
 					itemsToRemove.add(fa.getBody());
@@ -178,16 +178,6 @@ public class MMContactListener implements ContactListener {
 				}
 			}
 		}
-
-		/*
-		 * if (faUD != null && fbUD != null) { if (faUD.equals("lightBody") && !fbUD.equals("lightBody")) {
-		 * System.out.println("END contact: fa: " + faUD + ", fb: " + fbUD);
-		 * bodiesToDraw.removeValue(fb.getBody(), true); System.out.println("FB: " + fbUD +
-		 * " was removed from bodies to be drawn array.");
-		 * 
-		 * } }
-		 */
-
 	}
 
 	public Array<Body> getItemsToRemove() {

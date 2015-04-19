@@ -49,5 +49,6 @@ public class MurderMansion extends Game {
 	public void dispose() {
 		super.dispose();
 		AssetLoader.dispose();
+		AssetLoader.disposeSFX();
 	}
 }

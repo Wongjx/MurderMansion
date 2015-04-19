@@ -114,7 +114,6 @@ public class GameRenderer {
 	 * Releases the resources held by objects or images loaded.
 	 */
 	public void rendererDispose() {
-		gWorld.getWorld().dispose();
 		b2dr.dispose();
 	}
 

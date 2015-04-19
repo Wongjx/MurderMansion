@@ -43,12 +43,12 @@ import com.jkjk.MurderMansion.MurderMansion;
 public class ScoreScreen implements Screen {
 
 	private MurderMansion game;
-	private MMClient mmclient;
-	
+	private MMClient client;
+
 	private String[] names;
 	private int numOfNames;
-	private final ConcurrentHashMap<String, Integer> playerIsAlive; 
-	private final ConcurrentHashMap<String, Integer> playerType; 
+	private final ConcurrentHashMap<String, Integer> playerIsAlive;
+	private final ConcurrentHashMap<String, Integer> playerType;
 
 	private Stage stage;
 	private float animationRunTime;
@@ -65,12 +65,12 @@ public class ScoreScreen implements Screen {
 
 	private ImageButtonStyle normal1;
 	private ImageButton nextButton;
-	
+
 	private Table table;
-	
+
 	private Label[] label_array;
 	private LabelStyle scoreLabelStyle;
-	
+
 	private Image[] image_array;
 	private Texture rip;
 	private Texture civ_char0;
@@ -78,63 +78,66 @@ public class ScoreScreen implements Screen {
 	private Texture civ_char2;
 	private Texture civ_char3;
 	private Texture mur_char;
-	
-	private Integer status; 
+
+	private Integer status;
 	private Integer type;
-	
-	//for testing only
-//	private Label scoreLabel;
-//	private Label scoreLabel1;
-//	private Label scoreLabel2;
-//	private Label scoreLabel3;
-//	private Label scoreLabel4;
-//	private Label scoreLabel5;
-//	private Label scoreLabel6;
-//	private Image rip_image;
-//	private Image rip_image1;
-//	private Image rip_image2;
-//	private Image rip_image3;
-//	private Image civ_char_image;
-//	private Image mur_char_image;
+
+	// for testing only
+	// private Label scoreLabel;
+	// private Label scoreLabel1;
+	// private Label scoreLabel2;
+	// private Label scoreLabel3;
+	// private Label scoreLabel4;
+	// private Label scoreLabel5;
+	// private Label scoreLabel6;
+	// private Image rip_image;
+	// private Image rip_image1;
+	// private Image rip_image2;
+	// private Image rip_image3;
+	// private Image civ_char_image;
+	// private Image mur_char_image;
 
 	/**
 	 * Score screen
+	 * 
 	 * @param murWin
 	 *            who won the game? murderer or civilian?
 	 */
-	public ScoreScreen(MurderMansion game, float gameWidth, float gameHeight, MMClient mmclient) {
-		this.mmclient = mmclient;
-		this.gameHeight=gameHeight;
-		this.gameWidth=gameWidth;
-		this.game=game;
+	public ScoreScreen(MurderMansion game, float gameWidth, float gameHeight, MMClient client) {
+		this.client = client;
+		this.gameHeight = gameHeight;
+		this.gameWidth = gameWidth;
+		this.game = game;
 		initAssets(gameWidth, gameHeight);
-		
-//	public ScoreScreen(MurderMansion game, float gameWidth, float gameHeight) {
-//			this.gameHeight=gameHeight;
-//			this.gameWidth=gameWidth;
-//			this.game=game;
-//			initAssets(gameWidth, gameHeight);
-		
-//		names = new String[]{"wong","jx","enyan","kat"};
-		
-		
-		names = mmclient.getParticipantNames();
-//		
+
+		// public ScoreScreen(MurderMansion game, float gameWidth, float gameHeight) {
+		// this.gameHeight=gameHeight;
+		// this.gameWidth=gameWidth;
+		// this.game=game;
+		// initAssets(gameWidth, gameHeight);
+
+		// names = new String[]{"wong","jx","enyan","kat"};
+
+		names = client.getParticipantNames();
+		//
 		numOfNames = names.length;
-		playerIsAlive = mmclient.get_playerIsAlive();
-		playerType = mmclient.get_playerType();
-		status = 1; //default test = alive
-		type = 0; //default test = murderer
+		playerIsAlive = client.get_playerIsAlive();
+		playerType = client.get_playerType();
+		status = 1; // default test = alive
+		type = 0; // default test = murderer
 
 		// Create a Stage and add TouchPad
 		stage = new Stage(new ExtendViewport(gameWidth, gameHeight));
+		batch = new SpriteBatch();
+		sprite = new Sprite(score_texture);
+		sprite.setSize(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
 
 		BUTTON_WIDTH = 60;
 		BUTTON_HEIGHT = 60;
 
 		nextButton = new ImageButton(normal1);
 		table = new Table();
-		
+
 		label_array = new Label[numOfNames];
 		image_array = new Image[numOfNames];
 	}
@@ -166,128 +169,122 @@ public class ScoreScreen implements Screen {
 	 * @see com.badlogic.gdx.Screen#show()
 	 */
 	@Override
-	public void show() {    	
-    	batch = new SpriteBatch();
-    	
-		sprite = new Sprite(score_texture);
-		sprite.setSize(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
-		
-		table = new Table();
-    	table.padTop(120);
-    	
-    	//FIRST ROW: NAME OF PLAYERS
-    	for (int i=0 ; i<numOfNames ; i++){
-    		System.out.println("Name of player: "+names[i]);
-    		label_array[i] = new Label(names[i],scoreLabelStyle);
-    		label_array[i].setAlignment(Align.center);
-    		label_array[i].setWrap(true);
-    		label_array[i].setWidth(BUTTON_WIDTH);
-    	}
-    	for (int i=0 ; i<numOfNames ; i++){
-    		table.add(label_array[i]).size(82, 48).spaceRight(10);
-    	}
-    	
-    	table.row();
-    	
-    	
-    	//SECOND ROW: STATUS & TYPES OF PLAYERS
-    	for (int i=0 ; i<numOfNames ; i++){
-    		
-    		//status = 1 = alive
-    		//if character is dead
-    		if (status != playerIsAlive.get("Player "+ i)){
-    			image_array[i] = new Image(rip);
-    		}
-    		//if character is alive
-    		else{
-    			//type = 0 = murderer
-    			//if character is civilian
-    			//TODO: ASSIGN DIFFERENT CHARACTER FOR DIFFERENT IDs
-    			if (type != playerType.get("Player "+ i)){
-    				image_array[i] = new Image(civ_char0);
-    			}
-    			//if character is murderer
-    			else{
-    				image_array[i] = new Image(mur_char);
-    			}
-    		}
-    	}
-    	
-    	for (int i=0 ; i<numOfNames ; i++){
-    		table.add(image_array[i]).size(82, 127).spaceRight(10);
-    	}
-    	
-    	
-    	
-    	//the following works for testing
-//    	scoreLabel1 = new Label("Katherine",scoreLabelStyle);
-//    	scoreLabel1.setAlignment(Align.center);
-//    	scoreLabel2 = new Label("Enyan",scoreLabelStyle);
-//    	scoreLabel2.setAlignment(Align.center);
-//    	scoreLabel3 = new Label("JX",scoreLabelStyle);
-//    	scoreLabel3.setAlignment(Align.center);
-//    	scoreLabel4 = new Label("Wong",scoreLabelStyle);
-//    	scoreLabel4.setAlignment(Align.center);
-//    	scoreLabel5 = new Label("Enyan",scoreLabelStyle);
-//    	scoreLabel5.setAlignment(Align.center);
-//    	scoreLabel6 = new Label("Katherine",scoreLabelStyle);
-//    	scoreLabel6.setAlignment(Align.center);
-    	
-//    	rip_image = new Image(rip);
-//    	rip_image1 = new Image(rip);
-//    	rip_image2 = new Image(rip);
-//    	rip_image3 = new Image(rip);
-//    	civ_char_image = new Image(civ_char0);
-//    	mur_char_image = new Image(mur_char);
-    	
-//    	table.add(scoreLabel1).size(82, 48).spaceRight(10);
-//    	table.add(scoreLabel2).size(82, 48).spaceRight(10);
-//    	table.add(scoreLabel3).size(82, 48).spaceRight(10);
-//    	table.add(scoreLabel4).size(82, 48).spaceRight(10);
-//    	table.add(scoreLabel5).size(82, 48).spaceRight(10);
-//    	table.add(scoreLabel6).size(82, 48).spaceRight(10);
-//    	table.row();
-//    	table.add(rip_image).size(80, 150).spaceRight(22);
-//    	table.add(civ_char_image).size(80, 150).spaceRight(22);
-//    	table.add(mur_char_image).size(80, 150).spaceRight(22);
-//    	table.add(rip_image1).size(80, 150).spaceRight(22);
-//    	table.add(rip_image2).size(80, 150).spaceRight(22);
-//    	table.add(rip_image3).size(80, 150).spaceRight(22);
-    	
-        nextButton.addListener(new ClickListener(){
-            @Override
-            public void clicked(InputEvent event, float x, float y) {
-				AssetLoader.clickSound.play(AssetLoader.VOLUME);
-            	try{
-            		if(game.mMultiplayerSession.isServer){
-                		game.mMultiplayerSession.getServer().endSession();
-//                		System.out.println("Ended server session.");
-                	}
+	public void show() {
+		table.padTop(120);
 
-            		if (game.mMultiplayerSession.getClient()!=null){
-            			game.mMultiplayerSession.getClient().endSession();
-            		}else{
-            			//TODO HALP HALP HALP CLIENT NOT SUPPOSED TO BE NULL
-            			System.out.println("CLIENT IS NULL?!!!?");
-            		}
-            		
-            		game.actionResolver.leaveRoom();
-            		
-//            		System.out.println("End mMultiplayer session");
-                	game.mMultiplayerSession.endSession();
-            	}catch(Exception e){
-            		System.out.println("Error on button press: "+e.getMessage());
-            	}
-            	((Game)Gdx.app.getApplicationListener()).setScreen(new MenuScreen(game, gameWidth, gameHeight));
-            }
-        });
-        
-        nextButton.setSize(this.BUTTON_WIDTH,this.BUTTON_HEIGHT);
-        nextButton.setPosition(560, 10);
-	    stage.addActor(nextButton);
-	    stage.addActor(table);
-	    
-        Gdx.input.setInputProcessor(stage);
+		// FIRST ROW: NAME OF PLAYERS
+		for (int i = 0; i < numOfNames; i++) {
+			System.out.println("Name of player: " + names[i]);
+			label_array[i] = new Label(names[i], scoreLabelStyle);
+			label_array[i].setAlignment(Align.center);
+			label_array[i].setWrap(true);
+			label_array[i].setWidth(BUTTON_WIDTH);
+		}
+		for (int i = 0; i < numOfNames; i++) {
+			table.add(label_array[i]).size(82, 48).spaceRight(10);
+		}
+
+		table.row();
+		// SECOND ROW: STATUS & TYPES OF PLAYERS
+		for (int i = 0; i < numOfNames; i++) {
+
+			// status = 1 = alive
+			// if character is dead
+			if (status != playerIsAlive.get("Player " + i)) {
+				image_array[i] = new Image(rip);
+			}
+			// if character is alive
+			else {
+				// type = 0 = murderer
+				// if character is civilian
+				// TODO: ASSIGN DIFFERENT CHARACTER FOR DIFFERENT IDs
+				if (type != playerType.get("Player " + i)) {
+					image_array[i] = new Image(civ_char0);
+				}
+				// if character is murderer
+				else {
+					image_array[i] = new Image(mur_char);
+				}
+			}
+		}
+
+		for (int i = 0; i < numOfNames; i++) {
+			table.add(image_array[i]).size(82, 127).spaceRight(10);
+		}
+
+		// the following works for testing
+		// scoreLabel1 = new Label("Katherine",scoreLabelStyle);
+		// scoreLabel1.setAlignment(Align.center);
+		// scoreLabel2 = new Label("Enyan",scoreLabelStyle);
+		// scoreLabel2.setAlignment(Align.center);
+		// scoreLabel3 = new Label("JX",scoreLabelStyle);
+		// scoreLabel3.setAlignment(Align.center);
+		// scoreLabel4 = new Label("Wong",scoreLabelStyle);
+		// scoreLabel4.setAlignment(Align.center);
+		// scoreLabel5 = new Label("Enyan",scoreLabelStyle);
+		// scoreLabel5.setAlignment(Align.center);
+		// scoreLabel6 = new Label("Katherine",scoreLabelStyle);
+		// scoreLabel6.setAlignment(Align.center);
+
+		// rip_image = new Image(rip);
+		// rip_image1 = new Image(rip);
+		// rip_image2 = new Image(rip);
+		// rip_image3 = new Image(rip);
+		// civ_char_image = new Image(civ_char0);
+		// mur_char_image = new Image(mur_char);
+
+		// table.add(scoreLabel1).size(82, 48).spaceRight(10);
+		// table.add(scoreLabel2).size(82, 48).spaceRight(10);
+		// table.add(scoreLabel3).size(82, 48).spaceRight(10);
+		// table.add(scoreLabel4).size(82, 48).spaceRight(10);
+		// table.add(scoreLabel5).size(82, 48).spaceRight(10);
+		// table.add(scoreLabel6).size(82, 48).spaceRight(10);
+		// table.row();
+		// table.add(rip_image).size(80, 150).spaceRight(22);
+		// table.add(civ_char_image).size(80, 150).spaceRight(22);
+		// table.add(mur_char_image).size(80, 150).spaceRight(22);
+		// table.add(rip_image1).size(80, 150).spaceRight(22);
+		// table.add(rip_image2).size(80, 150).spaceRight(22);
+		// table.add(rip_image3).size(80, 150).spaceRight(22);
+
+		nextButton.addListener(new ClickListener() {
+			@Override
+			public void clicked(InputEvent event, float x, float y) {
+				AssetLoader.clickSound.play(AssetLoader.VOLUME);
+				try {
+					if (game.mMultiplayerSession.isServer) {
+						game.mMultiplayerSession.getServer().endSession();
+						// System.out.println("Ended server session.");
+					}
+
+					if (game.mMultiplayerSession.getClient() != null) {
+						game.mMultiplayerSession.getClient().endSession();
+					} else {
+						// TODO HALP HALP HALP CLIENT NOT SUPPOSED TO BE NULL
+						System.out.println("CLIENT IS NULL?!!!?");
+					}
+
+					game.actionResolver.leaveRoom();
+
+					// System.out.println("End mMultiplayer session");
+					game.mMultiplayerSession.endSession();
+				} catch (Exception e) {
+					System.out.println("Error on button press: " + e.getMessage());
+				}
+				if (game.mMultiplayerSession.mState == game.mMultiplayerSession.ROOM_MENU) {
+					((Game) Gdx.app.getApplicationListener()).setScreen(new MenuScreen(game, gameWidth,
+							gameHeight));
+				}
+			}
+		});
+
+		nextButton.setSize(this.BUTTON_WIDTH, this.BUTTON_HEIGHT);
+		nextButton.setPosition(560, 10);
+		table.setFillParent(true);
+		stage.addActor(nextButton);
+		stage.addActor(table);
+
+		Gdx.input.setInputProcessor(stage);
 	}
 
 	/*
@@ -299,21 +296,16 @@ public class ScoreScreen implements Screen {
 	public void render(float delta) {
 		Gdx.gl.glClearColor(0, 0, 0, 1);
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
-
 		batch.begin();
 		sprite.draw(batch);
-		//TODO: ANIMATION NOT WORKING :(
-//		animationRunTime += Gdx.graphics.getRawDeltaTime();
-//		batch.draw(score_animation.getKeyFrame(animationRunTime), 0, 0, 640, 360);
+		// TODO: ANIMATION NOT WORKING :(
+		// animationRunTime += Gdx.graphics.getRawDeltaTime();
+		// batch.draw(score_animation.getKeyFrame(animationRunTime), 0, 0, 640, 360);
 		batch.end();
-		
-		table.setFillParent(true);
-		stage.addActor(table);
 		stage.draw();
-		stage.act(Gdx.graphics.getDeltaTime()); // Acts stage at deltatime
-//		table.debugAll();
-		
-		
+		stage.act(delta); // Acts stage at deltatime
+		// table.debugAll();
+
 	}
 
 	/*
@@ -333,7 +325,6 @@ public class ScoreScreen implements Screen {
 	 */
 	@Override
 	public void pause() {
-
 
 	}
 
@@ -365,6 +356,7 @@ public class ScoreScreen implements Screen {
 	@Override
 	public void dispose() {
 		stage.dispose();
+		client.getgWorld().getWorld().dispose();
 	}
 
 }

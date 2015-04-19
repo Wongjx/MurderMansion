@@ -30,7 +30,6 @@ import com.jkjk.Screens.MenuScreen;
  * @author LeeJunXiang
  */
 public class HudRenderer {
-	private static HudRenderer instance;
 	private MurderMansion game;
 	private MMClient client;
 	private float gameWidth;
@@ -98,6 +97,7 @@ public class HudRenderer {
 	private boolean welcomeMsg;
 	private float scale;
 	private BitmapFont syncFont;
+	private boolean prevState;
 
 	// private boolean
 	/**
@@ -112,7 +112,7 @@ public class HudRenderer {
 	 * @param gameHeight
 	 *            Accesses the virtual game height.
 	 */
-	private HudRenderer(GameWorld gWorld, MMClient client, float gameWidth, float gameHeight,
+	public HudRenderer(GameWorld gWorld, MMClient client, float gameWidth, float gameHeight,
 			MurderMansion game) {
 		initAssets(gameWidth, gameHeight);
 
@@ -139,8 +139,6 @@ public class HudRenderer {
 		stage.addActor(getSettingsButton());
 		abilityCheck();
 
-		Gdx.input.setInputProcessor(stage);
-
 		settingsStage = new Stage(new ExtendViewport(gameWidth, gameHeight), batch);
 		settingsStage.addActor(getMainMenuButton());
 		settingsStage.addActor(getMuteButton());
@@ -149,14 +147,6 @@ public class HudRenderer {
 		GWTM = gWorld.getTM();
 		welcomeMsg = true;
 		scale = Gdx.graphics.getWidth() / gameWidth;
-	}
-
-	public static HudRenderer getInstance(GameWorld gWorld, MMClient client, float gameWidth,
-			float gameHeight, MurderMansion game) {
-		if (instance == null) {
-			instance = new HudRenderer(gWorld, client, gameWidth, gameHeight, game);
-		}
-		return instance;
 	}
 
 	/**
@@ -214,17 +204,19 @@ public class HudRenderer {
 
 		if (!gameStarted) {
 			String s = "Synchronizing...";
-			syncFont.draw(batch, s, (300-(font.getBounds(s).width/2)) * scale, 330 * scale);
+			syncFont.draw(batch, s, (300 - (font.getBounds(s).width / 2)) * scale, 330 * scale);
 			GWTM.render(batch);
 			batch.end();
-		}
-		else{
-			if(welcomeMsg){
+		} else {
+			if (gameStarted != prevState){
+				Gdx.input.setInputProcessor(stage);
+				prevState = gameStarted;
+			}
+			if (welcomeMsg) {
 				welcomeMsg = false;
-				if (gWorld.getPlayer().getType().equals("Murderer")){
+				if (gWorld.getPlayer().getType().equals("Murderer")) {
 					GWTM.setDisplayMessage("Welcome... Murderer...");
-				}
-				else{
+				} else {
 					GWTM.setDisplayMessage("Welcome... Civilian...");
 				}
 			}
@@ -603,7 +595,7 @@ public class HudRenderer {
 			TM.setDisplayMessage("Picked Bat Up");
 		} else
 			TM.setDisplayMessage("Obtained Bat");
-		
+
 		weaponButton.addListener(new ClickListener() {
 			@Override
 			public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
@@ -760,12 +752,6 @@ public class HudRenderer {
 		AssetLoader.pickUpItemSound.play(AssetLoader.VOLUME);
 		TM.setDisplayMessage("Obtained Knife");
 		weaponButton.addListener(new ClickListener() {
-			@Override
-			public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
-				System.out.println("Knife button touch down, draw hitbox");
-				return super.touchDown(event, x, y, pointer, button);
-			}
-
 			public void clicked(InputEvent event, float x, float y) {
 				System.out.println("Clicked on knife button");
 				if (gWorld.getPlayer().useWeapon()) {
@@ -800,12 +786,6 @@ public class HudRenderer {
 		TM.setDisplayMessage("Obtained Trap");
 
 		itemButton.addListener(new ClickListener() {
-			@Override
-			public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
-				System.out.println("Trap button touch down, draw hitbox");
-				return super.touchDown(event, x, y, pointer, button);
-			}
-
 			public void clicked(InputEvent event, float x, float y) {
 				System.out.println("Clicked on trap button");
 				gWorld.getPlayer().useItem();
@@ -904,7 +884,7 @@ public class HudRenderer {
 				System.out.println(gWorld.getPlayer().getBody().getPosition());
 				if (gWorld.getPlayer().useAbility()) {
 					// start drawing cool down animation with ability frame time.
-					TM.setDisplayMessage("CHAOS AND CONFUSION");
+					TM.setDisplayMessage("YOUR SOUL IS MINE!");
 					HauntCD = true;
 					client.updatePlayerUseAbility();
 				}
@@ -922,9 +902,8 @@ public class HudRenderer {
 	 * Releases the resources held by objects or images loaded.
 	 */
 	public void hudDispose() {
-		instance = null;
-		// stage.dispose();
-		// pauseStage.dispose();
+		stage.dispose();
+		settingsStage.dispose();
 	}
 
 }

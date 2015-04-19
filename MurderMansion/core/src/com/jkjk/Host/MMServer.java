@@ -64,7 +64,7 @@ public class MMServer {
 	public MMServer(int numOfPlayers, MultiplayerSessionInfo info) throws InterruptedException {
 		this.numOfPlayers = numOfPlayers;
 		this.info = info;
-		int gameStartPauseDuration = 2000;
+		int gameStartPauseDuration = 1000;
 
 		// System.out.println("Initialize Client list and listeners");
 		clients = new ConcurrentHashMap<String, Socket>();
@@ -498,12 +498,15 @@ public class MMServer {
 		// instance= null;
 		for (Thread t : serverListeners.values()) {
 			// System.out.println(t.getId());
-			t.interrupt();
+			if (!t.isAlive() && t != null)
+				t.interrupt();
 		}
 		for (Socket s : clients.values()) {
 			// System.out.println(s.getPort());
-			s.getOutputStream().flush();
-			s.close();
+			if (!s.isClosed() && s != null) {
+				s.getOutputStream().flush();
+				s.close();
+			}
 		}
 		System.out.println("MMServer seisson ended.");
 	}
@@ -674,7 +677,7 @@ class serverAcceptThread extends Thread {
 				writer.println("end");
 
 				// Start a listener thread for each client socket connected
-				
+
 				Thread thread = new serverListener(reader, server, idCount);
 				server.getServerListeners().put("Player " + idCount, thread);
 				thread.start();
@@ -719,9 +722,9 @@ class serverListener extends Thread {
 		while (!isInterrupted()) {
 			try {
 				if ((msg = input.readLine()) != null) {
-//					System.out.println("MMServer Message received: " + msg);
+					// System.out.println("MMServer Message received: " + msg);
 					// Do something with message
-					if (msg.equals("connection_" + playerId + "_close")){
+					if (msg.equals("connection_" + playerId + "_close")) {
 						System.out.println("Server listener " + playerId + " close.");
 						break;
 					}
@@ -738,35 +741,22 @@ class serverListener extends Thread {
 					msg = input.readLine();
 					System.out.println("Server listener received message from client " + playerId + ": "
 							+ msg);
+					server.handleMessage(msg);
 				} catch (IOException e1) {
-					System.out.println("IO exception on server listener e1");
-					msg = "noreply";
+					System.out.println("IO exception on client listener " + playerId + " e1");
 					e1.printStackTrace();
+					break;
 				} catch (NullPointerException e1) {
-					System.out.println("Server listener " + playerId
+					System.out.println("Client listener " + playerId
 							+ " received null in message. Terminating now.");
 					break;
-				}
-				if (msg.equals("connection_" + playerId + "_ok")) {
-					System.out.println("Server listener reply from client " + playerId
-							+ " satisfactory. Continue listening.");
+				} catch (NumberFormatException e1) {
+					System.out.println("Server Number format exception! Continuing.");
+					e1.printStackTrace();
 					continue;
-				} else if (msg.equals("connection_" + playerId + "_check")) {
-					try {
-						server.handleMessage(msg);
-					} catch (NumberFormatException e1) {
-						System.out.println("Received number format exception on server listener");
-						e1.printStackTrace();
-					} catch (InterruptedException e1) {
-						System.out.println("Received interrupted exception on server listener");
-						e1.printStackTrace();
-					}
-					System.out.println("Server listener " + playerId
-							+ " reply from server satisfactory. Continue listening.");
-					continue;
-				} else {
-					System.out.println("Server listener " + playerId
-							+ " received unsatisfactory reply. Terminating now");
+				} catch (InterruptedException e1) {
+					System.out.println("Server Interrupted exception! Terminating now.");
+					e1.printStackTrace();
 					break;
 				}
 			} catch (NumberFormatException e) {

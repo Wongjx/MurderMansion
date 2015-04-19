@@ -183,18 +183,21 @@ public class Murderer extends GameCharacter {
 
 	@Override
 	public boolean useAbility() {
-		if (!ability.isOnCoolDown()) {
-			ability.use();
-			ability.cooldown();
-			abilityChange = true;
-			if (seen) {
-				if (disguised) {
-					body.setUserData(civToMurAnimation);
-				} else {
-					body.setUserData(murToCivAnimation);
+		if (!isStun()) {
+			if (super.useAbility()) {
+				abilityChange = true;
+				if (seen) {
+					if (disguised) {
+						body.setUserData(civToMurAnimation);
+					} else {
+						body.setUserData(murToCivAnimation);
+					}
 				}
+				return true;
+			} else {
+				if (isPlayer)
+					gWorld.getTM().setDisplayMessage("Your powers have yet to return");
 			}
-			return true;
 		}
 		return false;
 	}
@@ -208,29 +211,34 @@ public class Murderer extends GameCharacter {
 	}
 
 	public boolean useWeapon() {
-		if (!disguised) {
-			if (super.useWeapon()) {
-				if (seen) {
-					body.setUserData(AssetLoader.murKnifeAnimation);
+		if (!isStun()) {
+			if (!disguised) {
+				if (super.useWeapon()) {
+					if (seen) {
+						body.setUserData(AssetLoader.murKnifeAnimation);
+					}
+					return true;
+				} else {
+					return false;
 				}
-				return true;
 			} else {
+				if (isPlayer)
+					gWorld.getTM().setDisplayMessage("You cannot use your knife while disguised");
 				return false;
 			}
-		} else {
-			if (isPlayer)
-				gWorld.getTM().setDisplayMessage("You cannot use your knife while disguised");
-			return false;
 		}
+		return false;
 	}
 
 	public void useItem() {
-		super.useItem();
-		if (seen) {
-			if (disguised) {
-				body.setUserData(civPlantTrapAnimation);
-			} else {
-				body.setUserData(AssetLoader.murPlantTrapAnimation);
+		if (!isStun()) {
+			super.useItem();
+			if (seen) {
+				if (disguised) {
+					body.setUserData(civPlantTrapAnimation);
+				} else {
+					body.setUserData(AssetLoader.murPlantTrapAnimation);
+				}
 			}
 		}
 	}

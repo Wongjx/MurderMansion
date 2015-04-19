@@ -203,10 +203,15 @@ public class Civilian extends GameCharacter {
 	}
 
 	public boolean useAbility() {// panic
-		if (super.useAbility()) {
-			if (seen)
-				body.setUserData(civPanicAnimation);
-			return true;
+		if (!isStun()) {
+			if (super.useAbility()) {
+				if (seen)
+					body.setUserData(civPanicAnimation);
+				return true;
+			} else {
+				if (isPlayer)
+					gWorld.getTM().setDisplayMessage("You pant... completely out of breath");
+			}
 		}
 		return false;
 	}
@@ -219,24 +224,28 @@ public class Civilian extends GameCharacter {
 	}
 
 	public boolean useWeapon() {// bat
-		if (currentAnimation == civWalkAnimation || currentAnimation == civPanicAnimation) {
-			if (super.useWeapon()) {// boolean
-				if (weapon.getName().equals("Shotgun")) {
-					if (seen)
-						body.setUserData(civShotgunAnimation);
-				} else {
-					if (seen)
-						body.setUserData(civBatAnimation);
+		if (!isStun()) {
+			if (currentAnimation == civWalkAnimation || currentAnimation == civPanicAnimation) {
+				if (super.useWeapon()) {// boolean
+					if (weapon.getName().equals("Shotgun")) {
+						if (seen)
+							body.setUserData(civShotgunAnimation);
+					} else {
+						if (seen)
+							body.setUserData(civBatAnimation);
+					}
+					return true;
 				}
-				return true;
 			}
 		}
 		return false;
 	}
 
 	public void useItem() {
-		super.useItem();
-		if (seen)
-			body.setUserData(civDisarmAnimation);
+		if (!isStun()) {
+			super.useItem();
+			if (seen)
+				body.setUserData(civDisarmAnimation);
+		}
 	}
 }

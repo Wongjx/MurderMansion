@@ -64,7 +64,7 @@ public abstract class GameCharacter {
 		maxVelocity = 56;
 		weaponUses = 3;
 		touchpad = AssetLoader.touchpad;
-		stunDuration = new Duration(2500);
+		stunDuration = new Duration(3000);
 		hauntDuration = new Duration(4000);
 
 		this.type = type;
@@ -200,6 +200,9 @@ public abstract class GameCharacter {
 				weapon.cooldown();
 			}
 			return true;
+		} else {
+			if (isPlayer)
+				gWorld.getTM().setDisplayMessage("Your hands tire since your last use. Perhaps later?");
 		}
 		return false;
 	}
