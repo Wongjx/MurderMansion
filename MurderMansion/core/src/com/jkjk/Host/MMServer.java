@@ -63,10 +63,27 @@ public class MMServer {
 	private boolean win;
 	private Random random;
 
-	public MMServer(int numOfPlayers, MultiplayerSessionInfo info) throws InterruptedException {
+	private boolean tutorial;
+	private int tutorialCharacter;
+
+	/**
+	 * @param numOfPlayers
+	 *            Number of players that will be playing the game
+	 * @param info
+	 *            Multiplayer session info
+	 * @param tutorial
+	 *            Is this a game for tutorial?
+	 * @param tutorialCharacter
+	 *            When in tutorial, 0 for murderer, 1 for civilian
+	 * @throws InterruptedException
+	 */
+	public MMServer(int numOfPlayers, MultiplayerSessionInfo info, boolean tutorial, int tutorialCharacter)
+			throws InterruptedException {
 		this.numOfPlayers = numOfPlayers;
 		this.info = info;
 		int gameStartPauseDuration = 1000;
+		this.tutorial = tutorial;
+		this.tutorialCharacter = tutorialCharacter;
 
 		// System.out.println("Initialize Client list and listeners");
 		clients = new ConcurrentHashMap<String, Socket>();
@@ -91,7 +108,11 @@ public class MMServer {
 		random = new Random();
 
 		// System.out.println("Assigning murderer");
-		murdererId = random.nextInt(numOfPlayers);
+		if (tutorial) {
+			murdererId = tutorialCharacter;
+		} else {
+			murdererId = random.nextInt(numOfPlayers);
+		}
 		// Set number of players who have loaded and ready to play=0
 		readyCount = new AtomicInteger(0);
 		initPlayers();
@@ -165,7 +186,7 @@ public class MMServer {
 
 	private void checkWin() {
 		// Civilian Win condition when murderer is dead
-		if (!win) {
+		if (!win && !tutorial) {
 			if (playerStats.getPlayerIsAliveValue("Player " + murdererId) == 0) {
 				gameStatus.win(1);
 				win = true;
@@ -210,13 +231,22 @@ public class MMServer {
 			playerStats.getPlayerIsAlive().put("Player " + i, 1);
 			playerStats.getPlayerIsStun().put("Player " + i, 0);
 			playerStats.getPlayerIsInSafeRegion().put("Player " + i, 0);
-			if (i == murdererId) {
-				playerStats.getPlayerType().put("Player " + i, 0);
+			if (!tutorial) {
+				if (i == murdererId) {
+					playerStats.getPlayerType().put("Player " + i, 0);
+				} else {
+					playerStats.getPlayerType().put("Player " + i, 1);
+				}
 			} else {
-				playerStats.getPlayerType().put("Player " + i, 1);
+				playerStats.getPlayerType().put("Player " + i, tutorialCharacter);
 			}
 
-			float[] playerSpawnLocation = playerSpawner.getSpawnLocation();
+			float[] playerSpawnLocation = new float[3];
+
+			if (!tutorial)
+				playerSpawnLocation = playerSpawner.getSpawnLocation();
+			else
+				playerSpawnLocation = new float[] { 860, 509.9347f, 3.1427f };
 
 			playerStats.getPlayerPosition().put("Player " + i,
 					new float[] { playerSpawnLocation[0], playerSpawnLocation[1] });

@@ -35,7 +35,7 @@ public class LoadingScreen implements Screen {
 	private int renderLoops;
 
 	/**
-	 * 
+	 * Loads Game SFX and shows mini tutorial
 	 */
 	public LoadingScreen(MurderMansion game, float gameWidth, float gameHeight, GameWorld gWorld,
 			GameRenderer renderer) {
@@ -80,7 +80,7 @@ public class LoadingScreen implements Screen {
 			AssetLoader.loadGameSfx();
 			System.out.println("Setting screen to new game screen.");
 			((Game) Gdx.app.getApplicationListener()).setScreen(new GameScreen(game, gameWidth, gameHeight,
-					gWorld, renderer));
+					gWorld, renderer, false));
 		}
 		renderLoops++;
 

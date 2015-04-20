@@ -9,6 +9,7 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton.TextButtonStyle;
@@ -99,6 +100,21 @@ public class HudRenderer {
 	private BitmapFont syncFont;
 	private boolean prevState;
 
+	private boolean tutorial;
+	private Image nextButton;
+	private Image backButton;
+	private Image hudOverlay;
+	private Image civCharTut;
+	private Image murCharTut;
+	private Image itemTutBegin;
+	private Image abilityTut;
+	private Image weaponTut;
+	private Image itemTut;
+	private Image shotgunTut;
+	private Image shotgunTutMur;
+	private Image mapTut;
+	private Image nextButtonToMenu;
+
 	// private boolean
 	/**
 	 * Constructs the link from the Box2D world created in GameWorld to HudRenderer. Allows rendering of the
@@ -112,8 +128,8 @@ public class HudRenderer {
 	 * @param gameHeight
 	 *            Accesses the virtual game height.
 	 */
-	public HudRenderer(GameWorld gWorld, MMClient client, float gameWidth, float gameHeight,
-			MurderMansion game) {
+	public HudRenderer(final GameWorld gWorld, MMClient client, final float gameWidth,
+			final float gameHeight, final MurderMansion game, boolean tutorial) {
 		initAssets(gameWidth, gameHeight);
 
 		this.gWorld = gWorld;
@@ -121,6 +137,7 @@ public class HudRenderer {
 		this.game = game;
 		this.gameWidth = gameWidth;
 		this.gameHeight = gameHeight;
+		this.tutorial = tutorial;
 
 		BUTTON_WIDTH = 70;
 		BUTTON_HEIGHT = 30;
@@ -130,6 +147,118 @@ public class HudRenderer {
 
 		batch = new SpriteBatch();
 
+		civCharTut = new Image(AssetLoader.civCharTut);
+		civCharTut.setName("civ char tut");
+		murCharTut = new Image(AssetLoader.murCharTut);
+		murCharTut.setName("mur char tut");
+		itemTutBegin = new Image(AssetLoader.itemTutBegin);
+		itemTutBegin.setName("item tut begin");
+		hudOverlay = new Image(AssetLoader.hudOverlay);
+		hudOverlay.setName("hud overlay");
+		if (gWorld.getPlayer().getType() == "Civilian") {
+			abilityTut = new Image(AssetLoader.abilityTutCiv);
+			weaponTut = new Image(AssetLoader.weaponTutCiv);
+			itemTut = new Image(AssetLoader.itemTutCiv);
+			shotgunTut = new Image(AssetLoader.shotgunTut);
+			shotgunTut.setName("shotgun tut");
+		} else {
+			abilityTut = new Image(AssetLoader.abilityTutMur);
+			weaponTut = new Image(AssetLoader.weaponTutMur);
+			itemTut = new Image(AssetLoader.itemTutMur);
+			shotgunTutMur = new Image(AssetLoader.shotgunTutMur);
+			shotgunTutMur.setName("shotgun tut mur");
+		}
+		abilityTut.setName("ability tut");
+		weaponTut.setName("weapon tut");
+		itemTut.setName("item tut");
+		mapTut = new Image(AssetLoader.mapTutorial);
+		mapTut.setName("map tut");
+		backButton = new Image(AssetLoader.backButton);
+		backButton.setPosition(20, 150);
+		backButton.setName("back button");
+		nextButton = new Image(AssetLoader.nextButton);
+		nextButton.setPosition(550, 150);
+		nextButton.setName("next button");
+		nextButtonToMenu = new Image(AssetLoader.nextButtonToMenu);
+		nextButtonToMenu.setPosition(550, 150);
+		nextButtonToMenu.setName("next button to menu");
+		if (tutorial)
+			TM = new ToastMessage(330, 15000);
+		else
+			TM = new ToastMessage(330, 5000);
+		GWTM = gWorld.getTM();
+
+		nextButton.addListener(new ClickListener() {
+			@Override
+			public void clicked(InputEvent event, float x, float y) {
+				AssetLoader.clickSound.play(AssetLoader.VOLUME);
+				boolean cont = false;
+				if (stage.getActors().first().equals(touchpad)) {
+					stage.clear();
+					stage.addActor(hudOverlay);
+					stage.addActor(nextButton);
+					TM.setDisplayMessage("Here are your controls... learn them well!");
+					GWTM.setDisplayMessage("");
+				} else if (stage.getActors().first().equals(hudOverlay)) {
+					stage.clear();
+					stage.addActor(abilityTut);
+					stage.addActor(nextButton);
+					TM.setDisplayMessage("Each class has unique ability, item and weapon");
+					GWTM.setDisplayMessage("Try using your ability!");
+				} else if (stage.getActors().first().equals(abilityTut)) {
+					stage.clear();
+					stage.addActor(itemTutBegin);
+					TM.setDisplayMessage("A weapon was spawned for you to your left");
+					GWTM.setDisplayMessage("Try picking it up!");
+					gWorld.createTutorialWeapon();
+				} else if (stage.getActors().first().equals(weaponTut)) {
+					stage.clear();
+					TM.setDisplayMessage("An item was spawned for you to your left");
+					GWTM.setDisplayMessage("Try picking it up!");
+					gWorld.createTutorialItem();
+				} else if (stage.getActors().first().equals(itemTut)) {
+					stage.clear();
+					if (gWorld.getPlayer().getType() == "Murderer") {
+						stage.addActor(shotgunTutMur);
+						stage.addActor(nextButton);
+					}
+					TM.setDisplayMessage("2 weapon parts were spawned for you to your left");
+					GWTM.setDisplayMessage("Try picking them up!");
+					gWorld.createTutorialWP();
+				} else if (stage.getActors().first().equals(shotgunTut)
+						|| stage.getActors().first().equals(shotgunTutMur)) {
+					stage.clear();
+					stage.addActor(nextButton);
+					TM.setDisplayMessage("Congrats! You completed the gameplay tutorial!");
+					GWTM.setDisplayMessage("Click next to learn more about the map");
+				} else if (stage.getActors().first().equals(nextButton)) {
+					stage.clear();
+					stage.addActor(mapTut);
+					stage.addActor(nextButtonToMenu);
+					cont = true;
+				}
+				if (!cont) {
+					stage.addActor(touchpad);
+					stage.addActor(getTimebox());
+					stage.addActor(getWeaponPartsCounter());
+					stage.addActor(getEmptySlot());
+					stage.addActor(getSettingsButton());
+					abilityCheck();
+				}
+
+			}
+		});
+
+		nextButtonToMenu.addListener(new ClickListener() {
+			@Override
+			public void clicked(InputEvent event, float x, float y) {
+				AssetLoader.clickSound.play(AssetLoader.VOLUME);
+				stage.clear();
+				((Game) Gdx.app.getApplicationListener()).setScreen(new MenuScreen(game, gameWidth,
+						gameHeight));
+			}
+		});
+
 		// Create a Stage and add TouchPad
 		stage = new Stage(new ExtendViewport(gameWidth, gameHeight), batch);
 		stage.addActor(touchpad);
@@ -138,13 +267,19 @@ public class HudRenderer {
 		stage.addActor(getEmptySlot());
 		stage.addActor(getSettingsButton());
 		abilityCheck();
+		if (tutorial) {
+			if (gWorld.getPlayer().getType() == "Civilian") {
+				stage.addActor(civCharTut);
+			} else {
+				stage.addActor(murCharTut);
+			}
+			stage.addActor(nextButton);
+		}
 
 		settingsStage = new Stage(new ExtendViewport(gameWidth, gameHeight), batch);
 		settingsStage.addActor(getMainMenuButton());
 		settingsStage.addActor(getMuteButton());
 		settingsStage.addActor(getSettingsCloseButton());
-		TM = new ToastMessage(335);
-		GWTM = gWorld.getTM();
 		welcomeMsg = true;
 		scale = Gdx.graphics.getWidth() / gameWidth;
 	}
@@ -191,6 +326,7 @@ public class HudRenderer {
 		pause_main = AssetLoader.pause_main;
 		normalSettings = AssetLoader.normalSettings;
 		settingsCloseDraw = AssetLoader.settings_cancel_draw;
+
 	}
 
 	/**
@@ -208,16 +344,21 @@ public class HudRenderer {
 			GWTM.render(batch);
 			batch.end();
 		} else {
-			if (gameStarted != prevState){
+			if (gameStarted != prevState) {
 				Gdx.input.setInputProcessor(stage);
 				prevState = gameStarted;
 			}
 			if (welcomeMsg) {
 				welcomeMsg = false;
-				if (gWorld.getPlayer().getType().equals("Murderer")) {
-					GWTM.setDisplayMessage("Welcome... Murderer...");
+				if (tutorial) {
+					TM.setDisplayMessage("Welcome to the game tutorial");
+					GWTM.setDisplayMessage("The following is your character's objectives");
 				} else {
-					GWTM.setDisplayMessage("Welcome... Civilian...");
+					if (gWorld.getPlayer().getType().equals("Murderer")) {
+						GWTM.setDisplayMessage("Welcome... Murderer...");
+					} else {
+						GWTM.setDisplayMessage("Welcome... Civilian...");
+					}
 				}
 			}
 			batch.draw(timebox, 55, 280);
@@ -458,10 +599,36 @@ public class HudRenderer {
 		player = gWorld.getPlayer();
 		player.setItemChange(false);
 		if (player.getItem() != null) {
-			if (player.getType().equals("Murderer"))
+			if (player.getType().equals("Murderer")) {
+				if (tutorial) {
+					stage.clear();
+					stage.addActor(itemTut);
+					stage.addActor(nextButton);
+					GWTM.setDisplayMessage("Excellent! Try using your item");
+					stage.addActor(touchpad);
+					stage.addActor(getTimebox());
+					stage.addActor(getWeaponPartsCounter());
+					stage.addActor(getEmptySlot());
+					stage.addActor(getSettingsButton());
+					abilityCheck();
+				}
 				stage.addActor(getTrap());
-			else
+			} else {
+				if (tutorial) {
+					stage.clear();
+					stage.addActor(itemTut);
+					stage.addActor(nextButton);
+					GWTM.setDisplayMessage("Excellent! Try using your item on the trap");
+					stage.addActor(touchpad);
+					stage.addActor(getTimebox());
+					stage.addActor(getWeaponPartsCounter());
+					stage.addActor(getEmptySlot());
+					stage.addActor(getSettingsButton());
+					abilityCheck();
+					gWorld.createTutorialTrap();
+				}
 				stage.addActor(getDisarmTrap());
+			}
 		} else {
 			for (Actor actors : stage.getActors()) {
 				if (actors.getName().equals("Item Button"))
@@ -470,6 +637,7 @@ public class HudRenderer {
 		}
 	}
 
+	// TODO
 	/**
 	 * When a change in the player's weapon is detected, weaponCheck() will be called, setting weaponChange to
 	 * false and updating the new item for the player's weapon slot.
@@ -483,11 +651,48 @@ public class HudRenderer {
 					actors.remove();
 			}
 			if (player.getWeapon().getName().equals("Shotgun")) {
+				if (tutorial) {
+					stage.clear();
+					stage.addActor(shotgunTut);
+					stage.addActor(nextButton);
+					GWTM.setDisplayMessage("Excellent! Try using your weapon");
+					stage.addActor(touchpad);
+					stage.addActor(getTimebox());
+					stage.addActor(getWeaponPartsCounter());
+					stage.addActor(getEmptySlot());
+					stage.addActor(getSettingsButton());
+					abilityCheck();
+				}
 				stage.addActor(getShotgun());
-			} else if (player.getWeapon().getName().equals("Bat"))
+			} else if (player.getWeapon().getName().equals("Bat")) {
+				if (tutorial) {
+					stage.clear();
+					stage.addActor(weaponTut);
+					stage.addActor(nextButton);
+					GWTM.setDisplayMessage("Excellent! Try using your weapon");
+					stage.addActor(touchpad);
+					stage.addActor(getTimebox());
+					stage.addActor(getWeaponPartsCounter());
+					stage.addActor(getEmptySlot());
+					stage.addActor(getSettingsButton());
+					abilityCheck();
+				}
 				stage.addActor(getBat());
-			else if (player.getWeapon().getName().equals("Knife"))
+			} else if (player.getWeapon().getName().equals("Knife")) {
+				if (tutorial) {
+					stage.clear();
+					stage.addActor(weaponTut);
+					stage.addActor(nextButton);
+					GWTM.setDisplayMessage("Excellent! Try using your weapon");
+					stage.addActor(touchpad);
+					stage.addActor(getTimebox());
+					stage.addActor(getWeaponPartsCounter());
+					stage.addActor(getEmptySlot());
+					stage.addActor(getSettingsButton());
+					abilityCheck();
+				}
 				stage.addActor(getKnife());
+			}
 		} else {
 			for (Actor actors : stage.getActors()) {
 				if (actors.getName().equals("Weapon Button"))
@@ -694,9 +899,10 @@ public class HudRenderer {
 				System.out.println("Clicked on disarm trap button");
 				gWorld.getPlayer().useItem();
 				client.updatePlayerUseItem();
-				if (gWorld.getPlayer().getType() == "Ghost")
+				if (gWorld.getPlayer().getType() == "Ghost") {
 					TM.setDisplayMessage("Placing Item Down");
-				AssetLoader.pickUpItemSound.play(AssetLoader.VOLUME);
+					AssetLoader.pickUpItemSound.play(AssetLoader.VOLUME);
+				}
 			}
 		});
 

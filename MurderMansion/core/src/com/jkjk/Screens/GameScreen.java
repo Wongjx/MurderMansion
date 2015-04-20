@@ -26,7 +26,7 @@ public class GameScreen implements Screen {
 	private MMClient client;
 
 	public GameScreen(MurderMansion game, float gameWidth, float gameHeight, GameWorld world,
-			GameRenderer renderer) {
+			GameRenderer renderer, boolean tutorial) {
 
 		// AssetLoader.loadMapSprites();
 		// AssetLoader.loadCharacters();
@@ -41,7 +41,7 @@ public class GameScreen implements Screen {
 		// this.renderer=renderer;
 
 		// client = new MMClient(server, gWorld, renderer);
-		hudRenderer = new HudRenderer(gWorld, client, gameWidth, gameHeight, game);
+		hudRenderer = new HudRenderer(gWorld, client, gameWidth, gameHeight, game, tutorial);
 	}
 
 	@Override

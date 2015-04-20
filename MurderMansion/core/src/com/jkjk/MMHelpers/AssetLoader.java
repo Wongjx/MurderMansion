@@ -225,13 +225,12 @@ public class AssetLoader {
 	public static Texture obstacle;
 	public static Texture main_door;
 
-	// LOAD SCREEN
+	// LOAD SCREEN / TUTORIAL SCREEN
 	public static Texture civLoad;
 	public static Texture murLoad;
 	public static Texture civTut;
 	public static Texture murTut;
 	public static Texture tutorialP1;
-	public static Texture hudOverlay;
 	public static Texture hudTutorial;
 	public static Texture screenTutorial;
 	public static Texture mapTutorial;
@@ -241,6 +240,49 @@ public class AssetLoader {
 	public static Texture murButtonDown;
 	public static Texture backButton;
 	public static Texture nextButton;
+	
+	public static Texture civCharTut;
+	public static Texture murCharTut;
+	public static Texture hudOverlay;
+	public static Texture itemTutBegin;
+	public static Texture abilityTutCiv;
+	public static Texture abilityTutMur;
+	public static Texture weaponTutCiv;
+	public static Texture weaponTutMur;
+	public static Texture itemTutCiv;
+	public static Texture itemTutMur;
+	public static Texture shotgunTut;
+	public static Texture shotgunTutMur;
+	public static Texture nextButtonToMenu;
+	
+	public static void loadTutorialScreen() {
+		civTut = new Texture(Gdx.files.internal("tutorial/Tutorial-Civilian.png"));
+		murTut = new Texture(Gdx.files.internal("tutorial/Tutorial-Murderer.png"));
+		tutorialP1 = new Texture(Gdx.files.internal("tutorial/Tutorial-Page-1.png"));
+		hudTutorial = new Texture(Gdx.files.internal("tutorial/HUD-Tutorial.png"));
+		screenTutorial = new Texture(Gdx.files.internal("tutorial/Screen-Tutorial.png"));
+		mapTutorial = new Texture(Gdx.files.internal("tutorial/Map-Tutorial.png"));
+		civButton = new Texture(Gdx.files.internal("tutorial/civButton.png"));
+		civButtonDown = new Texture(Gdx.files.internal("tutorial/civButtonDown.png"));
+		murButton = new Texture(Gdx.files.internal("tutorial/murButton.png"));
+		murButtonDown = new Texture(Gdx.files.internal("tutorial/murButtonDown.png"));
+		backButton = new Texture(Gdx.files.internal("tutorial/backButton.png"));
+		nextButton = new Texture(Gdx.files.internal("tutorial/nextButton.png"));
+		
+		civCharTut = new Texture(Gdx.files.internal("tutorial/Character-Tutorial-Civ.png"));
+		murCharTut = new Texture(Gdx.files.internal("tutorial/Character-Tutorial-Mur.png"));
+		hudOverlay = new Texture(Gdx.files.internal("tutorial/HUD-Overlay-Tutorial.png"));
+		itemTutBegin = new Texture(Gdx.files.internal("tutorial/Item-Tutorial-Begin.png"));
+		abilityTutCiv = new Texture(Gdx.files.internal("tutorial/Ability-Tutorial-Civ.png"));
+		abilityTutMur = new Texture(Gdx.files.internal("tutorial/Ability-Tutorial-Mur.png"));
+		weaponTutCiv = new Texture(Gdx.files.internal("tutorial/Weapon-Tutorial-Civ.png"));
+		weaponTutMur = new Texture(Gdx.files.internal("tutorial/Weapon-Tutorial-Mur.png"));
+		itemTutCiv = new Texture(Gdx.files.internal("tutorial/Item-Tutorial-Civ.png"));
+		itemTutMur = new Texture(Gdx.files.internal("tutorial/Item-Tutorial-Mur.png"));
+		shotgunTut = new Texture(Gdx.files.internal("tutorial/Shotgun-Tutorial.png"));
+		shotgunTutMur = new Texture(Gdx.files.internal("tutorial/Shotgun-Tutorial-Mur.png"));
+		nextButtonToMenu = new Texture(Gdx.files.internal("tutorial/nextButtonToMenu.png"));
+	}
 
 	// SOUNDS
 	public static Music menuMusic;
@@ -811,21 +853,6 @@ public class AssetLoader {
 		murLoad = new Texture(Gdx.files.internal("tutorial/Murderer-load-screen.png"));
 	}
 
-	public static void loadTutorialScreen() {
-		civTut = new Texture(Gdx.files.internal("tutorial/Tutorial-Civilian.png"));
-		murTut = new Texture(Gdx.files.internal("tutorial/Tutorial-Murderer.png"));
-		tutorialP1 = new Texture(Gdx.files.internal("tutorial/Tutorial-Page-1.png"));
-		hudOverlay = new Texture(Gdx.files.internal("tutorial/HUD-Overlay-Tutorial.png"));
-		hudTutorial = new Texture(Gdx.files.internal("tutorial/HUD-Tutorial.png"));
-		screenTutorial = new Texture(Gdx.files.internal("tutorial/Screen-Tutorial.png"));
-		mapTutorial = new Texture(Gdx.files.internal("tutorial/Map-Tutorial.png"));
-		civButton = new Texture(Gdx.files.internal("tutorial/civButton.png"));
-		civButtonDown = new Texture(Gdx.files.internal("tutorial/civButtonDown.png"));
-		murButton = new Texture(Gdx.files.internal("tutorial/murButton.png"));
-		murButtonDown = new Texture(Gdx.files.internal("tutorial/murButtonDown.png"));
-		backButton = new Texture(Gdx.files.internal("tutorial/backButton.png"));
-		nextButton = new Texture(Gdx.files.internal("tutorial/nextButton.png"));
-	}
 
 	public static void obstacleSFX() {
 		int randomInt = random.nextInt(3);
@@ -927,6 +954,18 @@ public class AssetLoader {
 			civ_char2.dispose();
 			civ_char3.dispose();
 			mur_char.dispose();
+			civCharTut.dispose();
+			murCharTut.dispose();
+			itemTutBegin.dispose();
+			abilityTutCiv.dispose();
+			abilityTutMur.dispose();
+			weaponTutCiv.dispose();
+			weaponTutMur.dispose();
+			itemTutCiv.dispose();
+			itemTutMur.dispose();
+			shotgunTut.dispose();
+			shotgunTutMur.dispose();
+			nextButtonToMenu.dispose();
 
 			// Dispose Sound
 			menuMusic.dispose();

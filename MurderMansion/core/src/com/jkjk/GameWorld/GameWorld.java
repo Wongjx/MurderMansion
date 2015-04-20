@@ -77,6 +77,7 @@ public class GameWorld {
 	private Random random;
 
 	private ToastMessage TM;
+	private boolean tutorial;
 
 	/**
 	 * Constructs the Box2D world, adding Box2D objects such as players, items and weapons. Attaches the
@@ -87,7 +88,8 @@ public class GameWorld {
 	 * @param gameHeight
 	 *            Accesses the virtual game height.
 	 */
-	public GameWorld() {
+	public GameWorld(boolean tutorial) {
+		this.tutorial = tutorial;
 		world = new World(new Vector2(0, 0), true);
 		// cl = MMContactListener.getInstance(this);
 		cl = new MMContactListener(this);
@@ -129,7 +131,10 @@ public class GameWorld {
 
 		random = new Random();
 
-		TM = new ToastMessage(310);
+		if (tutorial)
+			TM = new ToastMessage(305, 15000);
+		else
+			TM = new ToastMessage(305, 5000);
 	}
 
 	/**
@@ -164,6 +169,42 @@ public class GameWorld {
 				player.setAmbientLightValue(storeLightValue);
 			}
 		}
+	}
+
+	public void createTutorialWeapon() {
+		WeaponSprite ws = new WeaponSprite(this);
+		Vector2 location2 = new Vector2(player.getBody().getPosition().x - 60,
+				player.getBody().getPosition().y);
+		getWeaponList().put(location2, ws);
+		ws.spawn(location2.x, location2.y, 0);
+		player.getBody().setTransform(player.getBody().getPosition(), 3.1427f);
+	}
+
+	public void createTutorialItem() {
+		ItemSprite is = new ItemSprite(this);
+		Vector2 location = new Vector2(player.getBody().getPosition().x - 40,
+				player.getBody().getPosition().y);
+		getItemList().put(location, is);
+		is.spawn(location.x, location.y, 0);
+		player.getBody().setTransform(player.getBody().getPosition(), 3.1427f);
+	}
+
+	public void createTutorialWP() {
+		for (int i = 0; i < 2; i++) {
+			WeaponPartSprite wps = new WeaponPartSprite(this);
+			Vector2 location = new Vector2(player.getBody().getPosition().x - 40 - (30 * i), player.getBody()
+					.getPosition().y);
+			getWeaponPartList().put(location, wps);
+			wps.spawn(location.x, location.y, 0);
+			player.getBody().setTransform(player.getBody().getPosition(), 3.1427f);
+		}
+	}
+
+	public void createTutorialTrap() {
+		Vector2 location = new Vector2(player.getBody().getPosition().x - 40,
+				player.getBody().getPosition().y);
+		createTrap(location.x, location.y);
+		player.getBody().setTransform(player.getBody().getPosition(), 3.1427f);
 	}
 
 	/**

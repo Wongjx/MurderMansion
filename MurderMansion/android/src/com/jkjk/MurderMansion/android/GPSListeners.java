@@ -106,7 +106,7 @@ public class GPSListeners implements RoomStatusUpdateListener, RoomUpdateListene
 		if (activity.mMultiplayerSeisson.isServer) {
 			try {
 				// Create MMServer with current number of players and broadcast server details
-				MMServer server = new MMServer(room.getParticipants().size(), activity.mMultiplayerSeisson);
+				MMServer server = new MMServer(room.getParticipants().size(), activity.mMultiplayerSeisson, false, -1);
 				activity.mMultiplayerSeisson.setServer(server);
 				Log.d(TAG, "Server created.");
 

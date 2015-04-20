@@ -13,10 +13,10 @@ public class ToastMessage {
 	private float x;
 	private float y;
 	
-	public ToastMessage(float y){
+	public ToastMessage(float y, int duration){
 		show = false;
 		message = "";
-		ttl = new Duration(5000);
+		ttl = new Duration(duration);
 		font = AssetLoader.basker32Message;
 		font.setScale(.5f,.5f);
 		x = 0f;

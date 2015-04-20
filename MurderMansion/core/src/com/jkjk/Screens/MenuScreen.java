@@ -91,26 +91,26 @@ public class MenuScreen implements Screen {
 		sprite = new Sprite(background);
 		sprite.setSize(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
 
-		buttonPlay.addListener(new ClickListener() {
-			@Override
-			public void clicked(InputEvent event, float x, float y) {
-				AssetLoader.clickSound.play(AssetLoader.VOLUME);
-				GameWorld world = new GameWorld();
-				GameRenderer renderer = new GameRenderer(world, gameWidth, gameHeight);
-
-				try {
-					game.mMultiplayerSession.isServer = true;
-					game.mMultiplayerSession.setServer(new MMServer(1, game.mMultiplayerSession));
-					game.mMultiplayerSession.setClient(new MMClient(world, renderer,
-							game.mMultiplayerSession.serverAddress, game.mMultiplayerSession.serverPort,
-							game.mMultiplayerSession.mId, game.mMultiplayerSession.mName));
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-				((Game) Gdx.app.getApplicationListener()).setScreen(new LoadingScreen(game, gameWidth,
-						gameHeight, world, renderer));
-			}
-		});
+//		buttonPlay.addListener(new ClickListener() {
+//			@Override
+//			public void clicked(InputEvent event, float x, float y) {
+//				AssetLoader.clickSound.play(AssetLoader.VOLUME);
+//				GameWorld gWorld = new GameWorld();
+//				GameRenderer renderer = new GameRenderer(gWorld, gameWidth, gameHeight);
+//
+//				try {
+//					game.mMultiplayerSession.isServer = true;
+//					game.mMultiplayerSession.setServer(new MMServer(1, game.mMultiplayerSession, true));
+//					game.mMultiplayerSession.setClient(new MMClient(gWorld, renderer,
+//							game.mMultiplayerSession.serverAddress, game.mMultiplayerSession.serverPort,
+//							game.mMultiplayerSession.mId, game.mMultiplayerSession.mName, true));
+//				} catch (Exception e) {
+//					e.printStackTrace();
+//				}
+//				((Game) Gdx.app.getApplicationListener()).setScreen(new LoadingScreen(game, gameWidth,
+//						gameHeight, gWorld, renderer));
+//			}
+//		});
 		buttonLogin.addListener(new ClickListener() {
 			@Override
 			public void clicked(InputEvent event, float x, float y) {
@@ -209,9 +209,9 @@ public class MenuScreen implements Screen {
 
 		});
 
-		buttonPlay.setSize(this.BUTTON_WIDTH, this.BUTTON_HEIGHT);
-		buttonPlay.setPosition(20, 300);
-		stage.addActor(buttonPlay);
+//		buttonPlay.setSize(this.BUTTON_WIDTH, this.BUTTON_HEIGHT);
+//		buttonPlay.setPosition(20, 300);
+//		stage.addActor(buttonPlay);
 
 		buttonQuick.setSize(this.BUTTON_WIDTH, this.BUTTON_HEIGHT);
 		buttonQuick.setPosition(425, 220);

@@ -80,6 +80,8 @@ public class MMClient {
 
 	private ObstaclesHandler obstaclesHandler;
 
+	private boolean tutorial;
+
 	/**
 	 * Constructs the multiplayer world, including creation of opponents.
 	 * 
@@ -90,10 +92,11 @@ public class MMClient {
 	 * @throws Exception
 	 */
 	public MMClient(GameWorld gWorld, GameRenderer renderer, String serverAddress, int serverPort,
-			String participantId, String mName) throws Exception {
+			String participantId, String mName, boolean tutorial) throws Exception {
 
 		this.gWorld = gWorld;
 		this.renderer = renderer;
+		this.tutorial = tutorial;
 		itemFac = new ItemFactory();
 		weaponFac = new WeaponFactory();
 		gameCharFac = new GameCharacterFactory();
@@ -211,31 +214,6 @@ public class MMClient {
 		Thread thread = new clientListener(clientInput, this);
 		this.clientListenerThread = thread;
 		thread.start();
-
-		// // CREATE SPRITES FOR TESTING
-		// ItemSprite temporaryItem = new ItemSprite(gWorld);
-		// gWorld.getItemList().put(new Vector2(800f, 490), temporaryItem);
-		// temporaryItem.spawn(800f, 490, 0);
-		// WeaponSprite tempWeap = new WeaponSprite(gWorld);
-		// gWorld.getWeaponList().put(new Vector2(750f, 490), tempWeap);
-		// tempWeap.spawn(750f, 490, 0);
-		//
-		// for (int i = 0; i < 8; i++) {
-		// createWeaponParts(750 + (20 * i), 460);
-		// }
-
-		// // CREATING ITEMSPRITE FOR DEBUG PURPOSE
-		// ItemSprite is = new ItemSprite(gWorld);
-		// Vector2 location = new Vector2(800f, 540);
-		// gWorld.getItemList().put(location, is);
-		// is.spawn(location.x, location.y, 0);
-		// // CREATING WEAPONSPRITE FOR DEBUG PURPOSE
-		// WeaponSprite ws = new WeaponSprite(gWorld);
-		// Vector2 location2 = new Vector2(750f, 540);
-		// gWorld.getWeaponList().put(location2, ws);
-		// ws.spawn(location2.x, location2.y, 0);
-		//
-		// gWorld.createTrap(700f, 540);
 
 	}
 

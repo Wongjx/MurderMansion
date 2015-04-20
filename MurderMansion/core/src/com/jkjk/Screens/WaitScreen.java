@@ -19,7 +19,7 @@ import com.jkjk.MMHelpers.AssetLoader;
 import com.jkjk.MurderMansion.MurderMansion;
 
 public class WaitScreen implements Screen {
-	
+
 	private Stage stage;
 	private SpriteBatch batcher;
 	private Sprite sprite;
@@ -58,21 +58,22 @@ public class WaitScreen implements Screen {
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 		stage.act();
 		stage.draw();
-//		System.out.println("Room state: "+game.mMultiplayerSession.mState);
-//		System.out.println("Server adddress: "+game.mMultiplayerSession.serverAddress+" Server Port: "+game.mMultiplayerSession.serverPort);
+		// System.out.println("Room state: "+game.mMultiplayerSession.mState);
+		// System.out.println("Server adddress: "+game.mMultiplayerSession.serverAddress+" Server Port: "+game.mMultiplayerSession.serverPort);
 		if ((game.mMultiplayerSession.mState == game.mMultiplayerSession.ROOM_PLAY)
 				&& (game.mMultiplayerSession.serverAddress != null)
 				&& (game.mMultiplayerSession.serverPort != 0)) {
 			System.out.println("Condition fufilled!");
 			// Create MMClient and connect to server
-			GameWorld gWorld = new GameWorld();
+			GameWorld gWorld = new GameWorld(false);
 			System.out.println("New world made");
 			GameRenderer renderer = new GameRenderer(gWorld, gameWidth, gameHeight);
 			System.out.println("New Renderer made");
 
 			try {
 				game.mMultiplayerSession.setClient(new MMClient(gWorld, renderer,
-						game.mMultiplayerSession.serverAddress, game.mMultiplayerSession.serverPort,game.mMultiplayerSession.mId,game.mMultiplayerSession.mName));
+						game.mMultiplayerSession.serverAddress, game.mMultiplayerSession.serverPort,
+						game.mMultiplayerSession.mId, game.mMultiplayerSession.mName, false));
 				System.out.println("Set new client.");
 
 			} catch (Exception e) {
@@ -80,8 +81,8 @@ public class WaitScreen implements Screen {
 				e.printStackTrace();
 			}
 			System.out.println("Setting screen to new loading screen.");
-			((Game) Gdx.app.getApplicationListener()).setScreen(new LoadingScreen(game, gameWidth, gameHeight,
-					gWorld, renderer));
+			((Game) Gdx.app.getApplicationListener()).setScreen(new LoadingScreen(game, gameWidth,
+					gameHeight, gWorld, renderer));
 
 		} else if (game.mMultiplayerSession.mState == game.mMultiplayerSession.ROOM_MENU) {
 			game.mMultiplayerSession.mState = game.mMultiplayerSession.ROOM_NULL;
