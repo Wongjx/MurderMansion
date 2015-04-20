@@ -25,12 +25,12 @@ public class ObstaclesHandler {
 		obstacleLocations = new ArrayList<Location>();
 		obstacleLocations.add(new Location(new float[] { 915.2f, 511.8f })); // MAIN DOOR. ONLY DESTROY WHEN AT 0MIN
 		obstacleLocations.add(new Location(new float[] { 736.5f, 809.4f }));
-		obstacleLocations.add(new Location(new float[] { 185.2f, 476.5f }));
+//		obstacleLocations.add(new Location(new float[] { 185.2f, 476.5f }));
 		obstacleLocations.add(new Location(new float[] { 308.7f, 244.8f }));
 		obstacleLocations.add(new Location(new float[] { 750.9f, 269.6f }));
-		obstacleLocations.add(new Location(new float[] { 2151.3f, 685.85f }));
+		obstacleLocations.add(new Location(new float[] { 2095.9f, 496.7f }));
 		obstacleLocations.add(new Location(new float[] { 2640.4f, 268 }));
-		obstacleLocations.add(new Location(new float[] { 2802.6f, 490.1f }));
+//		obstacleLocations.add(new Location(new float[] { 2802.6f, 490.1f }));
 
 		randInt = new Random();
 	}

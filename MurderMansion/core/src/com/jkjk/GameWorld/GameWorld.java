@@ -355,7 +355,12 @@ public class GameWorld {
 		obstacleList.get(location).getBody().setTransform(0, 0, 0);
 		obstacleList.remove(location);
 		if (obstacleList.size() == 0) {
-			TM.setDisplayMessage("The mansion door creak open... This is your chance to escape!");
+			if (player.getType() == "Civilian")
+				TM.setDisplayMessage("The mansion door to the East creaks open... Run! Now!");
+			else if (player.getType() == "Murderer")
+				TM.setDisplayMessage("The mansion door to the East creaks open... Stop them! Now!");
+			else if (player.getType() == "Ghost")
+				TM.setDisplayMessage("Your spirit is forever trapped in JK's playhouse...");
 		} else {
 			TM.setDisplayMessage("An Obstacle has Disappeared...");
 		}

@@ -21,6 +21,7 @@ import com.badlogic.gdx.Gdx;
 import com.jkjk.GameObjects.Duration;
 import com.jkjk.Host.Helpers.Location;
 import com.jkjk.Host.Helpers.ObstaclesHandler;
+import com.jkjk.Host.Helpers.PlayerSpawner;
 import com.jkjk.MMHelpers.MultiplayerSessionInfo;
 
 public class MMServer {
@@ -52,6 +53,7 @@ public class MMServer {
 	private final PlayerStatuses playerStats;
 	private final ObjectLocations objectLocations;
 	private final ObstaclesHandler obstaclesHandler;
+	private final PlayerSpawner playerSpawner;
 	private float[] obstacleDestroyed; // To transmit position of obstacle destroyed to clients
 
 	private int weaponPartsCollected;
@@ -77,10 +79,11 @@ public class MMServer {
 		// System.out.println("Initialize fields");
 		playerStats = new PlayerStatuses(numOfPlayers);
 		objectLocations = new ObjectLocations(numOfPlayers, this);
+		playerSpawner = new PlayerSpawner();
 
 		obstaclesHandler = new ObstaclesHandler();
 		nextItemSpawnTime = 10000;
-		nextObstacleRemoveTime = 30000;
+		nextObstacleRemoveTime = 40000;
 		nextLightningTime = 20000;
 
 		gameStartPause = new Duration(gameStartPauseDuration);
@@ -156,7 +159,7 @@ public class MMServer {
 			System.out.println("At x:" + obstacleDestroyed[0] + " y: " + obstacleDestroyed[1]);
 			sendToClients("obstacle_" + Float.toString(obstacleDestroyed[0]) + "_"
 					+ Float.toString(obstacleDestroyed[1]));
-			nextObstacleRemoveTime += 30000;
+			nextObstacleRemoveTime += 40000;
 		}
 	}
 
@@ -213,8 +216,11 @@ public class MMServer {
 				playerStats.getPlayerType().put("Player " + i, 1);
 			}
 
-			playerStats.getPlayerPosition().put("Player " + i, new float[] { 880, 580 - ((i + 1) * 30) });
-			playerStats.getPlayerAngle().put("Player " + i, 3.1427f);
+			float[] playerSpawnLocation = playerSpawner.getSpawnLocation();
+
+			playerStats.getPlayerPosition().put("Player " + i,
+					new float[] { playerSpawnLocation[0], playerSpawnLocation[1] });
+			playerStats.getPlayerAngle().put("Player " + i, playerSpawnLocation[2]);
 
 		}
 	}
