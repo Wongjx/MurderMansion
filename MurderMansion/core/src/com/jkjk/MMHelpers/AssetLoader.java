@@ -243,6 +243,7 @@ public class AssetLoader {
 	
 	public static Texture civCharTut;
 	public static Texture murCharTut;
+	public static Texture ghostCharTut;
 	public static Texture hudOverlay;
 	public static Texture itemTutBegin;
 	public static Texture abilityTutCiv;
@@ -271,6 +272,7 @@ public class AssetLoader {
 		
 		civCharTut = new Texture(Gdx.files.internal("tutorial/Character-Tutorial-Civ.png"));
 		murCharTut = new Texture(Gdx.files.internal("tutorial/Character-Tutorial-Mur.png"));
+		ghostCharTut = new Texture(Gdx.files.internal("tutorial/Character-Tutorial-Ghost.png"));
 		hudOverlay = new Texture(Gdx.files.internal("tutorial/HUD-Overlay-Tutorial.png"));
 		itemTutBegin = new Texture(Gdx.files.internal("tutorial/Item-Tutorial-Begin.png"));
 		abilityTutCiv = new Texture(Gdx.files.internal("tutorial/Ability-Tutorial-Civ.png"));
@@ -966,6 +968,7 @@ public class AssetLoader {
 			shotgunTut.dispose();
 			shotgunTutMur.dispose();
 			nextButtonToMenu.dispose();
+			ghostCharTut.dispose();
 
 			// Dispose Sound
 			menuMusic.dispose();

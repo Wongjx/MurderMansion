@@ -114,6 +114,7 @@ public class HudRenderer {
 	private Image shotgunTutMur;
 	private Image mapTut;
 	private Image nextButtonToMenu;
+	private Image ghostCharTut;
 
 	// private boolean
 	/**
@@ -151,6 +152,8 @@ public class HudRenderer {
 		civCharTut.setName("civ char tut");
 		murCharTut = new Image(AssetLoader.murCharTut);
 		murCharTut.setName("mur char tut");
+		ghostCharTut = new Image(AssetLoader.ghostCharTut);
+		ghostCharTut.setName("ghost char tut");
 		itemTutBegin = new Image(AssetLoader.itemTutBegin);
 		itemTutBegin.setName("item tut begin");
 		hudOverlay = new Image(AssetLoader.hudOverlay);
@@ -226,7 +229,8 @@ public class HudRenderer {
 					GWTM.setDisplayMessage("Try picking them up!");
 					gWorld.createTutorialWP();
 				} else if (stage.getActors().first().equals(shotgunTut)
-						|| stage.getActors().first().equals(shotgunTutMur)) {
+						|| stage.getActors().first().equals(shotgunTutMur)
+						|| stage.getActors().first().equals(ghostCharTut)) {
 					stage.clear();
 					stage.addActor(nextButton);
 					TM.setDisplayMessage("Congrats! You completed the gameplay tutorial!");
@@ -243,7 +247,8 @@ public class HudRenderer {
 					stage.addActor(getWeaponPartsCounter());
 					stage.addActor(getEmptySlot());
 					stage.addActor(getSettingsButton());
-					abilityCheck();
+					if (gWorld.getPlayer().getType() != "Ghost")
+						abilityCheck();
 				}
 
 			}
@@ -615,17 +620,19 @@ public class HudRenderer {
 				stage.addActor(getTrap());
 			} else {
 				if (tutorial) {
-					stage.clear();
-					stage.addActor(itemTut);
-					stage.addActor(nextButton);
-					GWTM.setDisplayMessage("Excellent! Try using your item on the trap");
-					stage.addActor(touchpad);
-					stage.addActor(getTimebox());
-					stage.addActor(getWeaponPartsCounter());
-					stage.addActor(getEmptySlot());
-					stage.addActor(getSettingsButton());
-					abilityCheck();
-					gWorld.createTutorialTrap();
+					if (gWorld.getPlayer().getType() != "Ghost") {
+						stage.clear();
+						stage.addActor(itemTut);
+						stage.addActor(nextButton);
+						GWTM.setDisplayMessage("Excellent! Try using your item on the trap");
+						stage.addActor(touchpad);
+						stage.addActor(getTimebox());
+						stage.addActor(getWeaponPartsCounter());
+						stage.addActor(getEmptySlot());
+						stage.addActor(getSettingsButton());
+						abilityCheck();
+						gWorld.createTutorialTrap();
+					}
 				}
 				stage.addActor(getDisarmTrap());
 			}
@@ -637,7 +644,6 @@ public class HudRenderer {
 		}
 	}
 
-	// TODO
 	/**
 	 * When a change in the player's weapon is detected, weaponCheck() will be called, setting weaponChange to
 	 * false and updating the new item for the player's weapon slot.
@@ -666,16 +672,18 @@ public class HudRenderer {
 				stage.addActor(getShotgun());
 			} else if (player.getWeapon().getName().equals("Bat")) {
 				if (tutorial) {
-					stage.clear();
-					stage.addActor(weaponTut);
-					stage.addActor(nextButton);
-					GWTM.setDisplayMessage("Excellent! Try using your weapon");
-					stage.addActor(touchpad);
-					stage.addActor(getTimebox());
-					stage.addActor(getWeaponPartsCounter());
-					stage.addActor(getEmptySlot());
-					stage.addActor(getSettingsButton());
-					abilityCheck();
+					if (gWorld.getPlayer().getType() != "Ghost") {
+						stage.clear();
+						stage.addActor(weaponTut);
+						stage.addActor(nextButton);
+						GWTM.setDisplayMessage("Excellent! Try using your weapon");
+						stage.addActor(touchpad);
+						stage.addActor(getTimebox());
+						stage.addActor(getWeaponPartsCounter());
+						stage.addActor(getEmptySlot());
+						stage.addActor(getSettingsButton());
+						abilityCheck();
+					}
 				}
 				stage.addActor(getBat());
 			} else if (player.getWeapon().getName().equals("Knife")) {
@@ -734,6 +742,19 @@ public class HudRenderer {
 						|| actors.getName().equals("Panic")) {
 					actors.remove();
 				}
+			}
+			if (tutorial) {
+				stage.clear();
+				stage.addActor(ghostCharTut);
+				stage.addActor(nextButton);
+				TM.setDisplayMessage("Oops! Looks like you died. You're now a ghost!");
+				stage.addActor(touchpad);
+				stage.addActor(getTimebox());
+				stage.addActor(getWeaponPartsCounter());
+				stage.addActor(getEmptySlot());
+				stage.addActor(getSettingsButton());
+				gWorld.createTutorialItem();
+				gWorld.createTutorialWeapon();
 			}
 			stage.addActor(getHaunt());
 		}
