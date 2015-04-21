@@ -114,7 +114,7 @@ public class MMContactListener implements ContactListener {
 						AssetLoader.trappedSound.play(AssetLoader.VOLUME);
 					}
 				} else if (faUD.equals("knife") || fbUD.equals("knife")) {
-					if (!gWorld.getPlayer().getType().equals("Ghost")) {
+					if (gWorld.getPlayer().getType().equals("Civilian")) {
 						gWorld.getPlayer().die();
 						AssetLoader.knifeStabSound.play(AssetLoader.VOLUME);
 					}

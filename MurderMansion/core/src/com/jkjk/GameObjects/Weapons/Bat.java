@@ -28,7 +28,7 @@ public class Bat extends Weapon {
 		body = gWorld.getWorld().createBody(bdef);
 		body.setActive(false);
 
-		Vector2[] vertices = { new Vector2(15, 0), new Vector2(27.7f, 16), new Vector2(30, 10.9f),
+		Vector2[] vertices = { new Vector2(18, 0), new Vector2(27.7f, 16), new Vector2(30, 10.9f),
 				new Vector2(31.5f, 5.6f), new Vector2(32, 0), new Vector2(31.5f, -5.6f),
 				new Vector2(30, -10.9f), new Vector2(27.7f, -16) };
 		PolygonShape shape = new PolygonShape();

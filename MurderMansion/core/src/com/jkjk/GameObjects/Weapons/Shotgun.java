@@ -28,7 +28,7 @@ public class Shotgun extends Weapon {
 		body = gWorld.getWorld().createBody(bdef);
 		body.setActive(false);
 
-		Vector2[] vertices = { new Vector2(15, 0), new Vector2(43.3f, 25), new Vector2(47, 17.1f),
+		Vector2[] vertices = { new Vector2(18, 0), new Vector2(43.3f, 25), new Vector2(47, 17.1f),
 				new Vector2(49.2f, 8.7f), new Vector2(50, 0), new Vector2(49.2f, -8.7f),
 				new Vector2(47, -17.1f), new Vector2(43.3f, -25) };
 		PolygonShape shape = new PolygonShape();
