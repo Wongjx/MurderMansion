@@ -73,8 +73,10 @@ public class GameScreen implements Screen {
 		runTime += delta;
 //		System.out.println("Run time add");
 		gWorld.update(delta, client);
+
 		renderer.render(delta, runTime, client);
 		hudRenderer.render(delta, client.getIsGameStart());
+
 		// if phone is designated server
 		if (info.isServer) {
 			try {

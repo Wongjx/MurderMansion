@@ -75,6 +75,8 @@ public class GameWorld {
 	private ToastMessage TM;
 	private boolean tutorial;
 	private GameCharacter dummy;
+	
+	private boolean prevStun;
 
 	/**
 	 * Constructs the Box2D world, adding Box2D objects such as players, items and weapons. Attaches the
@@ -316,9 +318,13 @@ public class GameWorld {
 	}
 
 	private void checkStun(MMClient client) {
-		if (player.isStun()) {
+		if (player.isStun() && prevStun == false) {
+			prevStun = true;
 			client.updatePlayerIsStun(client.getId(), 1);
 			TM.setDisplayMessage("You have been Stunned");
+		}
+		if (!player.isStun()){
+			prevStun = false;
 		}
 	}
 

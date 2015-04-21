@@ -116,12 +116,8 @@ public class Civilian extends GameCharacter {
 		}
 		body.setUserData(civWalkAnimation);
 
-
 		walkSound = AssetLoader.walkSound;
 		runSound = AssetLoader.runSound;
-
-
-
 
 	}
 
@@ -129,7 +125,7 @@ public class Civilian extends GameCharacter {
 	public void render(OrthographicCamera cam, SpriteBatch batch) {
 
 		super.render(cam, batch);
-		
+
 		seen = gWorld.getPlayer().lightContains(body.getPosition().x, body.getPosition().y);
 		currentAnimation = (Animation) body.getUserData();
 
@@ -147,17 +143,14 @@ public class Civilian extends GameCharacter {
 					if (!runSound.isPlaying() && isPlayer()) {
 						runSound.play();
 					}
-
 					batch.draw(currentAnimation.getKeyFrame(runTime * 5, true), body.getPosition().x - 9,
 							body.getPosition().y - 9, 9, 9, 18, 18, 6f, 6f,
 							(float) (body.getAngle() * 180 / Math.PI) - 90);
 
 				} else {
-
 					if (runSound.isPlaying() && isPlayer()) {
 						runSound.stop();
 					}
-
 					batch.draw(civPanicRest, body.getPosition().x - 9, body.getPosition().y - 9, 9, 9, 18,
 							18, 6f, 6f, (float) (body.getAngle() * 180 / Math.PI) - 90);
 				}
@@ -169,7 +162,6 @@ public class Civilian extends GameCharacter {
 					if (runSound.isPlaying() && isPlayer()) {
 						runSound.stop();
 					}
-
 					batch.draw(currentAnimation.getKeyFrame(runTime * 4, true), body.getPosition().x - 9,
 							body.getPosition().y - 9, 9, 9, 18, 18, 6f, 6f,
 							(float) (body.getAngle() * 180 / Math.PI) - 90);
