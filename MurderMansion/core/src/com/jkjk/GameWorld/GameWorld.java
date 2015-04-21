@@ -183,7 +183,7 @@ public class GameWorld {
 	public void createTutorialTrap() {
 		Vector2 location = new Vector2(player.getBody().getPosition().x - 40,
 				player.getBody().getPosition().y);
-		createTrap(new float[] { location.x, location.y });
+		createTrap(location);
 		player.getBody().setTransform(player.getBody().getPosition(), 3.1427f);
 	}
 
@@ -309,9 +309,9 @@ public class GameWorld {
 		bodyToRemove = trapToRemove.poll();
 		if (bodyToRemove != null) {
 			trapList.remove(bodyToRemove.getPosition());
+			client.removeTrapLocation(bodyToRemove.getPosition().x, bodyToRemove.getPosition().y);
 			bodyToRemove.setActive(false);
 			bodyToRemove.setTransform(0, 0, 0);
-			client.removeTrapLocation(bodyToRemove.getPosition().x, bodyToRemove.getPosition().y);
 		}
 	}
 
@@ -385,10 +385,10 @@ public class GameWorld {
 		}
 	}
 
-	public void createTrap(float[] loc) {
+	public void createTrap(Vector2 location) {
 		trapToCreate = (Trap) itemFac.createItem("Trap", this, null, null);
-		trapList.put(new Vector2(loc[0], loc[1]), trapToCreate);
-		trapToCreate.spawn(loc[0], loc[1], 0);
+		trapList.put(location, trapToCreate);
+		trapToCreate.spawn(location.x, location.y, 0);
 	}
 
 	/**
