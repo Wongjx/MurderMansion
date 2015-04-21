@@ -100,7 +100,7 @@ public class HudRenderer {
 	private BitmapFont syncFont;
 	private boolean prevState;
 
-	private boolean tutorial;
+	private final boolean tutorial;
 	private Image nextButton;
 	private Image backButton;
 	private Image hudOverlay;
@@ -130,7 +130,7 @@ public class HudRenderer {
 	 *            Accesses the virtual game height.
 	 */
 	public HudRenderer(final GameWorld gWorld, MMClient client, final float gameWidth,
-			final float gameHeight, final MurderMansion game, boolean tutorial) {
+			final float gameHeight, final MurderMansion game, final boolean tutorial) {
 		initAssets(gameWidth, gameHeight);
 
 		this.gWorld = gWorld;
@@ -259,6 +259,16 @@ public class HudRenderer {
 			public void clicked(InputEvent event, float x, float y) {
 				AssetLoader.clickSound.play(AssetLoader.VOLUME);
 				stage.clear();
+				
+				if((game.actionResolver.getSignedInGPGS())
+						&& (tutorial)){
+					if (gWorld.getPlayer().getType() == "Civilian") {
+						game.actionResolver.unlockAchievementGPGS(game.actionResolver.ACHEIVEMENT_8);
+					}else if (gWorld.getPlayer().getType() == "Murderer"){
+						game.actionResolver.unlockAchievementGPGS(game.actionResolver.ACHEIVEMENT_7);
+					}
+				}
+				
 				((Game) Gdx.app.getApplicationListener()).setScreen(new MenuScreen(game, gameWidth,
 						gameHeight));
 			}

@@ -170,6 +170,12 @@ public class ScoreScreen implements Screen {
 	 */
 	@Override
 	public void show() {
+		//Unlock An AMAZING GAME
+		if(game.actionResolver.getSignedInGPGS()){
+			game.actionResolver.unlockAchievementGPGS(game.actionResolver.ACHEIVEMENT_1);
+		}
+		
+		
 		table.padTop(120);
 
 		// FIRST ROW: NAME OF PLAYERS

@@ -32,6 +32,7 @@ public class AndroidLauncher extends AndroidApplication implements GameHelperLis
     final static int RC_INVITATION_INBOX = 10001;
     final static int RC_WAITING_ROOM = 10002;
     private static final int RC_SIGN_IN = 9001;
+    
 
 	public GameHelper gameHelper;
 	public GoogleApiClient mGoogleApiClient;
