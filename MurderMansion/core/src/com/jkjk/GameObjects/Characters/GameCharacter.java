@@ -292,29 +292,25 @@ public abstract class GameCharacter {
 				rayHandler.setAmbientLight(ambientLightValue);
 				nextBrightTime += 10000;
 			}
-			System.out.println("Start render");
+
 			if (checkMovable()) {
 				playerMovement();
 			} else {
 				body.setAngularVelocity(0);
 				body.setLinearVelocity(0, 0);
 			}
-			System.out.println("set camera position");
+
 			cam.position.set(body.getPosition(), 0); // Set cam position to be on player
 			
-			System.out.println("Set ray handler matrix");
 			rayHandler.setCombinedMatrix(cam.combined);
 			try {
-				System.out.println("Try to update and render");
 				rayHandler.updateAndRender();
 			} catch (Exception e) {
 				e.printStackTrace();
 				System.out.println("EXCEPTION AT GAMECHARACTER");
-				rayHandler.setAmbientLight(ambientLightValue);
 			}
 			System.out.println("Finish render!");
 		}
-
 	}
 
 	protected boolean checkMovable() {

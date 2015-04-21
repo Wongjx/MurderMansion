@@ -217,7 +217,7 @@ public class MMClient {
 		initPlayers();
 		System.out.println("Player initialised.");
 		createObstacles();
-		System.out.println("Obsatacles initialised.");
+
 
 		// Get participant ids from server
 		if ((message = clientInput.readLine()).equals("clientNames")) {
@@ -230,7 +230,6 @@ public class MMClient {
 			}
 		}
 		
-		System.out.println("Client names got");
 
 		// Create and start extra thread that reads any incoming messages
 		Thread thread = new clientListener(clientInput, this);
