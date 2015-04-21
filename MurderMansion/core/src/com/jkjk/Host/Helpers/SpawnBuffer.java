@@ -24,7 +24,8 @@ public class SpawnBuffer {
 		System.out.println("SpawnBuffer: tried to consume");
 		if (buffer.size() > 0) {
 			System.out.println("SpawnBuffer: consumed successfully");
-			System.out.println("SpawnBuffer requesting to consume key: " + location.get()[0] * location.get()[1]);
+			System.out.println("SpawnBuffer requesting to consume key: " + location.get()[0]
+					* location.get()[1]);
 			if (!buffer.containsKey(location.get()[0] * location.get()[1])) {
 				System.out.println("SpawnBuffer: location not found when consume");
 			}

@@ -5,7 +5,6 @@ import box2dLight.PointLight;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.audio.Music;
-import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
@@ -35,7 +34,7 @@ public class Murderer extends GameCharacter {
 
 	private volatile boolean seen;
 
-	private Sound walkSound;
+	private Music walkSound;
 
 	Murderer(int id, GameWorld gWorld, boolean isPlayer) {
 		super("Murderer", id, gWorld, isPlayer);
@@ -103,9 +102,6 @@ public class Murderer extends GameCharacter {
 		body.setUserData(civWalkAnimation);
 
 		walkSound = AssetLoader.walkSound;
-		walkSound.play();		
-		walkSound.setLooping(0, true);
-		walkSound.pause();
 	}
 
 	@Override
@@ -122,8 +118,8 @@ public class Murderer extends GameCharacter {
 
 			if (currentAnimation == AssetLoader.murAnimation || currentAnimation == civWalkAnimation) {
 				if (!body.getLinearVelocity().isZero() && checkMovable()) {
-					if (isPlayer()) {
-						walkSound.resume();
+					if (!walkSound.isPlaying() && isPlayer()) {
+						walkSound.play();
 					}
 					if (isDisguised()) {
 						batch.draw(civWalkAnimation.getKeyFrame(runTime * 4, true), body.getPosition().x - 9,
@@ -135,8 +131,8 @@ public class Murderer extends GameCharacter {
 								(float) (body.getAngle() * 180 / Math.PI) - 90);
 					}
 				} else {
-					if (isPlayer()) {
-						walkSound.pause();
+					if (walkSound.isPlaying() && isPlayer()) {
+						walkSound.stop();
 					}
 					if (isDisguised()) {
 						batch.draw(civRest, body.getPosition().x - 9, body.getPosition().y - 9, 9, 9, 18, 18,

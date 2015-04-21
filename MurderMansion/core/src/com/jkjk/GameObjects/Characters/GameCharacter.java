@@ -306,7 +306,6 @@ public abstract class GameCharacter {
 			} catch (Exception e) {
 				e.printStackTrace();
 				System.out.println("EXCEPTION AT GAMECHARACTER");
-				rayHandler.setAmbientLight(ambientLightValue);
 			}
 		}
 

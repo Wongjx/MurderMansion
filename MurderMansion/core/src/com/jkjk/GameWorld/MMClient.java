@@ -563,7 +563,6 @@ public class MMClient {
 	}
 
 	/**
-	 * <<<<<<< HEAD ======= ======= >>>>>>> Broken_menu >>>>>>> 093da5221d56ff4aaead1b053aa98e22d2be4d11
 	 * Update server about change in player's type
 	 * 
 	 * @param playerID
