@@ -99,7 +99,7 @@ public class MMClient {
 	private ConcurrentLinkedQueue<float[]> itemSpawnQueue;
 	private ConcurrentLinkedQueue<float[]> weaponSpawnQueue;
 	private ConcurrentLinkedQueue<float[]> weaponPartSpawnQueue;
-	private ConcurrentLinkedQueue<float[]> trapSpawnQueue;
+	private ConcurrentLinkedQueue<Vector2> trapSpawnQueue;
 	private ConcurrentLinkedQueue<Vector2> trapConsumeQueue;
 	private ConcurrentLinkedQueue<Vector2> itemConsumeQueue;
 	private ConcurrentLinkedQueue<Vector2> weaponConsumeQueue;
@@ -158,7 +158,7 @@ public class MMClient {
 		itemSpawnQueue = new ConcurrentLinkedQueue<float[]>();
 		weaponSpawnQueue = new ConcurrentLinkedQueue<float[]>();
 		weaponPartSpawnQueue = new ConcurrentLinkedQueue<float[]>();
-		trapSpawnQueue = new ConcurrentLinkedQueue<float[]>();
+		trapSpawnQueue = new ConcurrentLinkedQueue<Vector2>();
 		trapConsumeQueue = new ConcurrentLinkedQueue<Vector2>();
 		itemConsumeQueue = new ConcurrentLinkedQueue<Vector2>();
 		weaponConsumeQueue = new ConcurrentLinkedQueue<Vector2>();
@@ -961,8 +961,9 @@ public class MMClient {
 				}
 			} else if (msg[2].equals("pro")) {
 				System.out.println("Produce trap");
+				Vector2 position = new Vector2(Float.parseFloat(msg[3]), Float.parseFloat(msg[4]));
 				if (Integer.parseInt(msg[1]) != id) {
-					trapSpawnQueue.offer(new float[] { Float.parseFloat(msg[3]), Float.parseFloat(msg[4]) });
+					trapSpawnQueue.offer(position);
 				}
 			}
 		}
