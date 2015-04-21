@@ -117,7 +117,8 @@ public class Civilian extends GameCharacter {
 			System.out.println("CIVILIAN CLASS ANIMATION ERROR");
 		}
 		body.setUserData(civWalkAnimation);
-
+		
+		System.out.println("Start to load sound");
 		walkSound = AssetLoader.walkSound;
 		walkSoundId = walkSound.play();
 		walkSound.pause();

@@ -212,9 +212,12 @@ public class MMClient {
 				}
 			}
 		}
-
+		
+		System.out.println("Try to init players.");
 		initPlayers();
+		System.out.println("Player initialised.");
 		createObstacles();
+		System.out.println("Obsatacles initialised.");
 
 		// Get participant ids from server
 		if ((message = clientInput.readLine()).equals("clientNames")) {
@@ -226,6 +229,8 @@ public class MMClient {
 				}
 			}
 		}
+		
+		System.out.println("Client names got");
 
 		// Create and start extra thread that reads any incoming messages
 		Thread thread = new clientListener(clientInput, this);
@@ -261,7 +266,7 @@ public class MMClient {
 
 	private void initPlayers() {
 		System.out.println("Number of players " + numOfPlayers);
-		System.out.println("Player list size " + playerList.size());
+//		System.out.println("Player list size " + playerList.size());
 		for (int i = 0; i < numOfPlayers; i++) {
 			playerIsAlive.put("Player " + i, 1);
 			if (i == id) {
@@ -275,6 +280,7 @@ public class MMClient {
 				playerList.add(gWorld.createPlayer(playerType.get("Player " + id),
 						playerPosition.get("Player " + i)[0], playerPosition.get("Player " + i)[1],
 						playerAngle.get("Player " + i), i));
+				System.out.println("Player made");
 			} else {
 				// Create opponent bodies
 				if (i == murdererId) {
@@ -283,15 +289,18 @@ public class MMClient {
 					playerList.get(playerList.size() - 1).spawn(playerPosition.get("Player " + i)[0],
 							playerPosition.get("Player " + i)[1], playerAngle.get("Player " + i));
 					playerType.put("Player " + i, 0);
+					System.out.println("Player made");
 				} else {
 					playerList.add(gWorld.getGameCharFac().createCharacter("Civilian", i, gWorld, false));
 					playerList.get(playerList.size() - 1).getBody().setType(BodyType.KinematicBody);
 					playerList.get(playerList.size() - 1).spawn(playerPosition.get("Player " + i)[0],
 							playerPosition.get("Player " + i)[1], playerAngle.get("Player " + i));
 					playerType.put("Player " + i, 1);
+					System.out.println("Player made");
 				}
 			}
 		}
+		System.out.println("Init players end" );
 	}
 
 	public GameCharacter createTutorialDummy() {

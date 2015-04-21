@@ -69,10 +69,15 @@ public class GameScreen implements Screen {
 						gameHeight, client));
 			}
 		}
+//		System.out.println("Disconnect and Win check pass");
 		runTime += delta;
+//		System.out.println("Run time add");
 		gWorld.update(delta, client);
+		System.out.println("Game world update");
 		renderer.render(delta, runTime, client);
+		System.out.println("Game renderer update");
 		hudRenderer.render(delta, client.getIsGameStart());
+		System.out.println("HUD renderer update");
 		// if phone is designated server
 		if (info.isServer) {
 			try {
@@ -82,6 +87,7 @@ public class GameScreen implements Screen {
 				System.out.println("Disconnected?");
 			}
 		}
+//		System.out.println("Server updated!");
 	}
 
 	@Override
