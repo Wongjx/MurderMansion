@@ -137,7 +137,6 @@ public class Civilian extends GameCharacter {
 					body.setUserData(civWalkAnimation);
 				}
 				if (!body.getLinearVelocity().isZero() && checkMovable()) {
-
 					if (walkSound.isPlaying() && isPlayer()) {
 						walkSound.stop();
 					}
