@@ -29,7 +29,6 @@ public class ItemSprite {
 
 		bdef.type = BodyType.StaticBody;
 		body = gWorld.getWorld().createBody(bdef);
-		body.setActive(false);
 
 		CircleShape shape = new CircleShape();
 		shape.setRadius(9);
