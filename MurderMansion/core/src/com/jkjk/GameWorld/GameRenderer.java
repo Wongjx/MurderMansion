@@ -68,46 +68,35 @@ public class GameRenderer {
 	 *            The total runtime since start.
 	 */
 	public void render(float delta, float runTime, MMClient client) {
-		System.out.println("Clear screen");
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT); // Clears screen everytime it renders
 
-		System.out.println("Set tiled map renderer");
-		tiledMapRenderer.setView(cam);
-		System.out.println("Render tiled map");
+		tiledMapRenderer.setView(cam);	
 		tiledMapRenderer.render();
+			
+		batch.setProjectionMatrix(cam.combined);		
 		
-		System.out.println("Set projection matrix");
-		batch.setProjectionMatrix(cam.combined);
-		
-		System.out.println("Render client");
 		client.render(cam, batch);
-		System.out.println("Begin batch");
 		batch.begin();
-		
-		System.out.println("Render obstacles");
+			
 		for (Obstacles ob : gWorld.getObstacleList().values()) {
 			ob.render(batch);
 		}
-		System.out.println("Render items");
+		
 		for (ItemSprite iS : gWorld.getItemList().values()) {
 			iS.render(batch);
 		}
-		System.out.println("Render weapons");
+
 		for (WeaponSprite wS : gWorld.getWeaponList().values()) {
 			wS.render(batch);
 		}
-		System.out.println("Render weapon part");
 		for (WeaponPartSprite wPS : gWorld.getWeaponPartList().values()) {
 			wPS.render(batch);
 		}
-		System.out.println("Render traps");
 		for (Trap trap : gWorld.getTrapList().values()) {
 			trap.render(batch);
 		}
-		System.out.println("End batch");
 		batch.end();
 		
-		System.out.println("Render player");
 		if (gWorld.getPlayer().isAlive()) {
 			gWorld.getPlayer().render(cam, batch);
 		}

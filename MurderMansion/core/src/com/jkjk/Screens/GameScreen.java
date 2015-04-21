@@ -87,7 +87,7 @@ public class GameScreen implements Screen {
 				System.out.println("Disconnected?");
 			}
 		}
-//		System.out.println("Server updated!");
+		System.out.println("Server updated!");
 	}
 
 	@Override

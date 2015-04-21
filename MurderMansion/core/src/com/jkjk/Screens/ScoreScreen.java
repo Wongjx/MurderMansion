@@ -256,13 +256,7 @@ public class ScoreScreen implements Screen {
 						game.mMultiplayerSession.getServer().endSession();
 						// System.out.println("Ended server session.");
 					}
-
-					if (game.mMultiplayerSession.getClient() != null) {
-						game.mMultiplayerSession.getClient().endSession();
-					} else {
-						// TODO HALP HALP HALP CLIENT NOT SUPPOSED TO BE NULL
-						System.out.println("CLIENT IS NULL?!!!?");
-					}
+					game.mMultiplayerSession.getClient().endSession();
 
 					game.actionResolver.leaveRoom();
 

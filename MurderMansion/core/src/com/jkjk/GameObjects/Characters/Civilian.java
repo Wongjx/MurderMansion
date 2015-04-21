@@ -5,7 +5,7 @@ import box2dLight.Light;
 import box2dLight.PointLight;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.audio.Sound;
+import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
@@ -38,10 +38,8 @@ public class Civilian extends GameCharacter {
 
 	private volatile boolean seen;
 
-	private Sound walkSound;
-	private Sound runSound;
-	private long walkSoundId;
-	private long runSoundId;
+	private Music walkSound;
+	private Music runSound;
 
 	// private Animation civDropDisarmAnimation; //not yet implemented
 
@@ -118,19 +116,9 @@ public class Civilian extends GameCharacter {
 		}
 		body.setUserData(civWalkAnimation);
 		
-		System.out.println("Start to load sound");
+//		System.out.println("Start to load sound");
 		walkSound = AssetLoader.walkSound;
-		System.out.println("Start 1");
-		walkSoundId = walkSound.play();
-		System.out.println("Start 2");
-		walkSound.pause();
-		System.out.println("Start 3");
 		runSound = AssetLoader.runSound;
-		System.out.println("Start 4");
-		runSoundId = runSound.play();
-		System.out.println("Start 5");
-		runSound.pause();
-		System.out.println("Finish loading sound");
 
 
 	}
@@ -140,91 +128,78 @@ public class Civilian extends GameCharacter {
 
 		super.render(cam, batch);
 		
-		System.out.println("Get seen");
 		seen = gWorld.getPlayer().lightContains(body.getPosition().x, body.getPosition().y);
-		System.out.println("Get current animation");
 		currentAnimation = (Animation) body.getUserData();
 
 		if (seen) {
-			System.out.println("Add run time");
 			runTime += Gdx.graphics.getRawDeltaTime();
-			System.out.println("batch begin");
 			batch.begin();
 			if (currentAnimation == civPanicAnimation) {
 				if (((Panic) ability).getStatus() == false) {
-					System.out.println("Set walk animation");
 					body.setUserData(civWalkAnimation);
 				}
 				if (!body.getLinearVelocity().isZero() && checkMovable()) {
-					if (isPlayer()) {
-						System.out.println("Pause walk");
-						walkSound.pause();
-						System.out.println("Resume run");
-						runSound.resume();
-						System.out.println("Up volume of run");
-						runSound.setVolume(3, AssetLoader.VOLUME);
+
+					if (walkSound.isPlaying() && isPlayer()) {
+						walkSound.stop();
 					}
-					System.out.println("Draw batch");
+					if (!runSound.isPlaying() && isPlayer()) {
+						runSound.play();
+
+					}
 					batch.draw(currentAnimation.getKeyFrame(runTime * 5, true), body.getPosition().x - 9,
 							body.getPosition().y - 9, 9, 9, 18, 18, 6f, 6f,
 							(float) (body.getAngle() * 180 / Math.PI) - 90);
 
 				} else {
-					if (isPlayer()) {
-						System.out.println("Pause run sound");
-						runSound.pause();
+
+					if (runSound.isPlaying() && isPlayer()) {
+						runSound.stop();
 					}
-					System.out.println("Draw batch civ panic");
 					batch.draw(civPanicRest, body.getPosition().x - 9, body.getPosition().y - 9, 9, 9, 18,
 							18, 6f, 6f, (float) (body.getAngle() * 180 / Math.PI) - 90);
 				}
 			} else if (currentAnimation == civWalkAnimation) {
 				if (!body.getLinearVelocity().isZero() && checkMovable()) {
-					if (isPlayer()) {
-						System.out.println("Resume walksound");
-						walkSound.resume();
-						walkSound.setVolume(2, AssetLoader.VOLUME);
-						System.out.println("Pause run sound");
-						runSound.pause();
+
+					if (!walkSound.isPlaying() && isPlayer()) {
+						walkSound.play();
 					}
-					System.out.println("Draw batch of current animation");
+					if (runSound.isPlaying() && isPlayer()) {
+						runSound.stop();
+
+					}
 					batch.draw(currentAnimation.getKeyFrame(runTime * 4, true), body.getPosition().x - 9,
 							body.getPosition().y - 9, 9, 9, 18, 18, 6f, 6f,
 							(float) (body.getAngle() * 180 / Math.PI) - 90);
 
 				} else {
-					if (isPlayer()) {
-						System.out.println("Pause walk sound");
-						walkSound.pause();
+
+					if (walkSound.isPlaying() && isPlayer()) {
+						walkSound.stop();
+
 					}
 					System.out.println("Draw batch civ rest");
 					batch.draw(civRest, body.getPosition().x - 9, body.getPosition().y - 9, 9, 9, 18, 18, 6f,
 							6f, (float) (body.getAngle() * 180 / Math.PI) - 90);
 				}
 			} else {
-				System.out.println("Else 1");
 				animationRunTime += Gdx.graphics.getRawDeltaTime();
 				if (currentAnimation.isAnimationFinished(animationRunTime)) {
-					System.out.println("Else 2");
 					animationRunTime = 0;
 					body.setUserData(civWalkAnimation);
 				} else {
-					System.out.println("Else 3");
 					body.setLinearVelocity(0, 0);
 					body.setAngularVelocity(0);
-					System.out.println("Else 4");
 					batch.draw(currentAnimation.getKeyFrame(animationRunTime, true),
 							body.getPosition().x - 9, body.getPosition().y - 9, 9, 9, 18, 18, 6f, 6f,
 							(float) (body.getAngle() * 180 / Math.PI) - 90);
 				}
 			}
-			System.out.println("Else 5");
 			batch.end();
 		} else {
 			if (!currentAnimation.isAnimationFinished(animationRunTime)) {
-				System.out.println("Else 6");
 				animationRunTime = 0;
-				System.out.println("Else 7");
 				body.setUserData(civWalkAnimation);
 			}
 		}
