@@ -72,7 +72,7 @@ public class MMClient {
 	private int murdererId;
 	private ArrayList<GameCharacter> playerList;
 
-	private final long UPDATES_PER_SEC = 30;
+	private final long UPDATES_PER_SEC = 10;
 	private long lastUpdated;
 
 	private final ConcurrentHashMap<String, Integer> playerIsAlive; // If 1 ->true; If 0 -> false;
