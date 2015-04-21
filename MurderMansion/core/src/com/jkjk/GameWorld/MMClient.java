@@ -241,12 +241,11 @@ public class MMClient {
 				}
 			}
 		}
-		
+
 		System.out.println("Try to init players.");
 		initPlayers();
 		System.out.println("Player initialised.");
 		createObstacles();
-
 
 		// Get participant ids from server
 		if ((message = clientInput.readLine()).equals("clientNames")) {
@@ -258,7 +257,6 @@ public class MMClient {
 				}
 			}
 		}
-		
 
 		// Create and start extra thread that reads any incoming messages
 		Thread thread = new clientListener(clientInput, this);
@@ -294,7 +292,7 @@ public class MMClient {
 
 	private void initPlayers() {
 		System.out.println("Number of players " + numOfPlayers);
-//		System.out.println("Player list size " + playerList.size());
+		// System.out.println("Player list size " + playerList.size());
 		for (int i = 0; i < numOfPlayers; i++) {
 			playerIsAlive.put("Player " + i, 1);
 			if (i == id) {
@@ -328,7 +326,7 @@ public class MMClient {
 				}
 			}
 		}
-		System.out.println("Init players end" );
+		System.out.println("Init players end");
 	}
 
 	public GameCharacter createTutorialDummy() {
@@ -437,7 +435,7 @@ public class MMClient {
 		if (!trapSpawnQueue.isEmpty()) {
 			gWorld.createTrap(trapSpawnQueue.poll());
 		}
-		if (!trapConsumeQueue.isEmpty()){
+		if (!trapConsumeQueue.isEmpty()) {
 			consumeTraps(trapConsumeQueue.poll());
 		}
 		if (!itemConsumeQueue.isEmpty()) {
@@ -474,15 +472,23 @@ public class MMClient {
 	}
 
 	public void consumeItems(Vector2 position) {
-		gWorld.getItemList().get(position).getBody().setActive(false);
-		gWorld.getItemList().get(position).getBody().setTransform(0, 0, 0);
-		gWorld.getItemList().remove(position);
+		try {
+			gWorld.getItemList().get(position).getBody().setActive(false);
+			gWorld.getItemList().get(position).getBody().setTransform(0, 0, 0);
+			gWorld.getItemList().remove(position);
+		} catch (Exception e) {
+
+		}
 	}
 
 	public void consumeWeapons(Vector2 position) {
-		gWorld.getWeaponList().get(position).getBody().setActive(false);
-		gWorld.getWeaponList().get(position).getBody().setTransform(0, 0, 0);
-		gWorld.getWeaponList().remove(position);
+		try {
+			gWorld.getWeaponList().get(position).getBody().setActive(false);
+			gWorld.getWeaponList().get(position).getBody().setTransform(0, 0, 0);
+			gWorld.getWeaponList().remove(position);
+		} catch (Exception e) {
+
+		}
 	}
 
 	public void consumeWeaponParts(Vector2 position) {
@@ -490,12 +496,12 @@ public class MMClient {
 		gWorld.getWeaponPartList().get(position).getBody().setTransform(0, 0, 0);
 		gWorld.getWeaponPartList().remove(position);
 	}
-	
-	public void consumeTraps(Vector2 position){
+
+	public void consumeTraps(Vector2 position) {
 		gWorld.getTrapList().get(position).getBody().setActive(false);
 		gWorld.getTrapList().get(position).getBody().setTransform(0, 0, 0);
 		gWorld.getTrapList().remove(position);
-		
+
 	}
 
 	public void lightningStrike() {

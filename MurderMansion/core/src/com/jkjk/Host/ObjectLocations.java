@@ -46,8 +46,10 @@ public class ObjectLocations implements Subject {
 	// Visible consume methods for objects
 	public void consumeItem(Location location, int origin) throws InterruptedException {
 		System.out.println("ObjectLocations: Item Consumed");
-		itemLocations.consume(location);
-		itemSpawner.restore(location);
+		if (weaponLocations.getBuffer().containsKey(location.get()[0] * location.get()[1])) {
+			itemLocations.consume(location);
+			itemSpawner.restore(location);
+		}
 		message = "item_" + origin + "_con_" + Float.toString(location.get()[0]) + "_"
 				+ Float.toString(location.get()[1]);
 		updateAll(origin);
@@ -55,8 +57,10 @@ public class ObjectLocations implements Subject {
 
 	public void consumeWeapon(Location location, int origin) {
 		System.out.println("ObjectLocations: Weapon Consumed");
-		weaponLocations.consume(location);
-		weaponSpawner.restore(location);
+		if (weaponLocations.getBuffer().containsKey(location.get()[0] * location.get()[1])) {
+			weaponLocations.consume(location);
+			weaponSpawner.restore(location);
+		}
 		message = "weapon_" + origin + "_con_" + Float.toString(location.get()[0]) + "_"
 				+ Float.toString(location.get()[1]);
 		updateAll(origin);

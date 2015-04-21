@@ -73,11 +73,11 @@ public class GameScreen implements Screen {
 		runTime += delta;
 //		System.out.println("Run time add");
 		gWorld.update(delta, client);
-		System.out.println("Game world update");
+//		System.out.println("Game world update");
 		renderer.render(delta, runTime, client);
-		System.out.println("Game renderer update");
+//		System.out.println("Game renderer update");
 		hudRenderer.render(delta, client.getIsGameStart());
-		System.out.println("HUD renderer update");
+//		System.out.println("HUD renderer update");
 		// if phone is designated server
 		if (info.isServer) {
 			try {
