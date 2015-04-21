@@ -38,8 +38,8 @@ public class Civilian extends GameCharacter {
 
 	private volatile boolean seen;
 
-	private Music walkSound;
-	private Music runSound;
+//	private Music walkSound;
+//	private Music runSound;
 
 	// private Animation civDropDisarmAnimation; //not yet implemented
 
@@ -116,8 +116,8 @@ public class Civilian extends GameCharacter {
 		}
 		body.setUserData(civWalkAnimation);
 
-		walkSound = AssetLoader.walkSound;
-		runSound = AssetLoader.runSound;
+//		walkSound = AssetLoader.walkSound;
+//		runSound = AssetLoader.runSound;
 
 	}
 
@@ -137,39 +137,39 @@ public class Civilian extends GameCharacter {
 					body.setUserData(civWalkAnimation);
 				}
 				if (!body.getLinearVelocity().isZero() && checkMovable()) {
-					if (walkSound.isPlaying() && isPlayer()) {
-						walkSound.stop();
-					}
-					if (!runSound.isPlaying() && isPlayer()) {
-						runSound.play();
-					}
+//					if (walkSound.isPlaying() && isPlayer()) {
+//						walkSound.stop();
+//					}
+//					if (!runSound.isPlaying() && isPlayer()) {
+//						runSound.play();
+//					}
 					batch.draw(currentAnimation.getKeyFrame(runTime * 5, true), body.getPosition().x - 9,
 							body.getPosition().y - 9, 9, 9, 18, 18, 6f, 6f,
 							(float) (body.getAngle() * 180 / Math.PI) - 90);
 
 				} else {
-					if (runSound.isPlaying() && isPlayer()) {
-						runSound.stop();
-					}
+//					if (runSound.isPlaying() && isPlayer()) {
+//						runSound.stop();
+//					}
 					batch.draw(civPanicRest, body.getPosition().x - 9, body.getPosition().y - 9, 9, 9, 18,
 							18, 6f, 6f, (float) (body.getAngle() * 180 / Math.PI) - 90);
 				}
 			} else if (currentAnimation == civWalkAnimation) {
 				if (!body.getLinearVelocity().isZero() && checkMovable()) {
-					if (!walkSound.isPlaying() && isPlayer()) {
-						walkSound.play();
-					}
-					if (runSound.isPlaying() && isPlayer()) {
-						runSound.stop();
-					}
+//					if (!walkSound.isPlaying() && isPlayer()) {
+//						walkSound.play();
+//					}
+//					if (runSound.isPlaying() && isPlayer()) {
+//						runSound.stop();
+//					}
 					batch.draw(currentAnimation.getKeyFrame(runTime * 4, true), body.getPosition().x - 9,
 							body.getPosition().y - 9, 9, 9, 18, 18, 6f, 6f,
 							(float) (body.getAngle() * 180 / Math.PI) - 90);
 
 				} else {
-					if (walkSound.isPlaying() && isPlayer()) {
-						walkSound.stop();
-					}
+//					if (walkSound.isPlaying() && isPlayer()) {
+//						walkSound.stop();
+//					}
 					batch.draw(civRest, body.getPosition().x - 9, body.getPosition().y - 9, 9, 9, 18, 18, 6f,
 							6f, (float) (body.getAngle() * 180 / Math.PI) - 90);
 				}

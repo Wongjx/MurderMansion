@@ -34,7 +34,7 @@ public class Murderer extends GameCharacter {
 
 	private volatile boolean seen;
 
-	private Music walkSound;
+//	private Music walkSound;
 
 	Murderer(int id, GameWorld gWorld, boolean isPlayer) {
 		super("Murderer", id, gWorld, isPlayer);
@@ -101,7 +101,7 @@ public class Murderer extends GameCharacter {
 		}
 		body.setUserData(civWalkAnimation);
 
-		walkSound = AssetLoader.walkSound;
+//		walkSound = AssetLoader.walkSound;
 	}
 
 	@Override
@@ -118,9 +118,9 @@ public class Murderer extends GameCharacter {
 
 			if (currentAnimation == AssetLoader.murAnimation || currentAnimation == civWalkAnimation) {
 				if (!body.getLinearVelocity().isZero() && checkMovable()) {
-					if (!walkSound.isPlaying() && isPlayer()) {
-						walkSound.play();
-					}
+//					if (!walkSound.isPlaying() && isPlayer()) {
+//						walkSound.play();
+//					}
 					if (isDisguised()) {
 						batch.draw(civWalkAnimation.getKeyFrame(runTime * 4, true), body.getPosition().x - 9,
 								body.getPosition().y - 9, 9, 9, 18, 18, 6f, 6f,
@@ -131,9 +131,9 @@ public class Murderer extends GameCharacter {
 								(float) (body.getAngle() * 180 / Math.PI) - 90);
 					}
 				} else {
-					if (walkSound.isPlaying() && isPlayer()) {
-						walkSound.stop();
-					}
+//					if (walkSound.isPlaying() && isPlayer()) {
+//						walkSound.stop();
+//					}
 					if (isDisguised()) {
 						batch.draw(civRest, body.getPosition().x - 9, body.getPosition().y - 9, 9, 9, 18, 18,
 								6f, 6f, (float) (body.getAngle() * 180 / Math.PI) - 90);
