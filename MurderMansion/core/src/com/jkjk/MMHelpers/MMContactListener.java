@@ -46,7 +46,7 @@ public class MMContactListener implements ContactListener {
 		fbUD = fb.getUserData();
 
 		if (faUD != null && fbUD != null) {
-//			System.out.println("Begin contact: fa: " + faUD + ", fb: " + fbUD);
+			// System.out.println("Begin contact: fa: " + faUD + ", fb: " + fbUD);
 			if (faUD.equals("player") || fbUD.equals("player")) {
 				if (faUD.equals("item") && gWorld.getPlayer().getItem() == null) {
 					itemsToRemove.add(fa.getBody());
@@ -129,6 +129,39 @@ public class MMContactListener implements ContactListener {
 					}
 				} else if (faUD.equals("saferegion") || fbUD.equals("saferegion")) {
 					gWorld.setInSafeArea(true);
+				}
+			} else if (faUD.equals("dummy") || fbUD.equals("dummy")) {
+				if (faUD.equals("bat") || fbUD.equals("bat")) {
+					if (!gWorld.getDummy().getType().equals("Ghost")) {
+						gWorld.getDummy().stun();
+						AssetLoader.batHitSound.play(AssetLoader.VOLUME);
+					}
+				} else if (faUD.equals("trap")) {
+					if (gWorld.getDummy().getType().equals("Civilian")) {
+						gWorld.getDummy().die();
+						trapToRemove.add(fa.getBody());
+						AssetLoader.trappedSound.play(AssetLoader.VOLUME);
+					}
+				} else if (fbUD.equals("trap")) {
+					if (gWorld.getDummy().getType().equals("Civilian")) {
+						gWorld.getDummy().die();
+						trapToRemove.add(fb.getBody());
+						AssetLoader.trappedSound.play(AssetLoader.VOLUME);
+					}
+				} else if (faUD.equals("knife") || fbUD.equals("knife")) {
+					if (!gWorld.getDummy().getType().equals("Ghost")) {
+						gWorld.getDummy().die();
+						AssetLoader.knifeStabSound.play(AssetLoader.VOLUME);
+					}
+				} else if (faUD.equals("shotgun") || fbUD.equals("shotgun")) {
+					if (!gWorld.getDummy().getType().equals("Ghost")) {
+						gWorld.getDummy().die();
+						AssetLoader.shotgunBlastSound.play(AssetLoader.VOLUME);
+					}
+				} else if (faUD.equals("haunt") || fbUD.equals("haunt")) {
+					if (!gWorld.getDummy().getType().equals("Ghost")) {
+						gWorld.getDummy().haunt(true);
+					}
 				}
 			} else {
 

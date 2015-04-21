@@ -616,6 +616,7 @@ public class HudRenderer {
 					stage.addActor(getEmptySlot());
 					stage.addActor(getSettingsButton());
 					abilityCheck();
+					client.createTutorialDummy();
 				}
 				stage.addActor(getTrap());
 			} else {
@@ -683,6 +684,7 @@ public class HudRenderer {
 						stage.addActor(getEmptySlot());
 						stage.addActor(getSettingsButton());
 						abilityCheck();
+						client.createTutorialDummy();
 					}
 				}
 				stage.addActor(getBat());
@@ -698,6 +700,7 @@ public class HudRenderer {
 					stage.addActor(getEmptySlot());
 					stage.addActor(getSettingsButton());
 					abilityCheck();
+					client.createTutorialDummy();
 				}
 				stage.addActor(getKnife());
 			}

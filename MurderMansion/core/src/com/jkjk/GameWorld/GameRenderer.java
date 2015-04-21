@@ -97,7 +97,7 @@ public class GameRenderer {
 		for (Trap trap : gWorld.getTrapList().values()) {
 			trap.render(batch);
 		}
-		
+
 		batch.end();
 		
 		if (gWorld.getPlayer().isAlive()) {
@@ -106,7 +106,7 @@ public class GameRenderer {
 
 		cam.update(); // Update cam
 
-//		b2dr.render(gWorld.getWorld(), cam.combined); // Renders box2d world
+		// b2dr.render(gWorld.getWorld(), cam.combined); // Renders box2d world
 
 	}
 

@@ -81,6 +81,7 @@ public class MMClient {
 	private ObstaclesHandler obstaclesHandler;
 
 	private boolean tutorial;
+	private GameCharacter dummy;
 
 	/**
 	 * Constructs the multiplayer world, including creation of opponents.
@@ -277,6 +278,18 @@ public class MMClient {
 		}
 	}
 
+	public GameCharacter createTutorialDummy() {
+		playerType.put("Player " + 100, 1);
+		dummy = gameCharFac.createCharacter("Civilian", 100, gWorld, false);
+		dummy.getBody().setType(BodyType.KinematicBody);
+		dummy.getBody().getFixtureList().get(0).setUserData("dummy");
+		dummy.spawn(gWorld.getPlayer().getBody().getPosition().x - 60, gWorld.getPlayer().getBody()
+				.getPosition().y, 0);
+		playerList.add(dummy);
+		gWorld.setDummy(dummy);
+		return dummy;
+	}
+
 	/**
 	 * If 0 = DEAD; If 1 = ALIVE;
 	 */
@@ -315,8 +328,27 @@ public class MMClient {
 	 */
 	public void update() {
 		for (GameCharacter gc : playerList) {
-			if (gc.isAlive() && !gc.isPlayer())
+			if (gc.isAlive() && !gc.isPlayer()) {
 				gc.update();
+			}
+			if (tutorial){
+				if (!gc.isAlive() && !gc.isPlayer()){
+					System.out.println("DUMMY IS DYING");
+					playerList.remove(1);
+					currentPositionX = dummy.getBody().getPosition().x;
+					currentPositionY = dummy.getBody().getPosition().y;
+
+					gWorld.getWorld().destroyBody(dummy.getBody());
+					dummy = gameCharFac.createCharacter("Ghost", dummy.getId(), gWorld, false);
+					dummy.set_deathPositionX(currentPositionX);
+					dummy.set_deathPositionY(currentPositionY);
+					dummy.getBody().getFixtureList().get(0).setUserData("dummy");
+					dummy.getBody().setType(BodyType.KinematicBody);
+					dummy.spawn(0, 0, 0);
+					gWorld.setDummy(dummy);
+					playerList.add(dummy);
+				}
+			}
 		}
 		updatePlayerLocation();
 		updatePlayerIsinSafeArea();

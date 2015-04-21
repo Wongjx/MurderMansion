@@ -10,6 +10,7 @@ import box2dLight.RayHandler;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.World;
+import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
 import com.badlogic.gdx.utils.Array;
 import com.jkjk.GameObjects.Duration;
 import com.jkjk.GameObjects.Obstacles;
@@ -78,6 +79,7 @@ public class GameWorld {
 
 	private ToastMessage TM;
 	private boolean tutorial;
+	private GameCharacter dummy;
 
 	/**
 	 * Constructs the Box2D world, adding Box2D objects such as players, items and weapons. Attaches the
@@ -131,9 +133,9 @@ public class GameWorld {
 
 		random = new Random();
 
-		if (tutorial)
+		if (tutorial) {
 			TM = new ToastMessage(305, 15000);
-		else
+		} else
 			TM = new ToastMessage(305, 5000);
 	}
 
@@ -549,6 +551,18 @@ public class GameWorld {
 
 	public ToastMessage getTM() {
 		return TM;
+	}
+
+	public boolean isTutorial() {
+		return tutorial;
+	}
+	
+	public void setDummy(GameCharacter dummy){
+		this.dummy = dummy;
+	}
+	
+	public GameCharacter getDummy(){
+		return dummy;
 	}
 
 	public void dispose() {
