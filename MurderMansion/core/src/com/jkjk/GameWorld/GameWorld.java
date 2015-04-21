@@ -205,7 +205,7 @@ public class GameWorld {
 	public void createTutorialTrap() {
 		Vector2 location = new Vector2(player.getBody().getPosition().x - 40,
 				player.getBody().getPosition().y);
-		createTrap(location.x, location.y);
+		createTrap(new float[] { location.x, location.y });
 		player.getBody().setTransform(player.getBody().getPosition(), 3.1427f);
 	}
 
@@ -417,10 +417,10 @@ public class GameWorld {
 		AssetLoader.lightningSound.play(AssetLoader.VOLUME);
 	}
 
-	public void createTrap(float x, float y) {
+	public void createTrap(float[] loc) {
 		trapToCreate = (Trap) itemFac.createItem("Trap", this, null, null);
-		trapList.put(new Vector2(x, y), trapToCreate);
-		trapToCreate.spawn(x, y, 0);
+		trapList.put(new Vector2(loc[0], loc[1]), trapToCreate);
+		trapToCreate.spawn(loc[0], loc[1], 0);
 	}
 
 	/**
@@ -556,12 +556,12 @@ public class GameWorld {
 	public boolean isTutorial() {
 		return tutorial;
 	}
-	
-	public void setDummy(GameCharacter dummy){
+
+	public void setDummy(GameCharacter dummy) {
 		this.dummy = dummy;
 	}
-	
-	public GameCharacter getDummy(){
+
+	public GameCharacter getDummy() {
 		return dummy;
 	}
 

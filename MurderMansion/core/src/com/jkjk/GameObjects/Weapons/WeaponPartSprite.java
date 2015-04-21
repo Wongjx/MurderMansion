@@ -43,6 +43,7 @@ public class WeaponPartSprite {
 		fdef.filter.categoryBits = 5;
 		fdef.filter.maskBits = 1;
 		body.createFixture(fdef).setUserData("weapon part");
+		body.setActive(false);
 		
 		shotgunPartSpriteAnimation = AssetLoader.shotgunPartSpriteAnimation;
 		animationRunTime = 0;
