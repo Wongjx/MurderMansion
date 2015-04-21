@@ -100,15 +100,16 @@ public class MMClient {
 	private ConcurrentLinkedQueue<float[]> weaponSpawnQueue;
 	private ConcurrentLinkedQueue<float[]> weaponPartSpawnQueue;
 	private ConcurrentLinkedQueue<float[]> trapSpawnQueue;
+	private ConcurrentLinkedQueue<Vector2> trapConsumeQueue;
 	private ConcurrentLinkedQueue<Vector2> itemConsumeQueue;
 	private ConcurrentLinkedQueue<Vector2> weaponConsumeQueue;
 	private ConcurrentLinkedQueue<Vector2> weaponPartConsumeQueue;
 	private ConcurrentLinkedQueue<Vector2> obstacleConsumeQueue;
 	private ConcurrentLinkedQueue<Boolean> lightningQueue;
 	private ConcurrentLinkedQueue<Integer> stunQueue;
-	private ConcurrentLinkedQueue<Integer> itemQueue;
-	private ConcurrentLinkedQueue<Integer> weaponQueue;
-	private ConcurrentLinkedQueue<Integer> abilityQueue;
+	private ConcurrentLinkedQueue<Integer> itemUseQueue;
+	private ConcurrentLinkedQueue<Integer> weaponUseQueue;
+	private ConcurrentLinkedQueue<Integer> abilityUseQueue;
 
 	/**
 	 * Constructs the multiplayer world, including creation of opponents.
@@ -159,15 +160,16 @@ public class MMClient {
 		weaponSpawnQueue = new ConcurrentLinkedQueue<float[]>();
 		weaponPartSpawnQueue = new ConcurrentLinkedQueue<float[]>();
 		trapSpawnQueue = new ConcurrentLinkedQueue<float[]>();
+		trapConsumeQueue = new ConcurrentLinkedQueue<Vector2>();
 		itemConsumeQueue = new ConcurrentLinkedQueue<Vector2>();
 		weaponConsumeQueue = new ConcurrentLinkedQueue<Vector2>();
 		weaponPartConsumeQueue = new ConcurrentLinkedQueue<Vector2>();
 		obstacleConsumeQueue = new ConcurrentLinkedQueue<Vector2>();
 		lightningQueue = new ConcurrentLinkedQueue<Boolean>();
 		stunQueue = new ConcurrentLinkedQueue<Integer>();
-		itemQueue = new ConcurrentLinkedQueue<Integer>();
-		weaponQueue = new ConcurrentLinkedQueue<Integer>();
-		abilityQueue = new ConcurrentLinkedQueue<Integer>();
+		itemUseQueue = new ConcurrentLinkedQueue<Integer>();
+		weaponUseQueue = new ConcurrentLinkedQueue<Integer>();
+		abilityUseQueue = new ConcurrentLinkedQueue<Integer>();
 
 		String message;
 		// Receive item locations
@@ -435,6 +437,9 @@ public class MMClient {
 		if (!trapSpawnQueue.isEmpty()) {
 			gWorld.createTrap(trapSpawnQueue.poll());
 		}
+		if (!trapConsumeQueue.isEmpty()){
+			consumeTraps(trapConsumeQueue.poll());
+		}
 		if (!itemConsumeQueue.isEmpty()) {
 			consumeItems(itemConsumeQueue.poll());
 		}
@@ -454,14 +459,14 @@ public class MMClient {
 		if (!stunQueue.isEmpty()) {
 			playerList.get(stunQueue.poll()).stun();
 		}
-		if (!itemQueue.isEmpty()) {
-			itemUsed(itemQueue.poll());
+		if (!itemUseQueue.isEmpty()) {
+			itemUsed(itemUseQueue.poll());
 		}
-		if (!weaponQueue.isEmpty()) {
-			weaponUsed(weaponQueue.poll());
+		if (!weaponUseQueue.isEmpty()) {
+			weaponUsed(weaponUseQueue.poll());
 		}
-		if (!abilityQueue.isEmpty()) {
-			abilityUsed(abilityQueue.poll());
+		if (!abilityUseQueue.isEmpty()) {
+			abilityUsed(abilityUseQueue.poll());
 		}
 
 		updatePlayerLocation();
@@ -484,6 +489,13 @@ public class MMClient {
 		gWorld.getWeaponPartList().get(position).getBody().setActive(false);
 		gWorld.getWeaponPartList().get(position).getBody().setTransform(0, 0, 0);
 		gWorld.getWeaponPartList().remove(position);
+	}
+	
+	public void consumeTraps(Vector2 position){
+		gWorld.getTrapList().get(position).getBody().setActive(false);
+		gWorld.getTrapList().get(position).getBody().setTransform(0, 0, 0);
+		gWorld.getTrapList().remove(position);
+		
 	}
 
 	public void lightningStrike() {
@@ -908,11 +920,11 @@ public class MMClient {
 		} else if (msg[0].equals("stun")) {
 			stunQueue.offer(Integer.parseInt(msg[2]));
 		} else if (msg[0].equals("useItem")) {
-			itemQueue.offer(Integer.parseInt(msg[1]));
+			itemUseQueue.offer(Integer.parseInt(msg[1]));
 		} else if (msg[0].equals("useWeapon")) {
-			weaponQueue.offer(Integer.parseInt(msg[1]));
+			weaponUseQueue.offer(Integer.parseInt(msg[1]));
 		} else if (msg[0].equals("useAbility")) {
-			abilityQueue.offer(Integer.parseInt(msg[1]));
+			abilityUseQueue.offer(Integer.parseInt(msg[1]));
 		} else if (msg[0].equals("weaponPartCollected")) {
 			gWorld.addNumOfWeaponPartsCollected();
 		} else if (msg[0].equals("createShotgun")) {
@@ -954,7 +966,7 @@ public class MMClient {
 				System.out.println("Consume trap");
 				Vector2 position = new Vector2(Float.parseFloat(msg[3]), Float.parseFloat(msg[4]));
 				if (gWorld.getTrapList().containsKey(position)) {
-					gWorld.setTrapToRemove(gWorld.getTrapList().get(position).getBody());
+					trapConsumeQueue.offer(position);
 				}
 			} else if (msg[2].equals("pro")) {
 				System.out.println("Produce trap");

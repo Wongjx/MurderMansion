@@ -258,7 +258,7 @@ public class GameWorld {
 		}
 		bodyToAdd = itemsToAdd.poll();
 		if (bodyToAdd != null) {
-			client.produceItemLocation(itemsToAdd.poll());
+			client.produceItemLocation(bodyToAdd);
 		}
 	}
 
@@ -280,7 +280,7 @@ public class GameWorld {
 		}
 		bodyToAdd = weaponsToAdd.poll();
 		if (bodyToAdd != null) {
-			client.produceWeaponLocation(weaponsToAdd.poll());
+			client.produceWeaponLocation(bodyToAdd);
 		}
 	}
 
