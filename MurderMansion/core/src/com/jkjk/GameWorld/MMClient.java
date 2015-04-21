@@ -70,13 +70,13 @@ public class MMClient {
 	private float currentPositionY;
 
 	private int numOfPlayers;
-	private int id;
+	private final int id;
 	private final String mName;
 	private String[] clientNames;
-	private int murdererId;
+	private final int murdererId;
 	private ArrayList<GameCharacter> playerList;
 
-	private final long UPDATES_PER_SEC = 10;
+	private final long UPDATES_PER_SEC = 5;
 	private long lastUpdated;
 
 	private final ConcurrentHashMap<String, Integer> playerIsAlive; // If 1 ->true; If 0 -> false;
@@ -378,7 +378,8 @@ public class MMClient {
 					currentPositionX = playerList.get(gc.getId()).getBody().getPosition().x;
 					currentPositionY = playerList.get(gc.getId()).getBody().getPosition().y;
 
-					gWorld.getWorld().destroyBody(playerList.get(gc.getId()).getBody());
+					playerList.get(gc.getId()).getBody().setActive(false);
+					playerList.get(gc.getId()).getBody().setTransform(0, 0, 0);
 					playerList.set(gc.getId(),
 							gameCharFac.createCharacter("Ghost", gc.getId(), gWorld, false));
 					playerList.get(gc.getId()).spawn(playerPosition.get("Player " + gc.getId())[0],
@@ -393,7 +394,8 @@ public class MMClient {
 					currentPositionX = dummy.getBody().getPosition().x;
 					currentPositionY = dummy.getBody().getPosition().y;
 
-					gWorld.getWorld().destroyBody(dummy.getBody());
+					dummy.getBody().setActive(false);
+					dummy.getBody().setTransform(0, 0, 0);
 					dummy = gameCharFac.createCharacter("Ghost", dummy.getId(), gWorld, false);
 					dummy.set_deathPositionX(currentPositionX);
 					dummy.set_deathPositionY(currentPositionY);
@@ -446,17 +448,20 @@ public class MMClient {
 	}
 
 	public void consumeItems(Vector2 position) {
-		gWorld.getWorld().destroyBody(gWorld.getItemList().get(position).getBody());
+		gWorld.getItemList().get(position).getBody().setActive(false);
+		gWorld.getItemList().get(position).getBody().setTransform(0, 0, 0);
 		gWorld.getItemList().remove(position);
 	}
 
 	public void consumeWeapons(Vector2 position) {
-		gWorld.getWorld().destroyBody(gWorld.getWeaponList().get(position).getBody());
+		gWorld.getWeaponList().get(position).getBody().setActive(false);
+		gWorld.getWeaponList().get(position).getBody().setTransform(0, 0, 0);
 		gWorld.getWeaponList().remove(position);
 	}
 
 	public void consumeWeaponParts(Vector2 position) {
-		gWorld.getWorld().destroyBody(gWorld.getWeaponPartList().get(position).getBody());
+		gWorld.getWeaponPartList().get(position).getBody().setActive(false);
+		gWorld.getWeaponPartList().get(position).getBody().setTransform(0, 0, 0);
 		gWorld.getWeaponPartList().remove(position);
 	}
 
@@ -548,7 +553,8 @@ public class MMClient {
 		selfVelocity = new float[] { selfVelocityX, selfVelocityY };
 		// if angle and position has changed
 		if ((playerPosition.get("Player " + id) != selfPosition)
-				&& (playerAngle.get("Player " + id) != selfAngle)
+				|| (playerAngle.get("Player " + id) != selfAngle)
+
 				|| (playerVelocity.get("Player" + id) != selfVelocity)) {
 			// Update client Hashmap
 			playerPosition.put("Player " + id, selfPosition);

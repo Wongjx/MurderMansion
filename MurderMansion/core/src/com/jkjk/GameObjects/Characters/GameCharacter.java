@@ -1,9 +1,12 @@
 package com.jkjk.GameObjects.Characters;
 
 import java.util.Random;
+import java.util.concurrent.ConcurrentLinkedQueue;
+
 import box2dLight.RayHandler;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.scenes.scene2d.ui.Touchpad;
 import com.jkjk.GameObjects.Duration;
@@ -59,6 +62,14 @@ public abstract class GameCharacter {
 	private long startTime;
 	private long brightTime;
 
+	private ConcurrentLinkedQueue<float[]> positionQueue;
+	private ConcurrentLinkedQueue<Float> angleQueue;
+	private ConcurrentLinkedQueue<float[]> velocityQueue;
+
+	private float[] nextPosition;
+	private Float nextAngle;
+	private float[] nextVelocity;
+
 	GameCharacter(String type, int id, GameWorld gWorld, boolean isPlayer) {
 		this.isPlayer = isPlayer;
 		maxVelocity = 56;
@@ -90,6 +101,14 @@ public abstract class GameCharacter {
 		random = new Random();
 		hauntTime = 0;
 		nextRandomMovement = 0;
+
+		positionQueue = new ConcurrentLinkedQueue<float[]>();
+		angleQueue = new ConcurrentLinkedQueue<Float>();
+		velocityQueue = new ConcurrentLinkedQueue<float[]>();
+
+		nextPosition = new float[2];
+		nextAngle = new Float(0);
+		nextVelocity = new float[2];
 
 	}
 
@@ -251,6 +270,18 @@ public abstract class GameCharacter {
 	}
 
 	public void update() {
+
+		if (!isPlayer) {
+			nextPosition = positionQueue.poll();
+			nextAngle = angleQueue.poll();
+			nextVelocity = velocityQueue.poll();
+
+			if (nextPosition != null && nextAngle != null && nextVelocity != null) {
+				body.setTransform(nextPosition[0], nextPosition[1], nextAngle);
+				body.setLinearVelocity(nextVelocity[0] / 2, nextVelocity[1] / 2);
+			}
+		}
+
 		if (weapon != null) {
 			weapon.update();
 			if (weapon.isCompleted() && weaponUses == 0) {
@@ -370,8 +401,14 @@ public abstract class GameCharacter {
 	}
 
 	public void setPosition(float x, float y, float angle, float velocityX, float velocityY) {
-		body.setTransform(x, y, angle);
-		body.setLinearVelocity(velocityX / 2, velocityY / 2);
+		for (int i = 0; i < positionQueue.size(); i++){
+			positionQueue.poll();
+			angleQueue.poll();
+			velocityQueue.poll();
+		}
+		positionQueue.offer(new float[] { x, y });
+		angleQueue.offer(angle);
+		velocityQueue.offer(new float[] { velocityX, velocityY });
 	}
 
 	public float getAmbientLightValue() {

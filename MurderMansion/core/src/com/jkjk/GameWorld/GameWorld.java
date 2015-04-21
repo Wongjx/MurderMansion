@@ -227,7 +227,8 @@ public class GameWorld {
 		currentAngle = player.getBody().getAngle();
 		ambientLightValue = player.getAmbientLightValue();
 
-		world.destroyBody(player.getBody());
+		player.getBody().setActive(false);
+		player.getBody().setTransform(0, 0, 0);
 		player = gameCharFac.createCharacter("Ghost", player.getId(), this, true);
 		player.set_deathPositionX(currentPositionX);
 		player.set_deathPositionY(currentPositionY);
@@ -247,7 +248,8 @@ public class GameWorld {
 			client.removeItemLocation(bodyToRemove.getPosition());
 			System.out.println("Item removed from client.");
 			itemList.remove(bodyToRemove.getPosition());
-			world.destroyBody(bodyToRemove);
+			bodyToRemove.setActive(false);
+			bodyToRemove.setTransform(0, 0, 0);
 			if (player.getType().equals("Murderer"))
 				player.addItem(itemFac.createItem("Trap", this, client, player));
 			else
@@ -268,7 +270,8 @@ public class GameWorld {
 			// Call MMclient to remove weapon
 			client.removeWeaponLocation(bodyToRemove.getPosition());
 			weaponList.remove(bodyToRemove.getPosition());
-			world.destroyBody(bodyToRemove);
+			bodyToRemove.setActive(false);
+			bodyToRemove.setTransform(0, 0, 0);
 			if (player.getType().equals("Murderer"))
 				player.addWeapon(weaponFac.createWeapon("Knife", this, player));
 			else
@@ -290,7 +293,8 @@ public class GameWorld {
 			// Call MMclient to remove weapon part
 			client.removeWeaponPartLocation(bodyToRemove.getPosition());
 			weaponPartList.remove(bodyToRemove.getPosition());
-			world.destroyBody(bodyToRemove);
+			bodyToRemove.setActive(false);
+			bodyToRemove.setTransform(0, 0, 0);
 			if (player.getType().equals("Civilian")) {
 				client.addWeaponPartCollected();
 			}
@@ -304,7 +308,8 @@ public class GameWorld {
 		bodyToRemove = trapToRemove.poll();
 		if (bodyToRemove != null) {
 			trapList.remove(bodyToRemove.getPosition());
-			world.destroyBody(bodyToRemove);
+			bodyToRemove.setActive(false);
+			bodyToRemove.setTransform(0, 0, 0);
 			client.removeTrapLocation(bodyToRemove.getPosition().x, bodyToRemove.getPosition().y);
 		}
 	}
@@ -364,7 +369,8 @@ public class GameWorld {
 	 *            Vector2 coordinates of the obstacle
 	 */
 	public void removeObstacle(Vector2 location) {
-		world.destroyBody(obstacleList.get(location).getBody());
+		obstacleList.get(location).getBody().setActive(false);
+		obstacleList.get(location).getBody().setTransform(0, 0, 0);
 		obstacleList.remove(location);
 		if (obstacleList.size() == 0) {
 			if (player.getType() == "Civilian")
