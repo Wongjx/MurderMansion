@@ -289,8 +289,8 @@ public class AssetLoader {
 	// SOUNDS
 	public static Music menuMusic;
 	public static Music gameMusic;
-	public static Music walkSound;
-	public static Music runSound;
+	public static Sound walkSound;
+	public static Sound runSound;
 	public static Sound plantTrapSound;
 	public static Sound knifeStabSound;
 	public static Sound batSwingSound;
@@ -812,12 +812,11 @@ public class AssetLoader {
 		musicBox.add(menuMusic = Gdx.audio.newMusic(Gdx.files.internal("bgm/MenuScreen Music.mp3")));
 		menuMusic.setLooping(true);
 		soundBox.add(clickSound = Gdx.audio.newSound(Gdx.files.internal("sfx/click.mp3")));
+		clickSound.setLooping(0, false);
 
-		musicBox.add(walkSound = Gdx.audio.newMusic(Gdx.files.internal("sfx/walking.mp3")));
-		walkSound.setVolume(0.8f);
+		soundBox.add(walkSound = Gdx.audio.newSound(Gdx.files.internal("sfx/walking.mp3")));
 
-		musicBox.add(runSound = Gdx.audio.newMusic(Gdx.files.internal("sfx/running.mp3")));
-		runSound.setVolume(0.8f);
+		soundBox.add(runSound = Gdx.audio.newSound(Gdx.files.internal("sfx/running.mp3")));
 	}
 
 	public static void loadGameSfx() {

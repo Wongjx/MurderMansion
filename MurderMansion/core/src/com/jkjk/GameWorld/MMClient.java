@@ -11,6 +11,7 @@ import java.net.SocketException;
 import java.net.SocketTimeoutException;
 import java.util.ArrayList;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentLinkedQueue;
 
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
@@ -61,6 +62,7 @@ public class MMClient {
 	private float[] selfPosition;
 	private float selfVelocityX;
 	private float selfVelocityY;
+	private float[] selfVelocity;
 
 	private float currentPositionX;
 	private float currentPositionY;
@@ -87,6 +89,11 @@ public class MMClient {
 
 	private boolean tutorial;
 	private GameCharacter dummy;
+
+	private ConcurrentLinkedQueue<float[]> itemSpawnQueue;
+	private ConcurrentLinkedQueue<float[]> weaponSpawnQueue;
+	private ConcurrentLinkedQueue<float[]> weaponPartSpawnQueue;
+	private ConcurrentLinkedQueue<float[]> trapSpawnQueue;
 
 	/**
 	 * Constructs the multiplayer world, including creation of opponents.
@@ -130,6 +137,10 @@ public class MMClient {
 		this.clientNames = new String[numOfPlayers];
 
 		obstaclesHandler = new ObstaclesHandler();
+		itemSpawnQueue = new ConcurrentLinkedQueue<float[]>();
+		weaponSpawnQueue = new ConcurrentLinkedQueue<float[]>();
+		weaponPartSpawnQueue = new ConcurrentLinkedQueue<float[]>();
+		trapSpawnQueue = new ConcurrentLinkedQueue<float[]>();
 
 		String message;
 		// Receive item locations
@@ -140,7 +151,7 @@ public class MMClient {
 				for (String coordinates : locations) {
 					String[] XY = coordinates.split(",");
 					// Spawn item inside game world
-					createItems(Float.parseFloat(XY[0]), Float.parseFloat(XY[1]));
+					createItems(new float[] { Float.parseFloat(XY[0]), Float.parseFloat(XY[1]) });
 				}
 			}
 		}
@@ -152,7 +163,7 @@ public class MMClient {
 				for (String coordinates : locations) {
 					String[] XY = coordinates.split(",");
 					// Spawn weapon in game world
-					createWeapons(Float.parseFloat(XY[0]), Float.parseFloat(XY[1]));
+					createWeapons(new float[] { Float.parseFloat(XY[0]), Float.parseFloat(XY[1]) });
 				}
 			}
 		}
@@ -164,7 +175,7 @@ public class MMClient {
 				for (String coordinates : locations) {
 					String[] XY = coordinates.split(",");
 					// spawn weapon parts in game world
-					createWeaponParts(Float.parseFloat(XY[0]), Float.parseFloat(XY[1]));
+					createWeaponParts(new float[] { Float.parseFloat(XY[0]), Float.parseFloat(XY[1]) });
 				}
 			}
 		}
@@ -233,7 +244,7 @@ public class MMClient {
 			clientSocket = new Socket();
 
 			// Time out in 60 seconds
-			clientSocket.setSoTimeout(5000);
+			clientSocket.setSoTimeout(10000);
 			// Create InetSocketAddress and connect to server socket
 			InetAddress addr = InetAddress.getByName(address);
 			InetSocketAddress iAddress = new InetSocketAddress(addr, port);
@@ -335,6 +346,17 @@ public class MMClient {
 		for (GameCharacter gc : playerList) {
 			if (gc.isAlive() && !gc.isPlayer()) {
 				gc.update();
+			} else if (!gc.isAlive() && !gc.isPlayer()) {
+				currentPositionX = playerList.get(id).getBody().getPosition().x;
+				currentPositionY = playerList.get(id).getBody().getPosition().y;
+
+				gWorld.getWorld().destroyBody(playerList.get(id).getBody());
+				playerList.set(id, gameCharFac.createCharacter("Ghost", id, gWorld, false));
+				playerList.get(id).spawn(playerPosition.get("Player " + id)[0],
+						playerPosition.get("Player " + id)[1], playerAngle.get("Player " + id));
+
+				playerList.get(id).set_deathPositionX(currentPositionX);
+				playerList.get(id).set_deathPositionY(currentPositionY);
 			}
 			if (tutorial) {
 				if (!gc.isAlive() && !gc.isPlayer()) {
@@ -353,6 +375,18 @@ public class MMClient {
 					gWorld.setDummy(dummy);
 					playerList.add(dummy);
 				}
+			}
+			if (!itemSpawnQueue.isEmpty()) {
+				createItems(itemSpawnQueue.poll());
+			}
+			if (!weaponSpawnQueue.isEmpty()) {
+				createWeapons(weaponSpawnQueue.poll());
+			}
+			if (!weaponPartSpawnQueue.isEmpty()) {
+				createWeaponParts(weaponPartSpawnQueue.poll());
+			}
+			if (!trapSpawnQueue.isEmpty()) {
+				gWorld.createTrap(trapSpawnQueue.poll());
 			}
 		}
 		updatePlayerLocation();
@@ -436,9 +470,11 @@ public class MMClient {
 				gWorld.getPlayer().getBody().getPosition().y };
 		selfVelocityX = gWorld.getPlayer().getBody().getLinearVelocity().x;
 		selfVelocityY = gWorld.getPlayer().getBody().getLinearVelocity().y;
+		selfVelocity = new float[] { selfVelocityX, selfVelocityY };
 		// if angle and position has changed
 		if ((playerPosition.get("Player " + id) != selfPosition)
-				&& (playerAngle.get("Player " + id) != selfAngle)) {
+				&& (playerAngle.get("Player " + id) != selfAngle)
+				&& (playerVelocity.get("Player" + id) != selfVelocity)) {
 			// Update client Hashmap
 			playerPosition.put("Player " + id, selfPosition);
 			playerAngle.put("Player " + id, selfAngle);
@@ -557,10 +593,10 @@ public class MMClient {
 	 * @param y
 	 *            Y coordinate on the map.
 	 */
-	private void createItems(float x, float y) {
+	private void createItems(float[] loc) {
 		ItemSprite is = new ItemSprite(gWorld);
-		gWorld.getItemList().put(new Vector2(x, y), is);
-		is.spawn(x, y, 0);
+		gWorld.getItemList().put(new Vector2(loc[0], loc[1]), is);
+		is.spawn(loc[0], loc[1], 0);
 	}
 
 	/**
@@ -571,10 +607,10 @@ public class MMClient {
 	 * @param y
 	 *            Y coordinate on the map.
 	 */
-	private void createWeapons(float x, float y) {
+	private void createWeapons(float[] loc) {
 		WeaponSprite ws = new WeaponSprite(gWorld);
-		gWorld.getWeaponList().put(new Vector2(x, y), ws);
-		ws.spawn(x, y, 0);
+		gWorld.getWeaponList().put(new Vector2(loc[0], loc[1]), ws);
+		ws.spawn(loc[0], loc[1], 0);
 	}
 
 	/**
@@ -585,10 +621,10 @@ public class MMClient {
 	 * @param y
 	 *            Y coordinate on the map.
 	 */
-	private void createWeaponParts(float x, float y) {
+	private void createWeaponParts(float[] loc) {
 		WeaponPartSprite wps = new WeaponPartSprite(gWorld);
-		gWorld.getWeaponPartList().put(new Vector2(x, y), wps);
-		wps.spawn(x, y, 0);
+		gWorld.getWeaponPartList().put(new Vector2(loc[0], loc[1]), wps);
+		wps.spawn(loc[0], loc[1], 0);
 	}
 
 	/**
@@ -716,17 +752,7 @@ public class MMClient {
 	 * @param parseInt
 	 */
 	private void killPlayer(int id) {
-		currentPositionX = playerList.get(id).getBody().getPosition().x;
-		currentPositionY = playerList.get(id).getBody().getPosition().y;
-
 		playerList.get(id).die();
-		gWorld.getWorld().destroyBody(playerList.get(id).getBody());
-		playerList.set(id, gameCharFac.createCharacter("Ghost", id, gWorld, false));
-		playerList.get(id).spawn(playerPosition.get("Player " + id)[0],
-				playerPosition.get("Player " + id)[1], playerAngle.get("Player " + id));
-
-		playerList.get(id).set_deathPositionX(currentPositionX);
-		playerList.get(id).set_deathPositionY(currentPositionY);
 	}
 
 	public void handleMessage(String message) {
@@ -804,7 +830,7 @@ public class MMClient {
 
 			} else if (msg[2].equals("pro")) {
 				System.out.println("Client: Produce item");
-				createItems(Float.parseFloat(msg[3]), Float.parseFloat(msg[4]));
+				itemSpawnQueue.add(new float[] { Float.parseFloat(msg[3]), Float.parseFloat(msg[4]) });
 			}
 		} else if (msg[0].equals("weapon")) {
 			if (msg[2].equals("con")) {
@@ -815,7 +841,7 @@ public class MMClient {
 				gWorld.getWeaponList().remove(position);
 			} else if (msg[2].equals("pro")) {
 				System.out.println("Client: Produce weapon");
-				createWeapons(Float.parseFloat(msg[3]), Float.parseFloat(msg[4]));
+				weaponSpawnQueue.add(new float[] { Float.parseFloat(msg[3]), Float.parseFloat(msg[4]) });
 			}
 		} else if (msg[0].equals("weaponpart")) {
 			if (msg[2].equals("con")) {
@@ -826,7 +852,7 @@ public class MMClient {
 				gWorld.getWeaponPartList().remove(position);
 			} else if (msg[2].equals("pro")) {
 				System.out.println("Client: Produce weaponpart");
-				createWeaponParts(Float.parseFloat(msg[3]), Float.parseFloat(msg[4]));
+				weaponPartSpawnQueue.add(new float[] { Float.parseFloat(msg[3]), Float.parseFloat(msg[4]) });
 			}
 		} else if (msg[0].equals("trap")) {
 			if (msg[2].equals("con")) {
@@ -838,7 +864,7 @@ public class MMClient {
 			} else if (msg[2].equals("pro")) {
 				System.out.println("Produce trap");
 				if (Integer.parseInt(msg[1]) != id) {
-					gWorld.createTrap(Float.parseFloat(msg[3]), Float.parseFloat(msg[4]));
+					trapSpawnQueue.add(new float[] { Float.parseFloat(msg[3]), Float.parseFloat(msg[4]) });
 				}
 			}
 		}

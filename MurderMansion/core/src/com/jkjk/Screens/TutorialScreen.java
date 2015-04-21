@@ -62,7 +62,7 @@ public class TutorialScreen implements Screen {
 		backButton.setPosition(20, 150);
 		nextButton = new Image(AssetLoader.nextButton);
 		nextButton.setPosition(550, 150);
-		
+
 		civButton.addListener(new ClickListener() {
 			@Override
 			public void clicked(InputEvent event, float x, float y) {
@@ -82,8 +82,8 @@ public class TutorialScreen implements Screen {
 				}
 				AssetLoader.loadGameSfx();
 				System.out.println("Setting screen to new game screen.");
-				((Game) Gdx.app.getApplicationListener()).setScreen(new GameScreen(game, gameWidth, gameHeight,
-						gWorld, renderer, true));
+				((Game) Gdx.app.getApplicationListener()).setScreen(new GameScreen(game, gameWidth,
+						gameHeight, gWorld, renderer, true));
 			}
 
 		});
@@ -107,123 +107,104 @@ public class TutorialScreen implements Screen {
 				}
 				AssetLoader.loadGameSfx();
 				System.out.println("Setting screen to new game screen.");
-				((Game) Gdx.app.getApplicationListener()).setScreen(new GameScreen(game, gameWidth, gameHeight,
-						gWorld, renderer, true));
+				((Game) Gdx.app.getApplicationListener()).setScreen(new GameScreen(game, gameWidth,
+						gameHeight, gWorld, renderer, true));
 			}
 
 		});
 
-//		civButton.addListener(new ClickListener() {
-//			@Override
-//			public void clicked(InputEvent event, float x, float y) {
-//				stage.clear();
-//				stage.addActor(civTut);
-//				stage.addActor(murButtonDown);
-//				stage.addActor(backButton);
-//				stage.addActor(nextButton);
-//			}
-//
-//		});
-//
-//		murButton.addListener(new ClickListener() {
-//			@Override
-//			public void clicked(InputEvent event, float x, float y) {
-//				stage.clear();
-//				stage.addActor(murTut);
-//				stage.addActor(civButtonDown);
-//				stage.addActor(backButton);
-//				stage.addActor(nextButton);
-//			}
-//
-//		});
-//
-//		civButtonDown.addListener(new ClickListener() {
-//			@Override
-//			public void clicked(InputEvent event, float x, float y) {
-//				stage.clear();
-//				stage.addActor(civTut);
-//				stage.addActor(murButtonDown);
-//				stage.addActor(backButton);
-//				stage.addActor(nextButton);
-//			}
-//
-//		});
-//
-//		murButtonDown.addListener(new ClickListener() {
-//			@Override
-//			public void clicked(InputEvent event, float x, float y) {
-//				stage.clear();
-//				stage.addActor(murTut);
-//				stage.addActor(civButtonDown);
-//				stage.addActor(backButton);
-//				stage.addActor(nextButton);
-//			}
-//
-//		});
-//		// TODO:
-//		nextButton.addListener(new ClickListener() {
-//			@Override
-//			public void clicked(InputEvent event, float x, float y) {
-//				AssetLoader.clickSound.play(AssetLoader.VOLUME);
-//				if (stage.getActors().first().equals(hudTut)) {
-//					stage.clear();
-//					stage.addActor(screenTut);
-//					stage.addActor(backButton);
-//					stage.addActor(nextButton);
-//				} else if (stage.getActors().first().equals(screenTut)) {
-//					stage.clear();
-//					stage.addActor(mapTut);
-//					stage.addActor(backButton);
-//					stage.addActor(nextButton);
-//				} else if (stage.getActors().first().equals(mapTut)) {
-//					stage.clear();
-//					((Game) Gdx.app.getApplicationListener()).setScreen(new MenuScreen(game, gameWidth,
-//							gameHeight));
-//				} else {
-//					stage.clear();
-//					stage.addActor(hudTut);
-//					stage.addActor(backButton);
-//					stage.addActor(nextButton);
-//				}
-//			}
-//
-//		});
-//		// TODO:
-//		backButton.addListener(new ClickListener() {
-//			@Override
-//			public void clicked(InputEvent event, float x, float y) {
-//				AssetLoader.clickSound.play(AssetLoader.VOLUME);
-//				if (stage.getActors().first().equals(hudTut)) {
-//					stage.clear();
-//					stage.addActor(page1);
-//					stage.addActor(civButton);
-//					stage.addActor(murButton);
-//					stage.addActor(backButton);
-//					stage.addActor(nextButton);
-//				} else if (stage.getActors().first().equals(screenTut)) {
-//					stage.clear();
-//					stage.addActor(hudTut);
-//					stage.addActor(backButton);
-//					stage.addActor(nextButton);
-//				} else if (stage.getActors().first().equals(mapTut)) {
-//					stage.clear();
-//					stage.addActor(screenTut);
-//					stage.addActor(backButton);
-//					stage.addActor(nextButton);
-//				} else {
-//					stage.clear();
-//					((Game) Gdx.app.getApplicationListener()).setScreen(new MenuScreen(game, gameWidth,
-//							gameHeight));
-//				}
-//			}
-//
-//		});
+		// civButton.addListener(new ClickListener() {
+		// @Override
+		// public void clicked(InputEvent event, float x, float y) {
+		// stage.clear();
+		// stage.addActor(civTut);
+		// stage.addActor(murButtonDown);
+		// stage.addActor(backButton);
+		// stage.addActor(nextButton);
+		// }
+		//
+		// });
+		//
+		// murButton.addListener(new ClickListener() {
+		// @Override
+		// public void clicked(InputEvent event, float x, float y) {
+		// stage.clear();
+		// stage.addActor(murTut);
+		// stage.addActor(civButtonDown);
+		// stage.addActor(backButton);
+		// stage.addActor(nextButton);
+		// }
+		//
+		// });
+		//
+		// civButtonDown.addListener(new ClickListener() {
+		// @Override
+		// public void clicked(InputEvent event, float x, float y) {
+		// stage.clear();
+		// stage.addActor(civTut);
+		// stage.addActor(murButtonDown);
+		// stage.addActor(backButton);
+		// stage.addActor(nextButton);
+		// }
+		//
+		// });
+		//
+		// murButtonDown.addListener(new ClickListener() {
+		// @Override
+		// public void clicked(InputEvent event, float x, float y) {
+		// stage.clear();
+		// stage.addActor(murTut);
+		// stage.addActor(civButtonDown);
+		// stage.addActor(backButton);
+		// stage.addActor(nextButton);
+		// }
+		//
+		// });
+		// // TODO:
+		// nextButton.addListener(new ClickListener() {
+		// @Override
+		// public void clicked(InputEvent event, float x, float y) {
+		// AssetLoader.clickSound.play(AssetLoader.VOLUME);
+		// if (stage.getActors().first().equals(hudTut)) {
+		// stage.clear();
+		// stage.addActor(screenTut);
+		// stage.addActor(backButton);
+		// stage.addActor(nextButton);
+		// } else if (stage.getActors().first().equals(screenTut)) {
+		// stage.clear();
+		// stage.addActor(mapTut);
+		// stage.addActor(backButton);
+		// stage.addActor(nextButton);
+		// } else if (stage.getActors().first().equals(mapTut)) {
+		// stage.clear();
+		// ((Game) Gdx.app.getApplicationListener()).setScreen(new MenuScreen(game, gameWidth,
+		// gameHeight));
+		// } else {
+		// stage.clear();
+		// stage.addActor(hudTut);
+		// stage.addActor(backButton);
+		// stage.addActor(nextButton);
+		// }
+		// }
+		//
+		// });
+		// TODO:
+		backButton.addListener(new ClickListener() {
+			@Override
+			public void clicked(InputEvent event, float x, float y) {
+				AssetLoader.clickSound.play(AssetLoader.VOLUME);
+				stage.clear();
+				((Game) Gdx.app.getApplicationListener()).setScreen(new MenuScreen(game, gameWidth,
+						gameHeight));
+			}
+
+		});
 
 		stage.addActor(page1);
 		stage.addActor(civButton);
 		stage.addActor(murButton);
 		stage.addActor(backButton);
-//		stage.addActor(nextButton);
+		// stage.addActor(nextButton);
 	}
 
 	/*

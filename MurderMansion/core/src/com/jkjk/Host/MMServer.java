@@ -603,7 +603,7 @@ class serverAcceptThread extends Thread {
 				Socket socket = server.serverSocket.accept();
 
 				// Set socket timeout as 30 seconds
-				socket.setSoTimeout(5000);
+				socket.setSoTimeout(10000);
 
 				// Add in client socket
 				server.getClients().put("Player " + idCount, socket);
