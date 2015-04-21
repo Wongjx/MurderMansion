@@ -105,6 +105,10 @@ public class MMClient {
 	private ConcurrentLinkedQueue<Vector2> weaponPartConsumeQueue;
 	private ConcurrentLinkedQueue<Vector2> obstacleConsumeQueue;
 	private ConcurrentLinkedQueue<Boolean> lightningQueue;
+	private ConcurrentLinkedQueue<Integer> stunQueue;
+	private ConcurrentLinkedQueue<Integer> itemQueue;
+	private ConcurrentLinkedQueue<Integer> weaponQueue;
+	private ConcurrentLinkedQueue<Integer> abilityQueue;
 
 	/**
 	 * Constructs the multiplayer world, including creation of opponents.
@@ -159,6 +163,10 @@ public class MMClient {
 		weaponPartConsumeQueue = new ConcurrentLinkedQueue<Vector2>();
 		obstacleConsumeQueue = new ConcurrentLinkedQueue<Vector2>();
 		lightningQueue = new ConcurrentLinkedQueue<Boolean>();
+		stunQueue = new ConcurrentLinkedQueue<Integer>();
+		itemQueue = new ConcurrentLinkedQueue<Integer>();
+		weaponQueue = new ConcurrentLinkedQueue<Integer>();
+		abilityQueue = new ConcurrentLinkedQueue<Integer>();
 
 		String message;
 		// Receive item locations
@@ -435,6 +443,19 @@ public class MMClient {
 			lightningStrike();
 			lightningQueue.poll();
 		}
+		if (!stunQueue.isEmpty()) {
+			playerList.get(stunQueue.poll()).stun();
+		}
+		if (!itemQueue.isEmpty()) {
+			itemUsed(itemQueue.poll());
+		}
+		if (!weaponQueue.isEmpty()) {
+			weaponUsed(weaponQueue.poll());
+		}
+		if (!abilityQueue.isEmpty()) {
+			abilityUsed(abilityQueue.poll());
+		}
+
 		updatePlayerLocation();
 		updatePlayerIsinSafeArea();
 	}
@@ -597,8 +618,7 @@ public class MMClient {
 	}
 
 	/**
-	 * <<<<<<< HEAD ======= <<<<<<< HEAD >>>>>>> 093da5221d56ff4aaead1b053aa98e22d2be4d11 Update server about
-	 * change in player's use item
+	 * Update server about change in player's use item
 	 * 
 	 * @param playerID
 	 *            ID of player status to change
@@ -634,7 +654,6 @@ public class MMClient {
 	}
 
 	/**
-	 * <<<<<<< HEAD ======= ======= >>>>>>> Broken_menu >>>>>>> 093da5221d56ff4aaead1b053aa98e22d2be4d11
 	 * Update server about change in player's type
 	 * 
 	 * @param playerID
@@ -878,13 +897,13 @@ public class MMClient {
 			playerIsAlive.put("Player " + Integer.parseInt(msg[2]), Integer.parseInt(msg[3]));
 			killPlayer(Integer.parseInt(msg[2]));
 		} else if (msg[0].equals("stun")) {
-			playerList.get(Integer.parseInt(msg[2])).stun();
+			stunQueue.offer(Integer.parseInt(msg[2]));
 		} else if (msg[0].equals("useItem")) {
-			itemUsed(Integer.parseInt(msg[1]));
+			itemQueue.offer(Integer.parseInt(msg[1]));
 		} else if (msg[0].equals("useWeapon")) {
-			weaponUsed(Integer.parseInt(msg[1]));
+			weaponQueue.offer(Integer.parseInt(msg[1]));
 		} else if (msg[0].equals("useAbility")) {
-			abilityUsed(Integer.parseInt(msg[1]));
+			abilityQueue.offer(Integer.parseInt(msg[1]));
 		} else if (msg[0].equals("weaponPartCollected")) {
 			gWorld.addNumOfWeaponPartsCollected();
 		} else if (msg[0].equals("createShotgun")) {
@@ -900,7 +919,7 @@ public class MMClient {
 
 			} else if (msg[2].equals("pro")) {
 				System.out.println("Client: Produce item");
-				itemSpawnQueue.add(new float[] { Float.parseFloat(msg[3]), Float.parseFloat(msg[4]) });
+				itemSpawnQueue.offer(new float[] { Float.parseFloat(msg[3]), Float.parseFloat(msg[4]) });
 			}
 		} else if (msg[0].equals("weapon")) {
 			if (msg[2].equals("con")) {
@@ -909,7 +928,7 @@ public class MMClient {
 				weaponConsumeQueue.offer(position);
 			} else if (msg[2].equals("pro")) {
 				System.out.println("Client: Produce weapon");
-				weaponSpawnQueue.add(new float[] { Float.parseFloat(msg[3]), Float.parseFloat(msg[4]) });
+				weaponSpawnQueue.offer(new float[] { Float.parseFloat(msg[3]), Float.parseFloat(msg[4]) });
 			}
 		} else if (msg[0].equals("weaponpart")) {
 			if (msg[2].equals("con")) {
@@ -918,7 +937,8 @@ public class MMClient {
 				weaponPartConsumeQueue.offer(position);
 			} else if (msg[2].equals("pro")) {
 				System.out.println("Client: Produce weaponpart");
-				weaponPartSpawnQueue.add(new float[] { Float.parseFloat(msg[3]), Float.parseFloat(msg[4]) });
+				weaponPartSpawnQueue
+						.offer(new float[] { Float.parseFloat(msg[3]), Float.parseFloat(msg[4]) });
 			}
 		} else if (msg[0].equals("trap")) {
 			if (msg[2].equals("con")) {
@@ -930,7 +950,7 @@ public class MMClient {
 			} else if (msg[2].equals("pro")) {
 				System.out.println("Produce trap");
 				if (Integer.parseInt(msg[1]) != id) {
-					trapSpawnQueue.add(new float[] { Float.parseFloat(msg[3]), Float.parseFloat(msg[4]) });
+					trapSpawnQueue.offer(new float[] { Float.parseFloat(msg[3]), Float.parseFloat(msg[4]) });
 				}
 			}
 		}

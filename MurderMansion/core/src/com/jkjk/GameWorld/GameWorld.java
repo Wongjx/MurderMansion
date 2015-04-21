@@ -141,7 +141,7 @@ public class GameWorld {
 		} else {
 			client.updatePlayerIsAlive(client.getId(), 0);
 			TM.setDisplayMessage("You Have Died... Your Spirit Seeks Vengeance.");
-			createGhost();
+			createGhost(client);
 		}
 		checkStairs();
 		checkItemSprite(client);
@@ -221,7 +221,7 @@ public class GameWorld {
 	 * Creates a ghost by destroying the player's previous body. Sets the user data to "player", and spawns
 	 * him at the position and angle of his death.
 	 */
-	private void createGhost() {
+	private void createGhost(MMClient client) {
 		currentPositionX = player.getBody().getPosition().x;
 		currentPositionY = player.getBody().getPosition().y;
 		currentAngle = player.getBody().getAngle();
@@ -230,6 +230,7 @@ public class GameWorld {
 		player.getBody().setActive(false);
 		player.getBody().setTransform(0, 0, 0);
 		player = gameCharFac.createCharacter("Ghost", player.getId(), this, true);
+		client.updatePlayerType(client.getId(), 2);
 		player.set_deathPositionX(currentPositionX);
 		player.set_deathPositionY(currentPositionY);
 		player.getBody().getFixtureList().get(0).setUserData("player");
@@ -380,7 +381,7 @@ public class GameWorld {
 			else if (player.getType() == "Ghost")
 				TM.setDisplayMessage("Your spirit is forever trapped in JK's playhouse...");
 		} else {
-			TM.setDisplayMessage("An Obstacle has Disappeared...");
+			TM.setDisplayMessage("An Obstacle Mysteriously Disappears...");
 		}
 	}
 
@@ -505,7 +506,7 @@ public class GameWorld {
 	}
 
 	public void setTrapToRemove(Body value) {
-		this.trapToRemove.add(value);
+		this.trapToRemove.offer(value);
 	}
 
 	public int getNumOfWeaponPartsCollected() {
