@@ -116,14 +116,10 @@ public class Civilian extends GameCharacter {
 		}
 		body.setUserData(civWalkAnimation);
 
-<<<<<<< HEAD
 
-//		walkSound = AssetLoader.walkSound;
-//		runSound = AssetLoader.runSound;
-=======
 		walkSound = AssetLoader.walkSound;
 		runSound = AssetLoader.runSound;
->>>>>>> e2ca4e5aa6ae3a58b2f9999a41b4d1284d71a58e
+
 
 
 
@@ -145,77 +141,43 @@ public class Civilian extends GameCharacter {
 					body.setUserData(civWalkAnimation);
 				}
 				if (!body.getLinearVelocity().isZero() && checkMovable()) {
-<<<<<<< HEAD
-
-//					if (walkSound.isPlaying() && isPlayer()) {
-//						walkSound.stop();
-//					}
-//					if (!runSound.isPlaying() && isPlayer()) {
-//						runSound.play();
-//					}
-
-=======
 					if (walkSound.isPlaying() && isPlayer()) {
 						walkSound.stop();
 					}
 					if (!runSound.isPlaying() && isPlayer()) {
 						runSound.play();
 					}
->>>>>>> e2ca4e5aa6ae3a58b2f9999a41b4d1284d71a58e
+
 					batch.draw(currentAnimation.getKeyFrame(runTime * 5, true), body.getPosition().x - 9,
 							body.getPosition().y - 9, 9, 9, 18, 18, 6f, 6f,
 							(float) (body.getAngle() * 180 / Math.PI) - 90);
 
 				} else {
-<<<<<<< HEAD
 
-
-//					if (runSound.isPlaying() && isPlayer()) {
-//						runSound.stop();
-//					}
-
-=======
 					if (runSound.isPlaying() && isPlayer()) {
 						runSound.stop();
 					}
->>>>>>> e2ca4e5aa6ae3a58b2f9999a41b4d1284d71a58e
+
 					batch.draw(civPanicRest, body.getPosition().x - 9, body.getPosition().y - 9, 9, 9, 18,
 							18, 6f, 6f, (float) (body.getAngle() * 180 / Math.PI) - 90);
 				}
 			} else if (currentAnimation == civWalkAnimation) {
 				if (!body.getLinearVelocity().isZero() && checkMovable()) {
-<<<<<<< HEAD
-//					if (!walkSound.isPlaying() && isPlayer()) {
-//						walkSound.play();
-//					}
-//					if (runSound.isPlaying() && isPlayer()) {
-//						runSound.stop();
-//					}
-
-=======
 					if (!walkSound.isPlaying() && isPlayer()) {
 						walkSound.play();
 					}
 					if (runSound.isPlaying() && isPlayer()) {
 						runSound.stop();
 					}
->>>>>>> e2ca4e5aa6ae3a58b2f9999a41b4d1284d71a58e
+
 					batch.draw(currentAnimation.getKeyFrame(runTime * 4, true), body.getPosition().x - 9,
 							body.getPosition().y - 9, 9, 9, 18, 18, 6f, 6f,
 							(float) (body.getAngle() * 180 / Math.PI) - 90);
 
 				} else {
-<<<<<<< HEAD
-
-//					if (walkSound.isPlaying() && isPlayer()) {
-//						walkSound.stop();
-//					}
-
-=======
 					if (walkSound.isPlaying() && isPlayer()) {
 						walkSound.stop();
 					}
->>>>>>> e2ca4e5aa6ae3a58b2f9999a41b4d1284d71a58e
 					batch.draw(civRest, body.getPosition().x - 9, body.getPosition().y - 9, 9, 9, 18, 18, 6f,
 							6f, (float) (body.getAngle() * 180 / Math.PI) - 90);
 				}
