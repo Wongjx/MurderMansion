@@ -74,6 +74,9 @@ public abstract class GameCharacter {
 		this.isPlayer = isPlayer;
 		maxVelocity = 56;
 		weaponUses = 3;
+		if (type == "Murderer"){
+			weaponUses = 2;
+		}
 		touchpad = AssetLoader.touchpad;
 		stunDuration = new Duration(3000);
 		hauntDuration = new Duration(4000);
