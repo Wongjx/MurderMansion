@@ -1,7 +1,5 @@
 package com.jkjk.MMHelpers;
 
-import java.util.concurrent.ConcurrentLinkedQueue;
-
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.Contact;
 import com.badlogic.gdx.physics.box2d.ContactImpulse;
@@ -21,20 +19,20 @@ public class MMContactListener implements ContactListener {
 	private Fixture fb;
 	private Object faUD;
 	private Object fbUD;
-	private ConcurrentLinkedQueue<Body> itemsToRemove;
-	private ConcurrentLinkedQueue<Body> weaponsToRemove;
-	private ConcurrentLinkedQueue<Body> trapToRemove;
-	private ConcurrentLinkedQueue<Body> weaponPartsToRemove;
+	private Array<Body> itemsToRemove;
+	private Array<Body> weaponsToRemove;
+	private Array<Body> trapToRemove;
+	private Array<Body> weaponPartsToRemove;
 
 	private GameWorld gWorld;
 	private boolean atStairs;
 	private String stairsName;
 
 	public MMContactListener(GameWorld gWorld) {
-		itemsToRemove = new ConcurrentLinkedQueue<Body>();
-		weaponsToRemove = new ConcurrentLinkedQueue<Body>();
-		weaponPartsToRemove = new ConcurrentLinkedQueue<Body>();
-		trapToRemove = new ConcurrentLinkedQueue<Body>();
+		itemsToRemove = new Array<Body>();
+		weaponsToRemove = new Array<Body>();
+		weaponPartsToRemove = new Array<Body>();
+		trapToRemove = new Array<Body>();
 		this.gWorld = gWorld;
 		atStairs = false;
 		stairsName = null;
@@ -48,26 +46,24 @@ public class MMContactListener implements ContactListener {
 		fbUD = fb.getUserData();
 
 		if (faUD != null && fbUD != null) {
-			 System.out.println("Begin contact: fa: " + faUD + ", fb: " + fbUD);
+			// System.out.println("Begin contact: fa: " + faUD + ", fb: " + fbUD);
 			if (faUD.equals("player") || fbUD.equals("player")) {
 				if (faUD.equals("item") && gWorld.getPlayer().getItem() == null) {
-					itemsToRemove.offer(fa.getBody());
+					itemsToRemove.add(fa.getBody());
 				} else if (fbUD.equals("item") && gWorld.getPlayer().getItem() == null) {
-					itemsToRemove.offer(fb.getBody());
+					itemsToRemove.add(fb.getBody());
 				} else if (fbUD.equals("weapon") && gWorld.getPlayer().getWeapon() == null) {
-					weaponsToRemove.offer(fb.getBody());
-					System.out.println("HERE A");
+					weaponsToRemove.add(fb.getBody());
 				} else if (faUD.equals("weapon") && gWorld.getPlayer().getWeapon() == null) {
-					weaponsToRemove.offer(fa.getBody());
-					System.out.println("HERE B");
+					weaponsToRemove.add(fa.getBody());
 				} else if (faUD.equals("weapon part")) {
 					if (!gWorld.getPlayer().getType().equals("Ghost")) {
-						weaponPartsToRemove.offer(fa.getBody());
+						weaponPartsToRemove.add(fa.getBody());
 						AssetLoader.pickUpItemSound.play(AssetLoader.VOLUME);
 					}
 				} else if (fbUD.equals("weapon part")) {
 					if (!gWorld.getPlayer().getType().equals("Ghost")) {
-						weaponPartsToRemove.offer(fb.getBody());
+						weaponPartsToRemove.add(fb.getBody());
 						AssetLoader.pickUpItemSound.play(AssetLoader.VOLUME);
 					}
 				} else if (faUD.equals("L1S1") || fbUD.equals("L1S1")) {
@@ -108,13 +104,13 @@ public class MMContactListener implements ContactListener {
 				} else if (faUD.equals("trap")) {
 					if (gWorld.getPlayer().getType().equals("Civilian")) {
 						gWorld.getPlayer().die();
-						trapToRemove.offer(fa.getBody());
+						trapToRemove.add(fa.getBody());
 						AssetLoader.trappedSound.play(AssetLoader.VOLUME);
 					}
 				} else if (fbUD.equals("trap")) {
 					if (gWorld.getPlayer().getType().equals("Civilian")) {
 						gWorld.getPlayer().die();
-						trapToRemove.offer(fb.getBody());
+						trapToRemove.add(fb.getBody());
 						AssetLoader.trappedSound.play(AssetLoader.VOLUME);
 					}
 				} else if (faUD.equals("knife") || fbUD.equals("knife")) {
@@ -143,13 +139,13 @@ public class MMContactListener implements ContactListener {
 				} else if (faUD.equals("trap")) {
 					if (gWorld.getDummy().getType().equals("Civilian")) {
 						gWorld.getDummy().die();
-						trapToRemove.offer(fa.getBody());
+						trapToRemove.add(fa.getBody());
 						AssetLoader.trappedSound.play(AssetLoader.VOLUME);
 					}
 				} else if (fbUD.equals("trap")) {
 					if (gWorld.getDummy().getType().equals("Civilian")) {
 						gWorld.getDummy().die();
-						trapToRemove.offer(fb.getBody());
+						trapToRemove.add(fb.getBody());
 						AssetLoader.trappedSound.play(AssetLoader.VOLUME);
 					}
 				} else if (faUD.equals("knife") || fbUD.equals("knife")) {
@@ -179,9 +175,9 @@ public class MMContactListener implements ContactListener {
 				if (faUD.equals("post disarm trap") || fbUD.equals("post disarm trap")) {
 					AssetLoader.trapDisarmedSound.play(AssetLoader.VOLUME);
 					if (faUD.equals("trap")) {
-						trapToRemove.offer(fa.getBody());
+						trapToRemove.add(fa.getBody());
 					} else if (fbUD.equals("trap")) {
-						trapToRemove.offer(fb.getBody());
+						trapToRemove.add(fb.getBody());
 					}
 				}
 			}
@@ -217,19 +213,19 @@ public class MMContactListener implements ContactListener {
 		}
 	}
 
-	public ConcurrentLinkedQueue<Body> getItemsToRemove() {
+	public Array<Body> getItemsToRemove() {
 		return itemsToRemove;
 	}
 
-	public ConcurrentLinkedQueue<Body> getWeaponsToRemove() {
+	public Array<Body> getWeaponsToRemove() {
 		return weaponsToRemove;
 	}
 
-	public ConcurrentLinkedQueue<Body> getWeaponPartsToRemove() {
+	public Array<Body> getWeaponPartsToRemove() {
 		return weaponPartsToRemove;
 	}
 
-	public ConcurrentLinkedQueue<Body> getTrapToRemove() {
+	public Array<Body> getTrapToRemove() {
 		return trapToRemove;
 	}
 

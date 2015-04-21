@@ -3,7 +3,6 @@ package com.jkjk.GameWorld;
 import java.util.Iterator;
 import java.util.Random;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentLinkedQueue;
 
 import net.dermetfan.gdx.physics.box2d.Box2DMapObjectParser;
 import box2dLight.RayHandler;
@@ -61,16 +60,22 @@ public class GameWorld {
 	private World world;
 	private MMContactListener cl;
 
-	private ConcurrentLinkedQueue<Body> itemsToRemove, weaponsToRemove, weaponPartsToRemove, trapToRemove;
-	private ConcurrentLinkedQueue<Vector2> itemsToAdd, weaponsToAdd;
+	private Array<Body> itemsToRemove, weaponsToRemove, weaponPartsToRemove, trapToRemove;
+	private Iterator<Body> itemsRemoveIterator, weaponsRemoveIterator, weaponPartsRemoveIterator,
+			trapRemoveIterator;
+	private Array<Vector2> itemsToAdd, weaponsToAdd;
+	private Iterator<Vector2> itemsAddIterator, weaponsAddIterator;
 	private Body bodyToRemove;
-	private Vector2 bodyToAdd;
 	private Trap trapToCreate;
 
 	private float currentPositionX;
 	private float currentPositionY;
 	private float currentAngle;
 	private float ambientLightValue;
+	private float storeLightValue;
+	private Duration lightningDuration;
+
+	private Random random;
 
 	private ToastMessage TM;
 	private boolean tutorial;
@@ -96,8 +101,15 @@ public class GameWorld {
 		weaponsToRemove = cl.getWeaponsToRemove();
 		weaponPartsToRemove = cl.getWeaponPartsToRemove();
 		trapToRemove = cl.getTrapToRemove();
-		itemsToAdd = new ConcurrentLinkedQueue<Vector2>();
-		weaponsToAdd = new ConcurrentLinkedQueue<Vector2>();
+		itemsToAdd = new Array<Vector2>();
+		weaponsToAdd = new Array<Vector2>();
+
+		itemsRemoveIterator = itemsToRemove.iterator();
+		weaponsRemoveIterator = weaponsToRemove.iterator();
+		weaponPartsRemoveIterator = weaponPartsToRemove.iterator();
+		trapRemoveIterator = trapToRemove.iterator();
+		itemsAddIterator = itemsToAdd.iterator();
+		weaponsAddIterator = weaponsToAdd.iterator();
 
 		gameCharFac = new GameCharacterFactory();
 		rayHandler = new RayHandler(world);
@@ -114,9 +126,12 @@ public class GameWorld {
 		obstacleList = new ConcurrentHashMap<Vector2, Obstacles>();
 
 		gameOverTimer = new Duration(3000);
+		lightningDuration = new Duration(500);
 
 		Box2DMapObjectParser parser = new Box2DMapObjectParser();
 		parser.load(world, AssetLoader.tiledMap);
+
+		random = new Random();
 
 		if (tutorial) {
 			TM = new ToastMessage(305, 15000);
@@ -149,6 +164,13 @@ public class GameWorld {
 		checkWeaponPartSprite(client);
 		checkTrap(client);
 		checkStun(client);
+
+		if (lightningDuration.isCountingDown()) {
+			lightningDuration.update();
+			if (!lightningDuration.isCountingDown()) {
+				player.setAmbientLightValue(storeLightValue);
+			}
+		}
 	}
 
 	public void createTutorialWeapon() {
@@ -241,21 +263,25 @@ public class GameWorld {
 	 * Checks to remove item sprites that have been contacted by the player.
 	 */
 	private void checkItemSprite(MMClient client) {
-		bodyToRemove = itemsToRemove.poll();
-		// Call MMclient to remove item
-		if (bodyToRemove != null) {
+
+		while (itemsRemoveIterator.hasNext()) {
+			bodyToRemove = itemsRemoveIterator.next();
+			itemsRemoveIterator.remove();
+			// Call MMclient to remove item
 			client.removeItemLocation(bodyToRemove.getPosition());
 			System.out.println("Item removed from client.");
 			itemList.remove(bodyToRemove.getPosition());
-			world.destroyBody(bodyToRemove);
+			bodyToRemove.setActive(false);
+			bodyToRemove.setTransform(0, 0, 0);
 			if (player.getType().equals("Murderer"))
 				player.addItem(itemFac.createItem("Trap", this, client, player));
 			else
 				player.addItem(itemFac.createItem("Disarm Trap", this, client, player));
 		}
-		bodyToAdd = itemsToAdd.poll();
-		if (bodyToAdd != null) {
-			client.produceItemLocation(itemsToAdd.poll());
+
+		while (itemsAddIterator.hasNext()) {
+			client.produceItemLocation(itemsAddIterator.next());
+			itemsAddIterator.remove();
 		}
 	}
 
@@ -263,21 +289,22 @@ public class GameWorld {
 	 * Checks to remove weapon sprites that have been contacted by the player.
 	 */
 	private void checkWeaponSprite(MMClient client) {
-		bodyToRemove = weaponsToRemove.poll();
-//		System.out.println(weaponsToRemove);
-		if (bodyToRemove != null) {
+		while (weaponsRemoveIterator.hasNext()) {
+			bodyToRemove = weaponsRemoveIterator.next();
+			weaponsRemoveIterator.remove();
 			// Call MMclient to remove weapon
 			client.removeWeaponLocation(bodyToRemove.getPosition());
 			weaponList.remove(bodyToRemove.getPosition());
-			world.destroyBody(bodyToRemove);
+			bodyToRemove.setActive(false);
+			bodyToRemove.setTransform(0, 0, 0);
 			if (player.getType().equals("Murderer"))
 				player.addWeapon(weaponFac.createWeapon("Knife", this, player));
 			else
 				player.addWeapon(weaponFac.createWeapon("Bat", this, player));
 		}
-		bodyToAdd = weaponsToAdd.poll();
-		if (bodyToAdd != null) {
-			client.produceWeaponLocation(weaponsToAdd.poll());
+		while (weaponsAddIterator.hasNext()) {
+			client.produceWeaponLocation(weaponsAddIterator.next());
+			weaponsAddIterator.remove();
 		}
 	}
 
@@ -285,13 +312,14 @@ public class GameWorld {
 	 * Checks to remove weapon part sprites that have been contacted by the player.
 	 */
 	private void checkWeaponPartSprite(MMClient client) {
-		bodyToRemove = weaponPartsToRemove.poll();
-
-		if (bodyToRemove != null) {
+		while (weaponPartsRemoveIterator.hasNext()) {
+			bodyToRemove = weaponPartsRemoveIterator.next();
+			weaponPartsRemoveIterator.remove();
 			// Call MMclient to remove weapon part
 			client.removeWeaponPartLocation(bodyToRemove.getPosition());
 			weaponPartList.remove(bodyToRemove.getPosition());
-			world.destroyBody(bodyToRemove);
+			bodyToRemove.setActive(false);
+			bodyToRemove.setTransform(0, 0, 0);
 			if (player.getType().equals("Civilian")) {
 				client.addWeaponPartCollected();
 			}
@@ -302,8 +330,9 @@ public class GameWorld {
 	 * Checks to remove traps sprites that have been contacted by the player. Also checks to add trap added by
 	 */
 	private void checkTrap(MMClient client) {
-		bodyToRemove = trapToRemove.poll();
-		if (bodyToRemove != null) {
+		while (trapRemoveIterator.hasNext()) {
+			bodyToRemove = trapRemoveIterator.next();
+			trapRemoveIterator.remove();
 			trapList.remove(bodyToRemove.getPosition());
 			world.destroyBody(bodyToRemove);
 			client.removeTrapLocation(bodyToRemove.getPosition().x, bodyToRemove.getPosition().y);
@@ -365,7 +394,8 @@ public class GameWorld {
 	 *            Vector2 coordinates of the obstacle
 	 */
 	public void removeObstacle(Vector2 location) {
-		world.destroyBody(obstacleList.get(location).getBody());
+		obstacleList.get(location).getBody().setActive(false);
+		obstacleList.get(location).getBody().setTransform(0, 0, 0);
 		obstacleList.remove(location);
 		if (obstacleList.size() == 0) {
 			if (player.getType() == "Civilian")
@@ -377,6 +407,14 @@ public class GameWorld {
 		} else {
 			TM.setDisplayMessage("An Obstacle has Disappeared...");
 		}
+	}
+
+	public void lightningStrike() {
+		lightningDuration = new Duration(300 + random.nextInt(500));
+		lightningDuration.startCountdown();
+		storeLightValue = player.getAmbientLightValue();
+		player.setAmbientLightValue(0.8f);
+		AssetLoader.lightningSound.play(AssetLoader.VOLUME);
 	}
 
 	public void createTrap(float[] loc) {
@@ -447,11 +485,11 @@ public class GameWorld {
 		this.inSafeArea = inSafeArea;
 	}
 
-	public ConcurrentLinkedQueue<Vector2> getItemsToAdd() {
+	public Array<Vector2> getItemsToAdd() {
 		return itemsToAdd;
 	}
 
-	public ConcurrentLinkedQueue<Vector2> getWeaponsToAdd() {
+	public Array<Vector2> getWeaponsToAdd() {
 		return weaponsToAdd;
 	}
 
@@ -542,6 +580,13 @@ public class GameWorld {
 		itemsToAdd = null;
 		weaponsToAdd = null;
 
+		itemsRemoveIterator = null;
+		weaponsRemoveIterator = null;
+		weaponPartsRemoveIterator = null;
+		trapRemoveIterator = null;
+		itemsAddIterator = null;
+		weaponsAddIterator = null;
+
 		gameCharFac = null;
 		rayHandler = null;
 
@@ -557,6 +602,7 @@ public class GameWorld {
 		obstacleList = null;
 
 		gameOverTimer = null;
+		lightningDuration = null;
 
 		Box2DMapObjectParser parser = null;
 	}
