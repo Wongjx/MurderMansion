@@ -124,6 +124,7 @@ public class MMClient {
 		itemFac = new ItemFactory();
 		weaponFac = new WeaponFactory();
 		gameCharFac = new GameCharacterFactory();
+		random = new Random();
 
 		this.mName = mName;
 		this.serverAddress = serverAddress;
@@ -548,7 +549,7 @@ public class MMClient {
 		// if angle and position has changed
 		if ((playerPosition.get("Player " + id) != selfPosition)
 				&& (playerAngle.get("Player " + id) != selfAngle)
-				&& (playerVelocity.get("Player" + id) != selfVelocity)) {
+				|| (playerVelocity.get("Player" + id) != selfVelocity)) {
 			// Update client Hashmap
 			playerPosition.put("Player " + id, selfPosition);
 			playerAngle.put("Player " + id, selfAngle);

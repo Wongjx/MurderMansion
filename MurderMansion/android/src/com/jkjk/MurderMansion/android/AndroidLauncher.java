@@ -16,6 +16,7 @@ import com.google.android.gms.games.GamesActivityResultCodes;
 import com.google.android.gms.games.multiplayer.Invitation;
 import com.google.android.gms.games.multiplayer.Multiplayer;
 import com.google.android.gms.games.multiplayer.realtime.RoomConfig;
+import com.google.android.gms.internal.m;
 import com.google.example.games.basegameutils.GameHelper;
 import com.google.example.games.basegameutils.GameHelper.GameHelperListener;
 import com.jkjk.MMHelpers.ActionResolver;
@@ -257,6 +258,9 @@ public class AndroidLauncher extends AndroidApplication implements GameHelperLis
             Games.RealTimeMultiplayer.leave(this.mGoogleApiClient, this.mGooglePlayListeners, mMultiplayerSeisson.mRoomId);  
             mMultiplayerSeisson.mRoomId=null;
             mMultiplayerSeisson.isServer=false;
+            mMultiplayerSeisson.mName=null;
+            mMultiplayerSeisson.mParticipants=null;
+            mMultiplayerSeisson.mId=null;
         } else {
         	mMultiplayerSeisson.mState=mMultiplayerSeisson.ROOM_MENU;
         }
