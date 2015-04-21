@@ -825,15 +825,7 @@ public class HudRenderer {
 			TM.setDisplayMessage("Obtained Bat");
 
 		weaponButton.addListener(new ClickListener() {
-			@Override
-			public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
-
-				System.out.println("Bat button touch down, draw hitbox");
-				return super.touchDown(event, x, y, pointer, button);
-			}
-
 			public void clicked(InputEvent event, float x, float y) {
-
 				System.out.println("Clicked on bat button");
 				if (gWorld.getPlayer().useWeapon()) {
 					// start drawing cool down animation.
