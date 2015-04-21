@@ -368,11 +368,9 @@ public abstract class GameCharacter {
 		}
 	}
 
-	public void setPosition(float x, float y, float angle, float velocity) {
+	public void setPosition(float x, float y, float angle, float velocityX, float velocityY) {
 		body.setTransform(x, y, angle);
-		if (velocity != 0) {
-			body.setLinearVelocity(0.00001f, 0.000001f);
-		}
+		body.setLinearVelocity(velocityX / 2, velocityY / 2);
 	}
 
 	public float getAmbientLightValue() {

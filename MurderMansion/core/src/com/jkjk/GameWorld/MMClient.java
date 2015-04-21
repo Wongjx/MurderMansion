@@ -57,6 +57,11 @@ public class MMClient {
 	private PrintWriter clientOutput;
 	private Thread clientListenerThread;
 
+	private float selfAngle;
+	private float[] selfPosition;
+	private float selfVelocityX;
+	private float selfVelocityY;
+
 	private float currentPositionX;
 	private float currentPositionY;
 
@@ -75,7 +80,7 @@ public class MMClient {
 																	// Ghost
 	private final ConcurrentHashMap<String, float[]> playerPosition;
 	private final ConcurrentHashMap<String, Float> playerAngle;
-	private final ConcurrentHashMap<String, Float> playerVelocity;
+	private final ConcurrentHashMap<String, float[]> playerVelocity;
 	private boolean playerIsInSafeArea;
 
 	private ObstaclesHandler obstaclesHandler;
@@ -170,7 +175,7 @@ public class MMClient {
 		playerIsAlive = new ConcurrentHashMap<String, Integer>(numOfPlayers);
 		playerPosition = new ConcurrentHashMap<String, float[]>(numOfPlayers);
 		playerAngle = new ConcurrentHashMap<String, Float>(numOfPlayers);
-		playerVelocity = new ConcurrentHashMap<String, Float>(numOfPlayers);
+		playerVelocity = new ConcurrentHashMap<String, float[]>(numOfPlayers);
 		playerIsInSafeArea = false;
 
 		// Receive spawn positions
@@ -331,8 +336,8 @@ public class MMClient {
 			if (gc.isAlive() && !gc.isPlayer()) {
 				gc.update();
 			}
-			if (tutorial){
-				if (!gc.isAlive() && !gc.isPlayer()){
+			if (tutorial) {
+				if (!gc.isAlive() && !gc.isPlayer()) {
 					System.out.println("DUMMY IS DYING");
 					playerList.remove(1);
 					currentPositionX = dummy.getBody().getPosition().x;
@@ -426,20 +431,22 @@ public class MMClient {
 			return;
 		}
 		// Get player postion
-		float angle = gWorld.getPlayer().getBody().getAngle();
-		float[] position = { gWorld.getPlayer().getBody().getPosition().x,
+		selfAngle = gWorld.getPlayer().getBody().getAngle();
+		selfPosition = new float[] { gWorld.getPlayer().getBody().getPosition().x,
 				gWorld.getPlayer().getBody().getPosition().y };
-		float velocity = gWorld.getPlayer().getBody().getLinearVelocity().x;
+		selfVelocityX = gWorld.getPlayer().getBody().getLinearVelocity().x;
+		selfVelocityY = gWorld.getPlayer().getBody().getLinearVelocity().y;
 		// if angle and position has changed
-		if ((playerPosition.get("Player " + id) != position) && (playerAngle.get("Player " + id) != angle)) {
+		if ((playerPosition.get("Player " + id) != selfPosition)
+				&& (playerAngle.get("Player " + id) != selfAngle)) {
 			// Update client Hashmap
-			playerPosition.put("Player " + id, position);
-			playerAngle.put("Player " + id, angle);
-			playerVelocity.put("Player " + id, velocity);
+			playerPosition.put("Player " + id, selfPosition);
+			playerAngle.put("Player " + id, selfAngle);
+			playerVelocity.put("Player " + id, new float[] { selfVelocityX, selfVelocityY });
 			// Update server
-			clientOutput.println("loc_" + id + "_" + Float.toString(position[0]) + "_"
-					+ Float.toString(position[1]) + "_" + Float.toString(angle) + "_"
-					+ Float.toString(velocity));
+			clientOutput.println("loc_" + id + "_" + Float.toString(selfPosition[0]) + "_"
+					+ Float.toString(selfPosition[1]) + "_" + Float.toString(selfAngle) + "_"
+					+ Float.toString(selfVelocityX) + "_" + Float.toString(selfVelocityY));
 			clientOutput.flush();
 			lastUpdated = System.currentTimeMillis();
 		}
@@ -742,12 +749,14 @@ public class MMClient {
 		else if (msg[0].equals("loc")) {
 			float[] position = { Float.parseFloat(msg[2]), Float.parseFloat(msg[3]) };
 			float angle = Float.parseFloat(msg[4]);
-			float velocity = Float.parseFloat(msg[5]);
+			float velocityX = Float.parseFloat(msg[5]);
+			float velocityY = Float.parseFloat(msg[6]);
 			playerPosition.put("Player " + msg[1], position);
 			playerAngle.put("Player " + msg[1], angle);
-			playerVelocity.put("Player " + msg[1], velocity);
+			playerVelocity.put("Player " + msg[1], new float[] { velocityX, velocityY });
 			// Get and change position of opponent
-			playerList.get(Integer.parseInt(msg[1])).setPosition(position[0], position[1], angle, velocity);
+			playerList.get(Integer.parseInt(msg[1])).setPosition(position[0], position[1], angle, velocityX,
+					velocityY);
 
 		} else if (msg[0].equals("pos")) {
 			// System.out.println("Change player " + msg[1] + " position");
@@ -759,8 +768,9 @@ public class MMClient {
 			playerAngle.put("Player " + Integer.parseInt(msg[1]), angle);
 		} else if (msg[0].equals("vel")) {
 			// System.out.println("Change player " + msg[1] + " velocity");
-			float velocity = Float.parseFloat(msg[2]);
-			playerVelocity.put("Player " + Integer.parseInt(msg[1]), velocity);
+			float velocityX = Float.parseFloat(msg[2]);
+			float velocityY = Float.parseFloat(msg[3]);
+			playerVelocity.put("Player " + Integer.parseInt(msg[1]), new float[] { velocityX, velocityY });
 		}
 
 		// Player Status updates
