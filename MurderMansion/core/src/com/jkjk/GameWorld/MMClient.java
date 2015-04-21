@@ -356,19 +356,20 @@ public class MMClient {
 			if (gc.isAlive() && !gc.isPlayer()) {
 				gc.update();
 			} else if (!gc.isAlive() && !gc.isPlayer()) {
-				currentPositionX = playerList.get(id).getBody().getPosition().x;
-				currentPositionY = playerList.get(id).getBody().getPosition().y;
+				if (!tutorial) {
+					currentPositionX = playerList.get(gc.getId()).getBody().getPosition().x;
+					currentPositionY = playerList.get(gc.getId()).getBody().getPosition().y;
 
-				gWorld.getWorld().destroyBody(playerList.get(id).getBody());
-				playerList.set(id, gameCharFac.createCharacter("Ghost", id, gWorld, false));
-				playerList.get(id).spawn(playerPosition.get("Player " + id)[0],
-						playerPosition.get("Player " + id)[1], playerAngle.get("Player " + id));
+					gWorld.getWorld().destroyBody(playerList.get(gc.getId()).getBody());
+					playerList.set(gc.getId(),
+							gameCharFac.createCharacter("Ghost", gc.getId(), gWorld, false));
+					playerList.get(gc.getId()).spawn(playerPosition.get("Player " + gc.getId())[0],
+							playerPosition.get("Player " + gc.getId())[1],
+							playerAngle.get("Player " + gc.getId()));
 
-				playerList.get(id).set_deathPositionX(currentPositionX);
-				playerList.get(id).set_deathPositionY(currentPositionY);
-			}
-			if (tutorial) {
-				if (!gc.isAlive() && !gc.isPlayer()) {
+					playerList.get(gc.getId()).set_deathPositionX(currentPositionX);
+					playerList.get(gc.getId()).set_deathPositionY(currentPositionY);
+				} else {
 					System.out.println("DUMMY IS DYING");
 					playerList.remove(1);
 					currentPositionX = dummy.getBody().getPosition().x;

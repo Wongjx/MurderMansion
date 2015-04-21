@@ -37,7 +37,6 @@ public class WeaponSprite {
 		fdef.filter.categoryBits = 5;
 		fdef.filter.maskBits = 1;
 		body.createFixture(fdef).setUserData("weapon");
-		body.setActive(false);
 		
 		batSpriteAnimation = AssetLoader.batSpriteAnimation;
 		knifeSpriteAnimation = AssetLoader.knifeSpriteAnimation;
