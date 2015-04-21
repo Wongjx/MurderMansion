@@ -10,6 +10,7 @@ import java.net.Socket;
 import java.net.SocketException;
 import java.net.SocketTimeoutException;
 import java.util.ArrayList;
+import java.util.Random;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
@@ -17,6 +18,7 @@ import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
+import com.jkjk.GameObjects.Duration;
 import com.jkjk.GameObjects.Obstacles;
 import com.jkjk.GameObjects.Characters.GameCharacter;
 import com.jkjk.GameObjects.Characters.GameCharacterFactory;
@@ -90,10 +92,19 @@ public class MMClient {
 	private boolean tutorial;
 	private GameCharacter dummy;
 
+	private float storeLightValue;
+	private Duration lightningDuration;
+	private Random random;
+
 	private ConcurrentLinkedQueue<float[]> itemSpawnQueue;
 	private ConcurrentLinkedQueue<float[]> weaponSpawnQueue;
 	private ConcurrentLinkedQueue<float[]> weaponPartSpawnQueue;
 	private ConcurrentLinkedQueue<float[]> trapSpawnQueue;
+	private ConcurrentLinkedQueue<Vector2> itemConsumeQueue;
+	private ConcurrentLinkedQueue<Vector2> weaponConsumeQueue;
+	private ConcurrentLinkedQueue<Vector2> weaponPartConsumeQueue;
+	private ConcurrentLinkedQueue<Vector2> obstacleConsumeQueue;
+	private ConcurrentLinkedQueue<Boolean> lightningQueue;
 
 	/**
 	 * Constructs the multiplayer world, including creation of opponents.
@@ -136,11 +147,18 @@ public class MMClient {
 		// Intialize String[] for participant names
 		this.clientNames = new String[numOfPlayers];
 
+		lightningDuration = new Duration(500);
+
 		obstaclesHandler = new ObstaclesHandler();
 		itemSpawnQueue = new ConcurrentLinkedQueue<float[]>();
 		weaponSpawnQueue = new ConcurrentLinkedQueue<float[]>();
 		weaponPartSpawnQueue = new ConcurrentLinkedQueue<float[]>();
 		trapSpawnQueue = new ConcurrentLinkedQueue<float[]>();
+		itemConsumeQueue = new ConcurrentLinkedQueue<Vector2>();
+		weaponConsumeQueue = new ConcurrentLinkedQueue<Vector2>();
+		weaponPartConsumeQueue = new ConcurrentLinkedQueue<Vector2>();
+		obstacleConsumeQueue = new ConcurrentLinkedQueue<Vector2>();
+		lightningQueue = new ConcurrentLinkedQueue<Boolean>();
 
 		String message;
 		// Receive item locations
@@ -385,21 +403,68 @@ public class MMClient {
 					playerList.add(dummy);
 				}
 			}
-			if (!itemSpawnQueue.isEmpty()) {
-				createItems(itemSpawnQueue.poll());
+		}
+
+		if (lightningDuration.isCountingDown()) {
+			lightningDuration.update();
+			if (!lightningDuration.isCountingDown()) {
+				gWorld.getPlayer().setAmbientLightValue(storeLightValue);
 			}
-			if (!weaponSpawnQueue.isEmpty()) {
-				createWeapons(weaponSpawnQueue.poll());
-			}
-			if (!weaponPartSpawnQueue.isEmpty()) {
-				createWeaponParts(weaponPartSpawnQueue.poll());
-			}
-			if (!trapSpawnQueue.isEmpty()) {
-				gWorld.createTrap(trapSpawnQueue.poll());
-			}
+		}
+
+		if (!itemSpawnQueue.isEmpty()) {
+			createItems(itemSpawnQueue.poll());
+		}
+		if (!weaponSpawnQueue.isEmpty()) {
+			createWeapons(weaponSpawnQueue.poll());
+		}
+		if (!weaponPartSpawnQueue.isEmpty()) {
+			createWeaponParts(weaponPartSpawnQueue.poll());
+		}
+		if (!trapSpawnQueue.isEmpty()) {
+			gWorld.createTrap(trapSpawnQueue.poll());
+		}
+		if (!itemConsumeQueue.isEmpty()) {
+			consumeItems(itemConsumeQueue.poll());
+		}
+		if (!weaponConsumeQueue.isEmpty()) {
+			consumeWeapons(weaponConsumeQueue.poll());
+		}
+		if (!weaponPartConsumeQueue.isEmpty()) {
+			consumeWeaponParts(weaponPartConsumeQueue.poll());
+		}
+		if (!obstacleConsumeQueue.isEmpty()) {
+			gWorld.removeObstacle(obstacleConsumeQueue.poll());
+		}
+		if (!lightningQueue.isEmpty()) {
+			lightningStrike();
+			lightningQueue.poll();
 		}
 		updatePlayerLocation();
 		updatePlayerIsinSafeArea();
+	}
+
+	public void consumeItems(Vector2 position) {
+		gWorld.getWorld().destroyBody(gWorld.getItemList().get(position).getBody());
+		gWorld.getItemList().remove(position);
+	}
+
+	public void consumeWeapons(Vector2 position) {
+		gWorld.getWorld().destroyBody(gWorld.getWeaponList().get(position).getBody());
+		gWorld.getWeaponList().remove(position);
+	}
+
+	public void consumeWeaponParts(Vector2 position) {
+		gWorld.getWorld().destroyBody(gWorld.getWeaponPartList().get(position).getBody());
+		gWorld.getWeaponPartList().remove(position);
+	}
+
+	public void lightningStrike() {
+		lightningDuration = new Duration(300 + random.nextInt(500));
+		lightningDuration.startCountdown();
+		storeLightValue = gWorld.getPlayer().getAmbientLightValue();
+		gWorld.getPlayer().setAmbientLightValue(0.8f);
+		AssetLoader.lightningSound.play(AssetLoader.VOLUME);
 	}
 
 	public void produceItemLocation(Vector2 position) {
@@ -833,9 +898,7 @@ public class MMClient {
 			if (msg[2].equals("con")) {
 				System.out.println("Client: Consume item");
 				Vector2 position = new Vector2(Float.parseFloat(msg[3]), Float.parseFloat(msg[4]));
-				gWorld.getItemList().get(position).getBody().setActive(false);
-				gWorld.getItemList().get(position).getBody().setTransform(0, 0, 0);
-				gWorld.getItemList().remove(position);
+				itemConsumeQueue.offer(position);
 
 			} else if (msg[2].equals("pro")) {
 				System.out.println("Client: Produce item");
@@ -845,9 +908,7 @@ public class MMClient {
 			if (msg[2].equals("con")) {
 				System.out.println("Client: Consume weapon");
 				Vector2 position = new Vector2(Float.parseFloat(msg[3]), Float.parseFloat(msg[4]));
-				gWorld.getWeaponList().get(position).getBody().setActive(false);
-				gWorld.getWeaponList().get(position).getBody().setTransform(0, 0, 0);
-				gWorld.getWeaponList().remove(position);
+				weaponConsumeQueue.offer(position);
 			} else if (msg[2].equals("pro")) {
 				System.out.println("Client: Produce weapon");
 				weaponSpawnQueue.add(new float[] { Float.parseFloat(msg[3]), Float.parseFloat(msg[4]) });
@@ -856,9 +917,7 @@ public class MMClient {
 			if (msg[2].equals("con")) {
 				System.out.println("Client: Consume WP");
 				Vector2 position = new Vector2(Float.parseFloat(msg[3]), Float.parseFloat(msg[4]));
-				gWorld.getWeaponPartList().get(position).getBody().setActive(false);
-				gWorld.getWeaponPartList().get(position).getBody().setTransform(0, 0, 0);
-				gWorld.getWeaponPartList().remove(position);
+				weaponPartConsumeQueue.offer(position);
 			} else if (msg[2].equals("pro")) {
 				System.out.println("Client: Produce weaponpart");
 				weaponPartSpawnQueue.add(new float[] { Float.parseFloat(msg[3]), Float.parseFloat(msg[4]) });
@@ -881,7 +940,7 @@ public class MMClient {
 		else if (msg[0].equals("obstacle")) {
 			System.out.println("Remove obstacle @ x:" + msg[1] + " y: " + msg[2]);
 			Vector2 location = new Vector2(Float.parseFloat(msg[1]), Float.parseFloat(msg[2]));
-			gWorld.removeObstacle(location);
+			obstacleConsumeQueue.offer(location);
 
 			if (gWorld.getObstacleList().isEmpty())
 				AssetLoader.obstacleSoundmd.play();
@@ -890,7 +949,7 @@ public class MMClient {
 		}
 
 		else if (msg[0].equals("lightning")) {
-			gWorld.lightningStrike();
+			lightningQueue.offer(true);
 		}
 
 		else if (msg[0].equals("win")) {
