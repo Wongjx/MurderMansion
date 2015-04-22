@@ -48,18 +48,27 @@ public class MMContactListener implements ContactListener {
 		fbUD = fb.getUserData();
 
 		if (faUD != null && fbUD != null) {
-			 System.out.println("Begin contact: fa: " + faUD + ", fb: " + fbUD);
+			System.out.println("Begin contact: fa: " + faUD + ", fb: " + fbUD);
 			if (faUD.equals("player") || fbUD.equals("player")) {
 				if (faUD.equals("item") && gWorld.getPlayer().getItem() == null) {
-					itemsToRemove.offer(fa.getBody());
-				} else if (fbUD.equals("item") && gWorld.getPlayer().getItem() == null) {
-					itemsToRemove.offer(fb.getBody());
-				} else if (fbUD.equals("weapon") && gWorld.getPlayer().getWeapon() == null) {
-					weaponsToRemove.offer(fb.getBody());
-					System.out.println("HERE A");
-				} else if (faUD.equals("weapon") && gWorld.getPlayer().getWeapon() == null) {
-					weaponsToRemove.offer(fa.getBody());
-					System.out.println("HERE B");
+					if (!gWorld.getPlayer().getType().equals("Ghost")) {
+						itemsToRemove.offer(fa.getBody());
+					}
+				} else if (fbUD.equals("item")
+						&& gWorld.getPlayer().getItem() == null) {
+					if (!gWorld.getPlayer().getType().equals("Ghost")) {
+						itemsToRemove.offer(fb.getBody());
+					}
+				} else if (fbUD.equals("weapon")
+						&& gWorld.getPlayer().getWeapon() == null) {
+					if (!gWorld.getPlayer().getType().equals("Ghost")) {
+						weaponsToRemove.offer(fb.getBody());
+					}
+				} else if (faUD.equals("weapon")
+						&& gWorld.getPlayer().getWeapon() == null) {
+					if (!gWorld.getPlayer().getType().equals("Ghost")) {
+						weaponsToRemove.offer(fa.getBody());
+					}
 				} else if (faUD.equals("weapon part")) {
 					if (!gWorld.getPlayer().getType().equals("Ghost")) {
 						weaponPartsToRemove.offer(fa.getBody());
@@ -131,7 +140,8 @@ public class MMContactListener implements ContactListener {
 					if (!gWorld.getPlayer().getType().equals("Ghost")) {
 						gWorld.getPlayer().haunt(true);
 					}
-				} else if (faUD.equals("saferegion") || fbUD.equals("saferegion")) {
+				} else if (faUD.equals("saferegion")
+						|| fbUD.equals("saferegion")) {
 					gWorld.setInSafeArea(true);
 				}
 			} else if (faUD.equals("dummy") || fbUD.equals("dummy")) {
@@ -169,14 +179,16 @@ public class MMContactListener implements ContactListener {
 				}
 			} else {
 
-				if (faUD.equals("pre disarm trap") || fbUD.equals("pre disarm trap")) {
+				if (faUD.equals("pre disarm trap")
+						|| fbUD.equals("pre disarm trap")) {
 					AssetLoader.disarmTrapSound.play(AssetLoader.VOLUME);
 					if (faUD.equals("trap") || fbUD.equals("trap")) {
 						((DisarmTrap) gWorld.getPlayer().getItem()).foundTrap();
 					}
 				}
 
-				if (faUD.equals("post disarm trap") || fbUD.equals("post disarm trap")) {
+				if (faUD.equals("post disarm trap")
+						|| fbUD.equals("post disarm trap")) {
 					AssetLoader.trapDisarmedSound.play(AssetLoader.VOLUME);
 					if (faUD.equals("trap")) {
 						trapToRemove.offer(fa.getBody());
