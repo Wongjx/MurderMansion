@@ -55,7 +55,7 @@ public class Murderer extends GameCharacter {
 		body.createFixture(fdef).setUserData("murderer");
 
 		// create light
-		pointLight = new PointLight(rayHandler, 100, null, 120, 0, 0);
+		pointLight = new PointLight(rayHandler, 100, null, 110, 0, 0);
 		pointLight.attachToBody(body);
 		Light.setContactFilter((short) 2, (short) 2, (short) 1);
 		disguised = true;

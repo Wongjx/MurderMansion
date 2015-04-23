@@ -334,7 +334,7 @@ public class MMClient {
 		dummy = gameCharFac.createCharacter("Civilian", 100, gWorld, false);
 		dummy.getBody().setType(BodyType.KinematicBody);
 		dummy.getBody().getFixtureList().get(0).setUserData("dummy");
-		dummy.spawn(gWorld.getPlayer().getBody().getPosition().x - 60, gWorld.getPlayer().getBody()
+		dummy.spawn(gWorld.getPlayer().getBody().getPosition().x - 40, gWorld.getPlayer().getBody()
 				.getPosition().y, 0);
 		playerList.add(dummy);
 		gWorld.setDummy(dummy);
@@ -510,16 +510,6 @@ public class MMClient {
 		storeLightValue = gWorld.getPlayer().getAmbientLightValue();
 		gWorld.getPlayer().setAmbientLightValue(0.8f);
 		AssetLoader.lightningSound.play(AssetLoader.VOLUME);
-	}
-
-	public void produceItemLocation(Vector2 position) {
-		clientOutput.println("item_" + id + "_pro_" + Float.toString(position.x) + "_"
-				+ Float.toString(position.y));
-	}
-
-	public void produceWeaponLocation(Vector2 position) {
-		clientOutput.println("weapon_" + id + "_pro_" + Float.toString(position.x) + "_"
-				+ Float.toString(position.y));
 	}
 
 	public void produceTrapLocation(float x, float y) {
@@ -776,8 +766,10 @@ public class MMClient {
 	 */
 	private void weaponUsed(int id) {
 		if (playerType.get("Player " + id) == 0) {
-			playerList.get(id).addWeapon(weaponFac.createWeapon("Knife", gWorld, playerList.get(id)));
-		} else if (playerType.get("Player " + id) == 1) {
+			if (playerList.get(id).getWeapon() == null) {
+				playerList.get(id).addWeapon(weaponFac.createWeapon("Knife", gWorld, playerList.get(id)));
+			}
+		} else {
 			if (playerList.get(id).getWeapon() == null) {
 				playerList.get(id).addWeapon(weaponFac.createWeapon("Bat", gWorld, playerList.get(id)));
 			}
@@ -987,11 +979,6 @@ public class MMClient {
 			System.out.println("Remove obstacle @ x:" + msg[1] + " y: " + msg[2]);
 			Vector2 location = new Vector2(Float.parseFloat(msg[1]), Float.parseFloat(msg[2]));
 			obstacleConsumeQueue.offer(location);
-
-			if (gWorld.getObstacleList().isEmpty())
-				AssetLoader.obstacleSoundmd.play();
-			else
-				AssetLoader.obstacleSFX();
 		}
 
 		else if (msg[0].equals("lightning")) {

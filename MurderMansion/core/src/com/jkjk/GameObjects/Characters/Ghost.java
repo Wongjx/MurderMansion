@@ -102,7 +102,6 @@ public class Ghost extends GameCharacter {
 		WeaponSprite ws = new WeaponSprite(gWorld);
 		gWorld.getWeaponList().put(spawnLocation, ws);
 		ws.spawn(spawnLocation.x, spawnLocation.y, 0);
-		gWorld.getWeaponsToAdd().add(spawnLocation);
 		weapon = null;
 		weaponChange = true;
 		return true;
@@ -115,7 +114,6 @@ public class Ghost extends GameCharacter {
 		ItemSprite is = new ItemSprite(gWorld);
 		gWorld.getItemList().put(spawnLocation, is);
 		is.spawn(spawnLocation.x, spawnLocation.y, 0);
-		gWorld.getItemsToAdd().add(spawnLocation);
 		item = null;
 		itemChange = true;
 	}

@@ -62,7 +62,6 @@ public class GameWorld {
 	private MMContactListener cl;
 
 	private ConcurrentLinkedQueue<Body> itemsToRemove, weaponsToRemove, weaponPartsToRemove, trapToRemove;
-	private ConcurrentLinkedQueue<Vector2> itemsToAdd, weaponsToAdd;
 	private Body bodyToRemove;
 	private Vector2 bodyToAdd;
 	private Trap trapToCreate;
@@ -75,7 +74,7 @@ public class GameWorld {
 	private ToastMessage TM;
 	private boolean tutorial;
 	private GameCharacter dummy;
-	
+
 	private boolean prevStun;
 
 	/**
@@ -98,8 +97,6 @@ public class GameWorld {
 		weaponsToRemove = cl.getWeaponsToRemove();
 		weaponPartsToRemove = cl.getWeaponPartsToRemove();
 		trapToRemove = cl.getTrapToRemove();
-		itemsToAdd = new ConcurrentLinkedQueue<Vector2>();
-		weaponsToAdd = new ConcurrentLinkedQueue<Vector2>();
 
 		gameCharFac = new GameCharacterFactory();
 		rayHandler = new RayHandler(world);
@@ -155,7 +152,7 @@ public class GameWorld {
 
 	public void createTutorialWeapon() {
 		WeaponSprite ws = new WeaponSprite(this);
-		Vector2 location2 = new Vector2(player.getBody().getPosition().x - 60,
+		Vector2 location2 = new Vector2(player.getBody().getPosition().x - 50,
 				player.getBody().getPosition().y);
 		getWeaponList().put(location2, ws);
 		ws.spawn(location2.x, location2.y, 0);
@@ -164,7 +161,7 @@ public class GameWorld {
 
 	public void createTutorialItem() {
 		ItemSprite is = new ItemSprite(this);
-		Vector2 location = new Vector2(player.getBody().getPosition().x - 40,
+		Vector2 location = new Vector2(player.getBody().getPosition().x - 30,
 				player.getBody().getPosition().y);
 		getItemList().put(location, is);
 		is.spawn(location.x, location.y, 0);
@@ -174,7 +171,7 @@ public class GameWorld {
 	public void createTutorialWP() {
 		for (int i = 0; i < 2; i++) {
 			WeaponPartSprite wps = new WeaponPartSprite(this);
-			Vector2 location = new Vector2(player.getBody().getPosition().x - 40 - (30 * i), player.getBody()
+			Vector2 location = new Vector2(player.getBody().getPosition().x - 30 - (30 * i), player.getBody()
 					.getPosition().y);
 			getWeaponPartList().put(location, wps);
 			wps.spawn(location.x, location.y, 0);
@@ -258,10 +255,6 @@ public class GameWorld {
 			else
 				player.addItem(itemFac.createItem("Disarm Trap", this, client, player));
 		}
-		bodyToAdd = itemsToAdd.poll();
-		if (bodyToAdd != null) {
-			client.produceItemLocation(bodyToAdd);
-		}
 	}
 
 	/**
@@ -279,10 +272,6 @@ public class GameWorld {
 				player.addWeapon(weaponFac.createWeapon("Knife", this, player));
 			else
 				player.addWeapon(weaponFac.createWeapon("Bat", this, player));
-		}
-		bodyToAdd = weaponsToAdd.poll();
-		if (bodyToAdd != null) {
-			client.produceWeaponLocation(bodyToAdd);
 		}
 	}
 
@@ -323,7 +312,7 @@ public class GameWorld {
 			client.updatePlayerIsStun(client.getId(), 1);
 			TM.setDisplayMessage("You have been Stunned");
 		}
-		if (!player.isStun()){
+		if (!player.isStun()) {
 			prevStun = false;
 		}
 	}
@@ -380,14 +369,17 @@ public class GameWorld {
 		obstacleList.get(location).getBody().setTransform(0, 0, 0);
 		obstacleList.remove(location);
 		if (obstacleList.size() == 0) {
-			if (player.getType() == "Civilian")
+			if (player.getType() == "Civilian") {
 				TM.setDisplayMessage("The mansion door to the East creaks open... Run! Now!");
-			else if (player.getType() == "Murderer")
+			} else if (player.getType() == "Murderer") {
 				TM.setDisplayMessage("The mansion door to the East creaks open... Stop them! Now!");
-			else if (player.getType() == "Ghost")
+			} else if (player.getType() == "Ghost") {
 				TM.setDisplayMessage("Your spirit is forever trapped in JK's playhouse...");
+			}
+			AssetLoader.obstacleSoundmd.play();
 		} else {
 			TM.setDisplayMessage("An Obstacle Mysteriously Disappears...");
+			AssetLoader.obstacleSFX();
 		}
 	}
 
@@ -457,14 +449,6 @@ public class GameWorld {
 		else
 			TM.setDisplayMessage("Are you crazy? Don't go back in!");
 		this.inSafeArea = inSafeArea;
-	}
-
-	public ConcurrentLinkedQueue<Vector2> getItemsToAdd() {
-		return itemsToAdd;
-	}
-
-	public ConcurrentLinkedQueue<Vector2> getWeaponsToAdd() {
-		return weaponsToAdd;
 	}
 
 	public RayHandler getRayHandler() {
@@ -551,8 +535,6 @@ public class GameWorld {
 		weaponsToRemove = null;
 		weaponPartsToRemove = null;
 		trapToRemove = null;
-		itemsToAdd = null;
-		weaponsToAdd = null;
 
 		gameCharFac = null;
 		rayHandler = null;
