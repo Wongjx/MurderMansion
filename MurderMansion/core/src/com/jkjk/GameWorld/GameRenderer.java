@@ -100,7 +100,6 @@ public class GameRenderer {
 		if (gWorld.getPlayer().isAlive()) {
 			gWorld.getPlayer().render(cam, batch);
 		}
-		System.out.println("Update cam");
 		cam.update(); // Update cam
 
 		// b2dr.render(gWorld.getWorld(), cam.combined); // Renders box2d world

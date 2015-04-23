@@ -69,9 +69,7 @@ public class GameScreen implements Screen {
 						gameHeight, client));
 			}
 		}
-//		System.out.println("Disconnect and Win check pass");
 		runTime += delta;
-//		System.out.println("Run time add");
 		gWorld.update(delta, client);
 
 		renderer.render(delta, runTime, client);

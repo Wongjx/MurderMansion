@@ -74,7 +74,7 @@ public abstract class GameCharacter {
 		this.isPlayer = isPlayer;
 		maxVelocity = 56;
 		weaponUses = 3;
-		if (type == "Murderer"){
+		if (type == "Murderer") {
 			weaponUses = 2;
 		}
 		touchpad = AssetLoader.touchpad;
@@ -316,10 +316,9 @@ public abstract class GameCharacter {
 
 	public void render(OrthographicCamera cam, SpriteBatch batch) {
 		if (isPlayer) {
-			
+
 			brightTime = System.currentTimeMillis() - startTime;
-			
-			
+
 			if (brightTime > nextBrightTime) {
 				System.out.println("BRIGHTER!");
 				ambientLightValue += 0.009;
@@ -335,15 +334,9 @@ public abstract class GameCharacter {
 			}
 
 			cam.position.set(body.getPosition(), 0); // Set cam position to be on player
-			
+
 			rayHandler.setCombinedMatrix(cam.combined);
-			try {
-				rayHandler.updateAndRender();
-			} catch (Exception e) {
-				e.printStackTrace();
-				System.out.println("EXCEPTION AT GAMECHARACTER");
-			}
-			System.out.println("Finish render!");
+			rayHandler.updateAndRender();
 		}
 	}
 
@@ -404,7 +397,7 @@ public abstract class GameCharacter {
 	}
 
 	public void setPosition(float x, float y, float angle, float velocityX, float velocityY) {
-		for (int i = 0; i < positionQueue.size(); i++){
+		for (int i = 0; i < positionQueue.size(); i++) {
 			positionQueue.poll();
 			angleQueue.poll();
 			velocityQueue.poll();

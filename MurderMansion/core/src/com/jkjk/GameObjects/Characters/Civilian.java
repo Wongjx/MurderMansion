@@ -65,7 +65,7 @@ public class Civilian extends GameCharacter {
 		coneLight = new ConeLight(rayHandler, 100, null, 150, 0, 0, 0, 40);
 		coneLight.attachToBody(body, 0, 0);
 		Light.setContactFilter((short) 2, (short) 2, (short) 1);
-		pointLight = new PointLight(rayHandler, 100, null, 30, 0, 0);
+		pointLight = new PointLight(rayHandler, 100, null, 35, 0, 0);
 		pointLight.attachToBody(body);
 
 		// INITIATE ANIMATIONS
