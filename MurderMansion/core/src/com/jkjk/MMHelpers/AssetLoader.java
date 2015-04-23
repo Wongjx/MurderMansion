@@ -537,7 +537,7 @@ public class AssetLoader {
 		civBatAnimation0 = new Animation(0.1f, Arrays.copyOfRange(civilianTR0[3], 0, 3));
 		civBatAnimation0.setPlayMode(PlayMode.NORMAL);
 
-		civShotgunAnimation0 = new Animation(0.2f, Arrays.copyOfRange(civilianTR0[4], 0, 3));
+		civShotgunAnimation0 = new Animation(0.1f, Arrays.copyOfRange(civilianTR0[4], 0, 3));
 		civShotgunAnimation0.setPlayMode(PlayMode.NORMAL);
 
 		civDisarmAnimation0 = new Animation(0.3f, civilianTR0[5]);
@@ -573,7 +573,7 @@ public class AssetLoader {
 		civBatAnimation1 = new Animation(0.1f, Arrays.copyOfRange(civilianTR1[3], 0, 3));
 		civBatAnimation1.setPlayMode(PlayMode.NORMAL);
 
-		civShotgunAnimation1 = new Animation(0.2f, Arrays.copyOfRange(civilianTR1[4], 0, 3));
+		civShotgunAnimation1 = new Animation(0.1f, Arrays.copyOfRange(civilianTR1[4], 0, 3));
 		civShotgunAnimation1.setPlayMode(PlayMode.NORMAL);
 
 		civDisarmAnimation1 = new Animation(0.3f, civilianTR1[5]);
@@ -609,7 +609,7 @@ public class AssetLoader {
 		civBatAnimation2 = new Animation(0.1f, Arrays.copyOfRange(civilianTR2[3], 0, 3));
 		civBatAnimation2.setPlayMode(PlayMode.NORMAL);
 
-		civShotgunAnimation2 = new Animation(0.2f, Arrays.copyOfRange(civilianTR2[4], 0, 3));
+		civShotgunAnimation2 = new Animation(0.1f, Arrays.copyOfRange(civilianTR2[4], 0, 3));
 		civShotgunAnimation2.setPlayMode(PlayMode.NORMAL);
 
 		civDisarmAnimation2 = new Animation(0.3f, civilianTR2[5]);
@@ -645,7 +645,7 @@ public class AssetLoader {
 		civBatAnimation3 = new Animation(0.1f, Arrays.copyOfRange(civilianTR3[3], 0, 3));
 		civBatAnimation3.setPlayMode(PlayMode.NORMAL);
 
-		civShotgunAnimation3 = new Animation(0.2f, Arrays.copyOfRange(civilianTR3[4], 0, 3));
+		civShotgunAnimation3 = new Animation(0.1f, Arrays.copyOfRange(civilianTR3[4], 0, 3));
 		civShotgunAnimation3.setPlayMode(PlayMode.NORMAL);
 
 		civDisarmAnimation3 = new Animation(0.3f, civilianTR3[5]);
@@ -675,7 +675,7 @@ public class AssetLoader {
 			murStun[i + 1] = murStunParts[1];
 			murStun[i + 2] = murStunParts[2];
 		}
-		murStunAnimation = new Animation(0.208f, murStun);
+		murStunAnimation = new Animation(0.2f, murStun);
 		murStunAnimation.setPlayMode(PlayMode.NORMAL);
 
 		murKnifeAnimation = new Animation(0.1f, Arrays.copyOfRange(murTR[2], 0, 4));

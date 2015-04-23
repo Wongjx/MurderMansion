@@ -29,6 +29,7 @@ public abstract class GameCharacter {
 
 	private boolean alive;
 	protected boolean itemChange, weaponChange, abilityChange;
+	private boolean movable;
 	private boolean stun;
 	private boolean haunt;
 	private Duration stunDuration;
@@ -57,7 +58,7 @@ public abstract class GameCharacter {
 	private long nextRandomMovement;
 
 	protected float runTime;
-	protected float ambientLightValue;
+	private float ambientLightValue;
 	private int nextBrightTime;
 	private long startTime;
 	private long brightTime;
@@ -73,9 +74,10 @@ public abstract class GameCharacter {
 	GameCharacter(String type, int id, GameWorld gWorld, boolean isPlayer) {
 		this.isPlayer = isPlayer;
 		maxVelocity = 56;
-		weaponUses = 3;
 		if (type == "Murderer") {
 			weaponUses = 2;
+		} else {
+			weaponUses = 3;
 		}
 		touchpad = AssetLoader.touchpad;
 		stunDuration = new Duration(3000);
@@ -112,6 +114,8 @@ public abstract class GameCharacter {
 		nextPosition = new float[2];
 		nextAngle = new Float(0);
 		nextVelocity = new float[2];
+
+		movable = true;
 
 	}
 
@@ -162,12 +166,21 @@ public abstract class GameCharacter {
 	}
 
 	public void stun() {
+		movable = false;
 		stun = true;
 		stunDuration.startCountdown();
 	}
 
 	public boolean isStun() {
 		return stun;
+	}
+
+	public boolean isMovable() {
+		return movable;
+	}
+
+	public void setMovable(boolean movable) {
+		this.movable = movable;
 	}
 
 	public void haunt(boolean haunt) {
@@ -207,7 +220,12 @@ public abstract class GameCharacter {
 	public void addWeapon(Weapon weapon) {
 		this.weapon = weapon;
 		weaponChange = true;
-		weaponUses = 3;
+		if (type == "Murderer") {
+			weaponUses = 2;
+		} else {
+			weaponUses = 3;
+		}
+
 	}
 
 	public Weapon getWeapon() {
@@ -290,6 +308,9 @@ public abstract class GameCharacter {
 			if (weapon.isCompleted() && weaponUses == 0) {
 				weapon = null;
 				weaponChange = true;
+				if (isPlayer){
+					gWorld.getTM().setDisplayMessage("Your weapon broke after too much use");
+				}
 			}
 		}
 		if (item != null) {
@@ -304,8 +325,10 @@ public abstract class GameCharacter {
 		}
 		if (stun) {
 			stunDuration.update();
-			if (!stunDuration.isCountingDown())
+			if (!stunDuration.isCountingDown()) {
+				movable = true;
 				stun = false;
+			}
 		}
 		if (haunt) {
 			hauntDuration.update();
@@ -326,7 +349,7 @@ public abstract class GameCharacter {
 				nextBrightTime += 10000;
 			}
 
-			if (checkMovable()) {
+			if (movable) {
 				playerMovement();
 			} else {
 				body.setAngularVelocity(0);
@@ -338,16 +361,6 @@ public abstract class GameCharacter {
 			rayHandler.setCombinedMatrix(cam.combined);
 			rayHandler.updateAndRender();
 		}
-	}
-
-	protected boolean checkMovable() {
-		if (stun) {
-			return false;
-		}
-		if (item != null)
-			if (item.inUse())
-				return false;
-		return true;
 	}
 
 	protected void playerMovement() {

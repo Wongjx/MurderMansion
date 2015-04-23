@@ -117,7 +117,7 @@ public class Murderer extends GameCharacter {
 			batch.begin();
 
 			if (currentAnimation == AssetLoader.murAnimation || currentAnimation == civWalkAnimation) {
-				if (!body.getLinearVelocity().isZero() && checkMovable()) {
+				if (!body.getLinearVelocity().isZero() && isMovable()) {
 					if (!walkSound.isPlaying() && isPlayer()) {
 						walkSound.play();
 					}
@@ -154,8 +154,6 @@ public class Murderer extends GameCharacter {
 						body.setUserData(civWalkAnimation);
 					}
 				} else {// disable touchpad while special animation occurs.
-					body.setLinearVelocity(0, 0);
-					body.setAngularVelocity(0);
 					batch.draw(currentAnimation.getKeyFrame(animationRunTime, true),
 							body.getPosition().x - 9, body.getPosition().y - 9, 9, 9, 18, 18, 6f, 6f,
 							(float) (body.getAngle() * 180 / Math.PI) - 90);
@@ -183,7 +181,7 @@ public class Murderer extends GameCharacter {
 
 	@Override
 	public boolean useAbility() {
-		if (!isStun()) {
+		if (isMovable()) {
 			if (super.useAbility()) {
 				abilityChange = true;
 				if (seen) {
@@ -211,7 +209,7 @@ public class Murderer extends GameCharacter {
 	}
 
 	public boolean useWeapon() {
-		if (!isStun()) {
+		if (isMovable()) {
 			if (!disguised) {
 				if (super.useWeapon()) {
 					if (seen) {
@@ -231,7 +229,7 @@ public class Murderer extends GameCharacter {
 	}
 
 	public void useItem() {
-		if (!isStun()) {
+		if (isMovable()) {
 			super.useItem();
 			if (seen) {
 				if (disguised) {

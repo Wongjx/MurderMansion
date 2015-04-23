@@ -312,7 +312,7 @@ public class GameWorld {
 			client.updatePlayerIsStun(client.getId(), 1);
 			TM.setDisplayMessage("You have been Stunned");
 		}
-		if (!player.isStun()) {
+		if (player.isStun()) {
 			prevStun = false;
 		}
 	}
@@ -370,9 +370,9 @@ public class GameWorld {
 		obstacleList.remove(location);
 		if (obstacleList.size() == 0) {
 			if (player.getType() == "Civilian") {
-				TM.setDisplayMessage("The mansion door to the East creaks open... Run! Now!");
+				TM.setDisplayMessage("The mansion door to the East creaks open... Run!");
 			} else if (player.getType() == "Murderer") {
-				TM.setDisplayMessage("The mansion door to the East creaks open... Stop them! Now!");
+				TM.setDisplayMessage("The mansion door to the East creaks open... Stop them!");
 			} else if (player.getType() == "Ghost") {
 				TM.setDisplayMessage("Your spirit is forever trapped in JK's playhouse...");
 			}
@@ -527,10 +527,6 @@ public class GameWorld {
 		world.dispose();
 		cl = null;
 
-		// world = new World(new Vector2(0, 0), true);
-		// cl = MMContactListener.getInstance(this);
-		// world.setContactListener(cl);
-
 		itemsToRemove = null;
 		weaponsToRemove = null;
 		weaponPartsToRemove = null;
@@ -551,8 +547,6 @@ public class GameWorld {
 		obstacleList = null;
 
 		gameOverTimer = null;
-
-		Box2DMapObjectParser parser = null;
 	}
 
 }

@@ -136,7 +136,7 @@ public class Civilian extends GameCharacter {
 				if (((Panic) ability).getStatus() == false) {
 					body.setUserData(civWalkAnimation);
 				}
-				if (!body.getLinearVelocity().isZero() && checkMovable()) {
+				if (!body.getLinearVelocity().isZero() && isMovable()) {
 					if (walkSound.isPlaying() && isPlayer()) {
 						walkSound.stop();
 					}
@@ -155,7 +155,7 @@ public class Civilian extends GameCharacter {
 							18, 6f, 6f, (float) (body.getAngle() * 180 / Math.PI) - 90);
 				}
 			} else if (currentAnimation == civWalkAnimation) {
-				if (!body.getLinearVelocity().isZero() && checkMovable()) {
+				if (!body.getLinearVelocity().isZero() && isMovable()) {
 					if (!walkSound.isPlaying() && isPlayer()) {
 						walkSound.play();
 					}
@@ -179,8 +179,6 @@ public class Civilian extends GameCharacter {
 					animationRunTime = 0;
 					body.setUserData(civWalkAnimation);
 				} else {
-					body.setLinearVelocity(0, 0);
-					body.setAngularVelocity(0);
 					batch.draw(currentAnimation.getKeyFrame(animationRunTime, true),
 							body.getPosition().x - 9, body.getPosition().y - 9, 9, 9, 18, 18, 6f, 6f,
 							(float) (body.getAngle() * 180 / Math.PI) - 90);
@@ -203,7 +201,7 @@ public class Civilian extends GameCharacter {
 	}
 
 	public boolean useAbility() {// panic
-		if (!isStun()) {
+		if (isMovable()) {
 			if (super.useAbility()) {
 				if (seen)
 					body.setUserData(civPanicAnimation);
@@ -224,7 +222,7 @@ public class Civilian extends GameCharacter {
 	}
 
 	public boolean useWeapon() {// bat
-		if (!isStun()) {
+		if (isMovable()) {
 			if (currentAnimation == civWalkAnimation || currentAnimation == civPanicAnimation) {
 				if (super.useWeapon()) {// boolean
 					if (weapon.getName().equals("Shotgun")) {
@@ -242,7 +240,7 @@ public class Civilian extends GameCharacter {
 	}
 
 	public void useItem() {
-		if (!isStun()) {
+		if (isMovable()) {
 			super.useItem();
 			if (seen)
 				body.setUserData(civDisarmAnimation);

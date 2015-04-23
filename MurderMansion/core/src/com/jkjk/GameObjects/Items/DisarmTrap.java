@@ -95,7 +95,7 @@ public class DisarmTrap extends Item {
 		postDisarmBody.setTransform(playerPosition.x, playerPosition.y, playerAngle);
 
 		hitBoxExposure.startCountdown();
-
+		super.endUse();
 	}
 
 	@Override

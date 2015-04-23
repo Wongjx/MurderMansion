@@ -1,5 +1,7 @@
 package com.jkjk.Screens;
 
+import java.io.IOException;
+
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
@@ -93,7 +95,14 @@ public class GameScreen implements Screen {
 
 	@Override
 	public void pause() {
-		// TODO Auto-generated method stub
+		try {
+			if (client != null)
+				client.endSession();
+			if (info.isServer && server != null)
+				server.endSession();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 
 	}
 
@@ -105,7 +114,14 @@ public class GameScreen implements Screen {
 
 	@Override
 	public void hide() {
-		// TODO Auto-generated method stub
+		try {
+			if (client != null)
+				client.endSession();
+			if (info.isServer && server != null)
+				server.endSession();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 		dispose();
 
 	}
@@ -126,7 +142,7 @@ class MMServerThread extends Thread {
 	}
 
 	public void run() {
-		while (true) {
+		while (!isInterrupted()) {
 			try {
 				Thread.sleep(2);
 			} catch (InterruptedException e) {

@@ -14,10 +14,12 @@ public abstract class Weapon {
 	protected String name;
 	protected float runTime;
 	private boolean isCompleted;
+	private GameCharacter character;
 
 	Weapon(GameWorld gWorld, GameCharacter character) {
 		cooldown = new Duration(5000);
-		hitBoxExposure = new Duration(50);
+		this.character = character;
+		hitBoxExposure = new Duration(300);
 		this.gWorld = gWorld;
 		runTime = 0;
 		isCompleted = false;
@@ -33,6 +35,7 @@ public abstract class Weapon {
 
 	public void use() {
 		isCompleted = false;
+		character.setMovable(false);
 	}
 
 	public void cooldown() {
@@ -51,6 +54,7 @@ public abstract class Weapon {
 				body.setActive(false);
 				body.setTransform(0, 0, 0);
 				isCompleted = true;
+				character.setMovable(true);
 			}
 		}
 

@@ -30,7 +30,6 @@ public class Panic extends Ability {
 		super.update();
 		duration.update();
 		if (!duration.isCountingDown() && active){
-			//gameCharacter.getBody().setUserData(AssetLoader.civAnimation);
 			gameCharacter.setVelocity(gameCharacter.getVelocity()/1.5f);
 			active = false;
 		}

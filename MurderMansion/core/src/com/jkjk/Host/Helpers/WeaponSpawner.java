@@ -24,6 +24,7 @@ public class WeaponSpawner {
 		weaponLocations.add(new Location(new float[] { 2140.6f, 576.4f }));
 		weaponLocations.add(new Location(new float[] { 2073, 134 }));
 		weaponLocations.add(new Location(new float[] { 3580.26f, 531 }));
+		weaponLocations.add(new Location(new float[] { 896.9f, 335.57f }));
 
 		randInt = new Random();
 	}

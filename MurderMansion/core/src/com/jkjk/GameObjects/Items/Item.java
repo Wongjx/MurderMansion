@@ -1,6 +1,5 @@
 package com.jkjk.GameObjects.Items;
 
-import com.badlogic.gdx.physics.box2d.Body;
 import com.jkjk.GameObjects.Duration;
 import com.jkjk.GameObjects.Characters.GameCharacter;
 import com.jkjk.GameWorld.GameWorld;
@@ -12,9 +11,11 @@ public abstract class Item {
 	private Duration executionTime;
 	private boolean wasInUse;
 	protected boolean isInterrupted;
+	private GameCharacter character;
 
 	Item(GameWorld gWorld, GameCharacter character) {
 		this.gWorld = gWorld;
+		this.character = character;
 		executionTime = new Duration(2000);
 	}
 
@@ -24,10 +25,13 @@ public abstract class Item {
 
 	public void startUse() {
 		executionTime.startCountdown();
+		character.setMovable(false);
 		wasInUse = true;
 	}
 
-	public abstract void endUse();
+	public void endUse(){
+		character.setMovable(true);
+	}
 
 	public void interrupt() {
 		isInterrupted = true;

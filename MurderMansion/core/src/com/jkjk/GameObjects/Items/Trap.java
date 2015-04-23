@@ -63,6 +63,7 @@ public class Trap extends Item  {
 		client.produceTrapLocation(body.getPosition().x,body.getPosition().y);
 
 		isCompleted = true;
+		super.endUse();
 	}
 
 	public void spawn(float x, float y, float angle) {

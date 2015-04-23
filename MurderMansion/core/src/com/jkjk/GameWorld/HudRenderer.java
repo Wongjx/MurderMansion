@@ -259,16 +259,15 @@ public class HudRenderer {
 			public void clicked(InputEvent event, float x, float y) {
 				AssetLoader.clickSound.play(AssetLoader.VOLUME);
 				stage.clear();
-				
-				if((game.actionResolver.getSignedInGPGS())
-						&& (tutorial)){
+
+				if ((game.actionResolver.getSignedInGPGS()) && (tutorial)) {
 					if (gWorld.getPlayer().getType() == "Civilian") {
 						game.actionResolver.unlockAchievementGPGS(game.actionResolver.ACHEIVEMENT_8);
-					}else if (gWorld.getPlayer().getType() == "Murderer"){
+					} else if (gWorld.getPlayer().getType() == "Murderer") {
 						game.actionResolver.unlockAchievementGPGS(game.actionResolver.ACHEIVEMENT_7);
 					}
 				}
-				
+
 				((Game) Gdx.app.getApplicationListener()).setScreen(new MenuScreen(game, gameWidth,
 						gameHeight));
 			}
@@ -376,10 +375,10 @@ public class HudRenderer {
 					}
 				}
 			}
-			batch.draw(timebox, 55, 280);
-			batch.draw(weapon_parts_counter, 470, 235);
+			batch.draw(timebox, 40, 280);
+			batch.draw(weapon_parts_counter, 480, 235);
 			batch.draw(emptySlot, 480, 22, 120, 120);
-			font.draw(batch, getTime(delta), 85, 328);
+			font.draw(batch, getTime(delta), 70, 328);
 			WeaponPartsDisplay();
 			coolDownAnimationCheck(delta);
 			prohibitButtonsCheck();
@@ -539,8 +538,8 @@ public class HudRenderer {
 
 	private void WeaponPartsDisplay() {
 		int numParts = gWorld.getNumOfWeaponPartsCollected();
-		font.draw(batch, Integer.toString(numParts), 496, 328);
-		font.draw(batch, Integer.toString(client.getNumOfPlayers() * 2), 540, 313);
+		font.draw(batch, Integer.toString(numParts), 506, 328);
+		font.draw(batch, Integer.toString(client.getNumOfPlayers() * 2), 550, 313);
 	}
 
 	/**
@@ -793,14 +792,14 @@ public class HudRenderer {
 	 */
 	public ImageButton getSettingsButton() {
 
-		x = 586;
-		y = 292;
+		x = 595;
+		y = 294;
 
 		settingsButton = new ImageButton(settingsButtonDraw);
 		settingsButton.setX(x);
 		settingsButton.setY(y);
-		settingsButton.setWidth(35);
-		settingsButton.setHeight(35);
+		settingsButton.setWidth(30);
+		settingsButton.setHeight(30);
 		settingsButton.setName("Pause Button");
 
 		settingsButton.addListener(new ClickListener() {
@@ -1115,7 +1114,6 @@ public class HudRenderer {
 				System.out.println(gWorld.getPlayer().getBody().getPosition());
 				if (gWorld.getPlayer().useAbility()) {
 					// start drawing cool down animation with ability frame time.
-					TM.setDisplayMessage("YOUR SOUL IS MINE!");
 					HauntCD = true;
 					client.updatePlayerUseAbility();
 				}

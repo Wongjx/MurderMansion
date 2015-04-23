@@ -19,7 +19,6 @@ public class ItemSpawner {
 		itemLocations.add(new Location(new float[] { 290.6f, 497.7f }));
 		itemLocations.add(new Location(new float[] { 267.7f, 425 }));
 		itemLocations.add(new Location(new float[] { 317.9f, 296 }));
-		itemLocations.add(new Location(new float[] { 428.61f, 218.4f }));
 		itemLocations.add(new Location(new float[] { 375, 161 }));
 		itemLocations.add(new Location(new float[] { 521.8f, 205 }));
 		itemLocations.add(new Location(new float[] { 770, 149 }));
@@ -38,6 +37,8 @@ public class ItemSpawner {
 		itemLocations.add(new Location(new float[] { 3600,413.8f }));
 		itemLocations.add(new Location(new float[] { 3310.1f, 395.8f }));
 		itemLocations.add(new Location(new float[] { 3310.1f, 513.5f }));
+		itemLocations.add(new Location(new float[] { 896.9f, 576f }));
+		itemLocations.add(new Location(new float[] { 896.9f, 447.2f }));
 
 		randInt = new Random();
 	}
