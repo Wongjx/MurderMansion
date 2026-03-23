@@ -3,6 +3,7 @@ package com.jkjk.GameObjects.Weapons;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
@@ -57,10 +58,12 @@ public class WeaponSprite {
 		if (gWorld.getPlayer().lightContains(posX, posY)) {
 			if (gWorld.getPlayer().getType().equals("Murderer")){
 				animationRunTime += Gdx.graphics.getRawDeltaTime();
-				batch.draw(knifeSpriteAnimation.getKeyFrame(animationRunTime), posX-12, posY-12, 24, 24);
+				batch.draw((TextureRegion) knifeSpriteAnimation.getKeyFrame(animationRunTime), posX - 12,
+						posY - 12, 24, 24);
 			}else{
 				animationRunTime += Gdx.graphics.getRawDeltaTime();
-				batch.draw(batSpriteAnimation.getKeyFrame(animationRunTime), posX-12, posY-12, 24, 24);
+				batch.draw((TextureRegion) batSpriteAnimation.getKeyFrame(animationRunTime), posX - 12,
+						posY - 12, 24, 24);
 			}
 		}
 	}

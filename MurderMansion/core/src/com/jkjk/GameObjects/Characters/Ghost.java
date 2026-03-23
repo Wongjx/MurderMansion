@@ -6,6 +6,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
@@ -64,7 +65,7 @@ public class Ghost extends GameCharacter {
 		batch.begin();
 		if (currentAnimation == ghostHauntAnimation) {
 			animationRunTime += Gdx.graphics.getRawDeltaTime();
-			batch.draw(currentAnimation.getKeyFrame(runTime, true), body.getPosition().x - 9,
+			batch.draw((TextureRegion) currentAnimation.getKeyFrame(runTime, true), body.getPosition().x - 9,
 					body.getPosition().y - 9, 9, 9, 18, 18, 2.4f, 2.4f,
 					(float) (body.getAngle() * 180 / Math.PI) - 90);
 			if (currentAnimation.isAnimationFinished(animationRunTime)) {

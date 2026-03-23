@@ -3,6 +3,7 @@ package com.jkjk.GameObjects.Items;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
@@ -58,10 +59,12 @@ public class ItemSprite {
 		if (gWorld.getPlayer().lightContains(posX, posY)) {
 			if (gWorld.getPlayer().getType().equals("Murderer")){
 				animationRunTime += Gdx.graphics.getRawDeltaTime();
-				batch.draw(restingTrapAnimation.getKeyFrame(animationRunTime), posX-12, posY-12, 25, 25);
+				batch.draw((TextureRegion) restingTrapAnimation.getKeyFrame(animationRunTime), posX - 12,
+						posY - 12, 25, 25);
 			}else{
 				animationRunTime += Gdx.graphics.getRawDeltaTime();
-				batch.draw(disarmTrapSpriteAnimation.getKeyFrame(animationRunTime), posX-12, posY-12, 25, 25);
+				batch.draw((TextureRegion) disarmTrapSpriteAnimation.getKeyFrame(animationRunTime),
+						posX - 12, posY - 12, 25, 25);
 			}
 		}
 	}

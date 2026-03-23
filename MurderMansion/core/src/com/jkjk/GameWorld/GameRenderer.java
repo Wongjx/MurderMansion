@@ -8,6 +8,9 @@ import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TiledMapRenderer;
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
 import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
+import com.badlogic.gdx.utils.viewport.FitViewport;
+import com.badlogic.gdx.utils.viewport.Viewport;
+import com.jkjk.MMHelpers.PresentationFrame;
 import com.jkjk.GameObjects.Obstacles;
 import com.jkjk.GameObjects.Items.ItemSprite;
 import com.jkjk.GameObjects.Items.Trap;
@@ -25,6 +28,7 @@ import com.jkjk.MMHelpers.AssetLoader;
 public class GameRenderer {
 	private GameWorld gWorld; // Box2D world. This will hold all objects (players, items, walls)
 	private OrthographicCamera cam; // Game camera. Views what is happening in the game.
+	private Viewport worldViewport;
 	private Box2DDebugRenderer b2dr; // Renders Box2D objects. (For debugging)
 
 	// Game Assets
@@ -50,7 +54,10 @@ public class GameRenderer {
 
 		// Create camera
 		cam = new OrthographicCamera();
-		cam.setToOrtho(false, (float) (gameWidth / 1.5), (float) (gameHeight / 1.5));
+		worldViewport = new FitViewport((float) (PresentationFrame.WIDTH / 1.5f),
+				(float) (PresentationFrame.HEIGHT / 1.5f), cam);
+		worldViewport.apply(true);
+		cam.update();
 
 		tiledMap = AssetLoader.tiledMap;
 		tiledMapRenderer = new OrthogonalTiledMapRenderer(tiledMap);
@@ -67,21 +74,27 @@ public class GameRenderer {
 	 * @param runTime
 	 *            The total runtime since start.
 	 */
-	public void render(float delta, float runTime, MMClient client) {
+	public void render(float delta, float runTime, GameSession session) {
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT); // Clears screen everytime it renders
+		worldViewport.apply();
 
-		tiledMapRenderer.setView(cam);	
+		if (gWorld.getPlayer() != null && gWorld.getPlayer().isAlive()) {
+			cam.position.set(gWorld.getPlayer().getBody().getPosition(), 0f);
+		}
+		cam.update();
+
+		tiledMapRenderer.setView(cam);
 		tiledMapRenderer.render();
-			
-		batch.setProjectionMatrix(cam.combined);		
-		
-		client.render(cam, batch);
+
+		batch.setProjectionMatrix(cam.combined);
+
+		session.render(cam, batch);
 		batch.begin();
-			
+
 		for (Obstacles ob : gWorld.getObstacleList().values()) {
 			ob.render(batch);
 		}
-		
+
 		for (ItemSprite iS : gWorld.getItemList().values()) {
 			iS.render(batch);
 		}
@@ -96,14 +109,21 @@ public class GameRenderer {
 			trap.render(batch);
 		}
 		batch.end();
-		
+
 		if (gWorld.getPlayer().isAlive()) {
 			gWorld.getPlayer().render(cam, batch);
 		}
-		cam.update(); // Update cam
 
 		// b2dr.render(gWorld.getWorld(), cam.combined); // Renders box2d world
 
+	}
+
+	public void resize(int width, int height) {
+		worldViewport.update(width, height, true);
+	}
+
+	public Viewport getWorldViewport() {
+		return worldViewport;
 	}
 
 	/**

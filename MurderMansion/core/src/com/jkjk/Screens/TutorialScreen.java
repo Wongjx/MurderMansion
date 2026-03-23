@@ -1,286 +1,129 @@
-/**
- * 
- */
 package com.jkjk.Screens;
 
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
-import com.badlogic.gdx.scenes.scene2d.Event;
-import com.badlogic.gdx.scenes.scene2d.EventListener;
+import com.badlogic.gdx.graphics.GL20;
+import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
-import com.badlogic.gdx.scenes.scene2d.ui.Button;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
-import com.badlogic.gdx.utils.viewport.ExtendViewport;
 import com.jkjk.GameWorld.GameRenderer;
 import com.jkjk.GameWorld.GameWorld;
-import com.jkjk.GameWorld.MMClient;
-import com.jkjk.Host.MMServer;
+import com.jkjk.GameWorld.LocalGameSession;
 import com.jkjk.MMHelpers.AssetLoader;
+import com.jkjk.MMHelpers.PresentationFrame;
 import com.jkjk.MurderMansion.MurderMansion;
 
-/**
- * @author LeeJunXiang
- * 
- */
 public class TutorialScreen implements Screen {
 
-	private Stage stage;
-	private Image page1;
-	private Image civTut;
-	private Image murTut;
-	private Image hudTut;
-	private Image screenTut;
-	private Image mapTut;
-	private Image civButton;
-	private Image murButton;
-	private Image civButtonDown;
-	private Image murButtonDown;
-	private Image backButton;
-	private Image nextButton;
+	private static final float MURDERER_X = 118f;
+	private static final float CIVILIAN_X = 483f;
+	private static final float CHARACTER_Y = 134f;
+	private static final float HIT_WIDTH = 170f;
+	private static final float HIT_HEIGHT = 140f;
+	private static final float BACK_X = 15f;
+	private static final float BACK_Y = 127f;
+
+	private final Stage stage;
+	private final Image page1;
+	private final Image backButton;
+	private final Actor civHitArea;
+	private final Actor murHitArea;
 
 	public TutorialScreen(final MurderMansion game, final float gameWidth, final float gameHeight) {
-		stage = new Stage(new ExtendViewport(gameWidth, gameHeight));
+		stage = new Stage(PresentationFrame.createViewport());
 		page1 = new Image(AssetLoader.tutorialP1);
-		civTut = new Image(AssetLoader.civTut);
-		murTut = new Image(AssetLoader.murTut);
-		hudTut = new Image(AssetLoader.hudTutorial);
-		screenTut = new Image(AssetLoader.screenTutorial);
-		mapTut = new Image(AssetLoader.mapTutorial);
-
-		civButton = new Image(AssetLoader.civButton);
-		civButton.setPosition(464, 154);
-		murButton = new Image(AssetLoader.murButton);
-		murButton.setPosition(124, 154);
-		civButtonDown = new Image(AssetLoader.civButtonDown);
-		civButtonDown.setPosition(464, 154);
-		murButtonDown = new Image(AssetLoader.murButtonDown);
-		murButtonDown.setPosition(124, 154);
 		backButton = new Image(AssetLoader.backButton);
-		backButton.setPosition(20, 150);
-		nextButton = new Image(AssetLoader.nextButton);
-		nextButton.setPosition(550, 150);
+		civHitArea = new Actor();
+		murHitArea = new Actor();
 
-		civButton.addListener(new ClickListener() {
+		civHitArea.addListener(new ClickListener() {
 			@Override
 			public void clicked(InputEvent event, float x, float y) {
-				stage.clear();
-				AssetLoader.clickSound.play(AssetLoader.VOLUME);
-				GameWorld gWorld = new GameWorld(true);
-				GameRenderer renderer = new GameRenderer(gWorld, gameWidth, gameHeight);
-
-				try {
-					game.mMultiplayerSession.isServer = true;
-					game.mMultiplayerSession.setServer(new MMServer(1, game.mMultiplayerSession, true, 1));
-					game.mMultiplayerSession.setClient(new MMClient(gWorld, renderer,
-							game.mMultiplayerSession.serverAddress, game.mMultiplayerSession.serverPort,
-							game.mMultiplayerSession.mId, game.mMultiplayerSession.mName, true));
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-				AssetLoader.loadGameSfx();
-				System.out.println("Setting screen to new game screen.");
-				((Game) Gdx.app.getApplicationListener()).setScreen(new GameScreen(game, gameWidth,
-						gameHeight, gWorld, renderer, true));
+				startLocalTutorial(game, gameWidth, gameHeight, 1);
 			}
-
 		});
 
-		murButton.addListener(new ClickListener() {
+		murHitArea.addListener(new ClickListener() {
 			@Override
 			public void clicked(InputEvent event, float x, float y) {
-				stage.clear();
-				AssetLoader.clickSound.play(AssetLoader.VOLUME);
-				GameWorld gWorld = new GameWorld(true);
-				GameRenderer renderer = new GameRenderer(gWorld, gameWidth, gameHeight);
-
-				try {
-					game.mMultiplayerSession.isServer = true;
-					game.mMultiplayerSession.setServer(new MMServer(1, game.mMultiplayerSession, true, 0));
-					game.mMultiplayerSession.setClient(new MMClient(gWorld, renderer,
-							game.mMultiplayerSession.serverAddress, game.mMultiplayerSession.serverPort,
-							game.mMultiplayerSession.mId, game.mMultiplayerSession.mName, true));
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-				AssetLoader.loadGameSfx();
-				System.out.println("Setting screen to new game screen.");
-				((Game) Gdx.app.getApplicationListener()).setScreen(new GameScreen(game, gameWidth,
-						gameHeight, gWorld, renderer, true));
+				startLocalTutorial(game, gameWidth, gameHeight, 0);
 			}
-
 		});
 
-		// civButton.addListener(new ClickListener() {
-		// @Override
-		// public void clicked(InputEvent event, float x, float y) {
-		// stage.clear();
-		// stage.addActor(civTut);
-		// stage.addActor(murButtonDown);
-		// stage.addActor(backButton);
-		// stage.addActor(nextButton);
-		// }
-		//
-		// });
-		//
-		// murButton.addListener(new ClickListener() {
-		// @Override
-		// public void clicked(InputEvent event, float x, float y) {
-		// stage.clear();
-		// stage.addActor(murTut);
-		// stage.addActor(civButtonDown);
-		// stage.addActor(backButton);
-		// stage.addActor(nextButton);
-		// }
-		//
-		// });
-		//
-		// civButtonDown.addListener(new ClickListener() {
-		// @Override
-		// public void clicked(InputEvent event, float x, float y) {
-		// stage.clear();
-		// stage.addActor(civTut);
-		// stage.addActor(murButtonDown);
-		// stage.addActor(backButton);
-		// stage.addActor(nextButton);
-		// }
-		//
-		// });
-		//
-		// murButtonDown.addListener(new ClickListener() {
-		// @Override
-		// public void clicked(InputEvent event, float x, float y) {
-		// stage.clear();
-		// stage.addActor(murTut);
-		// stage.addActor(civButtonDown);
-		// stage.addActor(backButton);
-		// stage.addActor(nextButton);
-		// }
-		//
-		// });
-		// // TODO:
-		// nextButton.addListener(new ClickListener() {
-		// @Override
-		// public void clicked(InputEvent event, float x, float y) {
-		// AssetLoader.clickSound.play(AssetLoader.VOLUME);
-		// if (stage.getActors().first().equals(hudTut)) {
-		// stage.clear();
-		// stage.addActor(screenTut);
-		// stage.addActor(backButton);
-		// stage.addActor(nextButton);
-		// } else if (stage.getActors().first().equals(screenTut)) {
-		// stage.clear();
-		// stage.addActor(mapTut);
-		// stage.addActor(backButton);
-		// stage.addActor(nextButton);
-		// } else if (stage.getActors().first().equals(mapTut)) {
-		// stage.clear();
-		// ((Game) Gdx.app.getApplicationListener()).setScreen(new MenuScreen(game, gameWidth,
-		// gameHeight));
-		// } else {
-		// stage.clear();
-		// stage.addActor(hudTut);
-		// stage.addActor(backButton);
-		// stage.addActor(nextButton);
-		// }
-		// }
-		//
-		// });
-		// TODO:
 		backButton.addListener(new ClickListener() {
 			@Override
 			public void clicked(InputEvent event, float x, float y) {
 				AssetLoader.clickSound.play(AssetLoader.VOLUME);
-				stage.clear();
 				((Game) Gdx.app.getApplicationListener()).setScreen(new MenuScreen(game, gameWidth,
 						gameHeight));
 			}
-
 		});
 
+		page1.setFillParent(true);
 		stage.addActor(page1);
-		stage.addActor(civButton);
-		stage.addActor(murButton);
+		stage.addActor(civHitArea);
+		stage.addActor(murHitArea);
 		stage.addActor(backButton);
-		// stage.addActor(nextButton);
+		layoutActors();
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.badlogic.gdx.Screen#show()
-	 */
+	private void startLocalTutorial(MurderMansion game, float gameWidth, float gameHeight,
+			int playerType) {
+		AssetLoader.clickSound.play(AssetLoader.VOLUME);
+		GameWorld gWorld = new GameWorld(true);
+		GameRenderer renderer = new GameRenderer(gWorld, gameWidth, gameHeight);
+		LocalGameSession session = new LocalGameSession(gWorld, playerType);
+		AssetLoader.loadGameSfx();
+		((Game) Gdx.app.getApplicationListener()).setScreen(new GameScreen(game, gameWidth,
+				gameHeight, gWorld, renderer, session, true));
+	}
+
 	@Override
 	public void show() {
 		Gdx.input.setInputProcessor(stage);
+		resize(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.badlogic.gdx.Screen#render(float)
-	 */
 	@Override
 	public void render(float delta) {
-		stage.draw();
+		Gdx.gl.glClearColor(0, 0, 0, 1);
+		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+		stage.getViewport().apply();
 		stage.act(delta);
+		stage.draw();
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.badlogic.gdx.Screen#resize(int, int)
-	 */
 	@Override
 	public void resize(int width, int height) {
-		// TODO Auto-generated method stub
-
+		stage.getViewport().update(width, height, true);
+		layoutActors();
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.badlogic.gdx.Screen#pause()
-	 */
+	private void layoutActors() {
+		civHitArea.setBounds(CIVILIAN_X - 58f, CHARACTER_Y - 40f, HIT_WIDTH, HIT_HEIGHT);
+		murHitArea.setBounds(MURDERER_X - 42f, CHARACTER_Y - 40f, HIT_WIDTH, HIT_HEIGHT);
+		backButton.setSize(77f, 62f);
+		backButton.setPosition(BACK_X, BACK_Y);
+	}
+
 	@Override
 	public void pause() {
-		// TODO Auto-generated method stub
-
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.badlogic.gdx.Screen#resume()
-	 */
 	@Override
 	public void resume() {
-		// TODO Auto-generated method stub
-
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.badlogic.gdx.Screen#hide()
-	 */
 	@Override
 	public void hide() {
-		// TODO Auto-generated method stub
 		dispose();
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.badlogic.gdx.Screen#dispose()
-	 */
 	@Override
 	public void dispose() {
-		// TODO Auto-generated method stub
 		stage.dispose();
 	}
-
 }

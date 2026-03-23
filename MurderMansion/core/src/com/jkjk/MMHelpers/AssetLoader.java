@@ -354,9 +354,9 @@ public class AssetLoader {
 		crimesFont36 = new BitmapFont(Gdx.files.internal("Fonts/crimesFont36.fnt"));
 		crimesFont48 = new BitmapFont(Gdx.files.internal("Fonts/crimesFont48.fnt"));
 		crimesFont36Time = new BitmapFont(Gdx.files.internal("Fonts/crimesFont36.fnt"));
-		crimesFont36Time.setScale(0.7f, 0.7f);
+		crimesFont36Time.getData().setScale(0.7f, 0.7f);
 		crimesFont36Sync = new BitmapFont(Gdx.files.internal("Fonts/crimesFont36.fnt"));
-		crimesFont36Sync.setScale(Gdx.graphics.getWidth() / gameWidth);
+		crimesFont36Sync.getData().setScale((float) Gdx.graphics.getWidth() / gameWidth);
 		crimesFont36Settings = new BitmapFont(Gdx.files.internal("Fonts/crimesFont36.fnt"));
 		crimesFont36Black = new BitmapFont(Gdx.files.internal("Fonts/crimesFont36Black.fnt"));
 		basker32Message = new BitmapFont(Gdx.files.internal("Fonts/Basker32.fnt"));
@@ -375,7 +375,7 @@ public class AssetLoader {
 		// Create Text button Style
 		normal = new TextButtonStyle();
 		normal.font = menuSkin.getFont("crimesFont36");
-		normal.font.setScale(0.65f, 0.65f);
+		normal.font.getData().setScale(0.65f, 0.65f);
 		normal.up = menuSkin.getDrawable("buttonUp");
 		normal.down = menuSkin.getDrawable("buttonDown");
 		normal.pressedOffsetY = -1;
@@ -417,7 +417,7 @@ public class AssetLoader {
 		mur_char = new Texture(Gdx.files.internal("score_screen/mur.png"));
 		scoreLabelStyle = new LabelStyle();
 		scoreLabelStyle.font = scoreSkin.getFont("crimesFont36Black");
-		scoreLabelStyle.font.setScale(0.5f, 0.5f);
+		scoreLabelStyle.font.getData().setScale(0.5f, 0.5f);
 		scoreLabelStyle.background = scoreSkin.getDrawable("namebox");
 	}
 
@@ -452,7 +452,7 @@ public class AssetLoader {
 		// PAUSE SCREEN
 		normalSettings = new TextButtonStyle();
 		normalSettings.font = crimesFont36Settings;
-		normalSettings.font.setScale(0.4f, 0.6f);
+		normalSettings.font.getData().setScale(0.4f, 0.6f);
 		normalSettings.up = menuSkin.getDrawable("buttonUp");
 		normalSettings.down = menuSkin.getDrawable("buttonDown");
 		normalSettings.pressedOffsetY = -1;

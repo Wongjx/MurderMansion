@@ -10,8 +10,8 @@ import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.utils.viewport.ExtendViewport;
 import com.jkjk.GameWorld.GameRenderer;
+import com.jkjk.GameWorld.GameSession;
 import com.jkjk.GameWorld.GameWorld;
-import com.jkjk.GameWorld.MMClient;
 import com.jkjk.MMHelpers.AssetLoader;
 import com.jkjk.MurderMansion.MurderMansion;
 
@@ -26,27 +26,27 @@ public class LoadingScreen implements Screen {
 	private float gameHeight;
 	private MurderMansion game;
 
-	private MMClient client;
+	private GameSession session;
 
 	private Image loadingImageCiv;
 	private Image loadingImageMur;
 	private Stage stage;
 
-	private int renderLoops;
+	private boolean screenQueued;
 
 	/**
 	 * Loads Game SFX and shows mini tutorial
 	 */
 	public LoadingScreen(MurderMansion game, float gameWidth, float gameHeight, GameWorld gWorld,
-			GameRenderer renderer) {
+			GameRenderer renderer, GameSession session) {
 		this.game = game;
 		this.gameWidth = gameWidth;
 		this.gameHeight = gameHeight;
-		this.client = game.mMultiplayerSession.getClient();
-		this.gWorld = client.getgWorld();
-		this.renderer = client.getRenderer();
+		this.gWorld = gWorld;
+		this.renderer = renderer;
+		this.session = session;
 		stage = new Stage(new ExtendViewport(gameWidth, gameHeight));
-		renderLoops = 0;
+		screenQueued = false;
 	}
 
 	/*
@@ -59,7 +59,7 @@ public class LoadingScreen implements Screen {
 		loadingImageCiv = new Image(AssetLoader.civLoad);
 		loadingImageMur = new Image(AssetLoader.murLoad);
 
-		if (gWorld.getPlayer().getType() == "Murderer") {
+		if ("Murderer".equals(gWorld.getPlayer().getType())) {
 			stage.addActor(loadingImageMur);
 		} else {
 			stage.addActor(loadingImageCiv);
@@ -76,13 +76,13 @@ public class LoadingScreen implements Screen {
 		stage.draw();
 		stage.act();
 
-		if (renderLoops == 500) {
+		if (!screenQueued) {
+			screenQueued = true;
 			AssetLoader.loadGameSfx();
 			System.out.println("Setting screen to new game screen.");
 			((Game) Gdx.app.getApplicationListener()).setScreen(new GameScreen(game, gameWidth, gameHeight,
-					gWorld, renderer, false));
+					gWorld, renderer, session, false));
 		}
-		renderLoops++;
 
 	}
 

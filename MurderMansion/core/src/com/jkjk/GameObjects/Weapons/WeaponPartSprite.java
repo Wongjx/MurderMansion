@@ -6,6 +6,7 @@ package com.jkjk.GameObjects.Weapons;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
@@ -61,7 +62,8 @@ public class WeaponPartSprite {
 	public void render(SpriteBatch batch) {
 		if (gWorld.getPlayer().lightContains(posX, posY)) {
 			animationRunTime += Gdx.graphics.getRawDeltaTime();
-			batch.draw(shotgunPartSpriteAnimation.getKeyFrame(animationRunTime), posX-12, posY-12, 25, 25);
+			batch.draw((TextureRegion) shotgunPartSpriteAnimation.getKeyFrame(animationRunTime), posX - 12,
+					posY - 12, 25, 25);
 		}
 	}
 	public Body getBody(){

@@ -8,6 +8,10 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 import net.dermetfan.gdx.physics.box2d.Box2DMapObjectParser;
 import box2dLight.RayHandler;
 
+import com.badlogic.gdx.maps.MapLayer;
+import com.badlogic.gdx.maps.MapObject;
+import com.badlogic.gdx.maps.MapObjects;
+import com.badlogic.gdx.maps.objects.PolygonMapObject;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.World;
@@ -23,6 +27,7 @@ import com.jkjk.GameObjects.Items.Trap;
 import com.jkjk.GameObjects.Weapons.WeaponFactory;
 import com.jkjk.GameObjects.Weapons.WeaponPartSprite;
 import com.jkjk.GameObjects.Weapons.WeaponSprite;
+import com.jkjk.Input.PlayerInputController;
 import com.jkjk.MMHelpers.AssetLoader;
 import com.jkjk.MMHelpers.MMContactListener;
 import com.jkjk.MMHelpers.ToastMessage;
@@ -74,6 +79,7 @@ public class GameWorld {
 	private ToastMessage TM;
 	private boolean tutorial;
 	private GameCharacter dummy;
+	private PlayerInputController playerInputController;
 
 	private boolean prevStun;
 
@@ -114,6 +120,7 @@ public class GameWorld {
 
 		gameOverTimer = new Duration(3000);
 
+		removeUnsupportedCollisionPolygons();
 		Box2DMapObjectParser parser = new Box2DMapObjectParser();
 		parser.load(world, AssetLoader.tiledMap);
 
@@ -123,6 +130,21 @@ public class GameWorld {
 			TM = new ToastMessage(305, 5000);
 	}
 
+	private void removeUnsupportedCollisionPolygons() {
+		for (MapLayer layer : AssetLoader.tiledMap.getLayers()) {
+			MapObjects objects = layer.getObjects();
+			Array<MapObject> unsupportedObjects = new Array<MapObject>();
+			for (MapObject object : objects) {
+				if (object instanceof PolygonMapObject) {
+					unsupportedObjects.add(object);
+				}
+			}
+			for (MapObject object : unsupportedObjects) {
+				objects.remove(object);
+			}
+		}
+	}
+
 	/**
 	 * Updates the state of Box2D objects, such as the consequence of a player picking up an item, or when a
 	 * player dies.
@@ -130,24 +152,24 @@ public class GameWorld {
 	 * @param delta
 	 *            The time between each render.
 	 */
-	public void update(float delta, MMClient client) {
+	public void update(float delta, GameSession session) {
 		world.step(delta, 6, 2); // Step size|Steps for each body to check collision|Accuracy of body position
 									// after collision
-		client.update();
+		session.update();
 
 		if (player.isAlive()) {
 			player.update();
 		} else {
-			client.updatePlayerIsAlive(client.getId(), 0);
+			session.updatePlayerIsAlive(session.getId(), 0);
 			TM.setDisplayMessage("You Have Died... Your Spirit Seeks Vengeance.");
-			createGhost(client);
+			createGhost(session);
 		}
 		checkStairs();
-		checkItemSprite(client);
-		checkWeaponSprite(client);
-		checkWeaponPartSprite(client);
-		checkTrap(client);
-		checkStun(client);
+		checkItemSprite(session);
+		checkWeaponSprite(session);
+		checkWeaponPartSprite(session);
+		checkTrap(session);
+		checkStun(session);
 	}
 
 	public void createTutorialWeapon() {
@@ -202,6 +224,7 @@ public class GameWorld {
 			player = gameCharFac.createCharacter("Civilian", id, this, true);
 		}
 		player.getBody().getFixtureList().get(0).setUserData("player");
+		player.setInputController(playerInputController);
 		player.spawn(x, y, angle);
 		return player;
 	}
@@ -210,7 +233,7 @@ public class GameWorld {
 	 * To block murderer from exiting into safe area when mansion door opens
 	 */
 	public void createDoor() {
-		if (player.getType() == "Murderer") {
+		if ("Murderer".equals(player.getType())) {
 			new Obstacles(this, new Vector2(915.2f, 511.8f), 0);
 
 		}
@@ -220,7 +243,7 @@ public class GameWorld {
 	 * Creates a ghost by destroying the player's previous body. Sets the user data to "player", and spawns
 	 * him at the position and angle of his death.
 	 */
-	private void createGhost(MMClient client) {
+	private void createGhost(GameSession session) {
 		currentPositionX = player.getBody().getPosition().x;
 		currentPositionY = player.getBody().getPosition().y;
 		currentAngle = player.getBody().getAngle();
@@ -229,10 +252,11 @@ public class GameWorld {
 		player.getBody().setActive(false);
 		player.getBody().setTransform(0, 0, 0);
 		player = gameCharFac.createCharacter("Ghost", player.getId(), this, true);
-		client.updatePlayerType(client.getId(), 2);
+		session.updatePlayerType(session.getId(), 2);
 		player.set_deathPositionX(currentPositionX);
 		player.set_deathPositionY(currentPositionY);
 		player.getBody().getFixtureList().get(0).setUserData("player");
+		player.setInputController(playerInputController);
 		player.spawn(currentPositionX, currentPositionY, currentAngle);
 		player.setAmbientLightValue(ambientLightValue);
 
@@ -241,30 +265,30 @@ public class GameWorld {
 	/**
 	 * Checks to remove item sprites that have been contacted by the player.
 	 */
-	private void checkItemSprite(MMClient client) {
+	private void checkItemSprite(GameSession session) {
 		bodyToRemove = itemsToRemove.poll();
 		// Call MMclient to remove item
 		if (bodyToRemove != null) {
-			client.removeItemLocation(bodyToRemove.getPosition());
+			session.removeItemLocation(bodyToRemove.getPosition());
 			System.out.println("Item removed from client.");
 			itemList.remove(bodyToRemove.getPosition());
 			bodyToRemove.setActive(false);
 			bodyToRemove.setTransform(0, 0, 0);
 			if (player.getType().equals("Murderer"))
-				player.addItem(itemFac.createItem("Trap", this, client, player));
+				player.addItem(itemFac.createItem("Trap", this, session, player));
 			else
-				player.addItem(itemFac.createItem("Disarm Trap", this, client, player));
+				player.addItem(itemFac.createItem("Disarm Trap", this, session, player));
 		}
 	}
 
 	/**
 	 * Checks to remove weapon sprites that have been contacted by the player.
 	 */
-	private void checkWeaponSprite(MMClient client) {
+	private void checkWeaponSprite(GameSession session) {
 		bodyToRemove = weaponsToRemove.poll();
 		if (bodyToRemove != null) {
 			// Call MMclient to remove weapon
-			client.removeWeaponLocation(bodyToRemove.getPosition());
+			session.removeWeaponLocation(bodyToRemove.getPosition());
 			weaponList.remove(bodyToRemove.getPosition());
 			bodyToRemove.setActive(false);
 			bodyToRemove.setTransform(0, 0, 0);
@@ -278,17 +302,17 @@ public class GameWorld {
 	/**
 	 * Checks to remove weapon part sprites that have been contacted by the player.
 	 */
-	private void checkWeaponPartSprite(MMClient client) {
+	private void checkWeaponPartSprite(GameSession session) {
 		bodyToRemove = weaponPartsToRemove.poll();
 
 		if (bodyToRemove != null) {
 			// Call MMclient to remove weapon part
-			client.removeWeaponPartLocation(bodyToRemove.getPosition());
+			session.removeWeaponPartLocation(bodyToRemove.getPosition());
 			weaponPartList.remove(bodyToRemove.getPosition());
 			bodyToRemove.setActive(false);
 			bodyToRemove.setTransform(0, 0, 0);
 			if (player.getType().equals("Civilian")) {
-				client.addWeaponPartCollected();
+				session.addWeaponPartCollected();
 			}
 		}
 	}
@@ -296,20 +320,20 @@ public class GameWorld {
 	/**
 	 * Checks to remove traps sprites that have been contacted by the player. Also checks to add trap added by
 	 */
-	private void checkTrap(MMClient client) {
+	private void checkTrap(GameSession session) {
 		bodyToRemove = trapToRemove.poll();
 		if (bodyToRemove != null) {
 			trapList.remove(bodyToRemove.getPosition());
-			client.removeTrapLocation(bodyToRemove.getPosition().x, bodyToRemove.getPosition().y);
+			session.removeTrapLocation(bodyToRemove.getPosition().x, bodyToRemove.getPosition().y);
 			bodyToRemove.setActive(false);
 			bodyToRemove.setTransform(0, 0, 0);
 		}
 	}
 
-	private void checkStun(MMClient client) {
+	private void checkStun(GameSession session) {
 		if (player.isStun() && prevStun == false) {
 			prevStun = true;
-			client.updatePlayerIsStun(client.getId(), 1);
+			session.updatePlayerIsStun(session.getId(), 1);
 			TM.setDisplayMessage("You have been Stunned");
 		}
 		if (player.isStun()) {
@@ -369,11 +393,11 @@ public class GameWorld {
 		obstacleList.get(location).getBody().setTransform(0, 0, 0);
 		obstacleList.remove(location);
 		if (obstacleList.size() == 0) {
-			if (player.getType() == "Civilian") {
+			if ("Civilian".equals(player.getType())) {
 				TM.setDisplayMessage("The mansion door to the East creaks open... Run!");
-			} else if (player.getType() == "Murderer") {
+			} else if ("Murderer".equals(player.getType())) {
 				TM.setDisplayMessage("The mansion door to the East creaks open... Stop them!");
-			} else if (player.getType() == "Ghost") {
+			} else if ("Ghost".equals(player.getType())) {
 				TM.setDisplayMessage("Your spirit is forever trapped in JK's playhouse...");
 			}
 			AssetLoader.obstacleSoundmd.play();
@@ -521,6 +545,13 @@ public class GameWorld {
 
 	public GameCharacter getDummy() {
 		return dummy;
+	}
+
+	public void setPlayerInputController(PlayerInputController playerInputController) {
+		this.playerInputController = playerInputController;
+		if (player != null) {
+			player.setInputController(playerInputController);
+		}
 	}
 
 	public void dispose() {

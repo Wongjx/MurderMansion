@@ -6,16 +6,14 @@ import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
 import com.jkjk.GameWorld.GameRenderer;
+import com.jkjk.GameWorld.GameSession;
 import com.jkjk.GameWorld.GameWorld;
 import com.jkjk.GameWorld.HudRenderer;
-import com.jkjk.GameWorld.MMClient;
 import com.jkjk.Host.MMServer;
 import com.jkjk.MMHelpers.AssetLoader;
-import com.jkjk.MMHelpers.MultiplayerSessionInfo;
 import com.jkjk.MurderMansion.MurderMansion;
 
 public class GameScreen implements Screen {
-	private MultiplayerSessionInfo info;
 	private GameWorld gWorld;
 	private GameRenderer renderer;
 	private HudRenderer hudRenderer;
@@ -24,26 +22,18 @@ public class GameScreen implements Screen {
 	private float gameHeight;
 	private MurderMansion game;
 
-	private MMServer server;
-	private MMClient client;
+	private GameSession session;
 
 	public GameScreen(MurderMansion game, float gameWidth, float gameHeight, GameWorld world,
-			GameRenderer renderer, boolean tutorial) {
-
-		// AssetLoader.loadMapSprites();
-		// AssetLoader.loadCharacters();
+			GameRenderer renderer, GameSession session, boolean tutorial) {
 		this.game = game;
 		this.gameWidth = gameWidth;
 		this.gameHeight = gameHeight;
-		this.client = game.mMultiplayerSession.getClient();
-		this.info = game.mMultiplayerSession;
-		this.gWorld = client.getgWorld();
-		this.renderer = client.getRenderer();
-		// this.gWorld=world;
-		// this.renderer=renderer;
-
-		// client = new MMClient(server, gWorld, renderer);
-		hudRenderer = new HudRenderer(gWorld, client, gameWidth, gameHeight, game, tutorial);
+		this.gWorld = world;
+		this.renderer = renderer;
+		this.session = session;
+		hudRenderer = new HudRenderer(gWorld, session, gameWidth, gameHeight, game, tutorial);
+		gWorld.setPlayerInputController(hudRenderer.getPlayerInputController());
 	}
 
 	@Override
@@ -51,36 +41,39 @@ public class GameScreen implements Screen {
 		AssetLoader.menuMusic.stop();
 		AssetLoader.gameMusic.play();
 
-		client.updatePlayerIsReady();
+		session.updatePlayerIsReady();
+		resize(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
 	}
 
 	@Override
 	public void render(float delta) {
+		hudRenderer.updateInput(renderer.getWorldViewport());
 		if (gWorld.isCivWin() || gWorld.isMurWin()) {
 			gWorld.getGameOverTimer().update();
 			if (!gWorld.getGameOverTimer().isCountingDown()) {
 				System.out.println("GAMEWORLD UPDATE: GAMEOVER COMPLETE");
 				((Game) Gdx.app.getApplicationListener()).setScreen(new ScoreScreen(game, gameWidth,
-						gameHeight, client));
+						gameHeight, session, gWorld));
 			}
 		} else if (gWorld.isDisconnected()) {
 			gWorld.getGameOverTimer().update();
 			if (!gWorld.getGameOverTimer().isCountingDown()) {
 				System.out.println("GAMEWORLD UPDATE: GAMEOVER COMPLETE");
 				((Game) Gdx.app.getApplicationListener()).setScreen(new ScoreScreen(game, gameWidth,
-						gameHeight, client));
+						gameHeight, session, gWorld));
 			}
 		}
 		runTime += delta;
-		gWorld.update(delta, client);
+		gWorld.update(delta, session);
 
-		renderer.render(delta, runTime, client);
-		hudRenderer.render(delta, client.getIsGameStart());
+		renderer.render(delta, runTime, session);
+		hudRenderer.render(delta, session.getIsGameStart());
 
 		// if phone is designated server
-		if (info.isServer) {
+		if (game.mMultiplayerSession != null && game.mMultiplayerSession.isServer
+				&& game.mMultiplayerSession.getServer() != null) {
 			try {
-				info.getServer().update();
+				game.mMultiplayerSession.getServer().update();
 			} catch (NullPointerException e) {
 				e.printStackTrace();
 				System.out.println("Disconnected?");
@@ -90,16 +83,20 @@ public class GameScreen implements Screen {
 
 	@Override
 	public void resize(int width, int height) {
-
+		renderer.resize(width, height);
+		hudRenderer.resize(width, height);
 	}
 
 	@Override
 	public void pause() {
 		try {
-			if (client != null)
-				client.endSession();
-			if (info.isServer && server != null)
-				server.endSession();
+			if (session != null) {
+				session.endSession();
+			}
+			if (game.mMultiplayerSession != null && game.mMultiplayerSession.isServer
+					&& game.mMultiplayerSession.getServer() != null) {
+				game.mMultiplayerSession.getServer().endSession();
+			}
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -115,10 +112,13 @@ public class GameScreen implements Screen {
 	@Override
 	public void hide() {
 		try {
-			if (client != null)
-				client.endSession();
-			if (info.isServer && server != null)
-				server.endSession();
+			if (session != null) {
+				session.endSession();
+			}
+			if (game.mMultiplayerSession != null && game.mMultiplayerSession.isServer
+					&& game.mMultiplayerSession.getServer() != null) {
+				game.mMultiplayerSession.getServer().endSession();
+			}
 		} catch (IOException e) {
 			e.printStackTrace();
 		}

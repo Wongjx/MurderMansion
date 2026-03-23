@@ -8,13 +8,13 @@ import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
-import com.badlogic.gdx.scenes.scene2d.ui.Touchpad;
 import com.jkjk.GameObjects.Duration;
 import com.jkjk.GameObjects.Abilities.Ability;
 import com.jkjk.GameObjects.Abilities.AbilityFactory;
 import com.jkjk.GameObjects.Items.Item;
 import com.jkjk.GameObjects.Weapons.Weapon;
 import com.jkjk.GameWorld.GameWorld;
+import com.jkjk.Input.PlayerInputController;
 import com.jkjk.MMHelpers.AssetLoader;
 
 /**
@@ -36,8 +36,6 @@ public abstract class GameCharacter {
 	private Duration hauntDuration;
 
 	private float maxVelocity;
-	private float touchpadX;
-	private float touchpadY;
 	private double angleDiff;
 
 	protected Weapon weapon;
@@ -45,8 +43,6 @@ public abstract class GameCharacter {
 	protected Ability ability;
 	protected Body body;
 	protected RayHandler rayHandler;
-
-	private Touchpad touchpad;
 
 	private float deathPositionX;
 	private float deathPositionY;
@@ -62,6 +58,8 @@ public abstract class GameCharacter {
 	private int nextBrightTime;
 	private long startTime;
 	private long brightTime;
+	private final Vector2 movementVector;
+	private PlayerInputController inputController;
 
 	private ConcurrentLinkedQueue<float[]> positionQueue;
 	private ConcurrentLinkedQueue<Float> angleQueue;
@@ -74,12 +72,11 @@ public abstract class GameCharacter {
 	GameCharacter(String type, int id, GameWorld gWorld, boolean isPlayer) {
 		this.isPlayer = isPlayer;
 		maxVelocity = 56;
-		if (type == "Murderer") {
+		if ("Murderer".equals(type)) {
 			weaponUses = 2;
 		} else {
 			weaponUses = 3;
 		}
-		touchpad = AssetLoader.touchpad;
 		stunDuration = new Duration(3000);
 		hauntDuration = new Duration(4000);
 
@@ -92,7 +89,7 @@ public abstract class GameCharacter {
 		this.deathPositionX = 0;
 		this.deathPositionY = 0;
 
-		if (isPlayer || type == "Ghost") {
+		if (isPlayer || "Ghost".equals(type)) {
 			rayHandler = gWorld.getRayHandler();
 		} else {
 			rayHandler = new RayHandler(gWorld.getWorld());
@@ -114,6 +111,7 @@ public abstract class GameCharacter {
 		nextPosition = new float[2];
 		nextAngle = new Float(0);
 		nextVelocity = new float[2];
+		movementVector = new Vector2();
 
 		movable = true;
 
@@ -209,6 +207,7 @@ public abstract class GameCharacter {
 	}
 
 	public boolean useAbility() {
+		alignToAimTargetIfAvailable();
 		if (!ability.isOnCoolDown()) {
 			ability.use();
 			ability.cooldown();
@@ -220,7 +219,7 @@ public abstract class GameCharacter {
 	public void addWeapon(Weapon weapon) {
 		this.weapon = weapon;
 		weaponChange = true;
-		if (type == "Murderer") {
+		if ("Murderer".equals(type)) {
 			weaponUses = 2;
 		} else {
 			weaponUses = 3;
@@ -233,6 +232,7 @@ public abstract class GameCharacter {
 	}
 
 	public boolean useWeapon() {
+		alignToAimTargetIfAvailable();
 		if (!weapon.isOnCooldown()) {
 			weapon.use();
 			weaponUses--;
@@ -265,6 +265,7 @@ public abstract class GameCharacter {
 	}
 
 	public void useItem() {
+		alignToAimTargetIfAvailable();
 		if (isPlayer)
 			if (!item.inUse())
 				item.startUse();
@@ -364,8 +365,12 @@ public abstract class GameCharacter {
 	}
 
 	protected void playerMovement() {
-		touchpadX = touchpad.getKnobPercentX();
-		touchpadY = touchpad.getKnobPercentY();
+		if (inputController == null) {
+			body.setAngularVelocity(0);
+			body.setLinearVelocity(0, 0);
+			return;
+		}
+		movementVector.set(inputController.getMovementVector());
 		if (haunt) {
 			hauntTime = System.currentTimeMillis() - startTime;
 			if (hauntTime > nextRandomMovement) {
@@ -378,10 +383,18 @@ public abstract class GameCharacter {
 			body.setLinearVelocity(maxVelocity * (float) Math.cos(body.getAngle()), maxVelocity
 					* (float) Math.sin(body.getAngle()));
 		} else {
-			if (!touchpad.isTouched()) {
+			if (!inputController.isMovementActive() && !inputController.hasAimTarget()) {
 				body.setAngularVelocity(0);
 			} else {
-				angleDiff = (Math.atan2(touchpadY, touchpadX) - (body.getAngle())) % (Math.PI * 2);
+				float targetAngle;
+				if (inputController.hasAimTarget()) {
+					Vector2 aimTarget = inputController.getAimTargetWorld();
+					targetAngle = (float) Math.atan2(aimTarget.y - body.getPosition().y,
+							aimTarget.x - body.getPosition().x);
+				} else {
+					targetAngle = (float) Math.atan2(movementVector.y, movementVector.x);
+				}
+				angleDiff = (targetAngle - (body.getAngle())) % (Math.PI * 2);
 				if (angleDiff > 0) {
 					if (angleDiff >= 3.14) {
 						if (angleDiff > 6.2)
@@ -405,8 +418,26 @@ public abstract class GameCharacter {
 				} else
 					body.setAngularVelocity(0);
 			}
-			body.setLinearVelocity(touchpadX * maxVelocity, touchpadY * maxVelocity);
+			body.setLinearVelocity(movementVector.x * maxVelocity, movementVector.y * maxVelocity);
 		}
+	}
+
+	public void setInputController(PlayerInputController inputController) {
+		this.inputController = inputController;
+	}
+
+	private void alignToAimTargetIfAvailable() {
+		if (inputController == null || !inputController.hasAimTarget() || body == null) {
+			return;
+		}
+		Vector2 aimTarget = inputController.getAimTargetWorld();
+		if (aimTarget == null) {
+			return;
+		}
+		float targetAngle = (float) Math.atan2(aimTarget.y - body.getPosition().y,
+				aimTarget.x - body.getPosition().x);
+		body.setTransform(body.getPosition(), targetAngle);
+		body.setAngularVelocity(0f);
 	}
 
 	public void setPosition(float x, float y, float angle, float velocityX, float velocityY) {

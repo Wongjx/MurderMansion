@@ -82,7 +82,7 @@ public class WaitScreen implements Screen {
 			}
 			System.out.println("Setting screen to new loading screen.");
 			((Game) Gdx.app.getApplicationListener()).setScreen(new LoadingScreen(game, gameWidth,
-					gameHeight, gWorld, renderer));
+					gameHeight, gWorld, renderer, game.mMultiplayerSession.getClient()));
 
 		} else if (game.mMultiplayerSession.mState == game.mMultiplayerSession.ROOM_MENU) {
 			game.mMultiplayerSession.mState = game.mMultiplayerSession.ROOM_NULL;

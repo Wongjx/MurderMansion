@@ -1,1 +1,11 @@
-include 'desktop', 'android', 'ios', 'html', 'core'
+pluginManagement {
+	repositories {
+		google()
+		mavenCentral()
+		gradlePluginPortal()
+	}
+}
+
+rootProject.name = 'MurderMansion'
+
+include 'core', 'desktop', 'android', 'ios'

@@ -64,9 +64,10 @@ public class Civilian extends GameCharacter {
 		// Create Light for player
 		coneLight = new ConeLight(rayHandler, 100, null, 150, 0, 0, 0, 40);
 		coneLight.attachToBody(body, 0, 0);
-		Light.setContactFilter((short) 2, (short) 2, (short) 1);
+		coneLight.setContactFilter((short) 2, (short) 2, (short) 1);
 		pointLight = new PointLight(rayHandler, 100, null, 35, 0, 0);
 		pointLight.attachToBody(body);
+		pointLight.setContactFilter((short) 2, (short) 2, (short) 1);
 
 		// INITIATE ANIMATIONS
 		animationRunTime = 0;
@@ -143,9 +144,10 @@ public class Civilian extends GameCharacter {
 					if (!runSound.isPlaying() && isPlayer()) {
 						runSound.play();
 					}
-					batch.draw(currentAnimation.getKeyFrame(runTime * 5, true), body.getPosition().x - 9,
-							body.getPosition().y - 9, 9, 9, 18, 18, 6f, 6f,
-							(float) (body.getAngle() * 180 / Math.PI) - 90);
+						batch.draw((TextureRegion) currentAnimation.getKeyFrame(runTime * 5, true),
+								body.getPosition().x - 9,
+								body.getPosition().y - 9, 9, 9, 18, 18, 6f, 6f,
+								(float) (body.getAngle() * 180 / Math.PI) - 90);
 
 				} else {
 					if (runSound.isPlaying() && isPlayer()) {
@@ -162,7 +164,8 @@ public class Civilian extends GameCharacter {
 					if (runSound.isPlaying() && isPlayer()) {
 						runSound.stop();
 					}
-					batch.draw(currentAnimation.getKeyFrame(runTime * 4, true), body.getPosition().x - 9,
+					batch.draw((TextureRegion) currentAnimation.getKeyFrame(runTime * 4, true),
+							body.getPosition().x - 9,
 							body.getPosition().y - 9, 9, 9, 18, 18, 6f, 6f,
 							(float) (body.getAngle() * 180 / Math.PI) - 90);
 
@@ -179,7 +182,7 @@ public class Civilian extends GameCharacter {
 					animationRunTime = 0;
 					body.setUserData(civWalkAnimation);
 				} else {
-					batch.draw(currentAnimation.getKeyFrame(animationRunTime, true),
+					batch.draw((TextureRegion) currentAnimation.getKeyFrame(animationRunTime, true),
 							body.getPosition().x - 9, body.getPosition().y - 9, 9, 9, 18, 18, 6f, 6f,
 							(float) (body.getAngle() * 180 / Math.PI) - 90);
 				}

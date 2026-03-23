@@ -57,7 +57,7 @@ public class Murderer extends GameCharacter {
 		// create light
 		pointLight = new PointLight(rayHandler, 100, null, 110, 0, 0);
 		pointLight.attachToBody(body);
-		Light.setContactFilter((short) 2, (short) 2, (short) 1);
+		pointLight.setContactFilter((short) 2, (short) 2, (short) 1);
 		disguised = true;
 
 		// INITIATE ANIMATIONS
@@ -122,11 +122,12 @@ public class Murderer extends GameCharacter {
 						walkSound.play();
 					}
 					if (isDisguised()) {
-						batch.draw(civWalkAnimation.getKeyFrame(runTime * 4, true), body.getPosition().x - 9,
+						batch.draw((TextureRegion) civWalkAnimation.getKeyFrame(runTime * 4, true),
+								body.getPosition().x - 9,
 								body.getPosition().y - 9, 9, 9, 18, 18, 6f, 6f,
 								(float) (body.getAngle() * 180 / Math.PI) - 90);
 					} else {
-						batch.draw(AssetLoader.murAnimation.getKeyFrame(runTime * 4, true),
+						batch.draw((TextureRegion) AssetLoader.murAnimation.getKeyFrame(runTime * 4, true),
 								body.getPosition().x - 9, body.getPosition().y - 9, 9, 9, 18, 18, 6f, 6f,
 								(float) (body.getAngle() * 180 / Math.PI) - 90);
 					}
@@ -154,7 +155,7 @@ public class Murderer extends GameCharacter {
 						body.setUserData(civWalkAnimation);
 					}
 				} else {// disable touchpad while special animation occurs.
-					batch.draw(currentAnimation.getKeyFrame(animationRunTime, true),
+					batch.draw((TextureRegion) currentAnimation.getKeyFrame(animationRunTime, true),
 							body.getPosition().x - 9, body.getPosition().y - 9, 9, 9, 18, 18, 6f, 6f,
 							(float) (body.getAngle() * 180 / Math.PI) - 90);
 				}

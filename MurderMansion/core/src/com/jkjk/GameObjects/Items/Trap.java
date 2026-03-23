@@ -4,6 +4,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.BodyDef;
@@ -11,13 +12,13 @@ import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
 import com.badlogic.gdx.physics.box2d.CircleShape;
 import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.jkjk.GameObjects.Characters.GameCharacter;
+import com.jkjk.GameWorld.GameSession;
 import com.jkjk.GameWorld.GameWorld;
-import com.jkjk.GameWorld.MMClient;
 import com.jkjk.MMHelpers.AssetLoader;
 
 
 public class Trap extends Item  {
-	public MMClient client;
+	public GameSession session;
 
 	private BodyDef bdef;
 	private Body body;
@@ -28,10 +29,10 @@ public class Trap extends Item  {
 	private float animationRunTime;
 	private GameCharacter character;
 
-	Trap(GameWorld gWorld, MMClient client, GameCharacter character) {
+	Trap(GameWorld gWorld, GameSession session, GameCharacter character) {
 		super(gWorld, character);
 		this.character = character;
-		this.client = client;
+		this.session = session;
 		bdef = new BodyDef();
 		fdef = new FixtureDef();
 
@@ -60,7 +61,9 @@ public class Trap extends Item  {
 		spawn(playerPosition.x, playerPosition.y, playerAngle);
 		AssetLoader.plantTrapSound.play(AssetLoader.VOLUME);
 
-		client.produceTrapLocation(body.getPosition().x,body.getPosition().y);
+		if (session != null) {
+			session.produceTrapLocation(body.getPosition().x, body.getPosition().y);
+		}
 
 		isCompleted = true;
 		super.endUse();
@@ -92,8 +95,8 @@ public class Trap extends Item  {
 	public void render(SpriteBatch batch) {
 		if (gWorld.getPlayer().lightContains(body.getPosition().x, body.getPosition().y)) {
 			animationRunTime += Gdx.graphics.getRawDeltaTime();
-			batch.draw(plantedTrapAnimation.getKeyFrame(animationRunTime), body.getPosition().x-16,
-					body.getPosition().y-16, 32, 32);
+			batch.draw((TextureRegion) plantedTrapAnimation.getKeyFrame(animationRunTime),
+					body.getPosition().x - 16, body.getPosition().y - 16, 32, 32);
 		}
 	}
 

@@ -12,7 +12,9 @@ import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.jkjk.MMHelpers.AssetLoader;
+import com.jkjk.MMHelpers.PresentationFrame;
 import com.jkjk.MurderMansion.MurderMansion;
 import com.jkjk.TweenAccessors.SpriteAccessor;
 
@@ -22,6 +24,7 @@ public class SplashScreen implements Screen {
 	private SpriteBatch batcher;
 	private Sprite sprite;
 	private MurderMansion game;
+	private FitViewport viewport;
 
 	private float gameWidth;
 	private float gameHeight;
@@ -36,14 +39,12 @@ public class SplashScreen implements Screen {
 
 	@Override
 	public void show() {
+		viewport = PresentationFrame.createViewport();
 		sprite = new Sprite(AssetLoader.logo);
 		sprite.setColor(1, 1, 1, 0);
-
-		sprite.setPosition((Gdx.graphics.getWidth() / 2 - sprite.getWidth() / 2),
-				(Gdx.graphics.getHeight() / 2 - sprite.getHeight() / 2));
-		sprite.setScale(Gdx.graphics.getWidth() / gameWidth / 2);
 		setupTween();
 		batcher = new SpriteBatch();
+		resize(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
 	}
 
 	private void setupTween() {
@@ -67,6 +68,8 @@ public class SplashScreen implements Screen {
 		manager.update(delta);
 		Gdx.gl.glClearColor(1, 1, 1, 1);
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+		viewport.apply();
+		batcher.setProjectionMatrix(viewport.getCamera().combined);
 		batcher.begin();
 		sprite.draw(batcher);
 		batcher.end();
@@ -86,7 +89,15 @@ public class SplashScreen implements Screen {
 
 	@Override
 	public void resize(int width, int height) {
-
+		if (viewport != null) {
+			viewport.update(width, height, true);
+			float logoWidth = 240f;
+			float logoHeight = logoWidth
+					* ((float) sprite.getTexture().getHeight() / sprite.getTexture().getWidth());
+			sprite.setSize(logoWidth, logoHeight);
+			sprite.setPosition((PresentationFrame.WIDTH - logoWidth) / 2f,
+					(PresentationFrame.HEIGHT - logoHeight) / 2f);
+		}
 	}
 
 	@Override

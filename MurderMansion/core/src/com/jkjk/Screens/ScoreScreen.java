@@ -26,14 +26,12 @@ import com.badlogic.gdx.scenes.scene2d.ui.ImageButton.ImageButtonStyle;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Label.LabelStyle;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
-import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
-import com.badlogic.gdx.scenes.scene2d.ui.TextButton.TextButtonStyle;
-import com.badlogic.gdx.scenes.scene2d.utils.Align;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
-import com.badlogic.gdx.utils.viewport.ExtendViewport;
-import com.jkjk.GameObjects.Characters.GameCharacter;
-import com.jkjk.GameWorld.MMClient;
+import com.badlogic.gdx.utils.Align;
+import com.jkjk.GameWorld.GameSession;
+import com.jkjk.GameWorld.GameWorld;
 import com.jkjk.MMHelpers.AssetLoader;
+import com.jkjk.MMHelpers.PresentationFrame;
 import com.jkjk.MurderMansion.MurderMansion;
 
 /**
@@ -43,7 +41,8 @@ import com.jkjk.MurderMansion.MurderMansion;
 public class ScoreScreen implements Screen {
 
 	private MurderMansion game;
-	private MMClient client;
+	private GameSession session;
+	private GameWorld gWorld;
 
 	private String[] names;
 	private int numOfNames;
@@ -103,8 +102,10 @@ public class ScoreScreen implements Screen {
 	 * @param murWin
 	 *            who won the game? murderer or civilian?
 	 */
-	public ScoreScreen(MurderMansion game, float gameWidth, float gameHeight, MMClient client) {
-		this.client = client;
+	public ScoreScreen(MurderMansion game, float gameWidth, float gameHeight, GameSession session,
+			GameWorld gWorld) {
+		this.session = session;
+		this.gWorld = gWorld;
 		this.gameHeight = gameHeight;
 		this.gameWidth = gameWidth;
 		this.game = game;
@@ -118,19 +119,18 @@ public class ScoreScreen implements Screen {
 
 		// names = new String[]{"wong","jx","enyan","kat"};
 
-		names = client.getParticipantNames();
+		names = session.getParticipantNames();
 		//
 		numOfNames = names.length;
-		playerIsAlive = client.get_playerIsAlive();
-		playerType = client.get_playerType();
+		playerIsAlive = session.get_playerIsAlive();
+		playerType = session.get_playerType();
 		status = 1; // default test = alive
 		type = 0; // default test = murderer
 
 		// Create a Stage and add TouchPad
-		stage = new Stage(new ExtendViewport(gameWidth, gameHeight));
+		stage = new Stage(PresentationFrame.createViewport());
 		batch = new SpriteBatch();
 		sprite = new Sprite(score_texture);
-		sprite.setSize(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
 
 		BUTTON_WIDTH = 60;
 		BUTTON_HEIGHT = 60;
@@ -258,23 +258,21 @@ public class ScoreScreen implements Screen {
 			public void clicked(InputEvent event, float x, float y) {
 				AssetLoader.clickSound.play(AssetLoader.VOLUME);
 				try {
-					if (game.mMultiplayerSession.isServer) {
+					session.endSession();
+					if (game.mMultiplayerSession != null && game.mMultiplayerSession.isServer
+							&& game.mMultiplayerSession.getServer() != null) {
 						game.mMultiplayerSession.getServer().endSession();
-						// System.out.println("Ended server session.");
 					}
-					game.mMultiplayerSession.getClient().endSession();
-
-					game.actionResolver.leaveRoom();
-
-					// System.out.println("End mMultiplayer session");
-					game.mMultiplayerSession.endSession();
+					if (game.mMultiplayerSession != null && game.mMultiplayerSession.getClient() != null) {
+						game.mMultiplayerSession.getClient().endSession();
+						game.actionResolver.leaveRoom();
+						game.mMultiplayerSession.endSession();
+					}
 				} catch (Exception e) {
 					System.out.println("Error on button press: " + e.getMessage());
 				}
-				if (game.mMultiplayerSession.mState == game.mMultiplayerSession.ROOM_MENU) {
-					((Game) Gdx.app.getApplicationListener()).setScreen(new MenuScreen(game, gameWidth,
-							gameHeight));
-				}
+				((Game) Gdx.app.getApplicationListener()).setScreen(new MenuScreen(game, gameWidth,
+						gameHeight));
 			}
 		});
 
@@ -284,6 +282,7 @@ public class ScoreScreen implements Screen {
 		stage.addActor(nextButton);
 		stage.addActor(table);
 
+		resize(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
 		Gdx.input.setInputProcessor(stage);
 	}
 
@@ -296,6 +295,8 @@ public class ScoreScreen implements Screen {
 	public void render(float delta) {
 		Gdx.gl.glClearColor(0, 0, 0, 1);
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+		stage.getViewport().apply();
+		batch.setProjectionMatrix(stage.getCamera().combined);
 		batch.begin();
 		sprite.draw(batch);
 		// TODO: ANIMATION NOT WORKING :(
@@ -315,7 +316,9 @@ public class ScoreScreen implements Screen {
 	 */
 	@Override
 	public void resize(int width, int height) {
-
+		stage.getViewport().update(width, height, true);
+		sprite.setSize(PresentationFrame.WIDTH, PresentationFrame.HEIGHT);
+		nextButton.setPosition(560f, 10f);
 	}
 
 	/*
@@ -356,7 +359,7 @@ public class ScoreScreen implements Screen {
 	@Override
 	public void dispose() {
 		stage.dispose();
-		client.getgWorld().getWorld().dispose();
+		gWorld.dispose();
 	}
 
 }

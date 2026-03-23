@@ -44,7 +44,7 @@ import com.jkjk.MMHelpers.AssetLoader;
  * @author LeeJunXiang
  * 
  */
-public class MMClient {
+public class MMClient implements GameSession {
 
 	private GameWorld gWorld;
 	private GameRenderer renderer;
@@ -782,7 +782,7 @@ public class MMClient {
 	 */
 	private void createShotgun() {
 		for (GameCharacter gc : playerList) {
-			if (gc.getType() == "Civilian") {
+			if ("Civilian".equals(gc.getType())) {
 				gc.addWeapon(weaponFac.createWeapon("Shotgun", gWorld, gc));
 			}
 		}

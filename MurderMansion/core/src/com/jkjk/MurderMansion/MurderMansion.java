@@ -4,14 +4,10 @@ import com.badlogic.gdx.Application;
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.utils.GdxNativesLoader;
-import com.jkjk.GameWorld.GameRenderer;
-import com.jkjk.GameWorld.GameWorld;
-import com.jkjk.GameWorld.MMClient;
 import com.jkjk.MMHelpers.ActionResolver;
 import com.jkjk.MMHelpers.AssetLoader;
 import com.jkjk.MMHelpers.MultiplayerSessionInfo;
-import com.jkjk.Screens.MenuScreen;
-import com.jkjk.Screens.ScoreScreen;
+import com.jkjk.MMHelpers.NoOpActionResolver;
 import com.jkjk.Screens.SplashScreen;
 
 public class MurderMansion extends Game {
@@ -25,13 +21,16 @@ public class MurderMansion extends Game {
 	
 
 	public MurderMansion(ActionResolver actionResolver, MultiplayerSessionInfo mMultiplayerSeisson){
-		this.actionResolver=actionResolver;
-		this.mMultiplayerSession=mMultiplayerSeisson; 
+		this.actionResolver = actionResolver != null ? actionResolver : new NoOpActionResolver();
+		this.mMultiplayerSession = mMultiplayerSeisson != null ? mMultiplayerSeisson
+				: new MultiplayerSessionInfo();
 	}
 
 	@Override
 	public void create() {
-		GdxNativesLoader.load();
+		if (Gdx.app.getType() == Application.ApplicationType.Desktop) {
+			GdxNativesLoader.load();
+		}
 		AssetLoader.initiate();
 		AssetLoader.loadLogo();
 		AssetLoader.loadFont();

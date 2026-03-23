@@ -1,46 +1,53 @@
-apply plugin: "java"
-
-sourceCompatibility = 1.6
-sourceSets.main.java.srcDirs = [ "src/" ]
-
-project.ext.mainClassName = "com.jkjk.MurderMansion.desktop.DesktopLauncher"
-project.ext.assetsDir = new File("../android/assets");
-
-task run(dependsOn: classes, type: JavaExec) {
-    main = project.mainClassName
-    classpath = sourceSets.main.runtimeClasspath
-    standardInput = System.in
-    workingDir = project.assetsDir
-    ignoreExitValue = true
+plugins {
+	id 'application'
 }
 
-task dist(type: Jar) {
-    from files(sourceSets.main.output.classesDir)
-    from files(sourceSets.main.output.resourcesDir)
-    from {configurations.compile.collect {zipTree(it)}}
-    from files(project.assetsDir);
- 
-    manifest {
-        attributes 'Main-Class': project.mainClassName
-    }
+import org.gradle.internal.os.OperatingSystem
+
+java {
+	sourceCompatibility = JavaVersion.VERSION_1_8
+	targetCompatibility = JavaVersion.VERSION_1_8
 }
 
-dist.dependsOn classes
-
-eclipse {
-    project {
-        name = appName + "-desktop"
-        linkedResource name: 'assets', type: '2', location: 'PARENT-1-PROJECT_LOC/android/assets'
-    }
+tasks.withType(JavaCompile).configureEach {
+	options.encoding = 'UTF-8'
 }
 
-task afterEclipseImport(description: "Post processing after project generation", group: "IDE") {
-  doLast {
-    def classpath = new XmlParser().parse(file(".classpath"))
-    new Node(classpath, "classpathentry", [ kind: 'src', path: 'assets' ]);
-    def writer = new FileWriter(file(".classpath"))
-    def printer = new XmlNodePrinter(new PrintWriter(writer))
-    printer.setPreserveWhitespace(true)
-    printer.print(classpath)
-  }
+sourceSets.main.java.srcDirs = ['src']
+
+def assetsDir = file('../android/assets')
+
+application {
+	mainClass = 'com.jkjk.MurderMansion.desktop.DesktopLauncher'
+}
+
+tasks.named('run', JavaExec).configure {
+	workingDir = assetsDir
+	ignoreExitValue = true
+	if (OperatingSystem.current().isMacOsX()) {
+		jvmArgs '-XstartOnFirstThread'
+	}
+}
+
+tasks.register('dist', Jar) {
+	group = 'build'
+	description = 'Builds a runnable desktop jar that also packages shared assets.'
+	dependsOn tasks.named('classes'), ':core:assemble'
+	archiveBaseName = 'murder-mansion-desktop'
+	duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+	manifest {
+		attributes 'Main-Class': application.mainClass.get()
+	}
+	from sourceSets.main.output
+	from {
+		configurations.runtimeClasspath.collect { it.isDirectory() ? it : zipTree(it) }
+	}
+	from assetsDir
+}
+
+dependencies {
+	implementation project(':core')
+	implementation "com.badlogicgames.gdx:gdx-backend-lwjgl3:$gdxVersion"
+	runtimeOnly "com.badlogicgames.gdx:gdx-platform:$gdxVersion:natives-desktop"
+	runtimeOnly "com.badlogicgames.gdx:gdx-box2d-platform:$gdxVersion:natives-desktop"
 }
