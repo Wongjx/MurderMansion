@@ -1,0 +1,9 @@
+{
+  "name": "murder-mansion-discovery",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "smoke:relay": "node ./scripts/relay-smoke-test.mjs",
+    "deploy:smoke": "node ./scripts/deploy-and-smoke.mjs"
+  }
+}
