@@ -31,7 +31,10 @@ import com.badlogic.gdx.utils.Align;
 import com.jkjk.GameWorld.GameSession;
 import com.jkjk.GameWorld.GameWorld;
 import com.jkjk.MMHelpers.AssetLoader;
+import com.jkjk.MMHelpers.MMLog;
 import com.jkjk.MMHelpers.PresentationFrame;
+import com.jkjk.Multiplayer.DiscoveryApiClient;
+import com.jkjk.Multiplayer.MultiplayerPreferences;
 import com.jkjk.MurderMansion.MurderMansion;
 
 /**
@@ -104,6 +107,7 @@ public class ScoreScreen implements Screen {
 	 */
 	public ScoreScreen(MurderMansion game, float gameWidth, float gameHeight, GameSession session,
 			GameWorld gWorld) {
+		MMLog.log("MM-SCORE", "Constructing ScoreScreen.");
 		this.session = session;
 		this.gWorld = gWorld;
 		this.gameHeight = gameHeight;
@@ -120,10 +124,13 @@ public class ScoreScreen implements Screen {
 		// names = new String[]{"wong","jx","enyan","kat"};
 
 		names = session.getParticipantNames();
+		MMLog.log("MM-SCORE", "Participant names length=" + (names == null ? -1 : names.length));
 		//
 		numOfNames = names.length;
 		playerIsAlive = session.get_playerIsAlive();
 		playerType = session.get_playerType();
+		MMLog.log("MM-SCORE", "playerIsAlive null=" + (playerIsAlive == null) + " playerType null="
+				+ (playerType == null));
 		status = 1; // default test = alive
 		type = 0; // default test = murderer
 
@@ -170,6 +177,7 @@ public class ScoreScreen implements Screen {
 	 */
 	@Override
 	public void show() {
+		MMLog.log("MM-SCORE", "ScoreScreen.show()");
 		//Unlock An AMAZING GAME
 		if(game.actionResolver.getSignedInGPGS()){
 			game.actionResolver.unlockAchievementGPGS(game.actionResolver.ACHEIVEMENT_1);
@@ -265,14 +273,41 @@ public class ScoreScreen implements Screen {
 					}
 					if (game.mMultiplayerSession != null && game.mMultiplayerSession.getClient() != null) {
 						game.mMultiplayerSession.getClient().endSession();
-						game.actionResolver.leaveRoom();
-						game.mMultiplayerSession.endSession();
 					}
 				} catch (Exception e) {
 					System.out.println("Error on button press: " + e.getMessage());
 				}
-				((Game) Gdx.app.getApplicationListener()).setScreen(new MenuScreen(game, gameWidth,
-						gameHeight));
+				if (game.mMultiplayerSession != null && game.mMultiplayerSession.mRoomId != null) {
+					final boolean wasServer = game.mMultiplayerSession.isServer;
+					final boolean disconnected = gWorld != null && gWorld.isDisconnected();
+					final String roomId = game.mMultiplayerSession.mRoomId;
+					final String occupantId = game.mMultiplayerSession.occupantId;
+					if (disconnected && !wasServer) {
+						game.mMultiplayerSession.clearRoomState();
+						((Game) Gdx.app.getApplicationListener()).setScreen(new MultiplayerMenuScreen(game,
+								gameWidth, gameHeight));
+						return;
+					}
+					game.mMultiplayerSession.clearMatchRuntime();
+					if (occupantId != null && wasServer) {
+						new Thread(new Runnable() {
+							@Override
+							public void run() {
+								try {
+									DiscoveryApiClient client = new DiscoveryApiClient(
+											MultiplayerPreferences.getDiscoveryUrl());
+									client.finishRoom(roomId, occupantId);
+								} catch (Exception ignored) {
+								}
+							}
+						}, "finish-room").start();
+					}
+					((Game) Gdx.app.getApplicationListener()).setScreen(new MultiplayerLobbyScreen(game,
+							gameWidth, gameHeight, MultiplayerLobbyScreen.EntryMode.RETURN_EXISTING, null));
+				} else {
+					((Game) Gdx.app.getApplicationListener()).setScreen(new MenuScreen(game, gameWidth,
+							gameHeight));
+				}
 			}
 		});
 

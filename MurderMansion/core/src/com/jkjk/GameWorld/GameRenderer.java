@@ -8,7 +8,6 @@ import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TiledMapRenderer;
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
 import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
-import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import com.jkjk.MMHelpers.PresentationFrame;
 import com.jkjk.GameObjects.Obstacles;
@@ -54,8 +53,7 @@ public class GameRenderer {
 
 		// Create camera
 		cam = new OrthographicCamera();
-		worldViewport = new FitViewport((float) (PresentationFrame.WIDTH / 1.5f),
-				(float) (PresentationFrame.HEIGHT / 1.5f), cam);
+		worldViewport = PresentationFrame.createWorldViewport(cam);
 		worldViewport.apply(true);
 		cam.update();
 

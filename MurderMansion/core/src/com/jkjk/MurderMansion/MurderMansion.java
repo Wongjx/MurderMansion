@@ -46,6 +46,9 @@ public class MurderMansion extends Game {
 
 	@Override
 	public void dispose() {
+		if (mMultiplayerSession != null) {
+			mMultiplayerSession.clearMatchRuntime();
+		}
 		super.dispose();
 		AssetLoader.dispose();
 		AssetLoader.disposeSFX();

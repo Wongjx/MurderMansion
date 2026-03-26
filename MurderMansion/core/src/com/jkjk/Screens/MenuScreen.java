@@ -27,6 +27,7 @@ public class MenuScreen implements Screen {
 
 	private Image backgroundImage;
 	private TextButton buttonPlay;
+	private TextButton buttonOnline;
 	private Image muteButton;
 	private Image unmuteButton;
 
@@ -63,6 +64,18 @@ public class MenuScreen implements Screen {
 			}
 		});
 		stage.addActor(buttonPlay);
+
+		buttonOnline = new TextButton("Play Online", normal);
+		buttonOnline.setSize(BUTTON_WIDTH, BUTTON_HEIGHT);
+		buttonOnline.addListener(new ClickListener() {
+			@Override
+			public void clicked(InputEvent event, float x, float y) {
+				AssetLoader.clickSound.play(AssetLoader.VOLUME);
+				((Game) Gdx.app.getApplicationListener()).setScreen(new MultiplayerMenuScreen(game, gameWidth,
+						gameHeight));
+			}
+		});
+		stage.addActor(buttonOnline);
 
 		muteButton = new Image(AssetLoader.muteButton);
 		unmuteButton = new Image(AssetLoader.unmuteButton);
@@ -114,7 +127,10 @@ public class MenuScreen implements Screen {
 
 	private void layoutActors() {
 		if (buttonPlay != null) {
-			buttonPlay.setPosition((PresentationFrame.WIDTH - BUTTON_WIDTH) / 2f, 136f);
+			buttonPlay.setPosition((PresentationFrame.WIDTH - BUTTON_WIDTH) / 2f, 158f);
+		}
+		if (buttonOnline != null) {
+			buttonOnline.setPosition((PresentationFrame.WIDTH - BUTTON_WIDTH) / 2f, 110f);
 		}
 		float buttonX = PresentationFrame.WIDTH - 18f - AssetLoader.muteButton.getWidth();
 		float buttonY = 18f;

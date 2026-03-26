@@ -1,12 +1,6 @@
 package com.jkjk.GameWorld;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.PrintWriter;
-import java.net.InetAddress;
-import java.net.InetSocketAddress;
-import java.net.Socket;
 import java.net.SocketException;
 import java.net.SocketTimeoutException;
 import java.util.ArrayList;
@@ -30,6 +24,9 @@ import com.jkjk.GameObjects.Weapons.WeaponSprite;
 import com.jkjk.Host.Helpers.Location;
 import com.jkjk.Host.Helpers.ObstaclesHandler;
 import com.jkjk.MMHelpers.AssetLoader;
+import com.jkjk.MMHelpers.MMLog;
+import com.jkjk.Multiplayer.GameLineTransport;
+import com.jkjk.Multiplayer.TcpGameLineTransport;
 
 /**
  * MMClient listens to input from the Server by the host. Inputs include sharable data such as player
@@ -55,10 +52,9 @@ public class MMClient implements GameSession {
 	private String serverAddress;
 	private int serverPort;
 	private boolean isGameStart;
-	public Socket clientSocket;
-	private BufferedReader clientInput;
-	private PrintWriter clientOutput;
+	private final GameLineTransport transport;
 	private Thread clientListenerThread;
+	private volatile boolean transportFailed;
 
 	private float selfAngle;
 	private float[] selfPosition;
@@ -122,33 +118,40 @@ public class MMClient implements GameSession {
 	 */
 	public MMClient(GameWorld gWorld, GameRenderer renderer, String serverAddress, int serverPort,
 			String participantId, String mName, boolean tutorial) throws Exception {
+		this(gWorld, renderer, new TcpGameLineTransport(serverAddress, serverPort), participantId, mName, tutorial,
+				true);
+	}
 
+	public MMClient(GameWorld gWorld, GameRenderer renderer, GameLineTransport transport, String participantId,
+			String mName, boolean tutorial, boolean sendClientName) throws Exception {
 		this.gWorld = gWorld;
 		this.renderer = renderer;
 		this.tutorial = tutorial;
+		this.transport = transport;
 		itemFac = new ItemFactory();
 		weaponFac = new WeaponFactory();
 		gameCharFac = new GameCharacterFactory();
 		random = new Random();
 
 		this.mName = mName;
-		this.serverAddress = serverAddress;
-		this.serverPort = serverPort;
+		this.serverAddress = null;
+		this.serverPort = 0;
 		this.isGameStart = false;
-		// Connect to server
-		initClientSocket(this.serverAddress, this.serverPort);
+		this.transportFailed = false;
 
 		// Set cuurent time to last updated time
 		this.lastUpdated = System.currentTimeMillis();
 
 		// Send client participant id to server
-		this.clientOutput.println(mName);
-		System.out.println("My name is : " + mName);
+		if (sendClientName) {
+			sendLine(mName);
+			System.out.println("My name is : " + mName);
+		}
 
 		// Receive initialzation parameters
-		numOfPlayers = Integer.parseInt(clientInput.readLine());
-		id = Integer.parseInt(clientInput.readLine());
-		murdererId = Integer.parseInt(clientInput.readLine());
+		numOfPlayers = Integer.parseInt(readLine());
+		id = Integer.parseInt(readLine());
+		murdererId = Integer.parseInt(readLine());
 
 		// Intialize String[] for participant names
 		this.clientNames = new String[numOfPlayers];
@@ -173,9 +176,9 @@ public class MMClient implements GameSession {
 
 		String message;
 		// Receive item locations
-		if ((message = clientInput.readLine()).equals("itemLocations")) {
+		if ((message = readLine()).equals("itemLocations")) {
 			// System.out.println("get item locations");
-			while (!(message = clientInput.readLine()).equals("end")) {
+			while (!(message = readLine()).equals("end")) {
 				String[] locations = message.split("_");
 				for (String coordinates : locations) {
 					String[] XY = coordinates.split(",");
@@ -185,9 +188,9 @@ public class MMClient implements GameSession {
 			}
 		}
 		// Receive weapon locations
-		if ((message = clientInput.readLine()).equals("weaponLocations")) {
+		if ((message = readLine()).equals("weaponLocations")) {
 			// System.out.println("get weapon locations");
-			while (!(message = clientInput.readLine()).equals("end")) {
+			while (!(message = readLine()).equals("end")) {
 				String[] locations = message.split("_");
 				for (String coordinates : locations) {
 					String[] XY = coordinates.split(",");
@@ -197,9 +200,9 @@ public class MMClient implements GameSession {
 			}
 		}
 		// Receive weaponPart locations
-		if ((message = clientInput.readLine()).equals("weaponPartLocations")) {
+		if ((message = readLine()).equals("weaponPartLocations")) {
 			// System.out.println("get weapon part locations");
-			while (!(message = clientInput.readLine()).equals("end")) {
+			while (!(message = readLine()).equals("end")) {
 				String[] locations = message.split("_");
 				for (String coordinates : locations) {
 					String[] XY = coordinates.split(",");
@@ -219,9 +222,9 @@ public class MMClient implements GameSession {
 		playerIsInSafeArea = false;
 
 		// Receive spawn positions
-		if ((message = clientInput.readLine()).equals("spawnPositions")) {
+		if ((message = readLine()).equals("spawnPositions")) {
 			// System.out.println("get spawn positions");
-			while (!(message = clientInput.readLine()).equals("end")) {
+			while (!(message = readLine()).equals("end")) {
 				String[] locations = message.split("_");
 				for (int i = 0; i < numOfPlayers; i++) {
 					String[] XY = locations[i].split(",");
@@ -232,9 +235,9 @@ public class MMClient implements GameSession {
 		}
 
 		// Receive spawn angles
-		if ((message = clientInput.readLine()).equals("spawnAngles")) {
+		if ((message = readLine()).equals("spawnAngles")) {
 			// System.out.println("get spawn angles");
-			while (!(message = clientInput.readLine()).equals("end")) {
+			while (!(message = readLine()).equals("end")) {
 				String[] angles = message.split(",");
 				for (int i = 0; i < numOfPlayers; i++) {
 					playerAngle.put("Player " + i, Float.parseFloat(angles[i]));
@@ -248,9 +251,9 @@ public class MMClient implements GameSession {
 		createObstacles();
 
 		// Get participant ids from server
-		if ((message = clientInput.readLine()).equals("clientNames")) {
+		if ((message = readLine()).equals("clientNames")) {
 			System.out.println("Get client names");
-			while (!(message = clientInput.readLine()).equals("end")) {
+			while (!(message = readLine()).equals("end")) {
 				String[] ids = message.split("_");
 				for (int i = 0; i < numOfPlayers; i++) {
 					clientNames[i] = ids[i];
@@ -259,35 +262,10 @@ public class MMClient implements GameSession {
 		}
 
 		// Create and start extra thread that reads any incoming messages
-		Thread thread = new clientListener(clientInput, this);
+		Thread thread = new clientListener(this);
 		this.clientListenerThread = thread;
 		thread.start();
 
-	}
-
-	/**
-	 * Initialize client socket
-	 * 
-	 * @throws Exception
-	 */
-	public void initClientSocket(String address, int port) throws Exception {
-		if (address != null) {
-			clientSocket = new Socket();
-
-			// Time out in 60 seconds
-			clientSocket.setSoTimeout(10000);
-			// Create InetSocketAddress and connect to server socket
-			InetAddress addr = InetAddress.getByName(address);
-			InetSocketAddress iAddress = new InetSocketAddress(addr, port);
-			clientSocket.connect(iAddress);
-
-			setClientInput(new BufferedReader(new InputStreamReader(clientSocket.getInputStream())));
-			setClientOutput(new PrintWriter(clientSocket.getOutputStream(), true));
-
-		} else {
-			// TODO Request information from server again
-
-		}
 	}
 
 	private void initPlayers() {
@@ -513,15 +491,15 @@ public class MMClient implements GameSession {
 	}
 
 	public void produceTrapLocation(float x, float y) {
-		clientOutput.println("trap_" + id + "_pro_" + Float.toString(x) + "_" + Float.toString(y));
+		sendLine("trap_" + id + "_pro_" + Float.toString(x) + "_" + Float.toString(y));
 	}
 
 	public void addWeaponPartCollected() {
-		clientOutput.println("addWeaponPart");
+		sendLine("addWeaponPart");
 	}
 
 	public void removeTrapLocation(float x, float y) {
-		clientOutput.println("trap_" + id + "_con_" + Float.toString(x) + "_" + Float.toString(y));
+		sendLine("trap_" + id + "_con_" + Float.toString(x) + "_" + Float.toString(y));
 	}
 
 	/**
@@ -531,8 +509,7 @@ public class MMClient implements GameSession {
 	 */
 	public void removeItemLocation(Vector2 position) {
 		// itemLocations.consume(new Location(new float[] { position.x, position.y }));
-		clientOutput.println("item_" + id + "_con_" + Float.toString(position.x) + "_"
-				+ Float.toString(position.y));
+		sendLine("item_" + id + "_con_" + Float.toString(position.x) + "_" + Float.toString(position.y));
 	}
 
 	/**
@@ -542,8 +519,7 @@ public class MMClient implements GameSession {
 	 */
 	public void removeWeaponLocation(Vector2 position) {
 		// weaponLocations.consume(new Location(new float[] { position.x, position.y }));
-		clientOutput.println("weapon_" + id + "_con_" + Float.toString(position.x) + "_"
-				+ Float.toString(position.y));
+		sendLine("weapon_" + id + "_con_" + Float.toString(position.x) + "_" + Float.toString(position.y));
 	}
 
 	/**
@@ -553,7 +529,7 @@ public class MMClient implements GameSession {
 	 */
 	public void removeWeaponPartLocation(Vector2 position) {
 		// weaponPartLocations.consume(new Location(new float[] { position.x, position.y }));
-		clientOutput.println("weaponpart_" + id + "_con_" + Float.toString(position.x) + "_"
+		sendLine("weaponpart_" + id + "_con_" + Float.toString(position.x) + "_"
 				+ Float.toString(position.y));
 	}
 
@@ -562,7 +538,7 @@ public class MMClient implements GameSession {
 	 * 
 	 */
 	public void updatePlayerIsReady() {
-		clientOutput.println("ready_" + id);
+		sendLine("ready_" + id);
 	}
 
 	/**
@@ -590,10 +566,9 @@ public class MMClient implements GameSession {
 			playerAngle.put("Player " + id, selfAngle);
 			playerVelocity.put("Player " + id, new float[] { selfVelocityX, selfVelocityY });
 			// Update server
-			clientOutput.println("loc_" + id + "_" + Float.toString(selfPosition[0]) + "_"
+			sendLine("loc_" + id + "_" + Float.toString(selfPosition[0]) + "_"
 					+ Float.toString(selfPosition[1]) + "_" + Float.toString(selfAngle) + "_"
 					+ Float.toString(selfVelocityX) + "_" + Float.toString(selfVelocityY));
-			clientOutput.flush();
 			lastUpdated = System.currentTimeMillis();
 		}
 	}
@@ -602,10 +577,9 @@ public class MMClient implements GameSession {
 		if (gWorld.isInSafeArea() != playerIsInSafeArea) {
 			playerIsInSafeArea = gWorld.isInSafeArea();
 			if (playerIsInSafeArea)
-				clientOutput.println("safe_" + id + "_" + 1);
+				sendLine("safe_" + id + "_" + 1);
 			else
-				clientOutput.println("safe_" + id + "_" + 0);
-			clientOutput.flush();
+				sendLine("safe_" + id + "_" + 0);
 		}
 	}
 
@@ -618,7 +592,7 @@ public class MMClient implements GameSession {
 	 *            If 1 -> true; If 0 -> false;
 	 */
 	public void updatePlayerIsStun(int playerID, int value) {
-		clientOutput.println("stun_" + id + "_" + playerID + "_" + value);
+		sendLine("stun_" + id + "_" + playerID + "_" + value);
 	}
 
 	/**
@@ -631,7 +605,7 @@ public class MMClient implements GameSession {
 	 */
 	public void updatePlayerIsAlive(int playerID, int value) {
 		playerIsAlive.put("Player " + id, value);
-		clientOutput.println("alive_" + id + "_" + playerID + "_" + value);
+		sendLine("alive_" + id + "_" + playerID + "_" + value);
 	}
 
 	/**
@@ -643,7 +617,7 @@ public class MMClient implements GameSession {
 	 *            If 1 -> true; If 0 -> false;
 	 */
 	public void updatePlayerUseItem() {
-		clientOutput.println("useItem_" + id);
+		sendLine("useItem_" + id);
 	}
 
 	/**
@@ -655,7 +629,7 @@ public class MMClient implements GameSession {
 	 *            If 1 -> true; If 0 -> false;
 	 */
 	public void updatePlayerUseWeapon() {
-		clientOutput.println("useWeapon_" + id);
+		sendLine("useWeapon_" + id);
 	}
 
 	/**
@@ -667,7 +641,7 @@ public class MMClient implements GameSession {
 	 *            If 1 -> true; If 0 -> false;
 	 */
 	public void updatePlayerUseAbility() {
-		clientOutput.println("useAbility_" + id);
+		sendLine("useAbility_" + id);
 	}
 
 	/**
@@ -680,7 +654,7 @@ public class MMClient implements GameSession {
 	 */
 	public void updatePlayerType(int playerID, int value) {
 		playerType.put("Player " + id, value);
-		clientOutput.println("type_" + id + "_" + playerID + "_" + value);
+		sendLine("type_" + id + "_" + playerID + "_" + value);
 	}
 
 	/**
@@ -799,30 +773,6 @@ public class MMClient implements GameSession {
 		return isGameStart;
 	}
 
-	public BufferedReader getClientInput() {
-		synchronized (clientInput) {
-			return clientInput;
-		}
-	}
-
-	public void setClientInput(BufferedReader clientInput) {
-		synchronized (clientInput) {
-			this.clientInput = clientInput;
-		}
-	}
-
-	public PrintWriter getClientOutput() {
-		synchronized (clientOutput) {
-			return clientOutput;
-		}
-	}
-
-	public void setClientOutput(PrintWriter clientOutput) {
-		synchronized (clientOutput) {
-			this.clientOutput = clientOutput;
-		}
-	}
-
 	public GameWorld getgWorld() {
 		return gWorld;
 	}
@@ -848,14 +798,11 @@ public class MMClient implements GameSession {
 	}
 
 	public void sendToServer(String message) {
-		clientOutput.println(message);
-		clientOutput.flush();
+		sendLine(message);
 	}
 
 	public void closeSocket() throws IOException {
-		clientInput.close();
-		clientOutput.close();
-		clientSocket.close();
+		transport.close();
 	}
 
 	/**
@@ -875,8 +822,7 @@ public class MMClient implements GameSession {
 			if (msg[1].equals("server")) {
 				if (msg[2].equals("check")) {
 					System.out.println("Client " + id + " received server connection check. Replying now.");
-					this.clientOutput.println("connection_" + id + "_ok");
-					this.clientOutput.flush();
+					sendLine("connection_" + id + "_ok");
 				}
 			}
 		}
@@ -994,23 +940,55 @@ public class MMClient implements GameSession {
 		}
 	}
 
+	String readLine() throws IOException {
+		return transport.readLine();
+	}
+
+	String readLine(long timeoutMillis) throws IOException, SocketTimeoutException {
+		return transport.readLine(timeoutMillis);
+	}
+
+	private void sendLine(String message) {
+		if (transportFailed || gWorld.isDisconnected()) {
+			return;
+		}
+		try {
+			transport.sendLine(message);
+		} catch (IOException e) {
+			handleTransportFailure(message, e);
+		}
+	}
+
+	private void handleTransportFailure(String message, IOException error) {
+		if (transportFailed) {
+			return;
+		}
+		transportFailed = true;
+		MMLog.log("MM-DISCONNECT", "Transport send failed for message: " + message + " reason="
+				+ error.getMessage());
+		gWorld.setDisconnected(true);
+		try {
+			transport.close();
+		} catch (Exception ignored) {
+		}
+	}
+
 	public void endSession() throws IOException {
-		if (!clientListenerThread.isAlive() && clientListenerThread != null)
+		if (clientListenerThread != null && clientListenerThread.isAlive())
 			this.clientListenerThread.interrupt();
-		if (!clientSocket.isClosed() && clientSocket != null)
-			this.clientSocket.close();
+		if (!transport.isClosed()) {
+			transport.close();
+		}
 		System.out.println("MMClient seisson ended.");
 
 	}
 }
 
 class clientListener extends Thread {
-	private BufferedReader input;
 	private MMClient client;
 	private String msg;
 
-	public clientListener(BufferedReader inputStream, MMClient client) {
-		this.input = inputStream;
+	public clientListener(MMClient client) {
 		this.client = client;
 	}
 
@@ -1019,7 +997,7 @@ class clientListener extends Thread {
 		System.out.println("Starting client listener thread.");
 		while (!isInterrupted()) {
 			try {
-				if ((msg = input.readLine()) != null) {
+				if ((msg = client.readLine(10000L)) != null) {
 					// System.out.println("MMClient Message received: " + msg);
 					client.handleMessage(msg);
 				} else {
@@ -1029,10 +1007,9 @@ class clientListener extends Thread {
 				}
 			} catch (SocketTimeoutException e) {
 				System.out.println("Client listener " + client.getId() + " timeout. check for server status");
-				client.getClientOutput().println("connection_" + client.getId() + "_check");
-				client.getClientOutput().flush();
+				client.sendToServer("connection_" + client.getId() + "_check");
 				try {
-					msg = input.readLine();
+					msg = client.readLine();
 					System.out.println("Client listener " + client.getId() + " received message: " + msg);
 				} catch (IOException e1) {
 					System.out.println("IO exception on client listener " + client.getId() + " e1");
@@ -1045,11 +1022,16 @@ class clientListener extends Thread {
 				}
 				client.handleMessage(msg);
 			} catch (SocketException E) {
-				System.out.println("Client error: Socket error: " + E.getMessage());
-				E.printStackTrace();
-				System.out.println("Client notifying server to close.");
-				client.getClientOutput().println("connection_" + client.getId() + "_close");
-				client.getClientOutput().flush();
+				boolean expectedShutdown = "Socket closed".equals(E.getMessage());
+				if (expectedShutdown) {
+					System.out.println("Client listener " + client.getId()
+							+ " socket closed during shutdown.");
+				} else {
+					System.out.println("Client error: Socket error: " + E.getMessage());
+					E.printStackTrace();
+					System.out.println("Client notifying server to close.");
+					client.sendToServer("connection_" + client.getId() + "_close");
+				}
 				break;
 
 			} catch (Exception e) {
@@ -1066,9 +1048,11 @@ class clientListener extends Thread {
 
 		System.out.println("Client listener " + client.getId() + " thread closed.");
 		if (!(client.getgWorld().isCivWin() || client.getgWorld().isMurWin())) {
+			MMLog.log("MM-DISCONNECT",
+					"Client listener closing without win condition. Marking world disconnected for " + client.getId());
 			client.getgWorld().setDisconnected(true);
 			try {
-				this.input.close();
+				client.closeSocket();
 			} catch (IOException e) {
 				e.printStackTrace();
 			}

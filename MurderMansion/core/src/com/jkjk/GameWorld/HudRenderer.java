@@ -56,6 +56,7 @@ public class HudRenderer {
 	private Texture weapon_parts_counter;
 	private Actor counter_actor;
 	private BitmapFont font;
+	private BitmapFont hotkeyFont;
 	private String time;
 	private Float playTime;
 
@@ -287,7 +288,8 @@ public class HudRenderer {
 		});
 
 		// Create a Stage and add TouchPad
-		stage = new Stage(PresentationFrame.createViewport(), batch);
+		stage = new Stage(PresentationFrame.createHudViewport(), batch);
+		touchpad.setVisible(!desktopControls);
 		stage.addActor(touchpad);
 		stage.addActor(getTimebox());
 		stage.addActor(getWeaponPartsCounter());
@@ -303,12 +305,13 @@ public class HudRenderer {
 			stage.addActor(nextButton);
 		}
 
-		settingsStage = new Stage(PresentationFrame.createViewport(), batch);
+		settingsStage = new Stage(PresentationFrame.createHudViewport(), batch);
 		settingsStage.addActor(getMainMenuButton());
 		settingsStage.addActor(getMuteButton());
 		settingsStage.addActor(getSettingsCloseButton());
 		welcomeMsg = true;
 		scale = 1f;
+		layoutHud();
 	}
 
 	/**
@@ -348,12 +351,79 @@ public class HudRenderer {
 		timebox = AssetLoader.time;
 		weapon_parts_counter = AssetLoader.weapon_parts_counter;
 		font = AssetLoader.crimesFont36Time;
+		hotkeyFont = new BitmapFont(Gdx.files.internal("Fonts/crimesFont36.fnt"));
+		hotkeyFont.getData().setScale(0.35f, 0.35f);
 		syncFont = AssetLoader.crimesFont36Sync;
 		settingsButtonDraw = AssetLoader.settings_button_draw;
 		pause_main = AssetLoader.pause_main;
 		normalSettings = AssetLoader.normalSettings;
 		settingsCloseDraw = AssetLoader.settings_cancel_draw;
 
+	}
+
+	private void layoutHud() {
+		float width = PresentationFrame.WIDTH;
+		float height = PresentationFrame.HEIGHT;
+		touchpad.setBounds(gameWidth / 14f, gameHeight / 14f, gameWidth / 5f, gameWidth / 5f);
+		touchKnob.setMinHeight(touchpad.getHeight() / 4f);
+		touchKnob.setMinWidth(touchpad.getWidth() / 4f);
+		settingsButton.setBounds(595f, 294f, 30f, 30f);
+		nextButton.setBounds(550f, 150f, 77f, 62f);
+		nextButtonToMenu.setBounds(550f, 150f, 77f, 62f);
+		if (buttonMainMenu != null) {
+			buttonMainMenu.setPosition(225f, 130f);
+		}
+		if (muteButton != null) {
+			muteButton.setPosition(348f, 130f);
+		}
+		if (unmuteButton != null) {
+			unmuteButton.setPosition(348f, 130f);
+		}
+		if (settingsCloseButton != null) {
+			settingsCloseButton.setPosition(485f, 260f);
+		}
+
+		if (weaponButton != null) {
+			weaponButton.setBounds(493f, 40f, 40f, 40f);
+		}
+		if (itemButton != null) {
+			itemButton.setBounds(("Murderer".equals(player.getType()) || "Ghost".equals(player.getType())) ? 546f
+					: 547f, ("Murderer".equals(player.getType()) || "Ghost".equals(player.getType())) ? 43f : 40f,
+					40f, 40f);
+		}
+		if (dashButton != null) {
+			dashButton.setBounds(520f, 94f, 33f, 33f);
+		}
+		if (disguiseToCiv != null) {
+			disguiseToCiv.setBounds(522f, 92f, 33f, 33f);
+		}
+		if (disguiseToMur != null) {
+			disguiseToMur.setBounds(522f, 92f, 33f, 33f);
+		}
+		if (hauntButton != null) {
+			hauntButton.setBounds(518f, 85f, 33f, 33f);
+		}
+
+		layoutOverlay(civCharTut, width, height);
+		layoutOverlay(murCharTut, width, height);
+		layoutOverlay(ghostCharTut, width, height);
+		layoutOverlay(itemTutBegin, width, height);
+		layoutOverlay(hudOverlay, width, height);
+		layoutOverlay(abilityTut, width, height);
+		layoutOverlay(weaponTut, width, height);
+		layoutOverlay(itemTut, width, height);
+		layoutOverlay(shotgunTut, width, height);
+		if (shotgunTutMur != null) {
+			layoutOverlay(shotgunTutMur, width, height);
+		}
+		layoutOverlay(mapTut, width, height);
+	}
+
+	private void layoutOverlay(Image image, float width, float height) {
+		if (image == null) {
+			return;
+		}
+		image.setBounds(0f, 0f, PresentationFrame.WIDTH, PresentationFrame.HEIGHT);
 	}
 
 	/**
@@ -566,17 +636,18 @@ public class HudRenderer {
 		if (!desktopControls) {
 			return;
 		}
-
-		font.getData().setScale(0.35f, 0.35f);
-		drawHotkeyLabel("LMB", 498f, 30f);
-		drawHotkeyLabel("E", 559f, 30f);
-		drawHotkeyLabel("RMB", 520f, 84f);
-		font.getData().setScale(1f, 1f);
+		drawHotkeyLabel("LMB", 498f, 31f);
+		drawHotkeyLabel("E", 559f, 31f);
+		drawHotkeyLabel("RMB", 520f, 125f);
+		drawHotkeyLabel("W", 110f, 108f);
+		drawHotkeyLabel("A", 82f, 80f);
+		drawHotkeyLabel("S", 110f, 54f);
+		drawHotkeyLabel("D", 138f, 80f);
 	}
 
 	private void drawHotkeyLabel(String label, float centerX, float baselineY) {
-		GlyphLayout layout = new GlyphLayout(font, label);
-		font.draw(batch, label, centerX - (layout.width / 2f), baselineY);
+		GlyphLayout layout = new GlyphLayout(hotkeyFont, label);
+		hotkeyFont.draw(batch, label, centerX - (layout.width / 2f), baselineY);
 	}
 
 	/**
@@ -597,8 +668,7 @@ public class HudRenderer {
 						WeaponsCD = false;
 					} else {
 						batch.draw((TextureRegion) WeaponsCoolDownAnimation.getKeyFrame(
-								WeaponsAnimationRunTime), 477, 25,
-								72, 72);
+								WeaponsAnimationRunTime), 477, 25, 72, 72);
 					}
 				} else {
 					WeaponsCD = false;
@@ -833,14 +903,14 @@ public class HudRenderer {
 	 */
 	public ImageButton getSettingsButton() {
 
-		x = 595;
-		y = 294;
+		x = 595f;
+		y = 294f;
 
 		settingsButton = new ImageButton(settingsButtonDraw);
 		settingsButton.setX(x);
 		settingsButton.setY(y);
-		settingsButton.setWidth(30);
-		settingsButton.setHeight(30);
+		settingsButton.setWidth(30f);
+		settingsButton.setHeight(30f);
 		settingsButton.setName("Pause Button");
 
 		settingsButton.addListener(new ClickListener() {
@@ -867,6 +937,7 @@ public class HudRenderer {
 		weaponButton = new ImageButton(civ_bat);
 		weaponButton.setX(x);
 		weaponButton.setY(y);
+		weaponButton.setSize(40, 40);
 		weaponButton.setName("Weapon Button");
 		AssetLoader.pickUpItemSound.play(AssetLoader.VOLUME);
 		if ("Ghost".equals(gWorld.getPlayer().getType())) {
@@ -908,6 +979,7 @@ public class HudRenderer {
 		weaponButton = new ImageButton(AssetLoader.civ_weapon_gun_draw);
 		weaponButton.setX(x);
 		weaponButton.setY(y);
+		weaponButton.setSize(40, 40);
 		weaponButton.setName("Weapon Button");
 		AssetLoader.pickUpItemSound.play(AssetLoader.VOLUME);
 		TM.setDisplayMessage("Obtained Shotgun");
@@ -946,6 +1018,7 @@ public class HudRenderer {
 		itemButton = new ImageButton(civ_item);
 		itemButton.setX(x);
 		itemButton.setY(y);
+		itemButton.setSize(40, 40);
 		itemButton.setName("Item Button");
 		AssetLoader.pickUpItemSound.play(AssetLoader.VOLUME);
 		if ("Ghost".equals(gWorld.getPlayer().getType()))
@@ -987,6 +1060,7 @@ public class HudRenderer {
 		dashButton = new ImageButton(civ_dash);
 		dashButton.setX(x);
 		dashButton.setY(y);
+		dashButton.setSize(33, 33);
 		dashButton.setName("Panic");
 
 		dashButton.addListener(new ClickListener() {
@@ -1019,6 +1093,7 @@ public class HudRenderer {
 		weaponButton = new ImageButton(mur_knife);
 		weaponButton.setX(x);
 		weaponButton.setY(y);
+		weaponButton.setSize(40, 40);
 		weaponButton.setName("Weapon Button");
 		AssetLoader.pickUpItemSound.play(AssetLoader.VOLUME);
 		TM.setDisplayMessage("Obtained Knife");
@@ -1146,6 +1221,7 @@ public class HudRenderer {
 		hauntButton = new ImageButton(haunt);
 		hauntButton.setX(x);
 		hauntButton.setY(y);
+		hauntButton.setSize(33, 33);
 		hauntButton.setName("Haunt");
 
 		hauntButton.addListener(new ClickListener() {
@@ -1181,6 +1257,7 @@ public class HudRenderer {
 		settingsStage.getViewport().update(width, height, true);
 		TM.setFrameWidth(PresentationFrame.WIDTH);
 		GWTM.setFrameWidth(PresentationFrame.WIDTH);
+		layoutHud();
 	}
 
 	private void handleDesktopActions() {
@@ -1266,6 +1343,7 @@ public class HudRenderer {
 		stage.dispose();
 		settingsStage.dispose();
 		batch.dispose();
+		hotkeyFont.dispose();
 	}
 
 }

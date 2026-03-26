@@ -99,6 +99,7 @@ tasks.named('preBuild').configure {
 dependencies {
 	implementation project(':core')
 	implementation "com.badlogicgames.gdx:gdx-backend-android:$gdxVersion"
+	implementation 'org.java-websocket:Java-WebSocket:1.5.7'
 	gdxNatives "com.badlogicgames.gdx:gdx-platform:$gdxVersion:natives-armeabi-v7a"
 	gdxNatives "com.badlogicgames.gdx:gdx-platform:$gdxVersion:natives-arm64-v8a"
 	gdxNatives "com.badlogicgames.gdx:gdx-platform:$gdxVersion:natives-x86"

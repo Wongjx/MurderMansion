@@ -65,6 +65,7 @@ public class MMServer {
 
 	private boolean tutorial;
 	private int tutorialCharacter;
+	private final boolean relayMode;
 
 	/**
 	 * @param numOfPlayers
@@ -84,6 +85,7 @@ public class MMServer {
 		int gameStartPauseDuration = 1000;
 		this.tutorial = tutorial;
 		this.tutorialCharacter = tutorialCharacter;
+		this.relayMode = info != null && info.useRelayTransport;
 
 		// System.out.println("Initialize Client list and listeners");
 		clients = new ConcurrentHashMap<String, Socket>();
@@ -118,9 +120,11 @@ public class MMServer {
 		initPlayers();
 
 		// Attempt to connect to clients (numOfPlayers)
-		System.out.println("Creating server socket");
-		initServerSocket(info);
-		acceptServerConnections();
+		if (!relayMode) {
+			System.out.println("Creating server socket");
+			initServerSocket(info);
+			acceptServerConnections();
+		}
 	}
 
 	// public static MMServer getInstance(int numOfPlayers, MultiplayerSessionInfo info)
@@ -354,7 +358,8 @@ public class MMServer {
 	public void initServerSocket(MultiplayerSessionInfo info) {
 		try {
 			// Randomly assign server to an open port
-			ServerSocket sock = new ServerSocket(0);
+			int preferredPort = info != null ? info.preferredServerPort : 0;
+			ServerSocket sock = preferredPort > 0 ? new ServerSocket(preferredPort) : new ServerSocket(0);
 			this.serverSocket = sock;
 			info.setServer(this);
 
@@ -402,22 +407,31 @@ public class MMServer {
 	 * @return IPV4 of device in string
 	 */
 	private String getLocalIpAddress() {
+		String fallback = null;
 		try {
 			for (Enumeration<NetworkInterface> en = NetworkInterface.getNetworkInterfaces(); en
 					.hasMoreElements();) {
 				NetworkInterface intf = en.nextElement();
+				if (!intf.isUp() || intf.isLoopback() || intf.isVirtual() || intf.isPointToPoint()) {
+					continue;
+				}
 				for (Enumeration<InetAddress> enumIpAddr = intf.getInetAddresses(); enumIpAddr
 						.hasMoreElements();) {
 					InetAddress inetAddress = enumIpAddr.nextElement();
 					if (!inetAddress.isLoopbackAddress() && inetAddress instanceof Inet4Address) {
-						return inetAddress.getHostAddress();
+						if (inetAddress.isSiteLocalAddress()) {
+							return inetAddress.getHostAddress();
+						}
+						if (fallback == null) {
+							fallback = inetAddress.getHostAddress();
+						}
 					}
 				}
 			}
 		} catch (SocketException ex) {
 			ex.printStackTrace();
 		}
-		return null;
+		return fallback;
 	}
 
 	/**
@@ -551,15 +565,17 @@ public class MMServer {
 
 	public void removePlayer(int playerId) {
 		Observer toRemove = observers.get("Player " + playerId);
-		unregisterFromSubjects(toRemove); // PlayerStats, Object locations
+		if (toRemove != null) {
+			unregisterFromSubjects(toRemove); // PlayerStats, Object locations
+		}
 		killPlayer(playerId);
 		removeFromPlayerLists(playerId); // clients, serverOuput, serverInput, serverListeners, observers
-		decreaseNumOfPlayers();
 	}
 
 	private void unregisterFromSubjects(Observer obs) {
 		this.playerStats.unregister(obs);
 		this.objectLocations.unregister(obs);
+		this.gameStatus.unregister(obs);
 	}
 
 	private void removeFromPlayerLists(int playerId) {
@@ -570,12 +586,116 @@ public class MMServer {
 		this.serverListeners.remove("Player " + playerId);
 	}
 
-	private void decreaseNumOfPlayers() {
-		this.numOfPlayers--;
-	}
-
 	private void killPlayer(int playerId) {
 		this.playerStats.updateIsAlive(SERVER_ID, playerId, 0);
+	}
+
+	public synchronized void registerLogicalClient(int playerId, String clientName, LineDispatchWriter.LineConsumer sender)
+			throws IOException {
+		if (serverOutput.containsKey("Player " + playerId)) {
+			return;
+		}
+
+		PrintWriter writer = new PrintWriter(new LineDispatchWriter(sender), true);
+		serverOutput.put("Player " + playerId, writer);
+		Observer player = new Observer(writer);
+		playerStats.register(player);
+		objectLocations.register(player);
+		gameStatus.register(player);
+		observers.put("Player " + playerId, player);
+		clientNames.put("Player " + playerId, clientName);
+
+		sendInitialization(writer, playerId);
+	}
+
+	public synchronized boolean hasRegisteredClient(int playerId) {
+		return serverOutput.containsKey("Player " + playerId);
+	}
+
+	public synchronized int getRegisteredClientCount() {
+		return serverOutput.size();
+	}
+
+	public synchronized void broadcastClientNames() {
+		String ret = "";
+		for (int i = 0; i < numOfPlayers; i++) {
+			if (clientNames.get("Player " + i) == null) {
+				return;
+			}
+			ret += clientNames.get("Player " + i) + "_";
+		}
+		ret = ret.substring(0, ret.length() - 1);
+		sendToClients("clientNames");
+		sendToClients(ret);
+		sendToClients("end");
+	}
+
+	private void sendInitialization(PrintWriter writer, int playerId) {
+		writer.println(numOfPlayers);
+		writer.println(playerId);
+		writer.println(getMurdererId());
+
+		String message = "";
+		float[] position = null;
+		Collection<Location> locations = null;
+
+		writer.println("itemLocations");
+		locations = getObjectLocations().getItemLocations().getBuffer().values();
+		message = serializeLocations(locations);
+		writer.println(message);
+		writer.println("end");
+
+		writer.println("weaponLocations");
+		locations = getObjectLocations().getWeaponLocations().getBuffer().values();
+		message = serializeLocations(locations);
+		writer.println(message);
+		writer.println("end");
+
+		writer.println("weaponPartLocations");
+		locations = getObjectLocations().getWeaponPartLocations().getBuffer().values();
+		message = serializeLocations(locations);
+		writer.println(message);
+		writer.println("end");
+
+		writer.println("spawnPositions");
+		message = "";
+		for (int i = 0; i < getNumOfPlayers(); i++) {
+			position = getPlayerStats().getPlayerPositionValue("Player " + i);
+			for (float coordinate : position) {
+				message += String.valueOf(coordinate) + ",";
+			}
+			message = message.substring(0, message.length() - 1);
+			message += "_";
+		}
+		message = message.substring(0, message.length() - 1);
+		writer.println(message);
+		writer.println("end");
+
+		writer.println("spawnAngles");
+		message = "";
+		for (int i = 0; i < getNumOfPlayers(); i++) {
+			float angle = getPlayerStats().getPlayerAngleValue("Player " + i);
+			message += String.valueOf(angle) + ",";
+		}
+		message = message.substring(0, message.length() - 1);
+		writer.println(message);
+		writer.println("end");
+	}
+
+	private String serializeLocations(Collection<Location> locations) {
+		if (locations == null || locations.isEmpty()) {
+			return "";
+		}
+		String message = "";
+		for (Location location : locations) {
+			float[] position = location.get();
+			for (float coordinate : position) {
+				message += String.valueOf(coordinate) + ",";
+			}
+			message = message.substring(0, message.length() - 1);
+			message += "_";
+		}
+		return message.substring(0, message.length() - 1);
 	}
 
 }

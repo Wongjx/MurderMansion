@@ -20,6 +20,8 @@ public class AndroidLauncher extends AndroidApplication {
 		config.useCompass = false;
 		config.useGyroscope = false;
 
-		initialize(new MurderMansion(new NoOpActionResolver(), new MultiplayerSessionInfo()), config);
+		MultiplayerSessionInfo sessionInfo = new MultiplayerSessionInfo();
+		sessionInfo.relaySocketFactory = new AndroidRelaySocketFactory();
+		initialize(new MurderMansion(new NoOpActionResolver(), sessionInfo), config);
 	}
 }

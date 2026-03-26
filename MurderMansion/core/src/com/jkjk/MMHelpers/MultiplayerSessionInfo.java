@@ -1,14 +1,13 @@
 package com.jkjk.MMHelpers;
 
-import java.net.InetAddress;
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.concurrent.locks.Condition;
-import java.util.concurrent.locks.ReentrantLock;
 
 import com.jkjk.GameWorld.MMClient;
 import com.jkjk.Host.MMServer;
+import com.jkjk.Multiplayer.DiscoveryApiClient.RoomPhase;
+import com.jkjk.Multiplayer.DiscoveryApiClient.RoomVisibility;
+import com.jkjk.Multiplayer.RelayHostedMatchCoordinator;
+import com.jkjk.Multiplayer.RelaySocketFactory;
 
 
 /**
@@ -24,7 +23,22 @@ public class MultiplayerSessionInfo {
 	public ArrayList mParticipants;
 	public String mName;
 	public int mState=1000;
-
+	public String roomCode;
+	public String occupantId;
+	public String roomNotice;
+	public String publicServerAddress;
+	public String localServerAddress;
+	public RoomVisibility roomVisibility;
+	public RoomPhase roomPhase;
+	public boolean isSpectator;
+	public int maxPlayers = 4;
+	public int preferredServerPort = 28765;
+	public String discoveryUrl;
+	public boolean useRelayTransport = true;
+	public String relayUrl;
+	public transient RelaySocketFactory relaySocketFactory;
+	public transient RelayHostedMatchCoordinator relayHostedMatchCoordinator;
+	
 	public boolean isServer;
 	public String serverAddress;
 	public int serverPort=0;
@@ -57,20 +71,42 @@ public class MultiplayerSessionInfo {
 	}	
 	
 	public void endSession(){
+		clearRoomState();
+	}
+
+	public void clearMatchRuntime() {
+		closeRelayHostedMatchCoordinator();
+		mState=ROOM_MENU;
+		isServer=false;
+		serverAddress=null;
+		serverPort=0;
+		publicServerAddress = null;
+		localServerAddress = null;
+		relayUrl = null;
+		server=null;
+		client=null;
+	}
+
+	public void closeRelayHostedMatchCoordinator() {
+		if (relayHostedMatchCoordinator != null) {
+			relayHostedMatchCoordinator.close();
+			relayHostedMatchCoordinator = null;
+		}
+	}
+
+	public void clearRoomState() {
 		mId=null;
 		mIncomingInvitationId=null;
 		mRoomId=null;
 		mParticipants=null;
 		mState=ROOM_MENU;
 		mName = null;
-
-		isServer=false;
-		serverAddress=null;
-		serverPort=0;
-		
-		server=null;
-		client=null;
-
+		roomCode = null;
+		occupantId = null;
+		roomVisibility = null;
+		roomPhase = null;
+		isSpectator = false;
+		clearMatchRuntime();
 	}
 
 

@@ -11,6 +11,7 @@ import com.jkjk.GameWorld.GameWorld;
 import com.jkjk.GameWorld.HudRenderer;
 import com.jkjk.Host.MMServer;
 import com.jkjk.MMHelpers.AssetLoader;
+import com.jkjk.MMHelpers.MMLog;
 import com.jkjk.MurderMansion.MurderMansion;
 
 public class GameScreen implements Screen {
@@ -51,16 +52,29 @@ public class GameScreen implements Screen {
 		if (gWorld.isCivWin() || gWorld.isMurWin()) {
 			gWorld.getGameOverTimer().update();
 			if (!gWorld.getGameOverTimer().isCountingDown()) {
-				System.out.println("GAMEWORLD UPDATE: GAMEOVER COMPLETE");
-				((Game) Gdx.app.getApplicationListener()).setScreen(new ScoreScreen(game, gameWidth,
-						gameHeight, session, gWorld));
+				MMLog.log("MM-SCORE", "Game over complete from win state. civWin=" + gWorld.isCivWin()
+						+ " murWin=" + gWorld.isMurWin());
+				try {
+					((Game) Gdx.app.getApplicationListener()).setScreen(new ScoreScreen(game, gameWidth,
+							gameHeight, session, gWorld));
+					return;
+				} catch (Throwable t) {
+					MMLog.log("MM-CRASH", "Failed transitioning to ScoreScreen from win state.", t);
+					throw t;
+				}
 			}
 		} else if (gWorld.isDisconnected()) {
 			gWorld.getGameOverTimer().update();
 			if (!gWorld.getGameOverTimer().isCountingDown()) {
-				System.out.println("GAMEWORLD UPDATE: GAMEOVER COMPLETE");
-				((Game) Gdx.app.getApplicationListener()).setScreen(new ScoreScreen(game, gameWidth,
-						gameHeight, session, gWorld));
+				MMLog.log("MM-SCORE", "Game over complete from disconnect state.");
+				try {
+					((Game) Gdx.app.getApplicationListener()).setScreen(new ScoreScreen(game, gameWidth,
+							gameHeight, session, gWorld));
+					return;
+				} catch (Throwable t) {
+					MMLog.log("MM-CRASH", "Failed transitioning to ScoreScreen from disconnect state.", t);
+					throw t;
+				}
 			}
 		}
 		runTime += delta;

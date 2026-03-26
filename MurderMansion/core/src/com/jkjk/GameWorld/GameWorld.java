@@ -30,6 +30,7 @@ import com.jkjk.GameObjects.Weapons.WeaponSprite;
 import com.jkjk.Input.PlayerInputController;
 import com.jkjk.MMHelpers.AssetLoader;
 import com.jkjk.MMHelpers.MMContactListener;
+import com.jkjk.MMHelpers.MMLog;
 import com.jkjk.MMHelpers.ToastMessage;
 
 /**
@@ -510,6 +511,7 @@ public class GameWorld {
 	public void setDisconnected(boolean disconnected) {
 		this.disconnected = disconnected;
 		if (disconnected) {
+			MMLog.log("MM-DISCONNECT", "GameWorld marked disconnected. Starting game over timer.");
 			TM.setDisplayMessage("Your connection to the real world has been lost...");
 			gameOverTimer.startCountdown();
 		}

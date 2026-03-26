@@ -1,5 +1,6 @@
 const ROOM_TTL_MS = 45_000;
 const DEFAULT_MAX_PLAYERS = 4;
+const KICK_LOCKOUT_MS = 30 * 60_000;
 
 export default {
   async fetch(request, env) {
@@ -23,7 +24,7 @@ export default {
 
       if (method === "POST" && path === "/rooms/quick-start") {
         const payload = await request.json();
-        return quickStart(env, payload, getRequesterIp(request));
+        return quickStart(env, payload, request, getRequesterIp(request));
       }
 
       if (method === "GET" && path.startsWith("/rooms/code/")) {
@@ -38,7 +39,9 @@ export default {
 
       if (method === "POST" && /^\/rooms\/[^/]+\/join$/.test(path)) {
         const roomId = path.split("/")[2];
-        return roomCommand(env, roomId, "/join", await request.json(), request);
+        const body = await request.json();
+        body.requesterIp = getRequesterIp(request);
+        return roomCommand(env, roomId, "/join", body, request);
       }
 
       if (method === "POST" && /^\/rooms\/[^/]+\/connect-info$/.test(path)) {
@@ -46,6 +49,11 @@ export default {
         const body = await request.json();
         body.requestOrigin = url.origin;
         return roomCommand(env, roomId, "/connect-info", body, request);
+      }
+
+      if (method === "POST" && /^\/rooms\/[^/]+\/poll$/.test(path)) {
+        const roomId = path.split("/")[2];
+        return roomCommand(env, roomId, "/poll", await request.json(), request);
       }
 
       if (method === "POST" && /^\/rooms\/[^/]+\/kick$/.test(path)) {
@@ -181,8 +189,8 @@ export class RoomDirectory {
         .filter((room) => room.protocolVersion === body.protocolVersion)
         .filter((room) => room.appVersion === body.appVersion)
         .filter((room) => room.visibility === "public")
-        .filter((room) => room.phase === "lobby")
-        .filter((room) => room.playerCount < room.maxPlayers)
+        .filter((room) => room.phase === "lobby" || room.phase === "starting" || room.phase === "in_game")
+        .filter((room) => room.playerCount + room.spectatorCount < room.maxPlayers)
         .sort((a, b) => a.playerCount - b.playerCount);
       await this.state.storage.put("directory", directory);
       return json({ ok: true, room: publicRooms[0] || null });
@@ -225,7 +233,20 @@ export class RoomObject {
     }
 
     if (method === "GET" && path === "/summary") {
-      await this.state.storage.put("room", room);
+      return json({ ok: true, room });
+    }
+
+    if (method === "POST" && path === "/poll") {
+      const body = await request.json();
+      const occupant = findOccupant(room, body.occupantId);
+      if (!occupant) {
+        return json({ ok: false, error: "occupant_not_found" }, 404);
+      }
+      if (room.phase !== "closed") {
+        room.lastHeartbeatAt = Date.now();
+        room.updatedAt = Date.now();
+        await this.state.storage.put("room", room);
+      }
       return json({ ok: true, room });
     }
 
@@ -252,7 +273,17 @@ export class RoomObject {
 
     if (method === "POST" && path === "/join") {
       const body = await request.json();
-      const joinResult = joinRoom(room, body);
+      let joinResult;
+      try {
+        joinResult = joinRoom(room, body);
+      } catch (error) {
+        const message = error instanceof Error ? error.message : String(error);
+        const status = message === "room_full" || message === "room_not_joinable"
+          || message === "You were kicked from this room. Try again later."
+          ? 409
+          : 400;
+        return json({ ok: false, error: message }, status);
+      }
       await this.state.storage.put("room", joinResult.room);
       return json({ ok: true, occupantId: joinResult.occupantId, role: joinResult.role, room: joinResult.room });
     }
@@ -260,6 +291,10 @@ export class RoomObject {
     if (method === "POST" && path === "/kick") {
       const body = await request.json();
       assertHost(room, body.occupantId);
+      const target = findOccupant(room, body.targetOccupantId);
+      if (target) {
+        registerKick(room, target);
+      }
       room.players = room.players.filter((player) => player.occupantId !== body.targetOccupantId);
       room.spectators = room.spectators.filter((spectator) => spectator.occupantId !== body.targetOccupantId);
       room.updatedAt = Date.now();
@@ -337,10 +372,14 @@ export class RoomObject {
     if (method === "POST" && path === "/leave") {
       const body = await request.json();
       if (body.occupantId === room.hostOccupantId) {
-        room.phase = "closed";
+        removeOccupant(room, body.occupantId);
+        if (room.phase === "lobby") {
+          transferLobbyHost(room);
+        } else {
+          room.phase = "closed";
+        }
       } else {
-        room.players = room.players.filter((player) => player.occupantId !== body.occupantId);
-        room.spectators = room.spectators.filter((spectator) => spectator.occupantId !== body.occupantId);
+        removeOccupant(room, body.occupantId);
         if (room.phase === "lobby") {
           promoteSpectators(room);
         }
@@ -504,10 +543,10 @@ export class RoomObject {
     }
 
     this.sendToOccupant(room.hostOccupantId, { type: "peer_disconnected", occupantId });
-    for (const player of room.players) {
-      if (player.occupantId === occupantId) {
-        player.ready = false;
-      }
+    room.players = room.players.filter((player) => player.occupantId !== occupantId);
+    room.spectators = room.spectators.filter((spectator) => spectator.occupantId !== occupantId);
+    if (room.phase === "lobby") {
+      promoteSpectators(room);
     }
     await this.state.storage.put("room", room);
   }
@@ -557,7 +596,7 @@ async function createRoom(env, payload, requesterIp) {
   return json(body, response.status);
 }
 
-async function quickStart(env, payload, requesterIp) {
+async function quickStart(env, payload, request, requesterIp) {
   const directory = env.ROOM_DIRECTORY.get(env.ROOM_DIRECTORY.idFromName("global"));
   const response = await directory.fetch("https://directory/quick-start", {
     method: "POST",
@@ -568,9 +607,23 @@ async function quickStart(env, payload, requesterIp) {
   });
   const directoryBody = await response.json();
   if (directoryBody.room) {
-    return roomCommand(env, directoryBody.room.roomId, "/join", {
-      displayName: payload.displayName
-    }, new Request("https://noop"));
+    const joinResponse = await roomCommand(env, directoryBody.room.roomId, "/join", {
+      displayName: payload.displayName,
+      requesterIp
+    }, request);
+    const joinBody = await joinResponse.clone().json().catch(() => null);
+    if (joinResponse.status < 400) {
+      return joinResponse;
+    }
+    const isExpectedMatchmakingConflict = joinResponse.status === 409
+      && (joinBody?.error === "room_full"
+        || joinBody?.error === "room_not_joinable"
+        || joinBody?.error === "room_closed");
+    const isExpectedStaleCandidate = joinResponse.status === 404
+      && joinBody?.error === "room_not_found";
+    if (!isExpectedMatchmakingConflict && !isExpectedStaleCandidate) {
+      return joinResponse;
+    }
   }
   return createRoom(env, {
     visibility: "public",
@@ -634,6 +687,7 @@ function createRoomState(body) {
     createdAt: now,
     updatedAt: now,
     lastHeartbeatAt: now,
+    kicked: [],
     hostOccupantId,
     hostName: body.hostName,
     endpoint: null,
@@ -642,7 +696,8 @@ function createRoomState(body) {
         occupantId: hostOccupantId,
         displayName: body.hostName,
         ready: false,
-        isHost: true
+        isHost: true,
+        requesterIp: body.publicAddress || null
       }
     ],
     spectators: []
@@ -660,12 +715,17 @@ function joinRoom(room, body) {
   if (room.phase === "closed") {
     return { room: ensureFresh(room), occupantId: null, role: null };
   }
+  const lockoutMessage = getJoinLockoutMessage(room, body.displayName, body.requesterIp);
+  if (lockoutMessage != null) {
+    throw new Error(lockoutMessage);
+  }
   const occupantId = crypto.randomUUID();
   const player = {
     occupantId,
     displayName: body.displayName,
     ready: false,
-    isHost: false
+    isHost: false,
+    requesterIp: body.requesterIp || null
   };
 
   if (room.phase === "lobby" && room.players.length < room.maxPlayers) {
@@ -674,16 +734,62 @@ function joinRoom(room, body) {
     return { room, occupantId, role: "player" };
   }
 
-  if (room.visibility === "public" && room.allowSpectators) {
+  const reservedSlots = room.players.length + room.spectators.length;
+  if ((room.phase === "starting" || room.phase === "in_game")
+      && room.allowSpectators
+      && reservedSlots < room.maxPlayers) {
     room.spectators.push({
       occupantId,
-      displayName: body.displayName
+      displayName: body.displayName,
+      requesterIp: body.requesterIp || null
     });
     room.updatedAt = Date.now();
     return { room, occupantId, role: "spectator" };
   }
 
-  throw new Error("room_not_joinable");
+  throw new Error(reservedSlots >= room.maxPlayers ? "room_full" : "room_not_joinable");
+}
+
+function removeOccupant(room, occupantId) {
+  room.players = room.players.filter((player) => player.occupantId !== occupantId);
+  room.spectators = room.spectators.filter((spectator) => spectator.occupantId !== occupantId);
+}
+
+function registerKick(room, occupant) {
+  pruneExpiredKicks(room);
+  room.kicked.push({
+    displayName: normalizeName(occupant.displayName),
+    requesterIp: occupant.requesterIp || null,
+    expiresAt: Date.now() + KICK_LOCKOUT_MS
+  });
+}
+
+function getJoinLockoutMessage(room, displayName, requesterIp) {
+  pruneExpiredKicks(room);
+  const normalizedName = normalizeName(displayName);
+  const banned = room.kicked.find((entry) => {
+    if (entry.expiresAt <= Date.now()) {
+      return false;
+    }
+    if (requesterIp && entry.requesterIp && entry.requesterIp === requesterIp) {
+      return true;
+    }
+    return normalizedName.length > 0 && entry.displayName === normalizedName;
+  });
+  return banned ? "You were kicked from this room. Try again later." : null;
+}
+
+function normalizeName(displayName) {
+  return (displayName || "").trim().toLowerCase();
+}
+
+function pruneExpiredKicks(room) {
+  if (!room.kicked) {
+    room.kicked = [];
+    return;
+  }
+  const now = Date.now();
+  room.kicked = room.kicked.filter((entry) => entry.expiresAt > now);
 }
 
 function promoteSpectators(room) {
@@ -695,6 +801,23 @@ function promoteSpectators(room) {
       ready: false,
       isHost: false
     });
+  }
+}
+
+function transferLobbyHost(room) {
+  promoteSpectators(room);
+  if (room.players.length === 0) {
+    room.phase = "closed";
+    room.hostOccupantId = null;
+    room.hostName = null;
+    return;
+  }
+  const nextHost = room.players[0];
+  room.hostOccupantId = nextHost.occupantId;
+  room.hostName = nextHost.displayName;
+  for (const player of room.players) {
+    player.isHost = player.occupantId === room.hostOccupantId;
+    player.ready = false;
   }
 }
 
@@ -714,6 +837,7 @@ function findOccupant(room, occupantId) {
 }
 
 function ensureFresh(room) {
+  pruneExpiredKicks(room);
   const now = Date.now();
   if (room.phase !== "closed" && now - room.lastHeartbeatAt > ROOM_TTL_MS) {
     room.phase = "closed";

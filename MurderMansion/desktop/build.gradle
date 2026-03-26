@@ -48,6 +48,7 @@ tasks.register('dist', Jar) {
 dependencies {
 	implementation project(':core')
 	implementation "com.badlogicgames.gdx:gdx-backend-lwjgl3:$gdxVersion"
+	implementation 'org.java-websocket:Java-WebSocket:1.5.7'
 	runtimeOnly "com.badlogicgames.gdx:gdx-platform:$gdxVersion:natives-desktop"
 	runtimeOnly "com.badlogicgames.gdx:gdx-box2d-platform:$gdxVersion:natives-desktop"
 }

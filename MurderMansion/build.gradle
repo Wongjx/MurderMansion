@@ -7,6 +7,7 @@ plugins {
 
 ext {
 	appName = 'Murder Mansion'
+	roboVMVersion = '2.3.24'
 	gdxVersion = '1.14.0'
 	box2DLightsVersion = '1.5'
 	libgdxUtilsVersion = '0.9.1'
