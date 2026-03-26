@@ -14,7 +14,7 @@ import com.badlogic.gdx.utils.JsonReader;
 import com.badlogic.gdx.utils.JsonValue;
 
 public class DiscoveryApiClient {
-	public static final int DEFAULT_MAX_PLAYERS = 4;
+	public static final int DEFAULT_MAX_PLAYERS = 6;
 	public static final int DEFAULT_PORT = 28765;
 	public static final int PROTOCOL_VERSION = 1;
 	public static final String APP_VERSION = "1.0.1";

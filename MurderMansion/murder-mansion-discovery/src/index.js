@@ -1,5 +1,5 @@
 const ROOM_TTL_MS = 45_000;
-const DEFAULT_MAX_PLAYERS = 4;
+const DEFAULT_MAX_PLAYERS = 6;
 const KICK_LOCKOUT_MS = 30 * 60_000;
 
 export default {

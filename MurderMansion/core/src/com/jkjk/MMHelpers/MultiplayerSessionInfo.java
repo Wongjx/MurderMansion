@@ -31,7 +31,7 @@ public class MultiplayerSessionInfo {
 	public RoomVisibility roomVisibility;
 	public RoomPhase roomPhase;
 	public boolean isSpectator;
-	public int maxPlayers = 4;
+	public int maxPlayers = 6;
 	public int preferredServerPort = 28765;
 	public String discoveryUrl;
 	public boolean useRelayTransport = true;
