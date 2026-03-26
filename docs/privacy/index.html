@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="light">
+  <title>Murder Mansion Privacy Policy</title>
+  <style>
+    :root {
+      --bg: #f4efe6;
+      --bg-accent: #e6d4bf;
+      --panel: rgba(255, 252, 247, 0.9);
+      --ink: #1f1a17;
+      --muted: #5f554e;
+      --line: rgba(67, 52, 42, 0.16);
+      --accent: #8b2f22;
+      --accent-strong: #5f1209;
+      --shadow: 0 24px 80px rgba(56, 33, 20, 0.15);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: "Iowan Old Style", "Palatino Linotype", "Book Antiqua", Georgia, serif;
+      color: var(--ink);
+      background:
+        radial-gradient(circle at top left, rgba(139, 47, 34, 0.16), transparent 32%),
+        radial-gradient(circle at top right, rgba(53, 78, 68, 0.16), transparent 28%),
+        linear-gradient(180deg, var(--bg) 0%, #f8f4ed 45%, #eee4d8 100%);
+      line-height: 1.65;
+    }
+
+    main {
+      width: min(920px, calc(100% - 32px));
+      margin: 48px auto;
+      padding: 0 0 40px;
+    }
+
+    .hero {
+      position: relative;
+      overflow: hidden;
+      padding: 40px 32px 32px;
+      border: 1px solid var(--line);
+      border-radius: 28px;
+      background: linear-gradient(160deg, rgba(255, 250, 245, 0.98), rgba(247, 239, 229, 0.88));
+      box-shadow: var(--shadow);
+    }
+
+    .hero::after {
+      content: "";
+      position: absolute;
+      inset: auto -80px -110px auto;
+      width: 260px;
+      height: 260px;
+      border-radius: 999px;
+      background: radial-gradient(circle, rgba(139, 47, 34, 0.18), transparent 68%);
+      pointer-events: none;
+    }
+
+    .eyebrow {
+      margin: 0 0 10px;
+      font: 600 0.78rem/1.2 "Avenir Next", "Segoe UI", sans-serif;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--accent);
+    }
+
+    h1 {
+      margin: 0;
+      font-size: clamp(2.2rem, 4vw, 4rem);
+      line-height: 0.98;
+      letter-spacing: -0.04em;
+    }
+
+    .summary {
+      max-width: 58ch;
+      margin: 18px 0 0;
+      color: var(--muted);
+      font-size: 1.05rem;
+    }
+
+    .meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin: 24px 0 0;
+      padding: 0;
+      list-style: none;
+    }
+
+    .meta li {
+      padding: 10px 14px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.72);
+      font: 600 0.9rem/1.2 "Avenir Next", "Segoe UI", sans-serif;
+      color: var(--muted);
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 18px;
+      margin-top: 20px;
+    }
+
+    section {
+      padding: 24px 24px 22px;
+      border: 1px solid var(--line);
+      border-radius: 24px;
+      background: var(--panel);
+      backdrop-filter: blur(12px);
+      box-shadow: 0 18px 40px rgba(68, 46, 28, 0.07);
+    }
+
+    section.wide {
+      grid-column: 1 / -1;
+    }
+
+    h2 {
+      margin: 0 0 12px;
+      font-size: 1.3rem;
+      line-height: 1.15;
+    }
+
+    p, li {
+      margin: 0;
+      color: var(--muted);
+    }
+
+    p + p,
+    p + ul,
+    ul + p,
+    ul + ul {
+      margin-top: 12px;
+    }
+
+    ul {
+      padding-left: 20px;
+    }
+
+    strong {
+      color: var(--ink);
+    }
+
+    a {
+      color: var(--accent-strong);
+    }
+
+    .note {
+      margin-top: 18px;
+      padding: 16px 18px;
+      border-left: 4px solid var(--accent);
+      border-radius: 14px;
+      background: rgba(139, 47, 34, 0.06);
+      color: var(--ink);
+    }
+
+    footer {
+      margin-top: 18px;
+      padding: 0 6px;
+      color: var(--muted);
+      font-size: 0.95rem;
+    }
+
+    @media (max-width: 640px) {
+      main {
+        width: min(100% - 20px, 920px);
+        margin: 20px auto 28px;
+      }
+
+      .hero,
+      section {
+        border-radius: 22px;
+      }
+
+      .hero {
+        padding: 28px 20px 24px;
+      }
+
+      section {
+        padding: 20px 18px 18px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <header class="hero">
+      <p class="eyebrow">Privacy Policy</p>
+      <h1>Murder Mansion</h1>
+      <p class="summary">
+        This policy explains what information Murder Mansion uses, why it is used, and how long it is kept.
+        The current Android build requests internet access for online multiplayer and does not include active
+        advertising or analytics SDKs.
+      </p>
+      <ul class="meta">
+        <li>Last updated: March 26, 2026</li>
+        <li>Applies to: current Murder Mansion app build and multiplayer service</li>
+        <li>Contact: GitHub project support</li>
+      </ul>
+    </header>
+
+    <div class="grid">
+      <section>
+        <h2>What We Collect</h2>
+        <ul>
+          <li><strong>Display names</strong> that players enter for multiplayer rooms.</li>
+          <li><strong>Room and session data</strong> such as room IDs, room codes, occupant IDs, ready status, and host state.</li>
+          <li><strong>Network information</strong> needed to run online multiplayer, including IP address data processed by the discovery service.</li>
+          <li><strong>Relay traffic</strong> sent during live multiplayer sessions so connected players can exchange game state.</li>
+        </ul>
+      </section>
+
+      <section>
+        <h2>What We Do Not Collect</h2>
+        <ul>
+          <li>No account registration is required to play the current build.</li>
+          <li>No active in-app ads are included in the current Android build.</li>
+          <li>No active third-party analytics or crash reporting SDKs are included in the current Android build.</li>
+          <li>No camera, microphone, contacts, photo library, or location permissions are requested by the current Android build.</li>
+        </ul>
+      </section>
+
+      <section class="wide">
+        <h2>How Information Is Used</h2>
+        <ul>
+          <li>To create, join, and manage multiplayer rooms.</li>
+          <li>To route websocket relay connections between players during matches.</li>
+          <li>To show lobby information such as host name, player count, and room visibility.</li>
+          <li>To reduce abuse, including temporary kick lockouts for removed players.</li>
+          <li>To maintain service stability and basic network operations.</li>
+        </ul>
+      </section>
+
+      <section>
+        <h2>Retention</h2>
+        <p>
+          Multiplayer room records are intended to be temporary. The current discovery service closes inactive rooms
+          after roughly <strong>45 seconds</strong> without heartbeat activity.
+        </p>
+        <p>
+          Temporary kick-lockout records may be kept for up to <strong>30 minutes</strong> to prevent immediate re-entry
+          by removed players.
+        </p>
+      </section>
+
+      <section>
+        <h2>Sharing</h2>
+        <p>
+          Information is shared only as needed to operate multiplayer sessions. Other players may see your display name
+          in room lobbies or public room listings if you host or join a public room.
+        </p>
+        <p>
+          The multiplayer service is currently hosted through Cloudflare infrastructure. Platform providers such as
+          Apple and Google may also collect their own store or device data under their own privacy policies.
+        </p>
+      </section>
+
+      <section>
+        <h2>Security</h2>
+        <p>
+          Reasonable steps are taken to limit data use to multiplayer operation, but no service can guarantee absolute security.
+          Avoid using real names or other sensitive personal information as your in-game display name.
+        </p>
+      </section>
+
+      <section>
+        <h2>Your Choices</h2>
+        <p>
+          You can avoid sharing multiplayer data by not using online multiplayer features. If you do not want your display name
+          shown to other players, do not enter personal information in that field.
+        </p>
+      </section>
+
+      <section class="wide">
+        <h2>Contact</h2>
+        <p>
+          Questions or requests about this policy can be sent through the project's support page:
+          <a href="https://github.com/Wongjx/MurderMansion/issues">github.com/Wongjx/MurderMansion/issues</a>
+        </p>
+        <p class="note">
+          If you later add ads, analytics, account systems, or other third-party SDKs, update this policy before shipping that version.
+        </p>
+      </section>
+    </div>
+
+    <footer>
+      <p>
+        Repository: <a href="https://github.com/Wongjx/MurderMansion">github.com/Wongjx/MurderMansion</a>
+      </p>
+    </footer>
+  </main>
+</body>
+</html>
