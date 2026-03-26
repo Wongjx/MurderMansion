@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
   push:
     branches:
-      - master
+      - renewal
     paths:
       - "docs/**"
       - ".github/workflows/deploy-privacy-policy.yml"
