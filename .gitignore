@@ -1,2 +1,4 @@
 BaseGameUtils/
 MurderMansion/android/project.properties
+MurderMansion/android/key.properties
+MurderMansion/android/*.jks

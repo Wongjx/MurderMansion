@@ -27,8 +27,11 @@ import com.jkjk.Multiplayer.RelayHostedMatchCoordinator;
 import com.jkjk.Multiplayer.RelayRoomSession;
 import com.jkjk.Multiplayer.MultiplayerUi;
 import com.jkjk.MurderMansion.MurderMansion;
+import com.jkjk.Telemetry.TelemetryService;
 
 public class MultiplayerConnectingScreen implements Screen {
+	private static final long CONNECTING_POLL_INTERVAL_MS = 2500L;
+
 	private final MurderMansion game;
 	private final float gameWidth;
 	private final float gameHeight;
@@ -58,6 +61,11 @@ public class MultiplayerConnectingScreen implements Screen {
 
 	@Override
 	public void show() {
+		TelemetryService telemetryService = TelemetryService.get();
+		if (telemetryService != null) {
+			telemetryService.setScreenName("MultiplayerConnectingScreen");
+			telemetryService.recordEvent("connecting_shown", "MultiplayerConnectingScreen", null);
+		}
 		stage.clear();
 		Image background = new Image(AssetLoader.menuBackground);
 		background.setFillParent(true);
@@ -145,6 +153,11 @@ public class MultiplayerConnectingScreen implements Screen {
 					}
 
 					info.roomPhase = result.room.phase;
+					info.matchId = result.room.matchId;
+					TelemetryService telemetryService = TelemetryService.get();
+					if (telemetryService != null) {
+						telemetryService.setMatchId(info.matchId);
+					}
 					info.relayUrl = connectInfo.relayUrl;
 					statusMessage = "Opening relay room...";
 					RelayHostedMatchCoordinator coordinator = new RelayHostedMatchCoordinator(info, server, result.room,
@@ -171,7 +184,12 @@ public class MultiplayerConnectingScreen implements Screen {
 								game.mMultiplayerSession.occupantId);
 						if (result != null && result.ok && result.room != null) {
 							game.mMultiplayerSession.roomPhase = result.room.phase;
+							game.mMultiplayerSession.matchId = result.room.matchId;
 							if (result.room.phase == RoomPhase.STARTING || result.room.phase == RoomPhase.IN_GAME) {
+								TelemetryService telemetryService = TelemetryService.get();
+								if (telemetryService != null) {
+									telemetryService.setMatchId(result.room.matchId);
+								}
 								RelayConnectInfo connectInfo = apiClient.fetchConnectInfo(game.mMultiplayerSession.mRoomId,
 										game.mMultiplayerSession.occupantId);
 								if (connectInfo == null || !connectInfo.ok || connectInfo.relayUrl == null) {
@@ -190,7 +208,7 @@ public class MultiplayerConnectingScreen implements Screen {
 								return;
 							}
 						}
-						Thread.sleep(1000L);
+						Thread.sleep(CONNECTING_POLL_INTERVAL_MS);
 					}
 				} catch (Exception e) {
 					errorMessage = e.getMessage() == null ? "Failed to connect." : e.getMessage();

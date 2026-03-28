@@ -53,7 +53,7 @@ public class MenuScreen implements Screen {
 		backgroundImage.setFillParent(true);
 		stage.addActor(backgroundImage);
 
-		buttonPlay = new TextButton("Play Local", normal);
+		buttonPlay = new TextButton("Tutorial", normal);
 		buttonPlay.setSize(BUTTON_WIDTH, BUTTON_HEIGHT);
 		buttonPlay.addListener(new ClickListener() {
 			@Override

@@ -117,7 +117,7 @@ public class Murderer extends GameCharacter {
 			batch.begin();
 
 			if (currentAnimation == AssetLoader.murAnimation || currentAnimation == civWalkAnimation) {
-				if (!body.getLinearVelocity().isZero() && isMovable()) {
+				if (isVisuallyMoving() && isMovable()) {
 					if (!walkSound.isPlaying() && isPlayer()) {
 						walkSound.play();
 					}
@@ -140,7 +140,7 @@ public class Murderer extends GameCharacter {
 								6f, 6f, (float) (body.getAngle() * 180 / Math.PI) - 90);
 					} else {
 						batch.draw(AssetLoader.mur_rest,
-								body.getPosition().x - 9,// to be changed to mur_rest when ready.
+								body.getPosition().x - 9,
 								body.getPosition().y - 9, 9, 9, 18, 18, 6f, 6f,
 								(float) (body.getAngle() * 180 / Math.PI) - 90);
 					}

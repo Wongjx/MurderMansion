@@ -25,6 +25,7 @@ import com.jkjk.Host.Helpers.Location;
 import com.jkjk.Host.Helpers.ObstaclesHandler;
 import com.jkjk.MMHelpers.AssetLoader;
 import com.jkjk.MMHelpers.MMLog;
+import com.jkjk.Telemetry.TelemetryService;
 import com.jkjk.Multiplayer.GameLineTransport;
 import com.jkjk.Multiplayer.TcpGameLineTransport;
 
@@ -72,7 +73,10 @@ public class MMClient implements GameSession {
 	private final int murdererId;
 	private ArrayList<GameCharacter> playerList;
 
-	private final long UPDATES_PER_SEC = 5;
+	private static final long POSITION_UPDATE_INTERVAL_MS = 125L;
+	private static final float POSITION_EPSILON = 0.02f;
+	private static final float ANGLE_EPSILON = 0.02f;
+	private static final float VELOCITY_EPSILON = 0.02f;
 	private long lastUpdated;
 
 	private final ConcurrentHashMap<String, Integer> playerIsAlive; // If 1 ->true; If 0 -> false;
@@ -546,7 +550,7 @@ public class MMClient implements GameSession {
 	 * 
 	 */
 	private void updatePlayerLocation() {
-		if (System.currentTimeMillis() - lastUpdated <= (1 / UPDATES_PER_SEC * 1000)) {
+		if (System.currentTimeMillis() - lastUpdated < POSITION_UPDATE_INTERVAL_MS) {
 			return;
 		}
 		// Get player postion
@@ -557,10 +561,12 @@ public class MMClient implements GameSession {
 		selfVelocityY = gWorld.getPlayer().getBody().getLinearVelocity().y;
 		selfVelocity = new float[] { selfVelocityX, selfVelocityY };
 		// if angle and position has changed
-		if ((playerPosition.get("Player " + id) != selfPosition)
-				|| (playerAngle.get("Player " + id) != selfAngle)
-
-				|| (playerVelocity.get("Player" + id) != selfVelocity)) {
+		float[] lastPosition = playerPosition.get("Player " + id);
+		Float lastAngleValue = playerAngle.get("Player " + id);
+		float[] lastVelocity = playerVelocity.get("Player" + id);
+		if (positionChanged(lastPosition, selfPosition)
+				|| angleChanged(lastAngleValue, selfAngle)
+				|| velocityChanged(lastVelocity, selfVelocity)) {
 			// Update client Hashmap
 			playerPosition.put("Player " + id, selfPosition);
 			playerAngle.put("Player " + id, selfAngle);
@@ -571,6 +577,29 @@ public class MMClient implements GameSession {
 					+ Float.toString(selfVelocityX) + "_" + Float.toString(selfVelocityY));
 			lastUpdated = System.currentTimeMillis();
 		}
+	}
+
+	private boolean positionChanged(float[] previousPosition, float[] newPosition) {
+		if (previousPosition == null || previousPosition.length < 2 || newPosition == null || newPosition.length < 2) {
+			return true;
+		}
+		return Math.abs(previousPosition[0] - newPosition[0]) > POSITION_EPSILON
+				|| Math.abs(previousPosition[1] - newPosition[1]) > POSITION_EPSILON;
+	}
+
+	private boolean angleChanged(Float previousAngle, float newAngle) {
+		if (previousAngle == null) {
+			return true;
+		}
+		return Math.abs(previousAngle - newAngle) > ANGLE_EPSILON;
+	}
+
+	private boolean velocityChanged(float[] previousVelocity, float[] newVelocity) {
+		if (previousVelocity == null || previousVelocity.length < 2 || newVelocity == null || newVelocity.length < 2) {
+			return true;
+		}
+		return Math.abs(previousVelocity[0] - newVelocity[0]) > VELOCITY_EPSILON
+				|| Math.abs(previousVelocity[1] - newVelocity[1]) > VELOCITY_EPSILON;
 	}
 
 	private void updatePlayerIsinSafeArea() {
@@ -966,6 +995,13 @@ public class MMClient implements GameSession {
 		transportFailed = true;
 		MMLog.log("MM-DISCONNECT", "Transport send failed for message: " + message + " reason="
 				+ error.getMessage());
+		TelemetryService telemetryService = TelemetryService.get();
+		if (telemetryService != null) {
+			java.util.HashMap<String, Object> payload = new java.util.HashMap<String, Object>();
+			payload.put("reason", error.getMessage());
+			payload.put("transport_state", "send_failed");
+			telemetryService.recordEvent("disconnect_detected", payload);
+		}
 		gWorld.setDisconnected(true);
 		try {
 			transport.close();
@@ -1012,8 +1048,15 @@ class clientListener extends Thread {
 					msg = client.readLine();
 					System.out.println("Client listener " + client.getId() + " received message: " + msg);
 				} catch (IOException e1) {
-					System.out.println("IO exception on client listener " + client.getId() + " e1");
-					e1.printStackTrace();
+					boolean expectedShutdown = "Socket closed".equals(e1.getMessage())
+							|| "Interrupted while reading transport.".equals(e1.getMessage());
+					if (expectedShutdown) {
+						System.out.println("Client listener " + client.getId()
+								+ " closed during connection check shutdown.");
+					} else {
+						System.out.println("IO exception on client listener " + client.getId() + " e1");
+						e1.printStackTrace();
+					}
 					break;
 				} catch (NullPointerException e1) {
 					System.out.println("Client listener " + client.getId()
@@ -1050,6 +1093,13 @@ class clientListener extends Thread {
 		if (!(client.getgWorld().isCivWin() || client.getgWorld().isMurWin())) {
 			MMLog.log("MM-DISCONNECT",
 					"Client listener closing without win condition. Marking world disconnected for " + client.getId());
+			TelemetryService telemetryService = TelemetryService.get();
+			if (telemetryService != null) {
+				java.util.HashMap<String, Object> payload = new java.util.HashMap<String, Object>();
+				payload.put("reason", "client_listener_closed");
+				payload.put("transport_state", "listener_closed");
+				telemetryService.recordEvent("disconnect_detected", payload);
+			}
 			client.getgWorld().setDisconnected(true);
 			try {
 				client.closeSocket();

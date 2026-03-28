@@ -3,6 +3,7 @@ package com.jkjk.MMHelpers;
 import java.lang.reflect.Method;
 
 import com.badlogic.gdx.Gdx;
+import com.jkjk.Telemetry.TelemetryService;
 
 public final class MMLog {
 	private MMLog() {
@@ -12,6 +13,10 @@ public final class MMLog {
 		String line = "[" + tag + "] " + message;
 		System.out.println(line);
 		System.err.println(line);
+		TelemetryService telemetryService = TelemetryService.get();
+		if (telemetryService != null) {
+			telemetryService.appendLogLine(line);
+		}
 		if (Gdx.app != null) {
 			Gdx.app.log(tag, message);
 		}

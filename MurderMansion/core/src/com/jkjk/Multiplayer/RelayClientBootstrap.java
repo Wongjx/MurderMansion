@@ -5,6 +5,8 @@ import java.net.SocketException;
 import java.net.SocketTimeoutException;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+import com.jkjk.Telemetry.TelemetryService;
+
 public class RelayClientBootstrap {
 	private RelayRoomSession session;
 	private final QueueLineTransport transport;
@@ -65,21 +67,42 @@ public class RelayClientBootstrap {
 
 			@Override
 			public void onHostDisconnected() {
+				TelemetryService telemetryService = TelemetryService.get();
+				if (telemetryService != null && telemetryService.shouldRecordHostDisconnected()) {
+					telemetryService.recordEvent("host_disconnected", null);
+				}
 				transport.signalPeerClosed();
 			}
 
 			@Override
 			public void onRoomClosed() {
+				TelemetryService telemetryService = TelemetryService.get();
+				if (telemetryService != null) {
+					telemetryService.recordEvent("room_closed_seen", null);
+				}
 				transport.signalPeerClosed();
 			}
 
 			@Override
 			public void onClose(String reason) {
+				TelemetryService telemetryService = TelemetryService.get();
+				if (telemetryService != null) {
+					java.util.HashMap<String, Object> payload = new java.util.HashMap<String, Object>();
+					payload.put("reason", reason);
+					telemetryService.recordEvent("relay_transport_closed", payload);
+				}
 				transport.signalPeerClosed();
 			}
 
 			@Override
 			public void onError(Throwable throwable) {
+				TelemetryService telemetryService = TelemetryService.get();
+				if (telemetryService != null) {
+					java.util.HashMap<String, Object> payload = new java.util.HashMap<String, Object>();
+					payload.put("exception_class", throwable == null ? null : throwable.getClass().getName());
+					payload.put("message", throwable == null ? null : throwable.getMessage());
+					telemetryService.recordEvent("relay_transport_error", payload);
+				}
 				transport.signalPeerClosed();
 			}
 		};

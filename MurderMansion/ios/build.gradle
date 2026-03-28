@@ -13,7 +13,23 @@ plugins {
 	id 'java-library'
 }
 
+import java.util.Properties
+
 apply plugin: 'robovm'
+
+def requestedTasks = gradle.startParameter.taskNames
+def wantsDeviceLaunch = requestedTasks.any { it != null && it.contains('launchIOSDevice') }
+
+robovm {
+	if (wantsDeviceLaunch) {
+		iosSignIdentity = "Apple Development: Jun Xiang Lee (DWJ63AMJ7M)"
+		iosProvisioningProfile = "Murder Mansion Dev"
+	} else {
+		iosSignIdentity = "Apple Distribution: Jun Xiang Lee (AZ4SCP8KFL)"
+		iosProvisioningProfile = "Murder Mansion App Store"
+	}
+	iosSkipSigning = false
+}
 
 sourceSets.main.java.srcDirs = ['src']
 
@@ -28,6 +44,74 @@ tasks.withType(JavaCompile).configureEach {
 
 ext {
 	mainClassName = 'com.jkjk.MurderMansion.IOSLauncher'
+}
+
+def iosDataDir = file('data')
+def xcassetsDir = file('data/Images.xcassets')
+def appIconSetDir = file('data/Images.xcassets/AppIcon.appiconset')
+def appIconSource = file('../android/res/drawable-xxhdpi/mm_app_icon.png')
+
+def regenerateOpaqueIcon = { int size, String name ->
+	def tempDir = new File(buildDir, "tmp/appicons")
+	tempDir.mkdirs()
+	def tempPng = new File(tempDir, "${name}.png")
+	def tempJpg = new File(tempDir, "${name}.jpg")
+	exec {
+		commandLine 'sips', '-z', Integer.toString(size), Integer.toString(size),
+				appIconSource.absolutePath, '--out', tempPng.absolutePath
+	}
+	exec {
+		commandLine 'sips', '-s', 'format', 'jpeg',
+				tempPng.absolutePath, '--out', tempJpg.absolutePath
+	}
+	exec {
+		commandLine 'sips', '-s', 'format', 'png',
+				tempJpg.absolutePath, '--out', new File(appIconSetDir, "${name}.png").absolutePath
+	}
+}
+
+tasks.register('generateIosAppIcons') {
+	doLast {
+		appIconSetDir.mkdirs()
+		regenerateOpaqueIcon(20, 'Icon-20')
+		regenerateOpaqueIcon(40, 'Icon-20@2x')
+		regenerateOpaqueIcon(60, 'Icon-20@3x')
+		regenerateOpaqueIcon(29, 'Icon-29')
+		regenerateOpaqueIcon(58, 'Icon-29@2x')
+		regenerateOpaqueIcon(87, 'Icon-29@3x')
+		regenerateOpaqueIcon(40, 'Icon-40')
+		regenerateOpaqueIcon(80, 'Icon-40@2x')
+		regenerateOpaqueIcon(120, 'Icon-40@3x')
+		regenerateOpaqueIcon(120, 'Icon-60@2x')
+		regenerateOpaqueIcon(180, 'Icon-60@3x')
+		regenerateOpaqueIcon(76, 'Icon-76')
+		regenerateOpaqueIcon(152, 'Icon-76@2x')
+		regenerateOpaqueIcon(167, 'Icon-83.5@2x')
+		regenerateOpaqueIcon(1024, 'Icon-1024')
+	}
+}
+
+tasks.register('compileIosAssetCatalog', Exec) {
+	dependsOn tasks.named('generateIosAppIcons')
+	doFirst {
+		delete fileTree(iosDataDir) {
+			include 'Assets.car'
+			include 'assetcatalog_generated_info.plist'
+		}
+	}
+	commandLine 'xcrun', 'actool',
+			'--compile', iosDataDir.absolutePath,
+			'--platform', 'iphoneos',
+			'--minimum-deployment-target', '12.0',
+			'--app-icon', 'AppIcon',
+			'--target-device', 'iphone',
+			'--target-device', 'ipad',
+			'--output-partial-info-plist', new File(iosDataDir, 'assetcatalog_generated_info.plist').absolutePath,
+			xcassetsDir.absolutePath
+}
+
+tasks.named('createIPA').configure {
+	dependsOn tasks.named('compileIosAssetCatalog')
 }
 
 dependencies {

@@ -137,7 +137,7 @@ public class Civilian extends GameCharacter {
 				if (((Panic) ability).getStatus() == false) {
 					body.setUserData(civWalkAnimation);
 				}
-				if (!body.getLinearVelocity().isZero() && isMovable()) {
+					if (isVisuallyMoving() && isMovable()) {
 					if (walkSound.isPlaying() && isPlayer()) {
 						walkSound.stop();
 					}
@@ -157,7 +157,7 @@ public class Civilian extends GameCharacter {
 							18, 6f, 6f, (float) (body.getAngle() * 180 / Math.PI) - 90);
 				}
 			} else if (currentAnimation == civWalkAnimation) {
-				if (!body.getLinearVelocity().isZero() && isMovable()) {
+				if (isVisuallyMoving() && isMovable()) {
 					if (!walkSound.isPlaying() && isPlayer()) {
 						walkSound.play();
 					}

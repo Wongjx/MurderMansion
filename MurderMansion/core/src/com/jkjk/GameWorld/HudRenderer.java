@@ -1,16 +1,24 @@
 package com.jkjk.GameWorld;
 
+import java.io.IOException;
+
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Application.ApplicationType;
+import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.Camera;
+import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.GlyphLayout;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
+import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
+import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
@@ -27,8 +35,11 @@ import com.jkjk.Input.DesktopPlayerInputController;
 import com.jkjk.Input.PlayerInputController;
 import com.jkjk.Input.TouchPlayerInputController;
 import com.jkjk.MMHelpers.AssetLoader;
+import com.jkjk.MMHelpers.MMLog;
 import com.jkjk.MMHelpers.PresentationFrame;
 import com.jkjk.MMHelpers.ToastMessage;
+import com.jkjk.Multiplayer.DiscoveryApiClient;
+import com.jkjk.Multiplayer.MultiplayerPreferences;
 import com.jkjk.MurderMansion.MurderMansion;
 import com.jkjk.Screens.MenuScreen;
 
@@ -38,6 +49,14 @@ import com.jkjk.Screens.MenuScreen;
  * @author LeeJunXiang
  */
 public class HudRenderer {
+	private enum ActionPreviewType {
+		NONE, BAT, SHOTGUN, KNIFE, TRAP, DISARM_TRAP
+	}
+
+	private enum TutorialStep {
+		CHARACTER_INTRO, HUD_OVERVIEW, ABILITY, ITEM_BEGIN, WEAPON, ITEM, SHOTGUN_OR_GHOST, COMPLETE, MAP
+	}
+
 	private MurderMansion game;
 	private GameSession session;
 	private float gameWidth;
@@ -71,10 +90,12 @@ public class HudRenderer {
 	private ImageButton weaponButton, itemButton, dashButton, disguiseToCiv, disguiseToMur, hauntButton;
 
 	private SpriteBatch batch;
+	private ShapeRenderer previewRenderer;
 	private Stage stage;
 	private Stage settingsStage;
 
 	private Touchpad touchpad;
+	private Actor aimDragArea;
 	private Drawable touchKnob;
 
 	private boolean PanicCD;
@@ -124,7 +145,12 @@ public class HudRenderer {
 	private Image nextButtonToMenu;
 	private Image ghostCharTut;
 	private final boolean desktopControls;
+	private final TouchPlayerInputController touchPlayerInputController;
 	private final PlayerInputController playerInputController;
+	private ActionPreviewType actionPreviewType;
+	private TutorialStep tutorialStep;
+	private final Color previewFillColor = new Color(0.2f, 0.9f, 0.3f, 0.22f);
+	private final Color previewOutlineColor = new Color(0.35f, 1f, 0.45f, 0.85f);
 
 	// private boolean
 	/**
@@ -150,8 +176,9 @@ public class HudRenderer {
 		this.gameHeight = gameHeight;
 		this.tutorial = tutorial;
 		this.desktopControls = Gdx.app.getType() == ApplicationType.Desktop;
+		this.touchPlayerInputController = desktopControls ? null : new TouchPlayerInputController(touchpad);
 		this.playerInputController = desktopControls ? new DesktopPlayerInputController()
-				: new TouchPlayerInputController(touchpad);
+				: touchPlayerInputController;
 
 		BUTTON_WIDTH = 70;
 		BUTTON_HEIGHT = 30;
@@ -160,6 +187,9 @@ public class HudRenderer {
 		playTime = 240.0f;
 
 		batch = new SpriteBatch();
+		previewRenderer = new ShapeRenderer();
+		actionPreviewType = ActionPreviewType.NONE;
+		tutorialStep = tutorial ? TutorialStep.CHARACTER_INTRO : null;
 
 		civCharTut = new Image(AssetLoader.civCharTut);
 		civCharTut.setName("civ char tut");
@@ -210,30 +240,33 @@ public class HudRenderer {
 			public void clicked(InputEvent event, float x, float y) {
 				AssetLoader.clickSound.play(AssetLoader.VOLUME);
 				boolean cont = false;
-				if (stage.getActors().first().equals(touchpad)) {
+				if (tutorialStep == TutorialStep.CHARACTER_INTRO) {
 					stage.clear();
 					stage.addActor(hudOverlay);
 					stage.addActor(nextButton);
 					TM.setDisplayMessage("Here are your controls... learn them well!");
 					GWTM.setDisplayMessage("");
-				} else if (stage.getActors().first().equals(hudOverlay)) {
+					tutorialStep = TutorialStep.HUD_OVERVIEW;
+				} else if (tutorialStep == TutorialStep.HUD_OVERVIEW) {
 					stage.clear();
 					stage.addActor(abilityTut);
 					stage.addActor(nextButton);
 					TM.setDisplayMessage("Each class has unique ability, item and weapon");
 					GWTM.setDisplayMessage("Try using your ability!");
-				} else if (stage.getActors().first().equals(abilityTut)) {
+					tutorialStep = TutorialStep.ABILITY;
+				} else if (tutorialStep == TutorialStep.ABILITY) {
 					stage.clear();
 					stage.addActor(itemTutBegin);
 					TM.setDisplayMessage("A weapon was spawned for you to your left");
 					GWTM.setDisplayMessage("Try picking it up!");
 					gWorld.createTutorialWeapon();
-				} else if (stage.getActors().first().equals(weaponTut)) {
+					tutorialStep = TutorialStep.ITEM_BEGIN;
+				} else if (tutorialStep == TutorialStep.WEAPON) {
 					stage.clear();
 					TM.setDisplayMessage("An item was spawned for you to your left");
 					GWTM.setDisplayMessage("Try picking it up!");
 					gWorld.createTutorialItem();
-				} else if (stage.getActors().first().equals(itemTut)) {
+				} else if (tutorialStep == TutorialStep.ITEM) {
 					stage.clear();
 					if ("Murderer".equals(gWorld.getPlayer().getType())) {
 						stage.addActor(shotgunTutMur);
@@ -242,21 +275,22 @@ public class HudRenderer {
 					TM.setDisplayMessage("2 weapon parts were spawned for you to your left");
 					GWTM.setDisplayMessage("Try picking them up!");
 					gWorld.createTutorialWP();
-				} else if (stage.getActors().first().equals(shotgunTut)
-						|| stage.getActors().first().equals(shotgunTutMur)
-						|| stage.getActors().first().equals(ghostCharTut)) {
+					tutorialStep = TutorialStep.SHOTGUN_OR_GHOST;
+				} else if (tutorialStep == TutorialStep.SHOTGUN_OR_GHOST) {
 					stage.clear();
 					stage.addActor(nextButton);
 					TM.setDisplayMessage("Congrats! You completed the gameplay tutorial!");
 					GWTM.setDisplayMessage("Click next to learn more about the map");
-				} else if (stage.getActors().first().equals(nextButton)) {
+					tutorialStep = TutorialStep.COMPLETE;
+				} else if (tutorialStep == TutorialStep.COMPLETE) {
 					stage.clear();
 					stage.addActor(mapTut);
 					stage.addActor(nextButtonToMenu);
 					cont = true;
+					tutorialStep = TutorialStep.MAP;
 				}
 				if (!cont) {
-					stage.addActor(touchpad);
+					addTouchControls();
 					stage.addActor(getTimebox());
 					stage.addActor(getWeaponPartsCounter());
 					stage.addActor(getEmptySlot());
@@ -290,7 +324,8 @@ public class HudRenderer {
 		// Create a Stage and add TouchPad
 		stage = new Stage(PresentationFrame.createHudViewport(), batch);
 		touchpad.setVisible(!desktopControls);
-		stage.addActor(touchpad);
+		aimDragArea = createAimDragArea();
+		addTouchControls();
 		stage.addActor(getTimebox());
 		stage.addActor(getWeaponPartsCounter());
 		stage.addActor(getEmptySlot());
@@ -361,12 +396,111 @@ public class HudRenderer {
 
 	}
 
+	private Actor createAimDragArea() {
+		Actor actor = new Actor() {
+			@Override
+			public Actor hit(float x, float y, boolean touchable) {
+				if (isPriorityButtonHit(x, y)) {
+					return null;
+				}
+				return super.hit(x, y, touchable);
+			}
+		};
+		actor.setName("aim drag area");
+		actor.setBounds(0f, 0f, PresentationFrame.WIDTH, PresentationFrame.HEIGHT);
+		actor.addListener(new InputListener() {
+			@Override
+			public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
+				if (desktopControls || touchPlayerInputController == null
+						|| x < event.getListenerActor().getWidth() / 2f) {
+					return false;
+				}
+				touchPlayerInputController.beginFreeAim(pointer);
+				return true;
+			}
+
+			@Override
+			public void touchDragged(InputEvent event, float x, float y, int pointer) {
+				if (touchPlayerInputController != null) {
+					touchPlayerInputController.updateFreeAim(pointer);
+				}
+			}
+
+			@Override
+			public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
+				if (touchPlayerInputController != null) {
+					touchPlayerInputController.endFreeAim(pointer);
+				}
+			}
+		});
+		return actor;
+	}
+
+	private void addTouchControls() {
+		if (!desktopControls && aimDragArea != null) {
+			stage.addActor(aimDragArea);
+		}
+		stage.addActor(touchpad);
+		restoreTutorialActorOrder();
+	}
+
+	private void restoreTutorialActorOrder() {
+		if (!tutorial) {
+			return;
+		}
+		raiseIfPresent(civCharTut);
+		raiseIfPresent(murCharTut);
+		raiseIfPresent(ghostCharTut);
+		raiseIfPresent(itemTutBegin);
+		raiseIfPresent(hudOverlay);
+		raiseIfPresent(abilityTut);
+		raiseIfPresent(weaponTut);
+		raiseIfPresent(itemTut);
+		raiseIfPresent(shotgunTut);
+		raiseIfPresent(shotgunTutMur);
+		raiseIfPresent(mapTut);
+		raiseIfPresent(nextButton);
+		raiseIfPresent(nextButtonToMenu);
+	}
+
+	private void raiseIfPresent(Actor actor) {
+		if (actor != null && actor.getStage() == stage) {
+			stage.addActor(actor);
+		}
+	}
+
+	private boolean isPriorityButtonHit(float x, float y) {
+		return isActorHit(nextButton, x, y) || isActorHit(nextButtonToMenu, x, y);
+	}
+
+	private boolean isActorHit(Actor actor, float x, float y) {
+		return actor != null && actor.getStage() == stage && actor.isVisible() && x >= actor.getX()
+				&& x <= actor.getX() + actor.getWidth() && y >= actor.getY()
+				&& y <= actor.getY() + actor.getHeight();
+	}
+
+	private boolean isTutorialActorPresent(Actor actor) {
+		return actor != null && actor.getStage() == stage;
+	}
+
+	private boolean isAnyTutorialOverlayPresent() {
+		return isTutorialActorPresent(civCharTut) || isTutorialActorPresent(murCharTut)
+				|| isTutorialActorPresent(ghostCharTut) || isTutorialActorPresent(itemTutBegin)
+				|| isTutorialActorPresent(hudOverlay) || isTutorialActorPresent(abilityTut)
+				|| isTutorialActorPresent(weaponTut) || isTutorialActorPresent(itemTut)
+				|| isTutorialActorPresent(shotgunTut) || isTutorialActorPresent(shotgunTutMur)
+				|| isTutorialActorPresent(mapTut);
+	}
+
 	private void layoutHud() {
 		float width = PresentationFrame.WIDTH;
 		float height = PresentationFrame.HEIGHT;
 		touchpad.setBounds(gameWidth / 14f, gameHeight / 14f, gameWidth / 5f, gameWidth / 5f);
 		touchKnob.setMinHeight(touchpad.getHeight() / 4f);
 		touchKnob.setMinWidth(touchpad.getWidth() / 4f);
+		if (aimDragArea != null) {
+			aimDragArea.setBounds(0f, 0f, width, height);
+		}
 		settingsButton.setBounds(595f, 294f, 30f, 30f);
 		nextButton.setBounds(550f, 150f, 77f, 62f);
 		nextButtonToMenu.setBounds(550f, 150f, 77f, 62f);
@@ -501,6 +635,126 @@ public class HudRenderer {
 		}
 	}
 
+	public void renderActionPreview(Camera worldCamera) {
+		if (actionPreviewType == ActionPreviewType.NONE || inSettings || gWorld.getPlayer() == null
+				|| !gWorld.getPlayer().isAlive()) {
+			return;
+		}
+
+		Vector2 position = gWorld.getPlayer().getBody().getPosition();
+		float angle = gWorld.getPlayer().getBody().getAngle();
+
+		previewRenderer.setProjectionMatrix(worldCamera.combined);
+		Gdx.gl.glEnable(GL20.GL_BLEND);
+		Gdx.gl.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
+
+		if (actionPreviewType == ActionPreviewType.TRAP) {
+			float trapX = position.x + (float) (25f * Math.cos(angle));
+			float trapY = position.y + (float) (25f * Math.sin(angle));
+
+			previewRenderer.begin(ShapeRenderer.ShapeType.Filled);
+			previewRenderer.setColor(previewFillColor);
+			previewRenderer.circle(trapX, trapY, 10f, 24);
+			previewRenderer.end();
+
+			previewRenderer.begin(ShapeRenderer.ShapeType.Line);
+			previewRenderer.setColor(previewOutlineColor);
+			previewRenderer.circle(trapX, trapY, 10f, 24);
+			previewRenderer.line(position.x, position.y, trapX, trapY);
+			previewRenderer.end();
+		} else {
+			Vector2[] localVertices = getPreviewVertices(actionPreviewType);
+			if (localVertices != null) {
+				drawPolygonPreview(localVertices, position, angle);
+			}
+		}
+
+		Gdx.gl.glDisable(GL20.GL_BLEND);
+	}
+
+	private void drawPolygonPreview(Vector2[] localVertices, Vector2 origin, float angle) {
+		if (localVertices.length < 3) {
+			return;
+		}
+
+		Vector2[] worldVertices = new Vector2[localVertices.length];
+		float cos = (float) Math.cos(angle);
+		float sin = (float) Math.sin(angle);
+		for (int i = 0; i < localVertices.length; i++) {
+			Vector2 vertex = localVertices[i];
+			float worldX = origin.x + vertex.x * cos - vertex.y * sin;
+			float worldY = origin.y + vertex.x * sin + vertex.y * cos;
+			worldVertices[i] = new Vector2(worldX, worldY);
+		}
+
+		previewRenderer.begin(ShapeRenderer.ShapeType.Filled);
+		previewRenderer.setColor(previewFillColor);
+		for (int i = 1; i < worldVertices.length - 1; i++) {
+			previewRenderer.triangle(worldVertices[0].x, worldVertices[0].y, worldVertices[i].x,
+					worldVertices[i].y, worldVertices[i + 1].x, worldVertices[i + 1].y);
+		}
+		previewRenderer.end();
+
+		previewRenderer.begin(ShapeRenderer.ShapeType.Line);
+		previewRenderer.setColor(previewOutlineColor);
+		for (int i = 0; i < worldVertices.length; i++) {
+			Vector2 start = worldVertices[i];
+			Vector2 end = worldVertices[(i + 1) % worldVertices.length];
+			previewRenderer.line(start.x, start.y, end.x, end.y);
+		}
+		previewRenderer.end();
+	}
+
+	private Vector2[] getPreviewVertices(ActionPreviewType previewType) {
+		switch (previewType) {
+		case BAT:
+			return new Vector2[] { new Vector2(18, 0), new Vector2(34.6f, 20), new Vector2(37.6f, 13.7f),
+					new Vector2(39.4f, 6.95f), new Vector2(40, 0), new Vector2(39.4f, -6.95f),
+					new Vector2(37.6f, -13.7f), new Vector2(34.6f, -20) };
+		case SHOTGUN:
+			return new Vector2[] { new Vector2(18, 0), new Vector2(43.3f, 25), new Vector2(47, 17.1f),
+					new Vector2(49.2f, 8.7f), new Vector2(50, 0), new Vector2(49.2f, -8.7f),
+					new Vector2(47, -17.1f), new Vector2(43.3f, -25) };
+		case KNIFE:
+		case DISARM_TRAP:
+			return new Vector2[] { new Vector2(11, 0), new Vector2(20, 8.9f), new Vector2(28, 5.6f),
+					new Vector2(32, 0), new Vector2(28, -5.6f), new Vector2(20, -8.9f) };
+		case NONE:
+		case TRAP:
+		default:
+			return null;
+		}
+	}
+
+	private void showPreview(ActionPreviewType previewType) {
+		actionPreviewType = previewType;
+	}
+
+	private void clearPreview() {
+		actionPreviewType = ActionPreviewType.NONE;
+		if (touchPlayerInputController != null) {
+			touchPlayerInputController.clearActionAim();
+		}
+	}
+
+	private void beginHeldActionAim(int pointer) {
+		if (touchPlayerInputController != null) {
+			touchPlayerInputController.beginActionAim(pointer);
+		}
+	}
+
+	private void updateHeldActionAim(int pointer) {
+		if (touchPlayerInputController != null) {
+			touchPlayerInputController.updateActionAim(pointer);
+		}
+	}
+
+	private void endHeldActionAim(int pointer) {
+		if (touchPlayerInputController != null) {
+			touchPlayerInputController.endActionAim(pointer);
+		}
+	}
+
 	/**
 	 * @return Time left in the game
 	 */
@@ -538,15 +792,13 @@ public class HudRenderer {
 			@Override
 			public void clicked(InputEvent event, float x, float y) {
 				AssetLoader.clickSound.play(AssetLoader.VOLUME);
+				leaveCurrentMultiplayerRoom();
 				try {
 					if (game.mMultiplayerSession.isServer) {
 						game.mMultiplayerSession.getServer().endSession();
 						// System.out.println("Ended server session.");
 					}
 					game.mMultiplayerSession.getClient().endSession();
-					// System.out.println("Leave room");
-					game.actionResolver.leaveRoom();
-
 					// System.out.println("End mMultiplayer session");
 					game.mMultiplayerSession.endSession();
 				} catch (Exception e) {
@@ -558,6 +810,35 @@ public class HudRenderer {
 		});
 
 		return buttonMainMenu;
+	}
+
+	private void leaveCurrentMultiplayerRoom() {
+		if (game == null || game.mMultiplayerSession == null) {
+			return;
+		}
+		final String roomId = game.mMultiplayerSession.mRoomId;
+		final String occupantId = game.mMultiplayerSession.occupantId;
+		final boolean host = game.mMultiplayerSession.isServer;
+		if (roomId == null || occupantId == null) {
+			return;
+		}
+		final String discoveryUrl = MultiplayerPreferences.getDiscoveryUrl();
+		new Thread(new Runnable() {
+			@Override
+			public void run() {
+				try {
+					DiscoveryApiClient client = new DiscoveryApiClient(discoveryUrl);
+					if (host) {
+						client.closeRoom(roomId, occupantId);
+					} else {
+						client.leaveRoom(roomId, occupantId);
+					}
+				} catch (IOException e) {
+					MMLog.log("MM-DISCOVERY", "Failed to leave room from in-game menu. roomId=" + roomId
+							+ " occupantId=" + occupantId + " host=" + host, e);
+				}
+			}
+		}, "leave-room-menu").start();
 	}
 
 	public Actor getSettingsCloseButton() {
@@ -721,6 +1002,7 @@ public class HudRenderer {
 	 * and updating the new item for the player's item slot.
 	 */
 	private void itemCheck() {
+		clearPreview();
 		player = gWorld.getPlayer();
 		player.setItemChange(false);
 		if (player.getItem() != null) {
@@ -730,7 +1012,8 @@ public class HudRenderer {
 					stage.addActor(itemTut);
 					stage.addActor(nextButton);
 					GWTM.setDisplayMessage("Excellent! Try using your item");
-					stage.addActor(touchpad);
+					tutorialStep = TutorialStep.ITEM;
+					addTouchControls();
 					stage.addActor(getTimebox());
 					stage.addActor(getWeaponPartsCounter());
 					stage.addActor(getEmptySlot());
@@ -745,7 +1028,8 @@ public class HudRenderer {
 						stage.addActor(itemTut);
 						stage.addActor(nextButton);
 						GWTM.setDisplayMessage("Excellent! Try using your item on the trap");
-						stage.addActor(touchpad);
+						tutorialStep = TutorialStep.ITEM;
+						addTouchControls();
 						stage.addActor(getTimebox());
 						stage.addActor(getWeaponPartsCounter());
 						stage.addActor(getEmptySlot());
@@ -769,6 +1053,7 @@ public class HudRenderer {
 	 * false and updating the new item for the player's weapon slot.
 	 */
 	private void weaponCheck() {
+		clearPreview();
 		player = gWorld.getPlayer();
 		player.setWeaponChange(false);
 		if (player.getWeapon() != null) {
@@ -782,7 +1067,8 @@ public class HudRenderer {
 					stage.addActor(shotgunTut);
 					stage.addActor(nextButton);
 					GWTM.setDisplayMessage("Excellent! Try using your weapon");
-					stage.addActor(touchpad);
+					tutorialStep = TutorialStep.SHOTGUN_OR_GHOST;
+					addTouchControls();
 					stage.addActor(getTimebox());
 					stage.addActor(getWeaponPartsCounter());
 					stage.addActor(getEmptySlot());
@@ -797,7 +1083,8 @@ public class HudRenderer {
 						stage.addActor(weaponTut);
 						stage.addActor(nextButton);
 						GWTM.setDisplayMessage("Excellent! Try using your weapon");
-						stage.addActor(touchpad);
+						tutorialStep = TutorialStep.WEAPON;
+						addTouchControls();
 						stage.addActor(getTimebox());
 						stage.addActor(getWeaponPartsCounter());
 						stage.addActor(getEmptySlot());
@@ -813,7 +1100,8 @@ public class HudRenderer {
 					stage.addActor(weaponTut);
 					stage.addActor(nextButton);
 					GWTM.setDisplayMessage("Excellent! Try using your weapon");
-					stage.addActor(touchpad);
+					tutorialStep = TutorialStep.WEAPON;
+					addTouchControls();
 					stage.addActor(getTimebox());
 					stage.addActor(getWeaponPartsCounter());
 					stage.addActor(getEmptySlot());
@@ -870,7 +1158,8 @@ public class HudRenderer {
 				stage.addActor(ghostCharTut);
 				stage.addActor(nextButton);
 				TM.setDisplayMessage("Oops! Looks like you died. You're now a ghost!");
-				stage.addActor(touchpad);
+				tutorialStep = TutorialStep.SHOTGUN_OR_GHOST;
+				addTouchControls();
 				stage.addActor(getTimebox());
 				stage.addActor(getWeaponPartsCounter());
 				stage.addActor(getEmptySlot());
@@ -946,19 +1235,32 @@ public class HudRenderer {
 			TM.setDisplayMessage("Obtained Bat");
 
 		weaponButton.addListener(new ClickListener() {
+			@Override
+			public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
+				showPreview(ActionPreviewType.BAT);
+				beginHeldActionAim(pointer);
+				return super.touchDown(event, x, y, pointer, button);
+			}
+
+			@Override
+			public void touchDragged(InputEvent event, float x, float y, int pointer) {
+				updateHeldActionAim(pointer);
+				super.touchDragged(event, x, y, pointer);
+			}
+
+			@Override
+			public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
+				if (!desktopControls) {
+					useCurrentWeapon();
+				}
+				endHeldActionAim(pointer);
+				clearPreview();
+				super.touchUp(event, x, y, pointer, button);
+			}
+
 			public void clicked(InputEvent event, float x, float y) {
-				System.out.println("Clicked on bat button");
-				if (gWorld.getPlayer().useWeapon()) {
-					// start drawing cool down animation.
-					WeaponsCD = true;
-					if ("Ghost".equals(gWorld.getPlayer().getType())) {
-						AssetLoader.pickUpItemSound.play(AssetLoader.VOLUME);
-						TM.setDisplayMessage("Placed Bat Down");
-					} else {
-						TM.setDisplayMessage("Swung Bat");
-						AssetLoader.batSwingSound.play(AssetLoader.VOLUME);
-					}
-					session.updatePlayerUseWeapon();
+				if (desktopControls) {
+					useCurrentWeapon();
 				}
 			}
 		});
@@ -987,17 +1289,30 @@ public class HudRenderer {
 			@Override
 			public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
 				System.out.println("Shotgun button touch down, draw hitbox");
+				showPreview(ActionPreviewType.SHOTGUN);
+				beginHeldActionAim(pointer);
 				return super.touchDown(event, x, y, pointer, button);
 			}
 
+			@Override
+			public void touchDragged(InputEvent event, float x, float y, int pointer) {
+				updateHeldActionAim(pointer);
+				super.touchDragged(event, x, y, pointer);
+			}
+
+			@Override
+			public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
+				if (!desktopControls) {
+					useCurrentWeapon();
+				}
+				endHeldActionAim(pointer);
+				clearPreview();
+				super.touchUp(event, x, y, pointer, button);
+			}
+
 			public void clicked(InputEvent event, float x, float y) {
-				System.out.println("Clicked on shotgun button");
-				if (gWorld.getPlayer().useWeapon()) {
-					// start drawing cool down animation
-					TM.setDisplayMessage("Shotgun Fired!");
-					WeaponsCD = true;
-					session.updatePlayerUseWeapon();
-					AssetLoader.shotgunBlastSound.play(AssetLoader.VOLUME);
+				if (desktopControls) {
+					useCurrentWeapon();
 				}
 			}
 		});
@@ -1030,16 +1345,30 @@ public class HudRenderer {
 			@Override
 			public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
 				System.out.println("Disarm trap button touch down, draw hitbox");
+				showPreview(ActionPreviewType.DISARM_TRAP);
+				beginHeldActionAim(pointer);
 				return super.touchDown(event, x, y, pointer, button);
 			}
 
+			@Override
+			public void touchDragged(InputEvent event, float x, float y, int pointer) {
+				updateHeldActionAim(pointer);
+				super.touchDragged(event, x, y, pointer);
+			}
+
+			@Override
+			public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
+				if (!desktopControls) {
+					useCurrentItem();
+				}
+				endHeldActionAim(pointer);
+				clearPreview();
+				super.touchUp(event, x, y, pointer, button);
+			}
+
 			public void clicked(InputEvent event, float x, float y) {
-				System.out.println("Clicked on disarm trap button");
-				gWorld.getPlayer().useItem();
-				session.updatePlayerUseItem();
-				if ("Ghost".equals(gWorld.getPlayer().getType())) {
-					TM.setDisplayMessage("Placing Item Down");
-					AssetLoader.pickUpItemSound.play(AssetLoader.VOLUME);
+				if (desktopControls) {
+					useCurrentItem();
 				}
 			}
 		});
@@ -1098,14 +1427,32 @@ public class HudRenderer {
 		AssetLoader.pickUpItemSound.play(AssetLoader.VOLUME);
 		TM.setDisplayMessage("Obtained Knife");
 		weaponButton.addListener(new ClickListener() {
+			@Override
+			public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
+				showPreview(ActionPreviewType.KNIFE);
+				beginHeldActionAim(pointer);
+				return super.touchDown(event, x, y, pointer, button);
+			}
+
+			@Override
+			public void touchDragged(InputEvent event, float x, float y, int pointer) {
+				updateHeldActionAim(pointer);
+				super.touchDragged(event, x, y, pointer);
+			}
+
+			@Override
+			public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
+				if (!desktopControls) {
+					useCurrentWeapon();
+				}
+				endHeldActionAim(pointer);
+				clearPreview();
+				super.touchUp(event, x, y, pointer, button);
+			}
+
 			public void clicked(InputEvent event, float x, float y) {
-				System.out.println("Clicked on knife button");
-				if (gWorld.getPlayer().useWeapon()) {
-					// start to draw cool down animation
-					TM.setDisplayMessage("Knife Thrust!");
-					WeaponsCD = true;
-					session.updatePlayerUseWeapon();
-					AssetLoader.knifeThrustSound.play(AssetLoader.VOLUME);
+				if (desktopControls) {
+					useCurrentWeapon();
 				}
 			}
 		});
@@ -1132,12 +1479,33 @@ public class HudRenderer {
 		TM.setDisplayMessage("Obtained Trap");
 
 		itemButton.addListener(new ClickListener() {
+			@Override
+			public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
+				showPreview(ActionPreviewType.TRAP);
+				beginHeldActionAim(pointer);
+				return super.touchDown(event, x, y, pointer, button);
+			}
+
+			@Override
+			public void touchDragged(InputEvent event, float x, float y, int pointer) {
+				updateHeldActionAim(pointer);
+				super.touchDragged(event, x, y, pointer);
+			}
+
+			@Override
+			public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
+				if (!desktopControls) {
+					useCurrentItem();
+				}
+				endHeldActionAim(pointer);
+				clearPreview();
+				super.touchUp(event, x, y, pointer, button);
+			}
+
 			public void clicked(InputEvent event, float x, float y) {
-				System.out.println("Clicked on trap button");
-				gWorld.getPlayer().useItem();
-				session.updatePlayerUseItem();
-				TM.setDisplayMessage("Planting Trap...");
-				AssetLoader.disarmTrapSound.play(AssetLoader.VOLUME);
+				if (desktopControls) {
+					useCurrentItem();
+				}
 			}
 		});
 
@@ -1245,7 +1613,8 @@ public class HudRenderer {
 	}
 
 	public void updateInput(Viewport worldViewport) {
-		playerInputController.update(worldViewport);
+		playerInputController.update(worldViewport,
+				gWorld.getPlayer() == null ? null : gWorld.getPlayer().getBody().getPosition());
 	}
 
 	public PlayerInputController getPlayerInputController() {
@@ -1274,6 +1643,7 @@ public class HudRenderer {
 			playerInputController.clearPendingActions();
 			return;
 		}
+		syncDesktopActionPreview();
 		if (playerInputController.consumeUseWeapon()) {
 			for (Actor actor : stage.getActors()) {
 				if ("Weapon Button".equals(actor.getName())) {
@@ -1336,6 +1706,73 @@ public class HudRenderer {
 		}
 	}
 
+	private void syncDesktopActionPreview() {
+		if (!desktopControls) {
+			return;
+		}
+		if (playerInputController.isWeaponControlHeld() && player.getWeapon() != null) {
+			if ("Shotgun".equals(player.getWeapon().getName())) {
+				showPreview(ActionPreviewType.SHOTGUN);
+			} else if ("Knife".equals(player.getWeapon().getName())) {
+				showPreview(ActionPreviewType.KNIFE);
+			} else {
+				showPreview(ActionPreviewType.BAT);
+			}
+			return;
+		}
+		if (playerInputController.isItemControlHeld() && player.getItem() != null) {
+			if ("Murderer".equals(gWorld.getPlayer().getType())) {
+				showPreview(ActionPreviewType.TRAP);
+			} else {
+				showPreview(ActionPreviewType.DISARM_TRAP);
+			}
+			return;
+		}
+		clearPreview();
+	}
+
+	private void useCurrentWeapon() {
+		System.out.println("Use current weapon");
+		clearPreview();
+		if (gWorld.getPlayer().getWeapon() == null) {
+			return;
+		}
+		if (gWorld.getPlayer().useWeapon()) {
+			WeaponsCD = true;
+			if (player.getWeapon() != null && "Shotgun".equals(player.getWeapon().getName())) {
+				TM.setDisplayMessage("Shotgun Fired!");
+				AssetLoader.shotgunBlastSound.play(AssetLoader.VOLUME);
+			} else if (player.getWeapon() != null && "Knife".equals(player.getWeapon().getName())) {
+				TM.setDisplayMessage("Knife Thrust!");
+				AssetLoader.knifeThrustSound.play(AssetLoader.VOLUME);
+			} else if ("Ghost".equals(gWorld.getPlayer().getType())) {
+				AssetLoader.pickUpItemSound.play(AssetLoader.VOLUME);
+				TM.setDisplayMessage("Placed Bat Down");
+			} else {
+				TM.setDisplayMessage("Swung Bat");
+				AssetLoader.batSwingSound.play(AssetLoader.VOLUME);
+			}
+			session.updatePlayerUseWeapon();
+		}
+	}
+
+	private void useCurrentItem() {
+		System.out.println("Use current item");
+		clearPreview();
+		if (gWorld.getPlayer().getItem() == null) {
+			return;
+		}
+		gWorld.getPlayer().useItem();
+		session.updatePlayerUseItem();
+		if ("Ghost".equals(gWorld.getPlayer().getType())) {
+			TM.setDisplayMessage("Placing Item Down");
+			AssetLoader.pickUpItemSound.play(AssetLoader.VOLUME);
+		} else if ("Murderer".equals(gWorld.getPlayer().getType())) {
+			TM.setDisplayMessage("Planting Trap...");
+			AssetLoader.disarmTrapSound.play(AssetLoader.VOLUME);
+		}
+	}
+
 	/**
 	 * Releases the resources held by objects or images loaded.
 	 */
@@ -1343,6 +1780,7 @@ public class HudRenderer {
 		stage.dispose();
 		settingsStage.dispose();
 		batch.dispose();
+		previewRenderer.dispose();
 		hotkeyFont.dispose();
 	}
 

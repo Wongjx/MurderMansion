@@ -4,7 +4,7 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.viewport.Viewport;
 
 public interface PlayerInputController {
-	void update(Viewport worldViewport);
+	void update(Viewport worldViewport, Vector2 playerPosition);
 
 	Vector2 getMovementVector();
 
@@ -21,6 +21,12 @@ public interface PlayerInputController {
 	boolean consumeUseItem();
 
 	boolean consumePauseToggle();
+
+	boolean isWeaponControlHeld();
+
+	boolean isAbilityControlHeld();
+
+	boolean isItemControlHeld();
 
 	void clearPendingActions();
 }

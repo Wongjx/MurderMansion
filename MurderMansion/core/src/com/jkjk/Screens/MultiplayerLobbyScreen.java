@@ -26,9 +26,11 @@ import com.jkjk.Multiplayer.DiscoveryApiClient.RoomVisibility;
 import com.jkjk.Multiplayer.MultiplayerPreferences;
 import com.jkjk.Multiplayer.MultiplayerUi;
 import com.jkjk.MurderMansion.MurderMansion;
+import com.jkjk.Telemetry.TelemetryService;
 
 public class MultiplayerLobbyScreen implements Screen {
 	private static final int MIN_PLAYERS_TO_START = 2;
+	private static final long LOBBY_POLL_INTERVAL_MS = 3000L;
 
 	public enum EntryMode {
 		HOST_PUBLIC, HOST_PRIVATE, JOIN_CODE, QUICK_START, RETURN_EXISTING
@@ -64,6 +66,11 @@ public class MultiplayerLobbyScreen implements Screen {
 
 	@Override
 	public void show() {
+		TelemetryService telemetryService = TelemetryService.get();
+		if (telemetryService != null) {
+			telemetryService.setScreenName("MultiplayerLobbyScreen");
+			telemetryService.recordEvent("lobby_shown", "MultiplayerLobbyScreen", null);
+		}
 		if (AssetLoader.gameMusic != null) {
 			AssetLoader.gameMusic.stop();
 		}
@@ -154,6 +161,7 @@ public class MultiplayerLobbyScreen implements Screen {
 		info.roomCode = result.room.roomCode;
 		info.roomVisibility = result.room.visibility;
 		info.roomPhase = result.room.phase;
+		info.matchId = result.room.matchId;
 		if (result.occupantId != null) {
 			info.occupantId = result.occupantId;
 		}
@@ -163,6 +171,10 @@ public class MultiplayerLobbyScreen implements Screen {
 			info.isSpectator = isOccupantInSpectators(result.room, info.occupantId);
 		}
 		if (result.room.phase == RoomPhase.CLOSED) {
+			TelemetryService telemetryService = TelemetryService.get();
+			if (telemetryService != null) {
+				telemetryService.recordEvent("room_closed_seen", "MultiplayerLobbyScreen", null);
+			}
 			removedFromRoom = true;
 			Gdx.app.postRunnable(new Runnable() {
 				@Override
@@ -176,6 +188,10 @@ public class MultiplayerLobbyScreen implements Screen {
 			return;
 		}
 		if (info.occupantId != null && !containsOccupant(result.room, info.occupantId)) {
+			TelemetryService telemetryService = TelemetryService.get();
+			if (telemetryService != null) {
+				telemetryService.recordEvent("kick_seen", "MultiplayerLobbyScreen", null);
+			}
 			removedFromRoom = true;
 			Gdx.app.postRunnable(new Runnable() {
 				@Override
@@ -188,6 +204,10 @@ public class MultiplayerLobbyScreen implements Screen {
 			});
 			return;
 		}
+		TelemetryService telemetryService = TelemetryService.get();
+		if (telemetryService != null) {
+			telemetryService.syncRoomContext();
+		}
 		statusMessage = null;
 		errorMessage = null;
 		stageDirty = true;
@@ -198,7 +218,7 @@ public class MultiplayerLobbyScreen implements Screen {
 		if (removedFromRoom) {
 			return;
 		}
-		if (room != null && !requestInFlight && System.currentTimeMillis() - lastPollTime > 1200L
+		if (room != null && !requestInFlight && System.currentTimeMillis() - lastPollTime > LOBBY_POLL_INTERVAL_MS
 				&& !screenQueued) {
 			lastPollTime = System.currentTimeMillis();
 			fetchRoom();

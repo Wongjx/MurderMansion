@@ -65,7 +65,7 @@ public class MultiplayerMenuScreen implements Screen {
 			game.mMultiplayerSession.roomNotice = null;
 		}
 
-		hostPublicButton = button("Host Public Match", 232f, 196f, new Runnable() {
+		hostPublicButton = button("Host Public Match", 232f, 148f, new Runnable() {
 			@Override
 			public void run() {
 				AssetLoader.clickSound.play(AssetLoader.VOLUME);
@@ -73,7 +73,7 @@ public class MultiplayerMenuScreen implements Screen {
 						gameWidth, gameHeight, MultiplayerLobbyScreen.EntryMode.HOST_PUBLIC, null));
 			}
 		});
-		hostPrivateButton = button("Host Private Match", 232f, 148f, new Runnable() {
+		hostPrivateButton = button("Host Private Match", 232f, 100f, new Runnable() {
 			@Override
 			public void run() {
 				AssetLoader.clickSound.play(AssetLoader.VOLUME);
@@ -81,7 +81,7 @@ public class MultiplayerMenuScreen implements Screen {
 						gameWidth, gameHeight, MultiplayerLobbyScreen.EntryMode.HOST_PRIVATE, null));
 			}
 		});
-		joinCodeButton = button("Join By Code", 232f, 100f, new Runnable() {
+		joinCodeButton = button("Join By Code", 232f, 52f, new Runnable() {
 			@Override
 			public void run() {
 				AssetLoader.clickSound.play(AssetLoader.VOLUME);
@@ -89,7 +89,7 @@ public class MultiplayerMenuScreen implements Screen {
 						gameHeight));
 			}
 		});
-		quickStartButton = button("Quick Start", 232f, 52f, new Runnable() {
+		quickStartButton = button("Quick Start", 232f, 196f, new Runnable() {
 			@Override
 			public void run() {
 				AssetLoader.clickSound.play(AssetLoader.VOLUME);

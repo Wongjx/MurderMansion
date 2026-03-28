@@ -36,6 +36,7 @@ import com.jkjk.MMHelpers.PresentationFrame;
 import com.jkjk.Multiplayer.DiscoveryApiClient;
 import com.jkjk.Multiplayer.MultiplayerPreferences;
 import com.jkjk.MurderMansion.MurderMansion;
+import com.jkjk.Telemetry.TelemetryService;
 
 /**
  * @author LeeJunXiang
@@ -178,6 +179,12 @@ public class ScoreScreen implements Screen {
 	@Override
 	public void show() {
 		MMLog.log("MM-SCORE", "ScoreScreen.show()");
+		TelemetryService telemetryService = TelemetryService.get();
+		if (telemetryService != null) {
+			telemetryService.setScreenName("ScoreScreen");
+			telemetryService.recordScoreScreenShown(gWorld != null && gWorld.isDisconnected(),
+					gWorld != null && gWorld.isCivWin(), gWorld != null && gWorld.isMurWin());
+		}
 		//Unlock An AMAZING GAME
 		if(game.actionResolver.getSignedInGPGS()){
 			game.actionResolver.unlockAchievementGPGS(game.actionResolver.ACHEIVEMENT_1);
@@ -283,12 +290,30 @@ public class ScoreScreen implements Screen {
 					final String roomId = game.mMultiplayerSession.mRoomId;
 					final String occupantId = game.mMultiplayerSession.occupantId;
 					if (disconnected && !wasServer) {
+						if (occupantId != null) {
+							new Thread(new Runnable() {
+								@Override
+								public void run() {
+									try {
+										DiscoveryApiClient client = new DiscoveryApiClient(
+												MultiplayerPreferences.getDiscoveryUrl());
+										client.leaveRoom(roomId, occupantId);
+									} catch (Exception ignored) {
+									}
+								}
+							}, "leave-room-disconnected").start();
+						}
+						game.mMultiplayerSession.roomNotice = "The host left and the room was closed.";
 						game.mMultiplayerSession.clearRoomState();
 						((Game) Gdx.app.getApplicationListener()).setScreen(new MultiplayerMenuScreen(game,
 								gameWidth, gameHeight));
 						return;
 					}
 					game.mMultiplayerSession.clearMatchRuntime();
+					TelemetryService telemetryService = TelemetryService.get();
+					if (telemetryService != null) {
+						telemetryService.clearMatchId();
+					}
 					if (occupantId != null && wasServer) {
 						new Thread(new Runnable() {
 							@Override

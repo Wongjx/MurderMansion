@@ -220,6 +220,7 @@ public class DiscoveryApiClient {
 		room.allowSpectators = roomJson.getBoolean("allowSpectators", true);
 		room.hostOccupantId = roomJson.getString("hostOccupantId", null);
 		room.hostName = roomJson.getString("hostName", null);
+		room.matchId = roomJson.getString("matchId", null);
 		room.players = parseOccupants(roomJson.get("players"));
 		room.spectators = parseOccupants(roomJson.get("spectators"));
 
@@ -311,6 +312,7 @@ public class DiscoveryApiClient {
 		public boolean allowSpectators;
 		public String hostOccupantId;
 		public String hostName;
+		public String matchId;
 		public ArrayList<RoomOccupant> players = new ArrayList<RoomOccupant>();
 		public ArrayList<RoomOccupant> spectators = new ArrayList<RoomOccupant>();
 		public ConnectInfo endpoint;

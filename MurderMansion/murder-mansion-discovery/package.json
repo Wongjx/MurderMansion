@@ -3,7 +3,11 @@
   "private": true,
   "type": "module",
   "scripts": {
+    "dev": "wrangler dev",
+    "dev:telemetry": "TELEMETRY_ENABLED=true wrangler dev --local",
+    "d1:migrate:local": "wrangler d1 migrations apply murder-mansion-telemetry --local",
     "smoke:relay": "node ./scripts/relay-smoke-test.mjs",
-    "deploy:smoke": "node ./scripts/deploy-and-smoke.mjs"
+    "deploy:smoke": "node ./scripts/deploy-and-smoke.mjs",
+    "telemetry:query": "node ./scripts/run-telemetry-query.mjs"
   }
 }

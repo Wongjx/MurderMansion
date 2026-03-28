@@ -28,11 +28,15 @@
     <false/>
     <key>UIStatusBarHidden</key>
     <true/>
+    <key>CFBundleIconName</key>
+    <string>AppIcon</string>
     <key>UIDeviceFamily</key>
     <array>
         <integer>1</integer>
         <integer>2</integer>
     </array>
+    <key>UIRequiresFullScreen</key>
+    <true/>
     <key>UIRequiredDeviceCapabilities</key>
     <array>
         <string>arm64</string>
@@ -43,16 +47,5 @@
         <string>UIInterfaceOrientationLandscapeLeft</string>
         <string>UIInterfaceOrientationLandscapeRight</string>
     </array>
-    <key>CFBundleIcons</key>
-    <dict>
-        <key>CFBundlePrimaryIcon</key>
-        <dict>
-            <key>CFBundleIconFiles</key>
-            <array>
-                <string>Icon</string>
-                <string>Icon-72</string>
-            </array>
-        </dict>
-    </dict>
 </dict>
 </plist>

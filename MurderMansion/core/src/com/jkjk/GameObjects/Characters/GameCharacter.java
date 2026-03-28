@@ -1,9 +1,8 @@
 package com.jkjk.GameObjects.Characters;
 
 import java.util.Random;
-import java.util.concurrent.ConcurrentLinkedQueue;
-
 import box2dLight.RayHandler;
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
@@ -22,7 +21,6 @@ import com.jkjk.MMHelpers.AssetLoader;
  * 
  */
 public abstract class GameCharacter {
-
 	private String type;
 	protected boolean isPlayer;
 	private GameWorld gWorld;
@@ -59,15 +57,16 @@ public abstract class GameCharacter {
 	private long startTime;
 	private long brightTime;
 	private final Vector2 movementVector;
+	private final Vector2 targetNetworkPosition;
+	private final Vector2 targetNetworkVelocity;
+	private boolean hasNetworkTarget;
+	private boolean remoteMoving;
+	private static final float NETWORK_SMOOTHING_SPEED = 12f;
+	private static final float NETWORK_SNAP_DISTANCE = 24f;
+	private static final float NETWORK_POSITION_DEADBAND = 1.5f;
+	private static final float NETWORK_ANGLE_DEADBAND = 0.04f;
 	private PlayerInputController inputController;
-
-	private ConcurrentLinkedQueue<float[]> positionQueue;
-	private ConcurrentLinkedQueue<Float> angleQueue;
-	private ConcurrentLinkedQueue<float[]> velocityQueue;
-
-	private float[] nextPosition;
-	private Float nextAngle;
-	private float[] nextVelocity;
+	private float targetNetworkAngle;
 
 	GameCharacter(String type, int id, GameWorld gWorld, boolean isPlayer) {
 		this.isPlayer = isPlayer;
@@ -104,14 +103,12 @@ public abstract class GameCharacter {
 		hauntTime = 0;
 		nextRandomMovement = 0;
 
-		positionQueue = new ConcurrentLinkedQueue<float[]>();
-		angleQueue = new ConcurrentLinkedQueue<Float>();
-		velocityQueue = new ConcurrentLinkedQueue<float[]>();
-
-		nextPosition = new float[2];
-		nextAngle = new Float(0);
-		nextVelocity = new float[2];
 		movementVector = new Vector2();
+		targetNetworkPosition = new Vector2();
+		targetNetworkVelocity = new Vector2();
+		hasNetworkTarget = false;
+		remoteMoving = false;
+		targetNetworkAngle = 0f;
 
 		movable = true;
 
@@ -196,6 +193,13 @@ public abstract class GameCharacter {
 
 	public boolean isPlayer() {
 		return isPlayer;
+	}
+
+	public boolean isVisuallyMoving() {
+		if (isPlayer) {
+			return body != null && !body.getLinearVelocity().isZero();
+		}
+		return remoteMoving;
 	}
 
 	public Body getBody() {
@@ -294,14 +298,7 @@ public abstract class GameCharacter {
 	public void update() {
 
 		if (!isPlayer) {
-			nextPosition = positionQueue.poll();
-			nextAngle = angleQueue.poll();
-			nextVelocity = velocityQueue.poll();
-
-			if (nextPosition != null && nextAngle != null && nextVelocity != null) {
-				body.setTransform(nextPosition[0], nextPosition[1], nextAngle);
-				body.setLinearVelocity(nextVelocity[0] / 2, nextVelocity[1] / 2);
-			}
+			applyRemoteNetworkTarget();
 		}
 
 		if (weapon != null) {
@@ -441,14 +438,54 @@ public abstract class GameCharacter {
 	}
 
 	public void setPosition(float x, float y, float angle, float velocityX, float velocityY) {
-		for (int i = 0; i < positionQueue.size(); i++) {
-			positionQueue.poll();
-			angleQueue.poll();
-			velocityQueue.poll();
+		targetNetworkPosition.set(x, y);
+		targetNetworkAngle = angle;
+		targetNetworkVelocity.set(velocityX, velocityY);
+		hasNetworkTarget = true;
+	}
+
+	private void applyRemoteNetworkTarget() {
+		if (!hasNetworkTarget || body == null) {
+			return;
 		}
-		positionQueue.offer(new float[] { x, y });
-		angleQueue.offer(angle);
-		velocityQueue.offer(new float[] { velocityX, velocityY });
+		Vector2 currentPosition = body.getPosition();
+		float distanceToTarget = currentPosition.dst(targetNetworkPosition);
+		float angleDelta = smallestAngleDelta(body.getAngle(), targetNetworkAngle);
+		if (distanceToTarget >= NETWORK_SNAP_DISTANCE) {
+			remoteMoving = true;
+			body.setTransform(targetNetworkPosition.x, targetNetworkPosition.y, targetNetworkAngle);
+			body.setLinearVelocity(0f, 0f);
+			return;
+		}
+		if (distanceToTarget <= NETWORK_POSITION_DEADBAND && Math.abs(angleDelta) <= NETWORK_ANGLE_DEADBAND) {
+			remoteMoving = false;
+			body.setLinearVelocity(0f, 0f);
+			return;
+		}
+
+		remoteMoving = true;
+		float alpha = Math.min(1f, Gdx.graphics.getDeltaTime() * NETWORK_SMOOTHING_SPEED);
+		float smoothedX = currentPosition.x + (targetNetworkPosition.x - currentPosition.x) * alpha;
+		float smoothedY = currentPosition.y + (targetNetworkPosition.y - currentPosition.y) * alpha;
+		float smoothedAngle = lerpAngle(body.getAngle(), targetNetworkAngle, alpha);
+		body.setTransform(smoothedX, smoothedY, smoothedAngle);
+		body.setLinearVelocity(0f, 0f);
+	}
+
+	private float lerpAngle(float currentAngle, float targetAngle, float alpha) {
+		float delta = smallestAngleDelta(currentAngle, targetAngle);
+		return currentAngle + delta * alpha;
+	}
+
+	private float smallestAngleDelta(float currentAngle, float targetAngle) {
+		float delta = targetAngle - currentAngle;
+		while (delta > Math.PI) {
+			delta -= Math.PI * 2f;
+		}
+		while (delta < -Math.PI) {
+			delta += Math.PI * 2f;
+		}
+		return delta;
 	}
 
 	public float getAmbientLightValue() {

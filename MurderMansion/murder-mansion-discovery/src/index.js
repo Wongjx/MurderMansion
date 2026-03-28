@@ -1,4 +1,4 @@
-const ROOM_TTL_MS = 45_000;
+const ROOM_TTL_MS = 30 * 60_000;
 const DEFAULT_MAX_PLAYERS = 6;
 const KICK_LOCKOUT_MS = 30 * 60_000;
 
@@ -15,6 +15,22 @@ export default {
 
       if (method === "GET" && path === "/health") {
         return json({ ok: true, service: "murder-mansion-discovery" });
+      }
+
+      if (method === "POST" && path === "/telemetry/session-start") {
+        return handleSessionStart(env, await request.json());
+      }
+
+      if (method === "POST" && path === "/telemetry/session-end") {
+        return handleSessionEnd(env, await request.json());
+      }
+
+      if (method === "POST" && path === "/telemetry/events") {
+        return handleTelemetryEvents(env, await request.json());
+      }
+
+      if (method === "POST" && path === "/telemetry/crash") {
+        return handleCrashReport(env, await request.json());
       }
 
       if (method === "POST" && path === "/rooms") {
@@ -137,7 +153,6 @@ export class RoomDirectory {
       do {
         code = randomCode();
       } while (directory.codeToRoomId[code]);
-      await this.state.storage.put("directory", directory);
       return json({ ok: true, roomCode: code });
     }
 
@@ -179,7 +194,6 @@ export class RoomDirectory {
     if (method === "GET" && path.startsWith("/code/")) {
       const code = path.substring("/code/".length).toUpperCase();
       const roomId = directory.codeToRoomId[code] || null;
-      await this.state.storage.put("directory", directory);
       return json({ ok: true, roomId, roomCode: code });
     }
 
@@ -192,7 +206,6 @@ export class RoomDirectory {
         .filter((room) => room.phase === "lobby" || room.phase === "starting" || room.phase === "in_game")
         .filter((room) => room.playerCount + room.spectatorCount < room.maxPlayers)
         .sort((a, b) => a.playerCount - b.playerCount);
-      await this.state.storage.put("directory", directory);
       return json({ ok: true, room: publicRooms[0] || null });
     }
 
@@ -205,6 +218,13 @@ export class RoomObject {
     this.state = state;
     this.env = env;
     this.connections = new Map();
+    this.lastVolatileActivityAt = 0;
+    this.debugCounters = {
+      persistentWrites: 0,
+      relayMessagesReceived: 0,
+      relayMessagesBroadcast: 0,
+      roomPolls: 0
+    };
   }
 
   async fetch(request) {
@@ -222,13 +242,13 @@ export class RoomObject {
     }
 
     if (room) {
-      room = ensureFresh(room);
+      room = this.ensureRoomFresh(room);
     }
 
     if (method === "POST" && path === "/create") {
       const body = await request.json();
       room = createRoomState(body);
-      await this.state.storage.put("room", room);
+      await this.persistRoom(room, "create");
       return json({ ok: true, roomId: room.roomId, roomCode: room.roomCode, occupantId: room.hostOccupantId, role: "player", room });
     }
 
@@ -238,14 +258,10 @@ export class RoomObject {
 
     if (method === "POST" && path === "/poll") {
       const body = await request.json();
+      this.noteCounter("roomPolls");
       const occupant = findOccupant(room, body.occupantId);
       if (!occupant) {
         return json({ ok: false, error: "occupant_not_found" }, 404);
-      }
-      if (room.phase !== "closed") {
-        room.lastHeartbeatAt = Date.now();
-        room.updatedAt = Date.now();
-        await this.state.storage.put("room", room);
       }
       return json({ ok: true, room });
     }
@@ -259,8 +275,6 @@ export class RoomObject {
       if (room.phase !== "starting" && room.phase !== "in_game") {
         return json({ ok: false, error: "room_not_connectable", phase: room.phase, room }, 409);
       }
-      room.updatedAt = Date.now();
-      await this.state.storage.put("room", room);
       const requestOrigin = body.requestOrigin || url.origin;
       return json({
         ok: true,
@@ -284,7 +298,7 @@ export class RoomObject {
           : 400;
         return json({ ok: false, error: message }, status);
       }
-      await this.state.storage.put("room", joinResult.room);
+      await this.persistRoom(joinResult.room, "join");
       return json({ ok: true, occupantId: joinResult.occupantId, role: joinResult.role, room: joinResult.room });
     }
 
@@ -298,7 +312,7 @@ export class RoomObject {
       room.players = room.players.filter((player) => player.occupantId !== body.targetOccupantId);
       room.spectators = room.spectators.filter((spectator) => spectator.occupantId !== body.targetOccupantId);
       room.updatedAt = Date.now();
-      await this.state.storage.put("room", room);
+      await this.persistRoom(room, "kick");
       return json({ ok: true, room });
     }
 
@@ -310,7 +324,7 @@ export class RoomObject {
       }
       player.ready = !!body.ready;
       room.updatedAt = Date.now();
-      await this.state.storage.put("room", room);
+      await this.persistRoom(room, "ready");
       return json({ ok: true, room });
     }
 
@@ -328,6 +342,7 @@ export class RoomObject {
         return json({ ok: false, error: "players_not_ready" }, 409);
       }
       room.phase = "starting";
+      room.matchId = crypto.randomUUID();
       room.endpoint = {
         publicAddress: body.publicAddress || null,
         localAddress: body.localAddress || null,
@@ -335,7 +350,7 @@ export class RoomObject {
       };
       room.lastHeartbeatAt = Date.now();
       room.updatedAt = Date.now();
-      await this.state.storage.put("room", room);
+      await this.persistRoom(room, "start");
       return json({ ok: true, room });
     }
 
@@ -351,26 +366,31 @@ export class RoomObject {
         };
       }
       room.updatedAt = Date.now();
-      await this.state.storage.put("room", room);
+      await this.persistRoom(room, "heartbeat");
       return json({ ok: true, room });
     }
 
     if (method === "POST" && path === "/finish") {
       const body = await request.json();
       assertHost(room, body.occupantId);
+      const finishedMatchId = room.matchId;
       room.phase = "lobby";
+      room.matchId = null;
       room.endpoint = null;
       room.players.forEach((player) => {
         player.ready = false;
       });
       promoteSpectators(room);
       room.updatedAt = Date.now();
-      await this.state.storage.put("room", room);
-      return json({ ok: true, room });
+      await this.persistRoom(room, "finish");
+      this.closeActiveSocketsSilently(1000, "Match finished");
+      return json({ ok: true, room, finishedMatchId });
     }
 
     if (method === "POST" && path === "/leave") {
       const body = await request.json();
+      const leavingMatchId = room.matchId;
+      const wasHost = body.occupantId === room.hostOccupantId;
       if (body.occupantId === room.hostOccupantId) {
         removeOccupant(room, body.occupantId);
         if (room.phase === "lobby") {
@@ -385,21 +405,22 @@ export class RoomObject {
         }
       }
       room.updatedAt = Date.now();
-      await this.state.storage.put("room", room);
+      await this.persistRoom(room, "leave");
       if (room.phase === "closed") {
         this.closeActiveSockets("room_closed", 1000, "Room closed");
       }
-      return json({ ok: true, room });
+      return json({ ok: true, room, endedMatchId: room.phase === "closed" ? leavingMatchId : null, hostTransferred: wasHost && room.phase === "lobby" });
     }
 
     if (method === "POST" && path === "/close") {
       const body = await request.json();
       assertHost(room, body.occupantId);
+      const closingMatchId = room.matchId;
       room.phase = "closed";
       room.updatedAt = Date.now();
-      await this.state.storage.put("room", room);
+      await this.persistRoom(room, "close");
       this.closeActiveSockets("room_closed", 1000, "Room closed");
-      return json({ ok: true, room });
+      return json({ ok: true, room, endedMatchId: closingMatchId });
     }
 
     return json({ ok: false, error: "not_found" }, 404);
@@ -413,7 +434,7 @@ export class RoomObject {
     if (!upgradeHeader || upgradeHeader.toLowerCase() !== "websocket") {
       return json({ ok: false, error: "expected_websocket" }, 426);
     }
-    room = ensureFresh(room);
+    room = this.ensureRoomFresh(room);
     const url = new URL(request.url);
     const occupantId = url.searchParams.get("occupantId");
     const occupant = findOccupant(room, occupantId);
@@ -428,6 +449,7 @@ export class RoomObject {
     const [clientSocket, serverSocket] = Object.values(pair);
     serverSocket.accept();
     this.connections.set(occupantId, serverSocket);
+    this.touchVolatileActivity();
     serverSocket.addEventListener("message", (event) => {
       this.handleRelayMessage(occupantId, String(event.data));
     });
@@ -437,10 +459,6 @@ export class RoomObject {
     serverSocket.addEventListener("error", async () => {
       await this.handleSocketClose(room, occupantId);
     });
-
-    room.lastHeartbeatAt = Date.now();
-    room.updatedAt = Date.now();
-    await this.state.storage.put("room", room);
 
     serverSocket.send(JSON.stringify({
       type: "connected",
@@ -459,13 +477,12 @@ export class RoomObject {
   }
 
   async handleRelayMessage(fromOccupantId, rawMessage) {
-    const room = ensureFresh(await this.state.storage.get("room"));
+    this.noteCounter("relayMessagesReceived");
+    this.touchVolatileActivity();
+    const room = this.ensureRoomFresh(await this.state.storage.get("room"));
     if (!room || room.phase === "closed") {
       return;
     }
-    room.lastHeartbeatAt = Date.now();
-    room.updatedAt = Date.now();
-    await this.state.storage.put("room", room);
 
     let message;
     try {
@@ -520,17 +537,17 @@ export class RoomObject {
       return;
     }
     this.connections.delete(occupantId);
+    this.touchVolatileActivity();
 
-    room = ensureFresh(await this.state.storage.get("room"));
+    room = this.ensureRoomFresh(await this.state.storage.get("room"));
     if (!room) {
       return;
     }
-    room.lastHeartbeatAt = Date.now();
-    room.updatedAt = Date.now();
 
     if (occupantId === room.hostOccupantId) {
       room.phase = "closed";
-      await this.state.storage.put("room", room);
+      room.updatedAt = Date.now();
+      await this.persistRoom(room, "host_socket_close");
       for (const [peerId, socket] of this.connections.entries()) {
         socket.send(JSON.stringify({ type: "host_disconnected" }));
         try {
@@ -543,12 +560,6 @@ export class RoomObject {
     }
 
     this.sendToOccupant(room.hostOccupantId, { type: "peer_disconnected", occupantId });
-    room.players = room.players.filter((player) => player.occupantId !== occupantId);
-    room.spectators = room.spectators.filter((spectator) => spectator.occupantId !== occupantId);
-    if (room.phase === "lobby") {
-      promoteSpectators(room);
-    }
-    await this.state.storage.put("room", room);
   }
 
   sendToOccupant(occupantId, payload) {
@@ -556,6 +567,8 @@ export class RoomObject {
     if (!socket) {
       return;
     }
+    this.noteCounter("relayMessagesBroadcast");
+    this.touchVolatileActivity();
     socket.send(JSON.stringify(payload));
   }
 
@@ -570,6 +583,365 @@ export class RoomObject {
     }
     this.connections.clear();
   }
+
+  closeActiveSocketsSilently(closeCode, closeReason) {
+    for (const [, socket] of this.connections.entries()) {
+      try {
+        socket.close(closeCode, closeReason);
+      } catch (error) {}
+    }
+    this.connections.clear();
+  }
+
+  async persistRoom(room, reason) {
+    this.noteCounter("persistentWrites");
+    if (this.env.DEBUG_COSTS === "true" && this.debugCounters.persistentWrites % 25 === 0) {
+      console.log("room_persist", room.roomId, reason, this.debugCounters);
+    }
+    await this.state.storage.put("room", room);
+  }
+
+  noteCounter(name) {
+    this.debugCounters[name] = (this.debugCounters[name] || 0) + 1;
+  }
+
+  touchVolatileActivity() {
+    this.lastVolatileActivityAt = Date.now();
+  }
+
+  ensureRoomFresh(room) {
+    if (!room) {
+      return room;
+    }
+    room = ensureFresh(room);
+    if (room.phase === "closed") {
+      const volatileActiveAt = this.lastVolatileActivityAt || 0;
+      const hasActiveConnections = this.connections.size > 0;
+      if (hasActiveConnections && volatileActiveAt > 0 && Date.now() - volatileActiveAt <= ROOM_TTL_MS) {
+        room.phase = room.matchId ? "in_game" : "lobby";
+      }
+    }
+    return room;
+  }
+}
+
+async function handleSessionStart(env, body) {
+  if (!telemetryEnabled(env)) {
+    return json({ ok: true, accepted: 0, telemetryEnabled: false });
+  }
+  validateTelemetrySchema(body);
+  const now = Date.now();
+  await env.TELEMETRY_DB.prepare(
+    `INSERT INTO app_sessions (
+      session_id, install_id, platform, app_version, build_number, started_at, ended_at, end_reason, device_model, os_version
+    ) VALUES (?, ?, ?, ?, ?, ?, NULL, NULL, ?, ?)
+    ON CONFLICT(session_id) DO UPDATE SET
+      install_id=excluded.install_id,
+      platform=excluded.platform,
+      app_version=excluded.app_version,
+      build_number=excluded.build_number,
+      device_model=excluded.device_model,
+      os_version=excluded.os_version`
+  ).bind(
+    body.sessionId,
+    body.installId,
+    body.platform,
+    body.appVersion,
+    body.buildNumber,
+    body.startedAt || now,
+    body.deviceModel || null,
+    body.osVersion || null
+  ).run();
+  return json({ ok: true, accepted: 1 });
+}
+
+async function handleSessionEnd(env, body) {
+  if (!telemetryEnabled(env)) {
+    return json({ ok: true, accepted: 0, telemetryEnabled: false });
+  }
+  validateTelemetrySchema(body);
+  await env.TELEMETRY_DB.prepare(
+    `UPDATE app_sessions
+     SET ended_at = ?, end_reason = ?
+     WHERE session_id = ?`
+  ).bind(body.endedAt || Date.now(), body.endReason || null, body.sessionId).run();
+  return json({ ok: true, accepted: 1 });
+}
+
+async function handleTelemetryEvents(env, body) {
+  if (!telemetryEnabled(env)) {
+    return json({ ok: true, accepted: 0, telemetryEnabled: false });
+  }
+  validateTelemetrySchema(body);
+  const events = Array.isArray(body.events) ? body.events : [];
+  const receivedAt = Date.now();
+  for (const event of events) {
+    await insertTelemetryEvent(env, event, receivedAt);
+    await applyTelemetryEventSideEffects(env, event);
+  }
+  return json({ ok: true, accepted: events.length });
+}
+
+async function handleCrashReport(env, body) {
+  if (!telemetryEnabled(env)) {
+    return json({ ok: true, accepted: 0, telemetryEnabled: false });
+  }
+  validateTelemetrySchema(body);
+  const receivedAt = Date.now();
+  await env.TELEMETRY_DB.prepare(
+    `INSERT INTO crash_reports (
+      crash_id, occurred_at, received_at, session_id, install_id, room_id, match_id, occupant_id, role,
+      platform, app_version, build_number, fatal, kind, thread_name, exception_class, message,
+      stacktrace, recent_log_tail, metadata_json
+    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`
+  ).bind(
+    body.crashId,
+    body.occurredAt || receivedAt,
+    receivedAt,
+    body.sessionId || null,
+    body.installId || null,
+    body.roomId || null,
+    body.matchId || null,
+    body.occupantId || null,
+    body.role || null,
+    body.platform,
+    body.appVersion,
+    body.buildNumber,
+    body.fatal ? 1 : 0,
+    body.kind,
+    body.threadName || null,
+    body.exceptionClass || null,
+    body.message || null,
+    body.stacktrace || null,
+    body.recentLogTail || null,
+    body.metadataJson || null
+  ).run();
+  if (body.matchId && body.occupantId) {
+    await upsertMatchParticipant(env, {
+      matchId: body.matchId,
+      occupantId: body.occupantId,
+      installId: body.installId || null,
+      sessionId: body.sessionId || null,
+      role: body.role || "client",
+      platform: body.platform,
+      appVersion: body.appVersion,
+      buildNumber: body.buildNumber,
+      joinedMatchAt: body.occurredAt || receivedAt
+    });
+    await updateParticipantTerminal(env, body.matchId, body.occupantId, body.kind);
+    if (body.role === "host") {
+      await recordMatchFinish(env, body.matchId, body.kind === "freeze_watchdog" ? "freeze_or_hang" : "host_crash",
+        body.role === "host" ? "host_crash_report" : "client_crash_report");
+    }
+  }
+  return json({ ok: true, accepted: 1 });
+}
+
+function validateTelemetrySchema(body) {
+  if (!body || (body.schemaVersion != null && body.schemaVersion !== 1)) {
+    throw new Error("invalid_telemetry_schema");
+  }
+}
+
+async function insertTelemetryEvent(env, event, receivedAt) {
+  await env.TELEMETRY_DB.prepare(
+    `INSERT INTO telemetry_events (
+      event_id, occurred_at, received_at, session_id, install_id, room_id, match_id, occupant_id, role, platform,
+      app_version, build_number, event_type, screen_name, payload_json
+    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`
+  ).bind(
+    event.eventId || crypto.randomUUID(),
+    event.occurredAt || receivedAt,
+    receivedAt,
+    event.sessionId || null,
+    event.installId || null,
+    event.roomId || null,
+    event.matchId || null,
+    event.occupantId || null,
+    event.role || null,
+    event.platform || null,
+    event.appVersion || null,
+    event.buildNumber || null,
+    event.eventType,
+    event.screenName || null,
+    event.payloadJson || "{}"
+  ).run();
+}
+
+async function applyTelemetryEventSideEffects(env, event) {
+  if (event.matchId && event.occupantId && event.platform && event.appVersion && event.buildNumber) {
+    await upsertMatchParticipant(env, {
+      matchId: event.matchId,
+      occupantId: event.occupantId,
+      installId: event.installId || null,
+      sessionId: event.sessionId || null,
+      role: event.role || "client",
+      platform: event.platform,
+      appVersion: event.appVersion,
+      buildNumber: event.buildNumber,
+      joinedMatchAt: event.occurredAt || Date.now()
+    });
+  }
+  if (event.eventType === "score_screen_shown" && event.matchId && event.occupantId) {
+    await env.TELEMETRY_DB.prepare(
+      `UPDATE match_participants
+       SET reached_score_screen = 1, left_match_at = COALESCE(left_match_at, ?), terminal_reason = COALESCE(terminal_reason, 'finished')
+       WHERE match_id = ? AND occupant_id = ?`
+    ).bind(event.occurredAt || Date.now(), event.matchId, event.occupantId).run();
+    if (event.role === "host") {
+      await env.TELEMETRY_DB.prepare(
+        `UPDATE matches
+         SET score_screen_reached = 1
+         WHERE match_id = ?`
+      ).bind(event.matchId).run();
+    }
+  }
+  if (event.eventType === "app_exit_intent" && event.matchId && event.occupantId) {
+    await updateParticipantTerminal(env, event.matchId, event.occupantId,
+      event.role === "host" ? "host_exit" : "app_exit");
+  }
+}
+
+async function bestEffortTelemetry(env, work) {
+  try {
+    if (!telemetryEnabled(env) || !env.TELEMETRY_DB) {
+      return;
+    }
+    await work();
+  } catch (error) {
+    console.error("telemetry failure", error);
+  }
+}
+
+function telemetryEnabled(env) {
+  return env && env.TELEMETRY_ENABLED === "true";
+}
+
+async function upsertRoomRecord(env, room) {
+  await env.TELEMETRY_DB.prepare(
+    `INSERT INTO rooms (
+      room_id, room_code, visibility, created_at, closed_at, last_phase, host_occupant_id, max_players, protocol_version, app_version
+    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+    ON CONFLICT(room_id) DO UPDATE SET
+      room_code=excluded.room_code,
+      visibility=excluded.visibility,
+      closed_at=excluded.closed_at,
+      last_phase=excluded.last_phase,
+      host_occupant_id=excluded.host_occupant_id,
+      max_players=excluded.max_players,
+      protocol_version=excluded.protocol_version,
+      app_version=excluded.app_version`
+  ).bind(
+    room.roomId,
+    room.roomCode,
+    room.visibility,
+    room.createdAt,
+    room.phase === "closed" ? Date.now() : null,
+    room.phase,
+    room.hostOccupantId || null,
+    room.maxPlayers,
+    room.protocolVersion,
+    room.appVersion
+  ).run();
+}
+
+function buildWorkerEvent(room, occupantId, eventType, payload) {
+  return {
+    eventId: crypto.randomUUID(),
+    occurredAt: Date.now(),
+    roomId: room ? room.roomId : null,
+    matchId: room ? room.matchId || null : null,
+    occupantId: occupantId || null,
+    role: room && occupantId ? (occupantId === room.hostOccupantId ? "host" : "client") : null,
+    appVersion: room ? room.appVersion : null,
+    buildNumber: "worker",
+    platform: "worker",
+    eventType,
+    screenName: null,
+    payloadJson: JSON.stringify(payload || {})
+  };
+}
+
+async function writeTelemetryEvent(env, event) {
+  await insertTelemetryEvent(env, event, Date.now());
+}
+
+async function recordMatchStart(env, room, hostOccupantId) {
+  const startedAt = Date.now();
+  await env.TELEMETRY_DB.prepare(
+    `INSERT OR REPLACE INTO matches (
+      match_id, room_id, host_occupant_id, started_at, ended_at, end_reason, end_source,
+      player_count_expected, player_count_started, score_screen_reached, app_version, build_number, protocol_version
+    ) VALUES (?, ?, ?, ?, NULL, NULL, NULL, ?, ?, 0, ?, ?, ?)`
+  ).bind(
+    room.matchId,
+    room.roomId,
+    hostOccupantId,
+    startedAt,
+    room.maxPlayers,
+    room.players.length,
+    room.appVersion,
+    "worker",
+    room.protocolVersion
+  ).run();
+  for (const player of room.players) {
+    await upsertMatchParticipant(env, {
+      matchId: room.matchId,
+      occupantId: player.occupantId,
+      installId: null,
+      sessionId: null,
+      role: player.occupantId === room.hostOccupantId ? "host" : "client",
+      platform: "unknown",
+      appVersion: room.appVersion,
+      buildNumber: "unknown",
+      joinedMatchAt: startedAt
+    });
+  }
+}
+
+async function recordMatchFinish(env, matchId, endReason, endSource) {
+  await env.TELEMETRY_DB.prepare(
+    `UPDATE matches
+     SET ended_at = COALESCE(ended_at, ?),
+         end_reason = COALESCE(end_reason, ?),
+         end_source = COALESCE(end_source, ?)
+     WHERE match_id = ?`
+  ).bind(Date.now(), endReason, endSource, matchId).run();
+}
+
+async function upsertMatchParticipant(env, participant) {
+  await env.TELEMETRY_DB.prepare(
+    `INSERT INTO match_participants (
+      match_id, occupant_id, install_id, session_id, role, platform, app_version, build_number,
+      joined_match_at, left_match_at, terminal_reason, reached_score_screen
+    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, NULL, NULL, 0)
+    ON CONFLICT(match_id, occupant_id) DO UPDATE SET
+      install_id = COALESCE(excluded.install_id, match_participants.install_id),
+      session_id = COALESCE(excluded.session_id, match_participants.session_id),
+      role = COALESCE(excluded.role, match_participants.role),
+      platform = CASE WHEN match_participants.platform = 'unknown' THEN excluded.platform ELSE match_participants.platform END,
+      app_version = CASE WHEN match_participants.app_version = 'unknown' THEN excluded.app_version ELSE match_participants.app_version END,
+      build_number = CASE WHEN match_participants.build_number = 'unknown' THEN excluded.build_number ELSE match_participants.build_number END`
+  ).bind(
+    participant.matchId,
+    participant.occupantId,
+    participant.installId,
+    participant.sessionId,
+    participant.role,
+    participant.platform,
+    participant.appVersion,
+    participant.buildNumber,
+    participant.joinedMatchAt
+  ).run();
+}
+
+async function updateParticipantTerminal(env, matchId, occupantId, terminalReason) {
+  await env.TELEMETRY_DB.prepare(
+    `UPDATE match_participants
+     SET left_match_at = COALESCE(left_match_at, ?),
+         terminal_reason = COALESCE(terminal_reason, ?)
+     WHERE match_id = ? AND occupant_id = ?`
+  ).bind(Date.now(), terminalReason, matchId, occupantId).run();
 }
 
 async function createRoom(env, payload, requesterIp) {
@@ -593,6 +965,12 @@ async function createRoom(env, payload, requesterIp) {
   const body = await response.json();
   await syncRoom(env, body.room);
   await registerCode(env, roomCode, roomId);
+  await bestEffortTelemetry(env, async () => {
+    await upsertRoomRecord(env, body.room);
+    await writeTelemetryEvent(env, buildWorkerEvent(body.room, body.occupantId, "room_created", {
+      visibility: body.room.visibility
+    }));
+  });
   return json(body, response.status);
 }
 
@@ -649,9 +1027,6 @@ async function fetchRoom(env, roomId) {
   const roomStub = env.ROOM_OBJECT.get(env.ROOM_OBJECT.idFromName(roomId));
   const response = await roomStub.fetch("https://room/summary");
   const body = await response.json();
-  if (body.room) {
-    await syncRoom(env, body.room);
-  }
   return json(body, response.status);
 }
 
@@ -662,7 +1037,13 @@ async function roomCommand(env, roomId, commandPath, payload, request) {
     body: JSON.stringify(payload)
   });
   const body = await response.json();
-  if (body.room) {
+  await bestEffortTelemetry(env, async () => {
+    if (body.room) {
+      await upsertRoomRecord(env, body.room);
+    }
+    await instrumentRoomCommand(env, roomId, commandPath, payload, body, response.status);
+  });
+  if (body.room && shouldSyncRoomCommand(commandPath)) {
     if (body.room.phase === "closed") {
       await removeRoom(env, body.room);
     } else {
@@ -670,6 +1051,100 @@ async function roomCommand(env, roomId, commandPath, payload, request) {
     }
   }
   return json(body, response.status);
+}
+
+function shouldSyncRoomCommand(commandPath) {
+  return commandPath !== "/poll" && commandPath !== "/connect-info";
+}
+
+async function instrumentRoomCommand(env, roomId, commandPath, payload, body, statusCode) {
+  if (commandPath === "/poll" && statusCode === 404 && body.error === "occupant_not_found") {
+    await writeTelemetryEvent(env, {
+      eventId: crypto.randomUUID(),
+      occurredAt: Date.now(),
+      roomId,
+      occupantId: payload.occupantId || null,
+      role: null,
+      platform: "worker",
+      appVersion: null,
+      buildNumber: "worker",
+      eventType: "poll_rejected_occupant_not_found",
+      screenName: null,
+      payloadJson: JSON.stringify({})
+    });
+    return;
+  }
+  if (!body.room) {
+    return;
+  }
+  if (commandPath === "/join" && body.occupantId) {
+    await writeTelemetryEvent(env, buildWorkerEvent(body.room, body.occupantId, "room_joined", {
+      role: body.role
+    }));
+    return;
+  }
+  if (commandPath === "/kick" && payload.targetOccupantId) {
+    await writeTelemetryEvent(env, buildWorkerEvent(body.room, payload.targetOccupantId, "room_kicked", {
+      byOccupantId: payload.occupantId
+    }));
+    if (body.room.matchId) {
+      await updateParticipantTerminal(env, body.room.matchId, payload.targetOccupantId, "kicked");
+    }
+    return;
+  }
+  if (commandPath === "/start" && body.room.matchId) {
+    await recordMatchStart(env, body.room, payload.occupantId);
+    await writeTelemetryEvent(env, buildWorkerEvent(body.room, payload.occupantId, "match_started", {
+      player_count_started: body.room.players.length,
+      expected_player_count: body.room.maxPlayers
+    }));
+    return;
+  }
+  if (commandPath === "/finish" && body.finishedMatchId) {
+    await recordMatchFinish(env, body.finishedMatchId, "finished_normal", "worker_finish");
+    await writeTelemetryEvent(env, {
+      eventId: crypto.randomUUID(),
+      occurredAt: Date.now(),
+      roomId: body.room.roomId,
+      matchId: body.finishedMatchId,
+      occupantId: payload.occupantId,
+      role: "host",
+      platform: "worker",
+      appVersion: body.room.appVersion,
+      buildNumber: "worker",
+      eventType: "match_finished",
+      screenName: null,
+      payloadJson: JSON.stringify({ finished_match_id: body.finishedMatchId })
+    });
+    return;
+  }
+  if (commandPath === "/leave") {
+    await writeTelemetryEvent(env, buildWorkerEvent(body.room, payload.occupantId, "room_left", {
+      phase: body.room.phase
+    }));
+    if (body.hostTransferred) {
+      await writeTelemetryEvent(env, buildWorkerEvent(body.room, payload.occupantId, "host_transferred", {
+        newHostOccupantId: body.room.hostOccupantId
+      }));
+    }
+    const activeMatchId = body.endedMatchId || (body.room.phase !== "lobby" ? body.room.matchId : null);
+    if (activeMatchId) {
+      const terminalReason = payload.occupantId === body.room.hostOccupantId
+        ? "app_exit"
+        : "app_exit";
+      await updateParticipantTerminal(env, activeMatchId, payload.occupantId, terminalReason);
+    }
+    if (body.endedMatchId) {
+      await recordMatchFinish(env, body.endedMatchId, "room_closed", "worker_room_close");
+    }
+    return;
+  }
+  if (commandPath === "/close") {
+    await writeTelemetryEvent(env, buildWorkerEvent(body.room, payload.occupantId, "room_closed", null));
+    if (body.endedMatchId) {
+      await recordMatchFinish(env, body.endedMatchId, "room_closed", "worker_room_close");
+    }
+  }
 }
 
 function createRoomState(body) {
@@ -690,6 +1165,7 @@ function createRoomState(body) {
     kicked: [],
     hostOccupantId,
     hostName: body.hostName,
+    matchId: null,
     endpoint: null,
     players: [
       {
@@ -839,7 +1315,8 @@ function findOccupant(room, occupantId) {
 function ensureFresh(room) {
   pruneExpiredKicks(room);
   const now = Date.now();
-  if (room.phase !== "closed" && now - room.lastHeartbeatAt > ROOM_TTL_MS) {
+  const lastActiveAt = Math.max(room.updatedAt || 0, room.lastHeartbeatAt || 0, room.createdAt || 0);
+  if (room.phase !== "closed" && now - lastActiveAt > ROOM_TTL_MS) {
     room.phase = "closed";
     room.updatedAt = now;
   }
@@ -866,7 +1343,7 @@ function toPublicSummary(room) {
 function pruneDirectory(directory) {
   const now = Date.now();
   for (const [roomId, room] of Object.entries(directory.publicRooms)) {
-    if (now - room.lastHeartbeatAt > ROOM_TTL_MS) {
+    if (now - room.updatedAt > ROOM_TTL_MS) {
       delete directory.publicRooms[roomId];
     }
   }

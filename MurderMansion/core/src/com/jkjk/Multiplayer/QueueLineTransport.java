@@ -46,6 +46,9 @@ public class QueueLineTransport implements GameLineTransport {
 			return unwrapLine(line);
 		} catch (InterruptedException e) {
 			Thread.currentThread().interrupt();
+			if (closed.get() || peerClosed.get()) {
+				throw new SocketException("Socket closed");
+			}
 			throw new IOException("Interrupted while reading transport.", e);
 		}
 	}
@@ -63,6 +66,9 @@ public class QueueLineTransport implements GameLineTransport {
 			return unwrapLine(line);
 		} catch (InterruptedException e) {
 			Thread.currentThread().interrupt();
+			if (closed.get() || peerClosed.get()) {
+				throw new SocketException("Socket closed");
+			}
 			throw new IOException("Interrupted while reading transport.", e);
 		}
 	}

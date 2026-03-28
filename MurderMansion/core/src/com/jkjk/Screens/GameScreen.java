@@ -1,7 +1,5 @@
 package com.jkjk.Screens;
 
-import java.io.IOException;
-
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
@@ -13,6 +11,7 @@ import com.jkjk.Host.MMServer;
 import com.jkjk.MMHelpers.AssetLoader;
 import com.jkjk.MMHelpers.MMLog;
 import com.jkjk.MurderMansion.MurderMansion;
+import com.jkjk.Telemetry.TelemetryService;
 
 public class GameScreen implements Screen {
 	private GameWorld gWorld;
@@ -39,6 +38,11 @@ public class GameScreen implements Screen {
 
 	@Override
 	public void show() {
+		TelemetryService telemetryService = TelemetryService.get();
+		if (telemetryService != null) {
+			telemetryService.setScreenName("GameScreen");
+			telemetryService.recordEvent("game_screen_shown", "GameScreen", null);
+		}
 		AssetLoader.menuMusic.stop();
 		AssetLoader.gameMusic.play();
 
@@ -81,6 +85,7 @@ public class GameScreen implements Screen {
 		gWorld.update(delta, session);
 
 		renderer.render(delta, runTime, session);
+		hudRenderer.renderActionPreview(renderer.getWorldViewport().getCamera());
 		hudRenderer.render(delta, session.getIsGameStart());
 
 		// if phone is designated server
@@ -103,18 +108,6 @@ public class GameScreen implements Screen {
 
 	@Override
 	public void pause() {
-		try {
-			if (session != null) {
-				session.endSession();
-			}
-			if (game.mMultiplayerSession != null && game.mMultiplayerSession.isServer
-					&& game.mMultiplayerSession.getServer() != null) {
-				game.mMultiplayerSession.getServer().endSession();
-			}
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-
 	}
 
 	@Override
@@ -125,17 +118,6 @@ public class GameScreen implements Screen {
 
 	@Override
 	public void hide() {
-		try {
-			if (session != null) {
-				session.endSession();
-			}
-			if (game.mMultiplayerSession != null && game.mMultiplayerSession.isServer
-					&& game.mMultiplayerSession.getServer() != null) {
-				game.mMultiplayerSession.getServer().endSession();
-			}
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
 		dispose();
 
 	}

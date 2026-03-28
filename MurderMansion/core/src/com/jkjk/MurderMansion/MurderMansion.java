@@ -9,6 +9,7 @@ import com.jkjk.MMHelpers.AssetLoader;
 import com.jkjk.MMHelpers.MultiplayerSessionInfo;
 import com.jkjk.MMHelpers.NoOpActionResolver;
 import com.jkjk.Screens.SplashScreen;
+import com.jkjk.Telemetry.TelemetryService;
 
 public class MurderMansion extends Game {
 	public ActionResolver actionResolver;
@@ -35,6 +36,7 @@ public class MurderMansion extends Game {
 		AssetLoader.loadLogo();
 		AssetLoader.loadFont();
 		AssetLoader.loadScoreScreen();
+		TelemetryService.initialize(mMultiplayerSession).start();
 		setScreen(new SplashScreen(this, V_WIDTH * SCALE, V_HEIGHT * SCALE));
 //		setScreen(new WaitScreen(this, V_WIDTH * SCALE, V_HEIGHT * SCALE));
 //		setScreen(new MenuScreen(this,V_WIDTH * SCALE, V_HEIGHT * SCALE));
@@ -45,7 +47,20 @@ public class MurderMansion extends Game {
 	}
 
 	@Override
+	public void render() {
+		TelemetryService telemetryService = TelemetryService.get();
+		if (telemetryService != null) {
+			telemetryService.noteRenderHeartbeat();
+		}
+		super.render();
+	}
+
+	@Override
 	public void dispose() {
+		TelemetryService telemetryService = TelemetryService.get();
+		if (telemetryService != null) {
+			telemetryService.stop("app_dispose");
+		}
 		if (mMultiplayerSession != null) {
 			mMultiplayerSession.clearMatchRuntime();
 		}

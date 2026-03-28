@@ -3,6 +3,16 @@
   "main": "src/index.js",
   "compatibility_date": "2026-03-25",
   "workers_dev": true,
+  "vars": {
+    "TELEMETRY_ENABLED": "true"
+  },
+  "d1_databases": [
+    {
+      "binding": "TELEMETRY_DB",
+      "database_name": "murder-mansion-telemetry",
+      "database_id": "79598cfe-b790-45e5-a74f-0df8dc73e190"
+    }
+  ],
   "durable_objects": {
     "bindings": [
       {

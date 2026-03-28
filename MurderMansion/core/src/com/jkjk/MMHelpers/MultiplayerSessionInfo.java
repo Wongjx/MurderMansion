@@ -25,6 +25,7 @@ public class MultiplayerSessionInfo {
 	public int mState=1000;
 	public String roomCode;
 	public String occupantId;
+	public String matchId;
 	public String roomNotice;
 	public String publicServerAddress;
 	public String localServerAddress;
@@ -38,6 +39,11 @@ public class MultiplayerSessionInfo {
 	public String relayUrl;
 	public transient RelaySocketFactory relaySocketFactory;
 	public transient RelayHostedMatchCoordinator relayHostedMatchCoordinator;
+	public String telemetryPlatform = "unknown";
+	public String telemetryAppVersion = "1.0.0";
+	public String telemetryBuildNumber = "0";
+	public String telemetryDeviceModel = "unknown";
+	public String telemetryOsVersion = "unknown";
 	
 	public boolean isServer;
 	public String serverAddress;
@@ -83,6 +89,7 @@ public class MultiplayerSessionInfo {
 		publicServerAddress = null;
 		localServerAddress = null;
 		relayUrl = null;
+		matchId = null;
 		server=null;
 		client=null;
 	}

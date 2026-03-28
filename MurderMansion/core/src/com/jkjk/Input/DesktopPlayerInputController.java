@@ -28,7 +28,7 @@ public class DesktopPlayerInputController implements PlayerInputController {
 	}
 
 	@Override
-	public void update(Viewport worldViewport) {
+	public void update(Viewport worldViewport, Vector2 playerPosition) {
 		float movementX = 0f;
 		float movementY = 0f;
 
@@ -61,9 +61,9 @@ public class DesktopPlayerInputController implements PlayerInputController {
 		boolean itemPressed = Gdx.input.isKeyPressed(Input.Keys.E);
 		boolean pausePressed = Gdx.input.isKeyPressed(Input.Keys.ESCAPE);
 
-		weaponPending |= weaponPressed && !previousWeaponPressed;
-		abilityPending |= abilityPressed && !previousAbilityPressed;
-		itemPending |= itemPressed && !previousItemPressed;
+		weaponPending |= !weaponPressed && previousWeaponPressed;
+		abilityPending |= !abilityPressed && previousAbilityPressed;
+		itemPending |= !itemPressed && previousItemPressed;
 		pausePending |= pausePressed && !previousPausePressed;
 
 		previousWeaponPressed = weaponPressed;
@@ -118,6 +118,21 @@ public class DesktopPlayerInputController implements PlayerInputController {
 		boolean result = pausePending;
 		pausePending = false;
 		return result;
+	}
+
+	@Override
+	public boolean isWeaponControlHeld() {
+		return previousWeaponPressed;
+	}
+
+	@Override
+	public boolean isAbilityControlHeld() {
+		return previousAbilityPressed;
+	}
+
+	@Override
+	public boolean isItemControlHeld() {
+		return previousItemPressed;
 	}
 
 	@Override
