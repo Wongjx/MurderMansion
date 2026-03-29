@@ -32,8 +32,8 @@ public class AndroidLauncher extends AndroidApplication {
 		MultiplayerSessionInfo sessionInfo = new MultiplayerSessionInfo();
 		sessionInfo.relaySocketFactory = new AndroidRelaySocketFactory();
 		sessionInfo.telemetryPlatform = "android";
-		sessionInfo.telemetryAppVersion = "1.0.2";
-		sessionInfo.telemetryBuildNumber = "4";
+		sessionInfo.telemetryAppVersion = "1.0.3";
+		sessionInfo.telemetryBuildNumber = "5";
 		sessionInfo.telemetryDeviceModel = Build.MANUFACTURER + " " + Build.MODEL;
 		sessionInfo.telemetryOsVersion = "Android " + Build.VERSION.RELEASE;
 		initialize(new MurderMansion(new NoOpActionResolver(), sessionInfo), config);

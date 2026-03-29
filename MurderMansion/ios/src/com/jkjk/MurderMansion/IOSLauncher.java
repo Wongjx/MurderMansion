@@ -28,8 +28,8 @@ public class IOSLauncher extends IOSApplication.Delegate {
 		MultiplayerSessionInfo sessionInfo = new MultiplayerSessionInfo();
 		sessionInfo.relaySocketFactory = new IOSRelaySocketFactory();
 		sessionInfo.telemetryPlatform = "ios";
-		sessionInfo.telemetryAppVersion = "1.0.2";
-		sessionInfo.telemetryBuildNumber = "4";
+		sessionInfo.telemetryAppVersion = "1.0.3";
+		sessionInfo.telemetryBuildNumber = "5";
 		sessionInfo.telemetryDeviceModel = UIDevice.getCurrentDevice().getModel();
 		sessionInfo.telemetryOsVersion = UIDevice.getCurrentDevice().getSystemName() + " "
 				+ UIDevice.getCurrentDevice().getSystemVersion();
