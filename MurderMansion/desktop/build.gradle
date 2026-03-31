@@ -157,7 +157,11 @@ tasks.register('packageWindowsExe') {
 		if (!OperatingSystem.current().isWindows()) {
 			throw new GradleException('packageWindowsExe must be run on Windows. This Mac can only build the macOS .app wrapper directly.')
 		}
-		def jpackageExecutable = new File(System.getenv('JAVA_HOME') ?: '', 'bin/jpackage')
+		def javaHome = System.getenv('JAVA_HOME') ?: ''
+		def jpackageExecutable = new File(javaHome, 'bin/jpackage.exe')
+		if (!jpackageExecutable.exists()) {
+			jpackageExecutable = new File(javaHome, 'bin/jpackage')
+		}
 		if (!jpackageExecutable.exists()) {
 			throw new GradleException('packageWindowsExe requires JAVA_HOME to point to a JDK that includes jpackage.')
 		}
