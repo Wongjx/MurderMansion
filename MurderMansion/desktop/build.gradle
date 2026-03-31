@@ -3,6 +3,8 @@ plugins {
 }
 
 import org.gradle.internal.os.OperatingSystem
+import java.util.zip.ZipEntry
+import java.util.zip.ZipOutputStream
 
 java {
 	sourceCompatibility = JavaVersion.VERSION_1_8
@@ -43,6 +45,143 @@ tasks.register('dist', Jar) {
 		configurations.runtimeClasspath.collect { it.isDirectory() ? it : zipTree(it) }
 	}
 	from assetsDir
+}
+
+def distJarTask = tasks.named('dist')
+def packagingDir = layout.buildDirectory.dir('packaging')
+
+tasks.register('packageMacApp') {
+	group = 'distribution'
+	description = 'Creates a clickable macOS .app bundle that launches the desktop jar using the system Java runtime.'
+	dependsOn distJarTask
+
+	doLast {
+		def appRoot = packagingDir.get().file('mac/Murder Mansion.app').asFile
+		def contentsDir = new File(appRoot, 'Contents')
+		def macOsDir = new File(contentsDir, 'MacOS')
+		def resourcesDir = new File(contentsDir, 'Resources/app')
+
+		project.delete(appRoot)
+		macOsDir.mkdirs()
+		resourcesDir.mkdirs()
+
+		copy {
+			from distJarTask.get().archiveFile
+			into resourcesDir
+			rename { 'murder-mansion-desktop.jar' }
+		}
+
+		new File(contentsDir, 'Info.plist').text = '''<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>CFBundleDevelopmentRegion</key>
+	<string>English</string>
+	<key>CFBundleExecutable</key>
+	<string>Murder Mansion</string>
+	<key>CFBundleIdentifier</key>
+	<string>com.jkjk.murdermansion.desktop</string>
+	<key>CFBundleInfoDictionaryVersion</key>
+	<string>6.0</string>
+	<key>CFBundleName</key>
+	<string>Murder Mansion</string>
+	<key>CFBundlePackageType</key>
+	<string>APPL</string>
+	<key>CFBundleShortVersionString</key>
+	<string>1.0.0</string>
+	<key>CFBundleVersion</key>
+	<string>1.0.0</string>
+	<key>LSMinimumSystemVersion</key>
+	<string>10.13</string>
+	<key>NSHighResolutionCapable</key>
+	<true/>
+</dict>
+</plist>
+'''
+
+		def launcher = new File(macOsDir, 'Murder Mansion')
+		launcher.text = '''#!/bin/sh
+SCRIPT_DIR="$(CDPATH= cd -- "$(dirname -- "$0")" && pwd)"
+APP_DIR="$(CDPATH= cd -- "$SCRIPT_DIR/../Resources/app" && pwd)"
+cd "$APP_DIR" || exit 1
+exec /usr/bin/env java -XstartOnFirstThread -jar "$APP_DIR/murder-mansion-desktop.jar"
+'''
+		launcher.setExecutable(true)
+
+		def readme = new File(resourcesDir, 'README.txt')
+		readme.text = '''Murder Mansion desktop build
+
+This macOS app bundle launches the packaged desktop jar.
+
+Requirement:
+- Java must be installed on the machine.
+
+If the app does not open, install a Java runtime and try again.
+'''
+	}
+}
+
+tasks.register('zipMacApp') {
+	group = 'distribution'
+	description = 'Zips the macOS .app bundle for upload.'
+	dependsOn tasks.named('packageMacApp')
+
+	doLast {
+		def appRoot = packagingDir.get().file('mac/Murder Mansion.app').asFile
+		def zipFile = packagingDir.get().file('murder-mansion-mac.zip').asFile
+		project.delete(zipFile)
+		zipFile.parentFile.mkdirs()
+
+		zipFile.withOutputStream { outputStream ->
+			def zip = new ZipOutputStream(outputStream)
+			appRoot.eachFileRecurse { file ->
+				if (!file.isFile()) {
+					return
+				}
+				def relative = appRoot.parentFile.toPath().relativize(file.toPath()).toString()
+				zip.putNextEntry(new ZipEntry(relative))
+				file.withInputStream { input -> input.transferTo(zip) }
+				zip.closeEntry()
+			}
+			zip.close()
+		}
+	}
+}
+
+tasks.register('packageWindowsExe') {
+	group = 'distribution'
+	description = 'Packages a Windows desktop executable. Run this on Windows with a JDK that includes jpackage.'
+	dependsOn distJarTask
+
+	doLast {
+		if (!OperatingSystem.current().isWindows()) {
+			throw new GradleException('packageWindowsExe must be run on Windows. This Mac can only build the macOS .app wrapper directly.')
+		}
+		def jpackageExecutable = new File(System.getenv('JAVA_HOME') ?: '', 'bin/jpackage')
+		if (!jpackageExecutable.exists()) {
+			throw new GradleException('packageWindowsExe requires JAVA_HOME to point to a JDK that includes jpackage.')
+		}
+		def inputDir = packagingDir.get().file('windows/input').asFile
+		def outputDir = packagingDir.get().file('windows/output').asFile
+		project.delete(inputDir, outputDir)
+		inputDir.mkdirs()
+		copy {
+			from distJarTask.get().archiveFile
+			into inputDir
+			rename { 'murder-mansion-desktop.jar' }
+		}
+		project.exec {
+			commandLine jpackageExecutable.absolutePath,
+				'--type', 'exe',
+				'--name', 'Murder Mansion',
+				'--input', inputDir.absolutePath,
+				'--dest', outputDir.absolutePath,
+				'--main-jar', 'murder-mansion-desktop.jar',
+				'--main-class', application.mainClass.get(),
+				'--win-console',
+				'--app-version', '1.0.0'
+		}
+	}
 }
 
 dependencies {
