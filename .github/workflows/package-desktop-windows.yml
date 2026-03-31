@@ -26,7 +26,7 @@ jobs:
         uses: gradle/actions/wrapper-validation@v4
 
       - name: Package Windows executable
-        run: .\gradlew.bat -Dorg.gradle.java.home="$env:JAVA_HOME" desktop:packageWindowsExe
+        run: .\gradlew.bat desktop:packageWindowsExe
 
       - name: List packaged files
         run: Get-ChildItem -Recurse .\desktop\build\packaging\windows\output
